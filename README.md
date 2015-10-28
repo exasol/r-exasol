@@ -4,8 +4,8 @@ Copyright © EXASOL AG. All rights reserved.
 
 ## Installation
 
-You need to have [Rtools](https://cran.r-project.org/bin/windows/Rtools/) installed on Windows for R to be able to compile the package.
-Plus, the R package "devtools" must be available in your workspace as it contains the install_github() method.
+You need to have **[Rtools](https://cran.r-project.org/bin/windows/Rtools/)** installed on Windows for R to be able to compile the package.
+Plus, the R package **devtools** must be available in your workspace as it contains the install_github() method. The EXASOL package itself needs the subpackage **RODBC**, which should be available on install from Github.
 
 To install the EXASOL package:
 ```r
