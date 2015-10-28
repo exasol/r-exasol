@@ -1,11 +1,11 @@
 # EXASOL R SDK
-Copyright © EXASOL AG. All rights reserved.  
+Copyright © EXASOL AG, Nuremberg (Germany). All rights reserved.  
 2004 - 2015  
 
 ## Installation
 
-You need to have **[Rtools](https://cran.r-project.org/bin/windows/Rtools/)** installed on Windows for R to be able to compile the package.
-Plus, the R package **devtools** must be available in your workspace as it contains the install_github() method. The EXASOL package itself needs the subpackage **RODBC**, which should be available on install from Github.
+You need to have **[Rtools](https://cran.r-project.org/bin/windows/Rtools/)** installed on Windows for R to be able to compile the package (for Linux see below).
+Plus, the R package **devtools** must be available in your workspace as it contains the install_github() method. The EXASOL package itself depends on the R package **RODBC**, which should be available on install from Github.
 
 To install the EXASOL package:
 ```r
@@ -18,20 +18,19 @@ To install the EXASOL package:
 ## Description
 
 
-The EXASolution R Package offers functionality to interact with the
-EXASolution database out of R programs. It is developed as a wrapper
-around ORDBC and extends RODBC in two main aspects:
+The EXASOL R Package offers functionality to interact with
+EXASOL database out of R programs. It is developed as a wrapper
+around RODBC and extends RODBC in two main aspects:
 
-1. It offers fast data transfer between EXASolution and R, multiple
+1. It offers fast data transfer between EXASOL and R, multiple
    times faster than RODBC.  This is achieved by using a proprietary
    transfer channel which is optimized for batch loading. Please read
    the R help of exa.readData() and exa.writeData() for details or
    read below.
 
-2. It makes it convenient to run parts of your R code in parallel on
-   the EXASolution database, using EXASolution R UDF scripts behind
+2. It makes it convenient to run parts of your R code in parallel on EXASOL DB, using EXASOL R UDF scripts behind
    the scenes. For example you can define an R function and execute it
-   in parallel on different groups of data in an EXASolution
+   in parallel on different groups of data in an EXASOL DB
    table. Please read the R help of exa.createScript() function for
    details or read the example below.
 
@@ -48,27 +47,27 @@ around ORDBC and extends RODBC in two main aspects:
    official R-project website download section for your OS to find the
    package that are needed to build packages.
 
-2. Make sure you have ODBC and EXASolution ODBC installed and
+2. Make sure you have ODBC and EXASOL ODBC installed and
    configured on your system. We recommend to create a DSN pointing to
-   your database instance. Read the README of the EXASolution ODBC
+   your database instance. Read the README of EXASOL's ODBC
    driver package for details.
    
-   In Linux, you also need to install the development files for ODBC.
+   On Linux, you also need to install the development files for ODBC.
    Therefore please install unixodbc-devel (RPM) or unixodbc-dev
    (Debian) package.
 
 3. Install a recent version of the RODBC package.
 
-4. Build and install the package from sources:
+4. To build and install the package from sources manually:
 
-   - Unpack the SDK archive and goto folder UDF/R
+   - go to folder UDF/R
    - Run 'R CMD INSTALL .' from the command line (sudo if you are on
      linux) to build and install the package.
 
 
 ## Importing the package
 
-To use the package import it like follows:
+To use the package import it as follows:
 
 
 ```r
@@ -76,14 +75,14 @@ To use the package import it like follows:
 ```
 
 
-## Connecting to EXASolution
+## Connecting to EXASOL DB
 
 
 First, you have to create a ODBC connection via RODBC that will be
 used by all functions of this package.
 
-We recommend to create a DSN pointing to your EXASolution database
-instance.  Read the README of the EXASolution ODBC driver package for
+We recommend to create a DSN pointing to your EXASOL database
+instance.  Read the README of EXASOL's ODBC driver package for
 details. Assuming you have a DSN pointing to your database instance
 you can connect like this:
 
@@ -107,12 +106,12 @@ You can also read the RODBC documentation via 'help(odbcConnect)' for
 more details.
 
 
-## Using the EXASolution R Package
+## Using the EXASOL R Package
 
 We offer the following three methods that operate on the RODBC
 connection:
 
-  # Execute query on EXASolution and transfer results to R, using fast
+  # Execute query on EXASOL DB and transfer results to R, using fast
   # batch transfer:
   
 
@@ -121,7 +120,7 @@ exa.readData(connection, query)
 ```
 
 
-  # Write data frame from R to EXASolution database, using fast batch transfer:
+  # Write data frame from R to EXASOL DB, using fast batch transfer:
 
 
 ```r
@@ -160,7 +159,7 @@ some of the functions.
   require(exasol)
   
   # Connect via RODBC
-  C <- odbcConnect("DSNToYourEXASolution")
+  C <- odbcConnect("DSNToYourEXASOL")
   
   # Read results 
   tables <- exa.readData(C, "SELECT * FROM EXA_ALL_TABLES")
@@ -201,13 +200,13 @@ some of the functions.
 ```
 
 
-## Show output from EXASolution UDF scripts
+## Show output from EXASOL UDF scripts
 
 
 During the development and debugging of UDF scripts it is helpful to be able to
 output arbitrary information from the UDF to any console. For this purpose we
 offer a small Python output service "exaoutput.py", which is included in the
-EXASolution Python Package. A recent version of Python 2.7 is required on the
+*[EXASOL Python Package](https://www.exasol.com/portal/display/WEL/Home)*. A recent version of Python 2.7 is required on the
 client system.
 
 To use the output service simply start it like follows:
@@ -251,4 +250,4 @@ where the output service is started:
   192.168.6.132:59282> [1] "@@@ calculation done"  
 
 All output line are prefixed with source IP and and source port, what
-means, that each R instance on EXAsolution have unique output prefix.
+means, that each R instance on EXASOL DB have unique output prefix.
