@@ -6,6 +6,17 @@ Copyright © EXASOL AG. All rights reserved.
 
 # EXASOL R Package
 
+## Installation
+
+You need to have rtools installed in order for R to be able to compile the package.
+Also the R package "devtools" must be available to your workspace as it contains the install_github() method.
+
+To install the EXASOL package:
+```r
+   require(devtools)
+   install_github("https://github.com/EXASOL/r-exasol")
+```
+
 ## Description
 
 
