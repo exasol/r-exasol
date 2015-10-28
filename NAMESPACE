@@ -1,0 +1,2 @@
+useDynLib(exasol, .registration = TRUE, .fixes = "C_")
+exportPattern("^[[:alpha:]]+")
