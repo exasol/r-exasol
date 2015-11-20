@@ -34,9 +34,9 @@ odbcConnect.}
 \item{inType}{The input type of the UDF script, either \code{SET} or
   \code{SCALAR}.
 
-\code{SET} will call the function once for each group, \code{SCALAR} will
-call the function once for each record. Please read the EXASolution manual
-about UDF scripts for details.}
+\code{SET} will call the function once for each group,
+\code{SCALAR} will call the function once for each record.
+Please read the EXASolution manual about UDF scripts for details.}
 
 \item{inArgs}{Vector of strings specifying the names and types of the input
   arguments for the UDF script.
