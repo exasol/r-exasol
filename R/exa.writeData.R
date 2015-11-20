@@ -57,15 +57,23 @@ exa.writeData <- function(channel, data, tableName, tableColumns = NA,
                                                                     sep = ",",
                                                                     qmethod = "double"),
                           server = NA) {
-  slot <- 0; m <- match.call(); m$tableColumns[[1]] <- NULL
+  slot <- 0
+  m <- match.call()
+  m$tableColumns[[1]] <- NULL
+
   try(.Call(C_asyncRODBCQueryFinish, slot, 1))
+
   serverAddress <- strsplit(
-    if(is.na(server)) odbcGetInfo(channel)[['Server_Name']]
-    else server, ':')[[1]]
-  serverHost <- as.character(serverAddress[[1]]); serverPort <- as.integer(serverAddress[[2]])
+    ifelse(is.na(server), odbcGetInfo(channel)[['Server_Name']], server),
+    ':')[[1]]
+
+  serverHost <- as.character(serverAddress[[1]])
+  serverPort <- as.integer(serverAddress[[2]])
+
   .Call(C_asyncRODBCIOStart, slot, serverHost, serverPort)
   proxyHost <- .Call(C_asyncRODBCProxyHost, slot)
   proxyPort <- .Call(C_asyncRODBCProxyPort, slot)
+
   query <- paste("IMPORT INTO ", tableName,
                  if (is.null(m$tableColumns)) ""
                  else paste('(', do.call(paste, c(lapply(tableColumns, as.character),

@@ -150,14 +150,16 @@ exa.createScript <- function(channel, name, func = NA,
   outType <- ifelse(is.null(m$outType), quote(EMITS), m$outType)
 
   #inArgs <- lapply(2:(length(m$inArgs)), function(x)
-  #                 paste(deparse(m$inArgs[[x]][[2]]), deparse(m$inArgs[[x]][[1]])))
+  #                 paste(deparse(m$inArgs[[x]][[2]]),
+  #                 deparse(m$inArgs[[x]][[1]])))
   inArgs <- do.call(paste, c(as.list(inArgs), sep = ", "))
   if (outType == quote(EMITS)) {
     if (is.null(m$outArgs)) {
       stop("No output arguments given")
     }
-    #outArgs <- paste("(", do.call(paste, c(lapply(2:(length(m$outArgs)), function(x)
-    #                                              paste(deparse(m$outArgs[[x]][[2]]), deparse(m$outArgs[[x]][[1]]))),
+    #outArgs <- paste("(", do.call(paste, c(lapply(2:(length(m$outArgs)),
+    # function(x) paste(deparse(m$outArgs[[x]][[2]]),
+    #                   deparse(m$outArgs[[x]][[1]]))),
     #                                       sep = ", ")), ")")
     outArgs <- paste("(", do.call(paste, c(as.list(outArgs), sep = ", ")), ")", sep = "")
   } else {
