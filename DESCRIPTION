@@ -8,3 +8,6 @@ Maintainer: EXASOL AG <support@exasol.com>
 Depends: R (>= 3.0.0), RODBC
 Description: The EXASolution R Package is a wrapper for RODBC offering addition functionality to speedup data transfer and to improve the usability of EXASolution UDF R scripts from an R environment.
 License: BSD_3_clause + file LICENSE
+URL: https://github.com/EXASOL/r-exasol
+LazyData: yes
+Suggests: testthat
