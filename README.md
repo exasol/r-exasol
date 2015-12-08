@@ -1,6 +1,6 @@
 # EXASOL R SDK
 Copyright © EXASOL AG, Nuremberg (Germany). All rights reserved.  
-2004 - 2015  
+2004 - 2015
 
 [![Build Status](https://travis-ci.org/vsimko/r-exasol.svg)](https://travis-ci.org/vsimko/r-exasol.svg)
 [![codecov.io](https://codecov.io/github/vsimko/r-exasol/coverage.svg?branch=master)](https://codecov.io/github/vsimko/r-exasol?branch=master)
@@ -8,7 +8,7 @@ Copyright © EXASOL AG, Nuremberg (Germany). All rights reserved.
 ## Installation
 
 You need to have **[Rtools](https://cran.r-project.org/bin/windows/Rtools/)** installed on Windows for R to be able to compile the package (for Linux see below).
-Plus, the R package **devtools** must be available in your workspace as it contains the install_github() method. The EXASOL package itself depends on the R package **RODBC**, which should be available on install from Github.
+Plus, the R package **devtools** must be available in your workspace as it contains the `install_github()` method. The EXASOL package itself depends on the R package **RODBC**, which should be available on install from Github.
 
 To install the EXASOL package:
 ```r
@@ -28,13 +28,13 @@ around RODBC and extends RODBC in two main aspects:
 1. It offers fast data transfer between EXASOL and R, multiple
    times faster than RODBC.  This is achieved by using a proprietary
    transfer channel which is optimized for batch loading. Please read
-   the R help of exa.readData() and exa.writeData() for details or
+   the R help of `exa.readData()` and `exa.writeData()` for details or
    read below.
 
 2. It makes it convenient to run parts of your R code in parallel on EXASOL DB, using EXASOL R UDF scripts behind
    the scenes. For example you can define an R function and execute it
    in parallel on different groups of data in an EXASOL DB
-   table. Please read the R help of exa.createScript() function for
+   table. Please read the R help of `exa.createScript()` function for
    details or read the example below.
 
 
@@ -56,15 +56,15 @@ around RODBC and extends RODBC in two main aspects:
    driver package for details.
    
    On Linux, you also need to install the development files for ODBC.
-   Therefore please install unixodbc-devel (RPM) or unixodbc-dev
+   Therefore please install `unixodbc-devel` (RPM) or `unixodbc-dev`
    (Debian) package.
 
 3. Install a recent version of the RODBC package.
 
 4. To build and install the package from sources manually:
 
-   - go to folder UDF/R
-   - Run 'R CMD INSTALL .' from the command line (sudo if you are on
+   - go to folder `UDF/R`
+   - Run `R CMD INSTALL .` from the command line (sudo if you are on
      linux) to build and install the package.
 
 
@@ -89,8 +89,6 @@ instance.  Read the README of EXASOL's ODBC driver package for
 details. Assuming you have a DSN pointing to your database instance
 you can connect like this:
 
-
-
 ```r
   C <- odbcConnect("yourDSN")
 ```
@@ -98,14 +96,11 @@ you can connect like this:
 Alternatively if you don't have a DSN you can also specify the
 required information in the connection string:
 
-
-
 ```r
 C <- odbcDriverConnect("Driver=/path/to/libexaodbc-uo2214lv1.so;UID=sys;PWD=exasol;EXAHOST=exasolution-host:8563")
 ```
 
-
-You can also read the RODBC documentation via 'help(odbcConnect)' for
+You can also read the RODBC documentation via `help(odbcConnect)` for
 more details.
 
 
@@ -122,22 +117,17 @@ connection:
 exa.readData(connection, query)
 ```
 
-
   # Write data frame from R to EXASOL DB, using fast batch transfer:
-
 
 ```r
 exa.writeData(connection, dataFrameToWrite, table = 'targetTable')
 ```
 
-
   # Create a script 
-
 
 ```r
 exa.createScript(cnx, nameForTheScript, inArgs, outArgs, rFunctionToExecute)
 ```
-
 
   # The detailed documentation for the package and all methods is
   # available directly in R via:
@@ -149,14 +139,10 @@ exa.createScript(cnx, nameForTheScript, inArgs, outArgs, rFunctionToExecute)
  help(exa.createScript)
 ```
 
-
 The help also explains the optional parameters that are available for
 some of the functions.
 
-
 ## Example Program
-
-
 ```r
   require(RODBC)
   require(exasol)
@@ -202,13 +188,11 @@ some of the functions.
   testscript ("groupid", "val", table="test.twogroups" , groupBy = "groupid")
 ```
 
-
 ## Show output from EXASOL UDF scripts
-
 
 During the development and debugging of UDF scripts it is helpful to be able to
 output arbitrary information from the UDF to any console. For this purpose we
-offer a small Python output service "exaoutput.py", which is included in the
+offer a small Python output service `exaoutput.py`, which is included in the
 *[EXASOL Python Package](https://www.exasol.com/portal/display/WEL/Home)*. A recent version of Python 2.7 is required on the
 client system.
 
