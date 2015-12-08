@@ -54,6 +54,10 @@
 #' @param replaceIfExists Boolean whether the script shall be replaced if it
 #'   already exists. Either \code{TRUE} or \code{FALSE}.
 #'
+#' @param mockOnly Boolean, default FALSE. This parameter is useful for
+#'   unit-testing if the ODBC connection is not available. Setting mockOnly=TRUE
+#'   will not install the UDF function to the EXASOL database.
+#'
 #' @return This function returns a function that, when called, will execute the
 #'   script on the server. With the call you have to specify to which data it
 #'   shall be applied. The returned function generates and executes a
@@ -92,44 +96,7 @@
 #'   function.}
 #'
 #' @author EXASOL AG <support@@exasol.com>
-#'
-#' @examples
-#' # This example creates a simple SET-EMITS script and executes
-#' # it the table footable.
-#' require(RODBC)
-#' require(exasol)
-#'
-#' # Connect via RODBC with configured DSN
-#' C <- odbcConnect("exasolution")
-#'
-#' # Generate example data frame with two groups
-#' # of random values with different means.
-#' valsMean0  <- rnorm(10, 0)
-#' valsMean50 <- rnorm(10, 50)
-#' twogroups <- data.frame(group = rep(1:2, each = 10),
-#'                         value = c(valsMean0, valsMean50))
-#' # Write example data to a table
-#' odbcQuery(C, "CREATE SCHEMA test")
-#' odbcQuery(C, "CREATE TABLE test.twogroups (groupid INT, val DOUBLE)")
-#' exa.writeData(C, twogroups, tableName = "test.twogroups")
-#'
-#' # Create the R function as an UDF R script in the database
-#' # In our case it computes the mean for each group.
-#' testscript <- exa.createScript(
-#'   C,
-#'   "test.mymean",
-#'   function(data) {
-#'     data$next_row(NA); # read all values from this group into a single vector
-#'     data$emit(data$groupid[[1]], mean(data$val))
-#'   },
-#'   inArgs = c( "groupid INT", "val DOUBLE" ),
-#'   outArgs = c( "groupid INT", "mean DOUBLE" ) )
-#'
-#' # Run the function, grouping by the groupid column
-#' # and aggregating on the "val" column. This returns
-#' # two values which are close to the means of the two groups.
-#' testscript ("groupid", "val", table = "test.twogroups" , groupBy = "groupid")
-#'
+#' @example examples/createScript.R
 #' @export
 exa.createScript <- function(channel, name, func = NA,
                              env = list(),
@@ -140,7 +107,9 @@ exa.createScript <- function(channel, name, func = NA,
                              outType = EMITS,
                              outArgs = list(),
                              outputAddress = NA,
-                             replaceIfExists = TRUE) {
+                             replaceIfExists = TRUE,
+                             mockOnly = FALSE
+                             ) {
   m <- match.call()
   code <- func
   initCode <- m$initCode
@@ -194,7 +163,7 @@ exa.createScript <- function(channel, name, func = NA,
   }
   if (!is.null(cleanCode)) {
     sql <- paste(sql, "cleanup <- function()", sep = "\n")
-    for(codeLine in deparse(cleanCode)) {
+    for (codeLine in deparse(cleanCode)) {
       sql <- paste(sql, codeLine, sep = "\n")
     }
   }
@@ -204,10 +173,13 @@ exa.createScript <- function(channel, name, func = NA,
   }
   sql <- paste(sql, "", sep = "\n")
 
-  if (odbcQuery(channel, sql) == -1) {
-    stop(odbcGetErrMsg(channel)[[1]])
+  if (!mockOnly) {
+    if (odbcQuery(channel, sql) == -1) {
+      stop(odbcGetErrMsg(channel)[[1]])
+    }
   }
 
+  # This function will be returned as a proxy to the R script
   function(..., table = NA, where = NA, groupBy = NA, restQuery = "",
            returnSQL = FALSE, reader = NA, server = NA) {
     m <- match.call(expand.dots = FALSE)
