@@ -29,6 +29,7 @@
 #' @author EXASOL AG <support@@exasol.com>
 #'
 #' @examples
+#' \dontrun{
 #' require(RODBC)
 #' require(exasol)
 #'
@@ -46,7 +47,7 @@
 #' odbcQuery(C, "CREATE SCHEMA test")
 #' odbcQuery(C, "CREATE TABLE test.twogroups (groupid INT, val DOUBLE)")
 #' exa.writeData(C, twogroups, tableName = "test.twogroups")
-#'
+#' }
 #' @export
 exa.writeData <- function(channel, data, tableName, tableColumns = NA,
                           writer = function(data, conn) write.table(data,

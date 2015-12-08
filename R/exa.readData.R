@@ -39,6 +39,7 @@
 #' @author EXASOL AG <support@@exasol.com>
 #'
 #' @examples
+#' \dontrun{
 #' require(RODBC)
 #' require(exasol)
 #'
@@ -53,7 +54,7 @@
 #' print(colnames(tables))  # print names of columns
 #' print(tables[1,])        # print first row
 #' print(tables$TABLE_NAME[1])  # print first value of specified column
-#'
+#' }
 #' @export
 exa.readData <- function(channel, query,
                          reader = function(...) read.csv(..., stringsAsFactors = FALSE, blank.lines.skip = FALSE),
