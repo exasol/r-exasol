@@ -64,9 +64,11 @@ exa.readData <- function(channel, query,
 
   try(.Call(C_asyncRODBCQueryFinish, slot, 1))
 
-  serverAddress <- strsplit(
-    ifelse(is.na(server), odbcGetInfo(channel)[['Server_Name']], server),
-    ':')[[1]]
+  if (is.na(server)) {
+    server <- odbcGetInfo(channel)[['Server_Name']]
+  }
+
+  serverAddress <- strsplit(server, ':')[[1]]
 
   serverHost <- as.character(serverAddress[[1]])
   serverPort <- as.integer(serverAddress[[2]])

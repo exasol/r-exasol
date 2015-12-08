@@ -115,8 +115,8 @@ exa.createScript <- function(channel, name, func = NA,
   initCode <- m$initCode
   cleanCode <- m$cleanCode
 
-  inType <- ifelse(is.null(m$inType), quote(SET), m$inType)
-  outType <- ifelse(is.null(m$outType), quote(EMITS), m$outType)
+  inType <- if (is.null(m$inType)) quote(SET) else m$inType
+  outType <- if (is.null(m$outType)) quote(EMITS) else m$outType
 
   #inArgs <- lapply(2:(length(m$inArgs)), function(x)
   #                 paste(deparse(m$inArgs[[x]][[2]]),
