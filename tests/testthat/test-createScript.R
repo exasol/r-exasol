@@ -3,7 +3,7 @@ context("R scripts as UDF in EXASOL")
 # Added by Viliam Simko
 test_that("Creating a script without ODBC connection", {
 
-  for (outType in c(EMITS, SET, SCALAR, RETURNS)) {
+  for (out_type in c(EMITS, SET, SCALAR, RETURNS)) {
     testscript <- exa.createScript(
       NULL, mockOnly = TRUE, # no connection inside unit-tests
       "test.mymean",
@@ -12,7 +12,7 @@ test_that("Creating a script without ODBC connection", {
       cleanCode = function() {},
       inArgs = c( "groupid INT", "val DOUBLE" ),
       outArgs = c( "groupid INT", "mean DOUBLE" ),
-      outType = outType
+      outType = out_type
     )
 
     expect_true(is.function(testscript))

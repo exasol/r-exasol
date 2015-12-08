@@ -50,13 +50,15 @@
 #' }
 #' @export
 exa.writeData <- function(channel, data, tableName, tableColumns = NA,
-                          writer = function(data, conn) write.table(data,
-                                                                    file = conn,
-                                                                    row.names = FALSE,
-                                                                    col.names = FALSE,
-                                                                    na = "",
-                                                                    sep = ",",
-                                                                    qmethod = "double"),
+                          writer = function(data, conn) {
+                            write.table(data,
+                                        file = conn,
+                                        row.names = FALSE,
+                                        col.names = FALSE,
+                                        na = "",
+                                        sep = ",",
+                                        qmethod = "double")
+                          },
                           server = NA) {
   slot <- 0
   m <- match.call()
@@ -65,10 +67,10 @@ exa.writeData <- function(channel, data, tableName, tableColumns = NA,
   try(.Call(C_asyncRODBCQueryFinish, slot, 1))
 
   if (is.na(server)) {
-    server <- odbcGetInfo(channel)[['Server_Name']]
+    server <- odbcGetInfo(channel)[["Server_Name"]]
   }
 
-  serverAddress <- strsplit(server, ':')[[1]]
+  serverAddress <- strsplit(server, ":")[[1]]
 
   serverHost <- as.character(serverAddress[[1]])
   serverPort <- as.integer(serverAddress[[2]])
@@ -79,13 +81,16 @@ exa.writeData <- function(channel, data, tableName, tableColumns = NA,
 
   query <- paste("IMPORT INTO ", tableName,
                  if (is.null(m$tableColumns)) ""
-                 else paste('(', do.call(paste, c(lapply(tableColumns, as.character),
+                 else paste("(", do.call(paste, c(lapply(tableColumns, as.character),
                                                   sep = ", ")),
-                            ')', sep = ''),
+                            ")", sep = ""),
                  " FROM CSV AT 'http://", proxyHost, ":",
                  proxyPort, "' FILE 'importData.csv'", sep = "")
   on.exit(.Call(C_asyncRODBCQueryFinish, slot, 1))
-  fd <- .Call(C_asyncRODBCQueryStart, slot, attr(channel, "handle_ptr"), query, 1)
+
+  fd <- .Call(C_asyncRODBCQueryStart, slot,
+              attr(channel, "handle_ptr"), query, 1)
+
   res <- writer(data, fd)
   flush(fd)
   on.exit(NULL)

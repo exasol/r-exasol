@@ -65,10 +65,10 @@ exa.readData <- function(channel, query,
   try(.Call(C_asyncRODBCQueryFinish, slot, 1))
 
   if (is.na(server)) {
-    server <- odbcGetInfo(channel)[['Server_Name']]
+    server <- odbcGetInfo(channel)[["Server_Name"]]
   }
 
-  serverAddress <- strsplit(server, ':')[[1]]
+  serverAddress <- strsplit(server, ":")[[1]]
 
   serverHost <- as.character(serverAddress[[1]])
   serverPort <- as.integer(serverAddress[[2]])
@@ -77,9 +77,14 @@ exa.readData <- function(channel, query,
   proxyHost <- .Call(C_asyncRODBCProxyHost, slot)
   proxyPort <- .Call(C_asyncRODBCProxyPort, slot)
   query <- paste("EXPORT (", query, ") INTO CSV AT 'http://",  proxyHost, ":",
-                 proxyPort, "' FILE 'executeSQL.csv' WITH COLUMN NAMES", sep = "")
+                 proxyPort, "' FILE 'executeSQL.csv' WITH COLUMN NAMES",
+                 sep = "")
+
   on.exit(.Call(C_asyncRODBCQueryFinish, slot, 1))
-  fd <- .Call(C_asyncRODBCQueryStart, slot, attr(channel, "handle_ptr"), query, 0)
+
+  fd <- .Call(C_asyncRODBCQueryStart, slot,
+              attr(channel, "handle_ptr"), query, 0)
+
   res <- reader(fd)
   on.exit(NULL)
   .Call(C_asyncRODBCQueryFinish, slot, 0)

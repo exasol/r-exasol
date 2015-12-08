@@ -117,4 +117,3 @@ RETURNS <- quote(RETURNS)
 
 # require(RODBC)
 # require(exasol); cnx <- odbcDriverConnect("DSN=EXA"); sqlQuery(cnx, "open schema test"); exa.readData(cnx, "select * from cat")
-

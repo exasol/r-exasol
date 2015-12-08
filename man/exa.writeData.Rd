@@ -5,8 +5,8 @@
 \title{Write data frame from R to an EXASolution table.}
 \usage{
 exa.writeData(channel, data, tableName, tableColumns = NA,
-  writer = function(data, conn) write.table(data, file = conn, row.names =
-  FALSE, col.names = FALSE, na = "", sep = ",", qmethod = "double"),
+  writer = function(data, conn) {     write.table(data, file = conn, row.names
+  = FALSE, col.names = FALSE, na = "", sep = ",", qmethod = "double") },
   server = NA)
 }
 \arguments{
