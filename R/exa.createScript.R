@@ -116,13 +116,11 @@ exa.createScript <- function(channel, name, func = NA,
   initCode <- m$initCode
   cleanCode <- m$cleanCode
 
-  inType <- if (is.null(m$inType)) quote(SET) else m$inType
-  outType <- if (is.null(m$outType)) quote(EMITS) else m$outType
+  inType <- ifelse(is.null(m$inType), quote(SET), m$inType)
+  outType <- ifelse(is.null(m$outType), quote(EMITS), m$outType)
 
-  #inArgs <- lapply(2:(length(m$inArgs)), function(x)
-  #                 paste(deparse(m$inArgs[[x]][[2]]),
-  #                 deparse(m$inArgs[[x]][[1]])))
   inArgs <- do.call(paste, c(as.list(inArgs), sep = ", "))
+
   if (outType == quote(EMITS)) {
     if (is.null(m$outArgs)) {
       stop("No output arguments given")
@@ -131,13 +129,13 @@ exa.createScript <- function(channel, name, func = NA,
     # function(x) paste(deparse(m$outArgs[[x]][[2]]),
     #                   deparse(m$outArgs[[x]][[1]]))),
     #                                       sep = ", ")), ")")
-    outArgs <- paste("(", do.call(paste, c(as.list(outArgs), sep = ", ")), ")", sep = "")
+    outArgs <- paste("(",
+                     do.call(paste, c(as.list(outArgs), sep = ", ")),
+                     ")", sep = "")
   } else {
     outType <- quote(RETURNS)
     outArgs <- as.character(outArgs)
   }
-  #print(paste('###', inArgs))
-  #print(paste('###', outArgs))
 
   sql <- paste("CREATE", if (replaceIfExists) "OR REPLACE" else "", "R",
                deparse(inType), "SCRIPT", name,
@@ -147,14 +145,20 @@ exa.createScript <- function(channel, name, func = NA,
   if (!is.null(m$outputAddress))
     sql <- paste(sql,
                  "# activate output to external server",
-                 paste("output_connection__ <- socketConnection('", outputAddress[[1]], "', ", outputAddress[[2]], ")", sep = ''),
+                 paste("output_connection__ <- socketConnection('",
+                       outputAddress[[1]], "', ", outputAddress[[2]], ")",
+                       sep = ""),
                  "sink(output_connection__)",
                  "sink(output_connection__, type = \"message\")",
                  "# ----------------------------------",
                  sep = "\n")
+
   if (!is.null(m$env)) {
-    sql <- paste(sql, "\nenv <- ", do.call(paste, c(as.list(deparse(env)), sep = "\n")), "\n", sep = "")
+    sql <- paste(sql, "\nenv <- ",
+                 do.call(paste, c(as.list(deparse(env)), sep = "\n")),
+                 "\n", sep = "")
   }
+
   if (!is.null(initCode)) {
     sql <- paste(sql, "\n# code from the init function")
     for (codeLine in deparse(initCode)) {
@@ -162,12 +166,14 @@ exa.createScript <- function(channel, name, func = NA,
     }
     sql <- paste(sql, "\n# ---------------------------")
   }
+
   if (!is.null(cleanCode)) {
     sql <- paste(sql, "cleanup <- function()", sep = "\n")
     for (codeLine in deparse(cleanCode)) {
       sql <- paste(sql, codeLine, sep = "\n")
     }
   }
+
   sql <- paste(sql, "run <-", sep = "\n")
   for (codeLine in deparse(code)) {
     sql <- paste(sql, codeLine, sep = "\n")
@@ -218,7 +224,7 @@ exa.createScript <- function(channel, name, func = NA,
     sql <- paste("SELECT * FROM (", sql, ")", restQuery, sep = "")
 
     if (returnSQL) {
-      paste('(', sql, ')', sep = '')
+      paste("(", sql, ")", sep = "")
     } else {
       execArgs <- list(channel, sql)
       if (!is.null(m$reader)) {
