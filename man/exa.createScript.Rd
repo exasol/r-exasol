@@ -112,7 +112,7 @@ We recommend to read the EXASolution manual about UDF scripts for a better
 understanding.
 }
 \examples{
-## \dontrun{
+\dontrun{
 
 # This example creates a simple SET-EMITS script and executes
 # it the table footable.
@@ -150,7 +150,7 @@ testscript <- exa.createScript(
 # and aggregating on the "val" column. This returns
 # two values which are close to the means of the two groups.
 testscript("groupid", "val", table = "test.twogroups" , groupBy = "groupid")
-## }
+}
 }
 \author{
 EXASOL AG <support@exasol.com>
