@@ -57,7 +57,10 @@
 #' }
 #' @export
 exa.readData <- function(channel, query,
-                         reader = function(...) read.csv(..., stringsAsFactors = FALSE, blank.lines.skip = FALSE),
+                         reader = function(...) {
+                           read.csv(..., stringsAsFactors = FALSE,
+                                    blank.lines.skip = FALSE)
+                         },
                          server = NA) {
   slot <- 0
   query <- as.character(query)

@@ -5,8 +5,8 @@
 \title{Execute a SQL query on an EXASolution database and read results in a fast
 way.}
 \usage{
-exa.readData(channel, query, reader = function(...) read.csv(...,
-  stringsAsFactors = FALSE, blank.lines.skip = FALSE), server = NA)
+exa.readData(channel, query, reader = function(...) {     read.csv(...,
+  stringsAsFactors = FALSE, blank.lines.skip = FALSE) }, server = NA)
 }
 \arguments{
 \item{channel}{The RODBC connection channel, typically created via
