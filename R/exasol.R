@@ -50,6 +50,31 @@ EMITS <- quote(EMITS)
 #' RETURNS output type of UDF script -- function emits just a single value.
 RETURNS <- quote(RETURNS)
 
+#' TODO comment
+"C_asyncRODBCQueryStart"
+
+#' TODO comment
+"C_asyncRODBCIOStart"
+
+#' TODO comment
+"C_asyncRODBCIsDone"
+
+#' TODO comment
+"C_asyncRODBCMax"
+
+#' TODO comment
+"C_asyncRODBCProxyHost"
+
+#' TODO comment
+"C_asyncRODBCProxyPort"
+
+#' TODO comment
+"C_asyncRODBCQueryCheck"
+
+#' TODO comment
+"C_asyncRODBCQueryFinish"
+
+
 # require(RODBC); require(exasol)
 # cnx <- odbcDriverConnect("Driver=/var/Executables/bc/install/ok7500-e8/lib/libexaodbc-uo2214.so;UID=sys;PWD=exasol;EXAHOST=cmw72;EXAPORT=8563")
 # sqlQuery(cnx, "OPEN SCHEMA TEST")
