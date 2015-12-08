@@ -74,6 +74,14 @@ RETURNS <- quote(RETURNS)
 #' TODO comment
 "C_asyncRODBCQueryFinish"
 
+.onAttach <- function(libname, pkgname) {
+  # show startup message
+  message <- paste("EXASOL RODBC", utils::packageVersion("exasol"), "loaded.")
+  packageStartupMessage(message, appendLF = TRUE)
+}
+
+
+
 
 # require(RODBC); require(exasol)
 # cnx <- odbcDriverConnect("Driver=/var/Executables/bc/install/ok7500-e8/lib/libexaodbc-uo2214.so;UID=sys;PWD=exasol;EXAHOST=cmw72;EXAPORT=8563")
