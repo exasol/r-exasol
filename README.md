@@ -2,6 +2,9 @@
 Copyright © EXASOL AG, Nuremberg (Germany). All rights reserved.  
 2004 - 2015  
 
+[![Build Status](https://travis-ci.org/vsimko/r-exasol.svg)](https://travis-ci.org/vsimko/r-exasol.svg)
+[![codecov.io](https://codecov.io/github/vsimko/r-exasol/coverage.svg?branch=master)](https://codecov.io/github/vsimko/r-exasol?branch=master)
+
 ## Installation
 
 You need to have **[Rtools](https://cran.r-project.org/bin/windows/Rtools/)** installed on Windows for R to be able to compile the package (for Linux see below).
