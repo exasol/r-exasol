@@ -98,6 +98,7 @@
 #' @author EXASOL AG <support@@exasol.com>
 #' @example examples/createScript.R
 #' @export
+#' @import assertthat
 exa.createScript <- function(channel, name, func = NA,
                              env = list(),
                              initCode = NA,
@@ -180,26 +181,55 @@ exa.createScript <- function(channel, name, func = NA,
   }
 
   # This function will be returned as a proxy to the R script
-  function(..., table = NA, where = NA, groupBy = NA, restQuery = "",
+  function(..., table, where = "", groupBy = "", restQuery = "",
            returnSQL = FALSE, reader = NA, server = NA) {
+
+    # preconditions
+    assert_that(is.character(table))
+    assert_that(length(where) == 1)
+
+    assert_that(is.character(where))
+    assert_that(length(where) == 1)
+
+    assert_that(is.character(groupBy))
+    assert_that(length(groupBy) == 1)
+
+    assert_that(is.character(restQuery))
+    assert_that(length(restQuery) == 1)
+    # end of preconditions
+
     m <- match.call(expand.dots = FALSE)
-    args <- c(...)
-    args <- lapply(1:(length(args)), function(x) as.character(args[[x]]))
-    sql <- paste("SELECT * FROM (SELECT ",
-                 name, "(", do.call(paste, c(args, sep = ", ")), ")",
-                 " FROM ", table,
-                 if (!is.null(m$where)) paste(" WHERE", as.character(where)),
-                 if (!is.null(m$groupBy)) paste(" GROUP BY", as.character(groupBy)),
-                 ")",
-                 if (!is.null(m$restQuery)) paste("", as.character(restQuery)),
-                 sep = "")
+
+    # UDF parameters
+    args <- paste(c(...), collapse = ", ")
+
+    # optional WHERE clause
+    if (where != "") {
+      where <- paste("WHERE", where)
+    }
+
+    # optional GROUP BY clause
+    if (groupBy != "") {
+      groupBy <- paste(" GROUP BY", groupBy)
+    }
+
+    sql <- paste("SELECT ", name, "(", args, ") FROM ",
+                 table, where, groupBy, sep = "")
+    sql <- paste("SELECT * FROM (", sql, ")", restQuery, sep = "")
+
     if (returnSQL) {
       paste('(', sql, ')', sep = '')
     } else {
       execArgs <- list(channel, sql)
-      if (!is.null(m$reader)) execArgs <- c(execArgs, reader = reader)
-      if (!is.null(m$server)) execArgs <- c(execArgs, server = server)
-      do.call(exa.readData, execArgs)
+      if (!is.null(m$reader)) {
+        execArgs <- c(execArgs, reader = reader)
+      }
+      if (!is.null(m$server)) {
+        execArgs <- c(execArgs, server = server)
+      }
+      if (!mockOnly) {
+        do.call(exa.readData, execArgs)
+      }
     }
   }
 }
