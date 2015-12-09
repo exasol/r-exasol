@@ -1,4 +1,4 @@
-context("Reading data from EXASOL")
+context("Reading data from EXASOL DB")
 
 # Added by Viliam Simko
 test_that("Testing error cases", {
