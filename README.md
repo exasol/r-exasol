@@ -109,29 +109,24 @@ more details.
 We offer the following three methods that operate on the RODBC
 connection:
 
-  # Execute query on EXASOL DB and transfer results to R, using fast
-  # batch transfer:
-  
-
+ 1. Execute query on EXASOL DB and transfer results to R,
+    using fast batch transfer:
 ```r
 exa.readData(connection, query)
 ```
 
-  # Write data frame from R to EXASOL DB, using fast batch transfer:
-
+ 2. Write data frame from R to EXASOL DB, using fast batch transfer:
 ```r
 exa.writeData(connection, dataFrameToWrite, table = 'targetTable')
 ```
 
-  # Create a script 
-
+ 3. Create a script:
 ```r
 exa.createScript(cnx, nameForTheScript, inArgs, outArgs, rFunctionToExecute)
 ```
 
-  # The detailed documentation for the package and all methods is
-  # available directly in R via:
-
+The detailed documentation for the package and all methods is
+available directly in R via:
 ```r
  help(exa.exasol)
  help(exa.readData)
@@ -144,48 +139,49 @@ some of the functions.
 
 ## Example Program
 ```r
-  require(RODBC)
-  require(exasol)
-  
-  # Connect via RODBC
-  C <- odbcConnect("DSNToYourEXASOL")
-  
-  # Read results 
-  tables <- exa.readData(C, "SELECT * FROM EXA_ALL_TABLES")
-  
-  # Work with the data frame returned (examples)
-  print(nrow(tables))      # print number of rows
-  print(colnames(tables))  # print names of columns
-  print(tables[1,])        # print first row
-  print(tables$TABLE_NAME[1])  # print first value of specified column
-  
-  # Generate example data frame with two groups 
-  # of random values with different means.
-  valsMean0  <- rnorm(10, 0)
-  valsMean50 <- rnorm(10, 50)
-  twogroups <- data.frame(group=rep(1:2, each=10), value=c(valsMean0, valsMean50))
-  
-  # Write example data to a table
-  odbcQuery(C, "CREATE SCHEMA test")
-  odbcQuery(C, "CREATE TABLE test.twogroups (groupid INT, val DOUBLE)")
-  exa.writeData(C, twogroups, tableName = "test.twogroups")
-  
-  # Create the R function as an UDF R script in the database
-  # In our case it computes the mean for each group.
-  testscript <- exa.createScript(
-      C,
-      "test.mymean",
-      function(data) {
-          data$next_row(NA);  # read all values from this group into a single vector.
-          data$emit(data$groupid[[1]], mean(data$val))
-      },
-      inArgs = c( "groupid INT", "val DOUBLE" ),
-      outArgs=c( "groupid INT", "mean DOUBLE" ) )
-  
-  # Run the function, grouping by the groupid column
-  # and aggregating on the "val" column. This returns
-  # two values which are close to the means of the two groups.
-  testscript ("groupid", "val", table="test.twogroups" , groupBy = "groupid")
+require(RODBC)
+require(exasol)
+
+# Connect via RODBC
+C <- odbcConnect("DSNToYourEXASOL")
+
+# Read results 
+tables <- exa.readData(C, "SELECT * FROM EXA_ALL_TABLES")
+
+# Work with the data frame returned (examples)
+print(nrow(tables))          # print number of rows
+print(colnames(tables))      # print names of columns
+print(tables[1,])            # print first row
+print(tables$TABLE_NAME[1])  # print first value of specified column
+
+# Generate example data frame with two groups 
+# of random values with different means.
+valsMean0  <- rnorm(10, 0)
+valsMean50 <- rnorm(10, 50)
+twogroups <- data.frame(group = rep(1:2, each = 10),
+                        value = c(valsMean0, valsMean50))
+
+# Write example data to a table
+odbcQuery(C, "CREATE SCHEMA test")
+odbcQuery(C, "CREATE TABLE test.twogroups (groupid INT, val DOUBLE)")
+exa.writeData(C, twogroups, tableName = "test.twogroups")
+
+# Create the R function as an UDF R script in the database
+# In our case it computes the mean for each group.
+testscript <- exa.createScript(
+   C,
+   "test.mymean",
+   function(data) {
+       data$next_row(NA);  # read all values from this group into a single vector.
+       data$emit(data$groupid[[1]], mean(data$val))
+   },
+   inArgs = c( "groupid INT", "val DOUBLE" ),
+   outArgs = c( "groupid INT", "mean DOUBLE" ) )
+
+# Run the function, grouping by the groupid column
+# and aggregating on the "val" column. This returns
+# two values which are close to the means of the two groups.
+testscript ("groupid", "val", table = "test.twogroups" , groupBy = "groupid")
 ```
 
 ## Show output from EXASOL UDF scripts
@@ -193,48 +189,51 @@ some of the functions.
 During the development and debugging of UDF scripts it is helpful to be able to
 output arbitrary information from the UDF to any console. For this purpose we
 offer a small Python output service `exaoutput.py`, which is included in the
-*[EXASOL Python Package](https://www.exasol.com/portal/display/WEL/Home)*. A recent version of Python 2.7 is required on the
-client system.
+*[EXASOL Python Package](https://www.exasol.com/portal/display/WEL/Home)*.
+A recent version of Python 2.7 is required on the client system.
 
 To use the output service simply start it like follows:
-
-  $> python exaoutput.py
+```sh
+$> python exaoutput.py
+```
 
 You can also specify a customized port:
-
-  $> python exaoutput.py -p 4555
+```sh
+$> python exaoutput.py -p 4555
+```
 
 The service prints the address it listens to when it is started:
-
-  $> python exaoutput.py
-  >>> bind the output server to 192.168.5.61:3000
+```sh
+$> python exaoutput.py
+>>> bind the output server to 192.168.5.61:3000
+```
 
 This address should be given to the exa.createScript function:
 
-
-
 ```r
-   mySum <- exa.createScript(cnx, mySum,
-                          inArgs = c("a INT", "b INT"),
-                          outArgs = c("c INT"),
-                          outputAddress = c("192.168.5.61", 3000),
-                          func = function(data) {
-      print("@@@ fetch data")
-      data$next_row(NA)
-      a <- data$a ; b <- data$b
-      print(paste("@@@ calculate sum on", length(a), "rows"))
-      data$emit(a + b)
-      print("@@@ calculation done")
-    })
+mySum <- exa.createScript(cnx, mySum,
+                       inArgs = c("a INT", "b INT"),
+                       outArgs = c("c INT"),
+                       outputAddress = c("192.168.5.61", 3000),
+                       func = function(data) {
+   print("@@@ fetch data")
+   data$next_row(NA)
+   a <- data$a
+   b <- data$b
+   print(paste("@@@ calculate sum on", length(a), "rows"))
+   data$emit(a + b)
+   print("@@@ calculation done")
+ })
 ```
 
 On call of the script, the printed output will appear in the terminal
 where the output service is started:  
-
-  >>> bind the output server to 192.168.5.61:3000  
-  192.168.6.132:59282> [1] "@@@ fetch data"  
-  192.168.6.132:59282> [1] "@@@ calculate sum on 5000 rows"  
-  192.168.6.132:59282> [1] "@@@ calculation done"  
+```
+>>> bind the output server to 192.168.5.61:3000  
+192.168.6.132:59282> [1] "@@@ fetch data"  
+192.168.6.132:59282> [1] "@@@ calculate sum on 5000 rows"  
+192.168.6.132:59282> [1] "@@@ calculation done"  
+```
 
 All output line are prefixed with source IP and and source port, what
 means, that each R instance on EXASOL DB have unique output prefix.
