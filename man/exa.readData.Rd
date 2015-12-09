@@ -50,6 +50,7 @@ needs.
 }
 \examples{
 \dontrun{
+
 require(RODBC)
 require(exasol)
 
@@ -64,6 +65,7 @@ print(nrow(tables))      # print number of rows
 print(colnames(tables))  # print names of columns
 print(tables[1,])        # print first row
 print(tables$TABLE_NAME[1])  # print first value of specified column
+
 }
 }
 \author{

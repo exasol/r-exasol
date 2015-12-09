@@ -1,7 +1,7 @@
 Package: exasol
 Type: Package
 Title: EXASolution R Package
-Version: 5.2.2
+Version: 5.2.3
 Date: 2015-12-08
 Author: EXASOL AG
 Maintainer: EXASOL AG <support@exasol.com>

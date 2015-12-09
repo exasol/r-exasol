@@ -38,23 +38,7 @@
 #'
 #' @author EXASOL AG <support@@exasol.com>
 #'
-#' @examples
-#' \dontrun{
-#' require(RODBC)
-#' require(exasol)
-#'
-#' # Connect via RODBC with configured DSN
-#' C <- odbcConnect("exasolution")
-#'
-#' # Read results
-#' tables <- exa.readData(C, "SELECT * FROM EXA_ALL_TABLES")
-#'
-#' # Work with the data frame returned (examples)
-#' print(nrow(tables))      # print number of rows
-#' print(colnames(tables))  # print names of columns
-#' print(tables[1,])        # print first row
-#' print(tables$TABLE_NAME[1])  # print first value of specified column
-#' }
+#' @example examples/readData.R
 #' @export
 exa.readData <- function(channel, query,
                          reader = function(...) {
@@ -77,6 +61,7 @@ exa.readData <- function(channel, query,
   serverPort <- as.integer(serverAddress[[2]])
 
   .Call(C_asyncRODBCIOStart, slot, serverHost, serverPort)
+
   proxyHost <- .Call(C_asyncRODBCProxyHost, slot)
   proxyPort <- .Call(C_asyncRODBCProxyPort, slot)
   query <- paste("EXPORT (", query, ") INTO CSV AT 'http://",  proxyHost, ":",

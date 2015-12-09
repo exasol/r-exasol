@@ -43,6 +43,7 @@ writers, processing the data frame according to your needs.
 }
 \examples{
 \dontrun{
+
 require(RODBC)
 require(exasol)
 
