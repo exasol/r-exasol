@@ -3,7 +3,18 @@ context("R scripts as UDF in EXASOL")
 # Added by Viliam Simko
 test_that("Creating a script without ODBC connection", {
 
-  for (out_type in c(EMITS, SET, SCALAR, RETURNS)) {
+  # should fail when outType has wrong value
+  expect_error(
+    exa.createScript(NULL, "test.mymean", outType = "WRONG TYPE"),
+    regexp = "should be one of")
+
+  # should fail when inType has wrong value
+  expect_error(
+    exa.createScript(NULL, "test.mymean", inType = "WRONG TYPE"),
+    regexp = "should be one of")
+
+  # now checking all allowed UDF output types
+  for (out_type in ALLOWED_UDF_OUT_TYPES) {
     testscript <- exa.createScript(
       NULL, mockOnly = TRUE, # no connection inside unit-tests
       "test.mymean",
@@ -17,10 +28,11 @@ test_that("Creating a script without ODBC connection", {
 
     expect_true(is.function(testscript))
     sql <- testscript("groupid", "val", table = "test.twogroups" ,
-                      groupBy = "groupid", returnSQL = TRUE)
+                      groupBy = "groupid", where = "true",
+                      returnSQL = TRUE)
     expect_equal(sql,
                  paste("(SELECT * FROM (SELECT test.mymean(groupid, val)",
-                       "FROM test.twogroups GROUP BY groupid))") )
+                       "FROM test.twogroups WHERE true GROUP BY groupid))") )
   }
 })
 

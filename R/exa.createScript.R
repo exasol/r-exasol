@@ -116,31 +116,27 @@ exa.createScript <- function(channel, name, func = NA,
   initCode <- m$initCode
   cleanCode <- m$cleanCode
 
-  inType <- ifelse(is.null(m$inType), quote(SET), m$inType)
-  outType <- ifelse(is.null(m$outType), quote(EMITS), m$outType)
+  inType <- match.arg(inType, ALLOWED_UDF_IN_TYPES)
+  outType <- match.arg(outType, ALLOWED_UDF_OUT_TYPES)
 
   inArgs <- do.call(paste, c(as.list(inArgs), sep = ", "))
 
-  if (outType == quote(EMITS)) {
+  if (outType == EMITS) {
     if (is.null(m$outArgs)) {
       stop("No output arguments given")
     }
-    #outArgs <- paste("(", do.call(paste, c(lapply(2:(length(m$outArgs)),
-    # function(x) paste(deparse(m$outArgs[[x]][[2]]),
-    #                   deparse(m$outArgs[[x]][[1]]))),
-    #                                       sep = ", ")), ")")
     outArgs <- paste("(",
                      do.call(paste, c(as.list(outArgs), sep = ", ")),
                      ")", sep = "")
   } else {
-    outType <- quote(RETURNS)
+    outType <- RETURNS
     outArgs <- as.character(outArgs)
   }
 
   sql <- paste("CREATE", if (replaceIfExists) "OR REPLACE" else "", "R",
-               deparse(inType), "SCRIPT", name,
+               inType, "SCRIPT", name,
                "(", inArgs, ")",
-               deparse(outType), outArgs, "AS")
+               outType, outArgs, "AS")
 
   if (!is.null(m$outputAddress))
     sql <- paste(sql,
@@ -211,12 +207,12 @@ exa.createScript <- function(channel, name, func = NA,
 
     # optional WHERE clause
     if (where != "") {
-      where <- paste("WHERE", where)
+      where <- paste(" WHERE", where, sep = " ")
     }
 
     # optional GROUP BY clause
     if (groupBy != "") {
-      groupBy <- paste(" GROUP BY", groupBy)
+      groupBy <- paste(" GROUP BY", groupBy, sep = " ")
     }
 
     sql <- paste("SELECT ", name, "(", args, ") FROM ",

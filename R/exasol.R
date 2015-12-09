@@ -39,16 +39,22 @@
 NULL
 
 #' SET input type of UDF script will call the function once for each group
-SET <- quote(SET)
+SET <- "SET"
 
 #' SCALAR input type of UDF script will call the function once for each record.
-SCALAR <- quote(SCALAR)
+SCALAR <- "SCALAR"
 
 #' EMITS output type of UDF script -- function emits any number of values.
-EMITS <- quote(EMITS)
+EMITS <- "EMITS"
 
 #' RETURNS output type of UDF script -- function emits just a single value.
-RETURNS <- quote(RETURNS)
+RETURNS <- "RETURNS"
+
+#' All input types of UDF scripts
+ALLOWED_UDF_IN_TYPES <- c(SET, SCALAR)
+
+#' All output types of UDF scripts
+ALLOWED_UDF_OUT_TYPES <- c(EMITS, RETURNS)
 
 #' TODO comment
 "C_asyncRODBCQueryStart"

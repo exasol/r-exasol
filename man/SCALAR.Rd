@@ -4,7 +4,7 @@
 \name{SCALAR}
 \alias{SCALAR}
 \title{SCALAR input type of UDF script will call the function once for each record.}
-\format{An object of class \code{name} of length 1.}
+\format{An object of class \code{character} of length 1.}
 \usage{
 SCALAR
 }
