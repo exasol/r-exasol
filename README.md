@@ -12,14 +12,13 @@ Plus, the R package **devtools** must be available in your workspace as it conta
 
 To install the EXASOL package:
 ```r
-   require(devtools)
-   install_github("EXASOL/r-exasol")
+require(devtools)
+install_github("EXASOL/r-exasol")
 ```
 
 # EXASOL R Package
 
 ## Description
-
 
 The EXASOL R Package offers functionality to interact with
 EXASOL database out of R programs. It is developed as a wrapper
@@ -40,11 +39,10 @@ around RODBC and extends RODBC in two main aspects:
 
 ## Prerequisites and Installation
 
-
 1. Install developer extensions for R to be able to build from sources
 
    For Windows: Install Rtools
-   For Linux: Install the R-devel (RPM) or r-base-dev (Debian) package.
+   For Linux: Install the `R-devel` (RPM) or `r-base-dev` (Debian) package.
 
    The packages might change over time, so generally you can go to the
    official R-project website download section for your OS to find the
@@ -62,24 +60,19 @@ around RODBC and extends RODBC in two main aspects:
 3. Install a recent version of the RODBC package.
 
 4. To build and install the package from sources manually:
-
-   - go to folder `UDF/R`
-   - Run `R CMD INSTALL .` from the command line (sudo if you are on
-     linux) to build and install the package.
+ - go to folder `UDF/R`
+ - Run `R CMD INSTALL .` from the command line (sudo if you are on linux)
+   to build and install the package.
 
 
 ## Importing the package
 
 To use the package import it as follows:
-
-
-```r
-   require(exasol)
+``` r
+library(exasol)
 ```
 
-
 ## Connecting to EXASOL DB
-
 
 First, you have to create a ODBC connection via RODBC that will be
 used by all functions of this package.
@@ -89,14 +82,14 @@ instance.  Read the README of EXASOL's ODBC driver package for
 details. Assuming you have a DSN pointing to your database instance
 you can connect like this:
 
-```r
-  C <- odbcConnect("yourDSN")
+``` r
+C <- odbcConnect("yourDSN")
 ```
 
 Alternatively if you don't have a DSN you can also specify the
 required information in the connection string:
 
-```r
+``` r
 C <- odbcDriverConnect("Driver=/path/to/libexaodbc-uo2214lv1.so;UID=sys;PWD=exasol;EXAHOST=exasolution-host:8563")
 ```
 
@@ -111,27 +104,27 @@ connection:
 
  1. Execute query on EXASOL DB and transfer results to R,
     using fast batch transfer:
-```r
+``` r
 exa.readData(connection, query)
 ```
 
  2. Write data frame from R to EXASOL DB, using fast batch transfer:
-```r
+``` r
 exa.writeData(connection, dataFrameToWrite, table = 'targetTable')
 ```
 
  3. Create a script:
-```r
+``` r
 exa.createScript(cnx, nameForTheScript, inArgs, outArgs, rFunctionToExecute)
 ```
 
 The detailed documentation for the package and all methods is
 available directly in R via:
-```r
- help(exa.exasol)
- help(exa.readData)
- help(exa.writeData)
- help(exa.createScript)
+``` r
+help(exa.exasol)
+help(exa.readData)
+help(exa.writeData)
+help(exa.createScript)
 ```
 
 The help also explains the optional parameters that are available for
@@ -139,8 +132,8 @@ some of the functions.
 
 ## Example Program
 ```r
-require(RODBC)
-require(exasol)
+library(RODBC)
+library(exasol)
 
 # Connect via RODBC
 C <- odbcConnect("DSNToYourEXASOL")
