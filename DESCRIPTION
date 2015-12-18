@@ -1,13 +1,21 @@
 Package: exasol
 Type: Package
 Title: EXASolution R Package
-Version: 5.0.7
-Date: 2015-03-09
+Version: 5.2.3
+Date: 2015-12-08
 Author: EXASOL AG
 Maintainer: EXASOL AG <support@exasol.com>
-Depends: R (>= 3.0.0), RODBC
-Description: The EXASolution R Package is a wrapper for RODBC offering addition functionality to speedup data transfer and to improve the usability of EXASolution UDF R scripts from an R environment.
+Depends:
+    R (>= 3.0.0)
+Imports:
+    RODBC,
+    assertthat
+Description: The EXASolution R Package is a wrapper for RODBC offering
+    addition functionality to speedup data transfer and to improve the usability
+    of EXASolution UDF R scripts from an R environment.
 License: BSD_3_clause + file LICENSE
 URL: https://github.com/EXASOL/r-exasol
 LazyData: yes
-Suggests: testthat
+Suggests:
+    testthat
+RoxygenNote: 5.0.1

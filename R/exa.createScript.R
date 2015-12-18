@@ -54,6 +54,10 @@
 #' @param replaceIfExists Boolean whether the script shall be replaced if it
 #'   already exists. Either \code{TRUE} or \code{FALSE}.
 #'
+#' @param mockOnly Boolean, default FALSE. This parameter is useful for
+#'   unit-testing if the ODBC connection is not available. Setting mockOnly=TRUE
+#'   will not install the UDF function to the EXASOL database.
+#'
 #' @return This function returns a function that, when called, will execute the
 #'   script on the server. With the call you have to specify to which data it
 #'   shall be applied. The returned function generates and executes a
@@ -92,45 +96,9 @@
 #'   function.}
 #'
 #' @author EXASOL AG <support@@exasol.com>
-#'
-#' @examples
-#' # This example creates a simple SET-EMITS script and executes
-#' # it the table footable.
-#' require(RODBC)
-#' require(exasol)
-#'
-#' # Connect via RODBC with configured DSN
-#' C <- odbcConnect("exasolution")
-#'
-#' # Generate example data frame with two groups
-#' # of random values with different means.
-#' valsMean0  <- rnorm(10, 0)
-#' valsMean50 <- rnorm(10, 50)
-#' twogroups <- data.frame(group = rep(1:2, each = 10),
-#'                         value = c(valsMean0, valsMean50))
-#' # Write example data to a table
-#' odbcQuery(C, "CREATE SCHEMA test")
-#' odbcQuery(C, "CREATE TABLE test.twogroups (groupid INT, val DOUBLE)")
-#' exa.writeData(C, twogroups, tableName = "test.twogroups")
-#'
-#' # Create the R function as an UDF R script in the database
-#' # In our case it computes the mean for each group.
-#' testscript <- exa.createScript(
-#'   C,
-#'   "test.mymean",
-#'   function(data) {
-#'     data$next_row(NA); # read all values from this group into a single vector
-#'     data$emit(data$groupid[[1]], mean(data$val))
-#'   },
-#'   inArgs = c( "groupid INT", "val DOUBLE" ),
-#'   outArgs = c( "groupid INT", "mean DOUBLE" ) )
-#'
-#' # Run the function, grouping by the groupid column
-#' # and aggregating on the "val" column. This returns
-#' # two values which are close to the means of the two groups.
-#' testscript ("groupid", "val", table = "test.twogroups" , groupBy = "groupid")
-#'
+#' @example examples/createScript.R
 #' @export
+#' @import assertthat
 exa.createScript <- function(channel, name, func = NA,
                              env = list(),
                              initCode = NA,
@@ -140,51 +108,53 @@ exa.createScript <- function(channel, name, func = NA,
                              outType = EMITS,
                              outArgs = list(),
                              outputAddress = NA,
-                             replaceIfExists = TRUE) {
+                             replaceIfExists = TRUE,
+                             mockOnly = FALSE
+                             ) {
   m <- match.call()
   code <- func
   initCode <- m$initCode
   cleanCode <- m$cleanCode
 
-  inType <- ifelse(is.null(m$inType), quote(SET), m$inType)
-  outType <- ifelse(is.null(m$outType), quote(EMITS), m$outType)
+  inType <- match.arg(inType, ALLOWED_UDF_IN_TYPES)
+  outType <- match.arg(outType, ALLOWED_UDF_OUT_TYPES)
 
-  #inArgs <- lapply(2:(length(m$inArgs)), function(x)
-  #                 paste(deparse(m$inArgs[[x]][[2]]),
-  #                 deparse(m$inArgs[[x]][[1]])))
   inArgs <- do.call(paste, c(as.list(inArgs), sep = ", "))
-  if (outType == quote(EMITS)) {
+
+  if (outType == EMITS) {
     if (is.null(m$outArgs)) {
       stop("No output arguments given")
     }
-    #outArgs <- paste("(", do.call(paste, c(lapply(2:(length(m$outArgs)),
-    # function(x) paste(deparse(m$outArgs[[x]][[2]]),
-    #                   deparse(m$outArgs[[x]][[1]]))),
-    #                                       sep = ", ")), ")")
-    outArgs <- paste("(", do.call(paste, c(as.list(outArgs), sep = ", ")), ")", sep = "")
+    outArgs <- paste("(",
+                     do.call(paste, c(as.list(outArgs), sep = ", ")),
+                     ")", sep = "")
   } else {
-    outType <- quote(RETURNS)
+    outType <- RETURNS
     outArgs <- as.character(outArgs)
   }
-  #print(paste('###', inArgs))
-  #print(paste('###', outArgs))
 
   sql <- paste("CREATE", if (replaceIfExists) "OR REPLACE" else "", "R",
-               deparse(inType), "SCRIPT", name,
+               inType, "SCRIPT", name,
                "(", inArgs, ")",
-               deparse(outType), outArgs, "AS")
+               outType, outArgs, "AS")
 
   if (!is.null(m$outputAddress))
     sql <- paste(sql,
                  "# activate output to external server",
-                 paste("output_connection__ <- socketConnection('", outputAddress[[1]], "', ", outputAddress[[2]], ")", sep = ''),
+                 paste("output_connection__ <- socketConnection('",
+                       outputAddress[[1]], "', ", outputAddress[[2]], ")",
+                       sep = ""),
                  "sink(output_connection__)",
                  "sink(output_connection__, type = \"message\")",
                  "# ----------------------------------",
                  sep = "\n")
+
   if (!is.null(m$env)) {
-    sql <- paste(sql, "\nenv <- ", do.call(paste, c(as.list(deparse(env)), sep = "\n")), "\n", sep = "")
+    sql <- paste(sql, "\nenv <- ",
+                 do.call(paste, c(as.list(deparse(env)), sep = "\n")),
+                 "\n", sep = "")
   }
+
   if (!is.null(initCode)) {
     sql <- paste(sql, "\n# code from the init function")
     for (codeLine in deparse(initCode)) {
@@ -192,42 +162,76 @@ exa.createScript <- function(channel, name, func = NA,
     }
     sql <- paste(sql, "\n# ---------------------------")
   }
+
   if (!is.null(cleanCode)) {
     sql <- paste(sql, "cleanup <- function()", sep = "\n")
-    for(codeLine in deparse(cleanCode)) {
+    for (codeLine in deparse(cleanCode)) {
       sql <- paste(sql, codeLine, sep = "\n")
     }
   }
+
   sql <- paste(sql, "run <-", sep = "\n")
   for (codeLine in deparse(code)) {
     sql <- paste(sql, codeLine, sep = "\n")
   }
   sql <- paste(sql, "", sep = "\n")
 
-  if (odbcQuery(channel, sql) == -1) {
-    stop(odbcGetErrMsg(channel)[[1]])
+  if (!mockOnly) {
+    if (odbcQuery(channel, sql) == -1) {
+      stop(odbcGetErrMsg(channel)[[1]])
+    }
   }
 
-  function(..., table = NA, where = NA, groupBy = NA, restQuery = "",
+  # This function will be returned as a proxy to the R script
+  function(..., table, where = "", groupBy = "", restQuery = "",
            returnSQL = FALSE, reader = NA, server = NA) {
+
+    # preconditions
+    assert_that(is.character(table))
+    assert_that(length(where) == 1)
+
+    assert_that(is.character(where))
+    assert_that(length(where) == 1)
+
+    assert_that(is.character(groupBy))
+    assert_that(length(groupBy) == 1)
+
+    assert_that(is.character(restQuery))
+    assert_that(length(restQuery) == 1)
+    # end of preconditions
+
     m <- match.call(expand.dots = FALSE)
-    args <- c(...)
-    args <- lapply(1:(length(args)), function(x) as.character(args[[x]]))
-    sql <- paste("SELECT * FROM (SELECT ",
-                 name, "(", do.call(paste, c(args, sep = ", ")), ")",
-                 " FROM ", table,
-                 if (!is.null(m$where)) paste(" WHERE", as.character(where)),
-                 if (!is.null(m$groupBy)) paste(" GROUP BY", as.character(groupBy)),
-                 ")",
-                 if (!is.null(m$restQuery)) paste("", as.character(restQuery)),
-                 sep = "")
+
+    # UDF parameters
+    args <- paste(c(...), collapse = ", ")
+
+    # optional WHERE clause
+    if (where != "") {
+      where <- paste(" WHERE", where, sep = " ")
+    }
+
+    # optional GROUP BY clause
+    if (groupBy != "") {
+      groupBy <- paste(" GROUP BY", groupBy, sep = " ")
+    }
+
+    sql <- paste("SELECT ", name, "(", args, ") FROM ",
+                 table, where, groupBy, sep = "")
+    sql <- paste("SELECT * FROM (", sql, ")", restQuery, sep = "")
+
     if (returnSQL) {
-      paste('(', sql, ')', sep = '')
+      paste("(", sql, ")", sep = "")
     } else {
       execArgs <- list(channel, sql)
-      if (!is.null(m$reader)) execArgs <- c(execArgs, reader = reader)
-      if (!is.null(m$server)) execArgs <- c(execArgs, server = server)
-      do.call(exa.readData, execArgs)
+      if (!is.null(m$reader)) {
+        execArgs <- c(execArgs, reader = reader)
+      }
+      if (!is.null(m$server)) {
+        execArgs <- c(execArgs, server = server)
+      }
+      if (!mockOnly) {
+        do.call(exa.readData, execArgs)
+      }
     }
   }
 }

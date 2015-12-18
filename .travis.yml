@@ -1,0 +1,21 @@
+language: r
+warnings_are_errors: true
+sudo: required
+
+cache: apt
+
+notifications:
+  email:
+    on_success: change
+    on_failure: change
+
+before_install:
+  - sudo apt-get install unixodbc-dev
+
+r_github_packages:
+  - jimhester/covr
+  - jimhester/lintr
+
+after_success:
+  - Rscript -e 'library(covr);codecov()'
+  - Rscript -e 'lintr::lint_package()'

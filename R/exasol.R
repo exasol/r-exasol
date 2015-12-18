@@ -39,16 +39,55 @@
 NULL
 
 #' SET input type of UDF script will call the function once for each group
-SET <- quote(SET)
+SET <- "SET"
 
 #' SCALAR input type of UDF script will call the function once for each record.
-SCALAR <- quote(SCALAR)
+SCALAR <- "SCALAR"
 
 #' EMITS output type of UDF script -- function emits any number of values.
-EMITS <- quote(EMITS)
+EMITS <- "EMITS"
 
 #' RETURNS output type of UDF script -- function emits just a single value.
-RETURNS <- quote(RETURNS)
+RETURNS <- "RETURNS"
+
+#' All input types of UDF scripts
+ALLOWED_UDF_IN_TYPES <- c(SET, SCALAR)
+
+#' All output types of UDF scripts
+ALLOWED_UDF_OUT_TYPES <- c(EMITS, RETURNS)
+
+#' TODO comment
+"C_asyncRODBCQueryStart"
+
+#' TODO comment
+"C_asyncRODBCIOStart"
+
+#' TODO comment
+"C_asyncRODBCIsDone"
+
+#' TODO comment
+"C_asyncRODBCMax"
+
+#' TODO comment
+"C_asyncRODBCProxyHost"
+
+#' TODO comment
+"C_asyncRODBCProxyPort"
+
+#' TODO comment
+"C_asyncRODBCQueryCheck"
+
+#' TODO comment
+"C_asyncRODBCQueryFinish"
+
+.onAttach <- function(libname, pkgname) {
+  # show startup message
+  message <- paste("EXASOL RODBC", utils::packageVersion("exasol"), "loaded.")
+  packageStartupMessage(message, appendLF = TRUE)
+}
+
+
+
 
 # require(RODBC); require(exasol)
 # cnx <- odbcDriverConnect("Driver=/var/Executables/bc/install/ok7500-e8/lib/libexaodbc-uo2214.so;UID=sys;PWD=exasol;EXAHOST=cmw72;EXAPORT=8563")
@@ -84,4 +123,3 @@ RETURNS <- quote(RETURNS)
 
 # require(RODBC)
 # require(exasol); cnx <- odbcDriverConnect("DSN=EXA"); sqlQuery(cnx, "open schema test"); exa.readData(cnx, "select * from cat")
-

@@ -38,45 +38,41 @@
 #'
 #' @author EXASOL AG <support@@exasol.com>
 #'
-#' @examples
-#' require(RODBC)
-#' require(exasol)
-#'
-#' # Connect via RODBC with configured DSN
-#' C <- odbcConnect("exasolution")
-#'
-#' # Read results
-#' tables <- exa.readData(C, "SELECT * FROM EXA_ALL_TABLES")
-#'
-#' # Work with the data frame returned (examples)
-#' print(nrow(tables))      # print number of rows
-#' print(colnames(tables))  # print names of columns
-#' print(tables[1,])        # print first row
-#' print(tables$TABLE_NAME[1])  # print first value of specified column
-#'
+#' @example examples/readData.R
 #' @export
 exa.readData <- function(channel, query,
-                         reader = function(...) read.csv(..., stringsAsFactors = FALSE, blank.lines.skip = FALSE),
+                         reader = function(...) {
+                           read.csv(..., stringsAsFactors = FALSE,
+                                    blank.lines.skip = FALSE)
+                         },
                          server = NA) {
   slot <- 0
   query <- as.character(query)
 
   try(.Call(C_asyncRODBCQueryFinish, slot, 1))
 
-  serverAddress <- strsplit(
-    ifelse(is.na(server), odbcGetInfo(channel)[['Server_Name']], server),
-    ':')[[1]]
+  if (is.na(server)) {
+    server <- odbcGetInfo(channel)[["Server_Name"]]
+  }
+
+  serverAddress <- strsplit(server, ":")[[1]]
 
   serverHost <- as.character(serverAddress[[1]])
   serverPort <- as.integer(serverAddress[[2]])
 
   .Call(C_asyncRODBCIOStart, slot, serverHost, serverPort)
+
   proxyHost <- .Call(C_asyncRODBCProxyHost, slot)
   proxyPort <- .Call(C_asyncRODBCProxyPort, slot)
   query <- paste("EXPORT (", query, ") INTO CSV AT 'http://",  proxyHost, ":",
-                 proxyPort, "' FILE 'executeSQL.csv' WITH COLUMN NAMES", sep = "")
+                 proxyPort, "' FILE 'executeSQL.csv' WITH COLUMN NAMES",
+                 sep = "")
+
   on.exit(.Call(C_asyncRODBCQueryFinish, slot, 1))
-  fd <- .Call(C_asyncRODBCQueryStart, slot, attr(channel, "handle_ptr"), query, 0)
+
+  fd <- .Call(C_asyncRODBCQueryStart, slot,
+              attr(channel, "handle_ptr"), query, 0)
+
   res <- reader(fd)
   on.exit(NULL)
   .Call(C_asyncRODBCQueryFinish, slot, 0)

@@ -27,35 +27,18 @@
 #'   default \code{NULL}.
 #'
 #' @author EXASOL AG <support@@exasol.com>
-#'
-#' @examples
-#' require(RODBC)
-#' require(exasol)
-#'
-#' # Connect via RODBC with configured DSN
-#' C <- odbcConnect("exasolution")
-#'
-#' # Generate example data frame with two groups
-#' # of random values with different means.
-#' valsMean0  <- rnorm(10, 0)
-#' valsMean50 <- rnorm(10, 50)
-#' twogroups <- data.frame(group = rep(1:2, each = 10),
-#'                         value = c(valsMean0, valsMean50))
-#'
-#' # Write example data to a table
-#' odbcQuery(C, "CREATE SCHEMA test")
-#' odbcQuery(C, "CREATE TABLE test.twogroups (groupid INT, val DOUBLE)")
-#' exa.writeData(C, twogroups, tableName = "test.twogroups")
-#'
+#' @example examples/writeData.R
 #' @export
 exa.writeData <- function(channel, data, tableName, tableColumns = NA,
-                          writer = function(data, conn) write.table(data,
-                                                                    file = conn,
-                                                                    row.names = FALSE,
-                                                                    col.names = FALSE,
-                                                                    na = "",
-                                                                    sep = ",",
-                                                                    qmethod = "double"),
+                          writer = function(data, conn) {
+                            write.table(data,
+                                        file = conn,
+                                        row.names = FALSE,
+                                        col.names = FALSE,
+                                        na = "",
+                                        sep = ",",
+                                        qmethod = "double")
+                          },
                           server = NA) {
   slot <- 0
   m <- match.call()
@@ -63,9 +46,11 @@ exa.writeData <- function(channel, data, tableName, tableColumns = NA,
 
   try(.Call(C_asyncRODBCQueryFinish, slot, 1))
 
-  serverAddress <- strsplit(
-    ifelse(is.na(server), odbcGetInfo(channel)[['Server_Name']], server),
-    ':')[[1]]
+  if (is.na(server)) {
+    server <- odbcGetInfo(channel)[["Server_Name"]]
+  }
+
+  serverAddress <- strsplit(server, ":")[[1]]
 
   serverHost <- as.character(serverAddress[[1]])
   serverPort <- as.integer(serverAddress[[2]])
@@ -76,13 +61,16 @@ exa.writeData <- function(channel, data, tableName, tableColumns = NA,
 
   query <- paste("IMPORT INTO ", tableName,
                  if (is.null(m$tableColumns)) ""
-                 else paste('(', do.call(paste, c(lapply(tableColumns, as.character),
+                 else paste("(", do.call(paste, c(lapply(tableColumns, as.character),
                                                   sep = ", ")),
-                            ')', sep = ''),
+                            ")", sep = ""),
                  " FROM CSV AT 'http://", proxyHost, ":",
                  proxyPort, "' FILE 'importData.csv'", sep = "")
   on.exit(.Call(C_asyncRODBCQueryFinish, slot, 1))
-  fd <- .Call(C_asyncRODBCQueryStart, slot, attr(channel, "handle_ptr"), query, 1)
+
+  fd <- .Call(C_asyncRODBCQueryStart, slot,
+              attr(channel, "handle_ptr"), query, 1)
+
   res <- writer(data, fd)
   flush(fd)
   on.exit(NULL)
