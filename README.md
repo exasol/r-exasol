@@ -20,6 +20,9 @@ require(devtools)
 install_github("EXASOL/r-exasol")
 ```
 
+## Code coverage
+![codecov.io](https://codecov.io/github/EXASOL/r-exasol/branch.svg?branch=master)
+
 # EXASOL R Package
 
 ## Description
