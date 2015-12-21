@@ -20,8 +20,8 @@
 #'   from the database. The read.csv function is used per default.
 #'
 #'   The input for the reader is an R file connection object (as returned by the
-#'   file function) containing the CSV input, as it is returned by the internall
-#'   call of EXPORT TO LOCAL CSV.
+#'   file function) containing the CSV input, as it is returned by the internal
+#'   call of EXPORT TO CSV.
 #'
 #'   The following custom reader function would simply read and return the CSV
 #'   formatted text:
@@ -32,6 +32,8 @@
 #'   customize the address of the data channel. Per default, the data channel
 #'   uses the same host and port as the RODBC connection.
 #'
+#' @param ... Other parameters passed on to the reader (read.csv).
+#'
 #' @return The return value is the return value of the reader function. If the
 #'   default read.csv is used, the result will be a dataframe as it is returned
 #'   read.csv.
@@ -41,11 +43,11 @@
 #' @example examples/readData.R
 #' @export
 exa.readData <- function(channel, query,
-                         reader = function(...) {
-                           read.csv(..., stringsAsFactors = FALSE,
-                                    blank.lines.skip = FALSE)
+                         reader = function(x,...) {
+                           read.csv(x,..., stringsAsFactors = FALSE,
+                                    blank.lines.skip = FALSE, numerals="no.loss")
                          },
-                         server = NA) {
+                         server = NA,...) {
   slot <- 0
   query <- as.character(query)
 
@@ -73,7 +75,7 @@ exa.readData <- function(channel, query,
   fd <- .Call(C_asyncRODBCQueryStart, slot,
               attr(channel, "handle_ptr"), query, 0)
 
-  res <- reader(fd)
+  res <- reader(fd,...)
   on.exit(NULL)
   .Call(C_asyncRODBCQueryFinish, slot, 0)
   res
