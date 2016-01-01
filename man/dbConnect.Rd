@@ -8,7 +8,7 @@
 \S4method{dbConnect}{EXADriver}(drv, ...)
 }
 \arguments{
-\item{drv}{An EXAdriver object, a connection string "exasol" (specifying the driver), or an existing
+\item{drv}{An EXAdriver object, a character string "exasol" or "exa", or an existing
 EXAConnection object (for connection cloning).}
 
 \item{...}{Additional parameters to the connection string. If a connection is cloned, these override the old connection settings.}

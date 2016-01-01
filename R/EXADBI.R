@@ -152,6 +152,12 @@ exa <- function() {
     new("EXADriver")
 }
 
+exasol <- function() {
+  print("EXASOL driver loaded")
+  new("EXADriver")
+}
+
+
 
 # Connection -------------------------------------------------------------------
 
@@ -160,7 +166,7 @@ exa <- function() {
 #' @family EXAConnection related objects
 #'
 #' @name dbConnect
-#' @param drv An EXAdriver object, a connection string "exasol" (specifying the driver), or an existing
+#' @param drv An EXAdriver object, a character string "exasol" or "exa", or an existing
 #'        EXAConnection object (for connection cloning).
 #' @param exahost DNS or IP and port of the database cluster, e.g. '10.0.2.15..20:8563'
 #' @param uid DB username, e.g. 'sys'
