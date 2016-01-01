@@ -2,8 +2,8 @@
 Copyright © EXASOL AG, Nuremberg (Germany). All rights reserved.  
 2004 - 2016
 
-[![Build Status](https://travis-ci.org/marcelboldt/r-exasol.svg)](https://travis-ci.org/marcelboldt/r-exasol)
-[![codecov.io](https://codecov.io/github/marcelboldt/r-exasol/coverage.svg?branch=master)](https://codecov.io/github/marcelboldt/r-exasol?branch=master)
+[![Build Status](https://travis-ci.org/EXASOL/r-exasol.svg)](https://travis-ci.org/EXASOL/r-exasol)
+[![codecov.io](https://codecov.io/github/EXASOL/r-exasol/coverage.svg?branch=master)](https://codecov.io/github/EXASOL/r-exasol?branch=master)
 
 ## Installation
 
