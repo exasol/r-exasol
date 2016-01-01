@@ -2,11 +2,11 @@
 % Please edit documentation in R/exa.readData.R
 \name{exa.readData}
 \alias{exa.readData}
-\title{Execute a SQL query on an EXASolution database and read results in a fast
-way.}
+\title{Execute a SQL query on an EXASolution database and read results fast.}
 \usage{
-exa.readData(channel, query, reader = function(...) {     read.csv(...,
-  stringsAsFactors = FALSE, blank.lines.skip = FALSE) }, server = NA)
+exa.readData(channel, query, reader = function(x, ...) {     read.csv(x, ...,
+  stringsAsFactors = FALSE, blank.lines.skip = FALSE, numerals = "no.loss") },
+  server = NA, ...)
 }
 \arguments{
 \item{channel}{The RODBC connection channel, typically created via
@@ -18,8 +18,8 @@ odbcConnect.}
   from the database. The read.csv function is used per default.
 
   The input for the reader is an R file connection object (as returned by the
-  file function) containing the CSV input, as it is returned by the internall
-  call of EXPORT TO LOCAL CSV.
+  file function) containing the CSV input, as it is returned by the internal
+  call of EXPORT TO CSV.
 
   The following custom reader function would simply read and return the CSV
   formatted text:
@@ -29,6 +29,8 @@ odbcConnect.}
 \item{server}{This parameter is only relevant in rare cases where you want to
 customize the address of the data channel. Per default, the data channel
 uses the same host and port as the RODBC connection.}
+
+\item{...}{Other parameters passed on to the reader (read.csv).}
 }
 \value{
 The return value is the return value of the reader function. If the

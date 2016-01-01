@@ -1,9 +1,9 @@
-# EXASOL R SDK
+# R Interface & SDK for the EXASOL Database
 Copyright © EXASOL AG, Nuremberg (Germany). All rights reserved.  
-2004 - 2015
+2004 - 2016
 
-[![Build Status](https://travis-ci.org/EXASOL/r-exasol.svg)](https://travis-ci.org/EXASOL/r-exasol)
-[![codecov.io](https://codecov.io/github/EXASOL/r-exasol/coverage.svg?branch=master)](https://codecov.io/github/EXASOL/r-exasol?branch=master)
+[![Build Status](https://travis-ci.org/marcelboldt/r-exasol.svg)](https://travis-ci.org/marcelboldt/r-exasol)
+[![codecov.io](https://codecov.io/github/marcelboldt/r-exasol/coverage.svg?branch=master)](https://codecov.io/github/marcelboldt/r-exasol?branch=master)
 
 ## Installation
 
@@ -24,21 +24,15 @@ install_github("EXASOL/r-exasol")
 
 ## Description
 
-The EXASOL R Package offers functionality to interact with
-EXASOL database out of R programs. It is developed as a wrapper
-around RODBC and extends RODBC in two main aspects:
+The EXASOL R Package offers interface functionality such as connecting to, querying and writing 
+into an EXASOL Database (version 5 onwards). It is optimised for massively parallel reading & 
+writing from and to a multinode cluster. Implemented are DBI compliant methods for database access, 
+querying and modiifcation. The package integrates with EXASOL's InDB R UDF capabilities, which 
+allows to deploy and execute R code dynamically from an R application running on a client.
 
-1. It offers fast data transfer between EXASOL and R, multiple
-   times faster than RODBC.  This is achieved by using a proprietary
-   transfer channel which is optimized for batch loading. Please read
-   the R help of `exa.readData()` and `exa.writeData()` for details or
-   read below.
-
-2. It makes it convenient to run parts of your R code in parallel on
-   EXASOL DB, using EXASOL R UDF scripts behind the scenes. For example
-   you can define an R function and execute it in parallel on different
-   groups of data in an EXASOL DB table. Please read the R help of
-   `exa.createScript()` function for details or read the example below.
+EXASOL is an InMemory RDBMS that runs in a MPP cluster (shared-nothing) environment. 
+Leading the TPC-H benckmark, it is considered the fastest analytical data warehouse available. 
+The community edition can be downloaded for free from the [EXASOL Community Portal](https://www.exasol.com/portal).
 
 
 ## Prerequisites and Installation
@@ -61,174 +55,128 @@ around RODBC and extends RODBC in two main aspects:
    Therefore please install `unixodbc-devel` (RPM) or `unixodbc-dev`
    (Debian) package.
 
-3. Install a recent version of the RODBC package.
-
-4. To build and install the package from sources manually:
- - go to folder `UDF/R`
- - Run `R CMD INSTALL .` from the command line (sudo if you are on linux)
-   to build and install the package.
-
-
 ## Importing the package
 
 To use the package import it as follows:
 ``` r
-library(exasol)
+library(EXASOL)
 ```
 
-## Connecting to EXASOL DB
+## Manual
 
-First, you have to create a ODBC connection via RODBC that will be
-used by all functions of this package.
+The package comes with documentation accessible from R via the command `?EXASOL`.
 
-We recommend to create a DSN pointing to your EXASOL database
-instance.  Read the README of EXASOL's ODBC driver package for
-details. Assuming you have a DSN pointing to your database instance
-you can connect like this:
-``` r
-C <- odbcConnect("yourDSN")
-```
+## Package index
 
-Alternatively if you don't have a DSN you can also specify the
-required information in the connection string:
-``` r
-C <- odbcDriverConnect("Driver=/path/to/libexaodbc-uo2214lv1.so;UID=sys;PWD=exasol;EXAHOST=exasolution-host:8563")
-```
+### DBI: Driver-related
 
-You can also read the RODBC documentation via `help(odbcConnect)` for
-more details.
+EXADriver-class
+:	An interface driver object to the EXASOL Database.
 
+dbDriver
+:	Load database drivers.
 
-## Using the EXASOL R Package
+dbUnloadDriver
+:	Unload a driver.
 
-We offer the following three methods that operate on the RODBC
-connection:
+dbConnect
+:	Creates a connection to an EXASOL Database.
 
- 1. Execute query on EXASOL DB and transfer results to R,
-    using fast batch transfer:
-    ``` r
-    exa.readData(connection, query)
-    ```
-    
- 2. Write data frame from R to EXASOL DB, using fast batch transfer:
-    ``` r
-    exa.writeData(connection, dataFrameToWrite, table = 'targetTable')
-    ```
-    
- 3. Create a script:
-    ``` r
-    exa.createScript(cnx, nameForTheScript, inArgs, outArgs, rFunctionToExecute)
-    ```
+dbListConnections
+:	List currently open connections.
 
-The detailed documentation for the package and all methods is
-available directly in R via:
-``` r
-help(exa.exasol)
-help(exa.readData)
-help(exa.writeData)
-help(exa.createScript)
-```
+### DBI: Connection-related
 
-The help also explains the optional parameters that are available for
-some of the functions.
+EXAConnection-class
+:	An object holding a connection to an EXASOL Database.
 
-## Example Program
-```r
-library(RODBC)
-library(exasol)
+dbDisconnect
+:	Disconnects the connection.
 
-# Connect via RODBC
-C <- odbcConnect("DSNToYourEXASOL")
+dbSendQuery
+:	Sends an SQL statment to an EXASOL DB, prepares for result fetching.
 
-# Read results 
-tables <- exa.readData(C, "SELECT * FROM EXA_ALL_TABLES")
+dbGetQuery
+:	Executes the query, fetches and returns the entire result set.
 
-# Work with the data frame returned (examples)
-print(nrow(tables))          # print number of rows
-print(colnames(tables))      # print names of columns
-print(tables[1,])            # print first row
-print(tables$TABLE_NAME[1])  # print first value of specified column
+dbGetException
+:	TODO
 
-# Generate example data frame with two groups 
-# of random values with different means.
-valsMean0  <- rnorm(10, 0)
-valsMean50 <- rnorm(10, 50)
-twogroups <- data.frame(group = rep(1:2, each = 10),
-                        value = c(valsMean0, valsMean50))
+dbListResults
+:	TODO
 
-# Write example data to a table
-odbcQuery(C, "CREATE SCHEMA test")
-odbcQuery(C, "CREATE TABLE test.twogroups (groupid INT, val DOUBLE)")
-exa.writeData(C, twogroups, tableName = "test.twogroups")
+dbListFields
+:	TODO
 
-# Create the R function as an UDF R script in the database
-# In our case it computes the mean for each group.
-testscript <- exa.createScript(
-   C,
-   "test.mymean",
-   function(data) {
-       data$next_row(NA);  # read all values from this group into a single vector.
-       data$emit(data$groupid[[1]], mean(data$val))
-   },
-   inArgs = c( "groupid INT", "val DOUBLE" ),
-   outArgs = c( "groupid INT", "mean DOUBLE" ) )
+dbListTables
+:	TODO
 
-# Run the function, grouping by the groupid column
-# and aggregating on the "val" column. This returns
-# two values which are close to the means of the two groups.
-testscript ("groupid", "val", table = "test.twogroups" , groupBy = "groupid")
-```
+dbReadTable
+:	TODO
 
-## Show output from EXASOL UDF scripts
+Reads a DB table.
+:	TODO
 
-During the development and debugging of UDF scripts it is helpful to be able to
-output arbitrary information from the UDF to any console. For this purpose we
-offer a small Python output service `exaoutput.py`, which is included in the
-*[EXASOL Python Package](https://www.exasol.com/portal/display/WEL/Home)*.
-A recent version of Python 2.7 is required on the client system.
+dbWriteTable
+:	Writes a data.frame into a table. If the table does not exist, it is created.
 
-To use the output service simply start it like follows:
-```sh
-$> python exaoutput.py
-```
+dbExistsTable
+:	Checks if a table exists in an EXASOL DB.
 
-You can also specify a customized port:
-```sh
-$> python exaoutput.py -p 4555
-```
+dbRemoveTable
+:	Removes a table.
 
-The service prints the address it listens to when it is started:
-```sh
-$> python exaoutput.py
->>> bind the output server to 192.168.5.61:3000
-```
+dbBegin
+:	Starts a DB transaction.
 
-This address should be given to the exa.createScript function:
+dbEnd
+:	Ends a DB transaction.
 
-```r
-mySum <- exa.createScript(cnx, mySum,
-                       inArgs = c("a INT", "b INT"),
-                       outArgs = c("c INT"),
-                       outputAddress = c("192.168.5.61", 3000),
-                       func = function(data) {
-   print("@@@ fetch data")
-   data$next_row(NA)
-   a <- data$a
-   b <- data$b
-   print(paste("@@@ calculate sum on", length(a), "rows"))
-   data$emit(a + b)
-   print("@@@ calculation done")
- })
-```
+dbCommit
+:	Sends a commit.
 
-On call of the script, the printed output will appear in the terminal
-where the output service is started:  
-```
->>> bind the output server to 192.168.5.61:3000  
-192.168.6.132:59282> [1] "@@@ fetch data"  
-192.168.6.132:59282> [1] "@@@ calculate sum on 5000 rows"  
-192.168.6.132:59282> [1] "@@@ calculation done"  
-```
+dbRollback
+:	Rolls the current DB transaction back.
 
-All output line are prefixed with source IP and and source port, what
-means, that each R instance on EXASOL DB have unique output prefix.
+### DBI: Result set-related
+
+EXAResult-class
+:	An object that is associated with a result set in an EXASOL Database.
+
+dbFetch
+:	Fetches a subset of an result set.
+
+dbClearResult
+:	Frees all resources associated with an EXAResult.
+
+dbColumnInfo
+:	TODO
+
+dbGetStatement
+:	TODO
+
+dbHasCompleted
+:	TODO
+
+dbGetRowsAffected
+:	TODO
+
+dbGetRowCount
+:	TODO
+
+### Low-level methods
+
+exa.readData
+:	Execute a SQL query on an EXASolution database and read results fast.
+
+exa.writeData
+:	Write a data.frame into an EXASOL table fast.
+
+exa.createScript
+:	Deploys an R function as an UDF in the EXASolution database.
+
+EXAupper
+:	Changes an identifier into uppercase, except for it is quoted.
+
+dbCurrentSchema
+:	Fetches and outputs the current schema from an EXASOL DB.

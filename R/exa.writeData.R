@@ -1,4 +1,4 @@
-#' Write data frame from R to an EXASolution table.
+#' Write a data.frame into an EXASOL table fast.
 #'
 #' @description This function writes the given data frame to a database table.
 #'
@@ -11,25 +11,25 @@
 #'
 #' @param channel The RODBC connection channel, typically created via odbcConnect.
 #' @param data The data frame to be written to the table specified in tableName.
-#'
-#' Please make sure that the column names and types of the data frame are consistent with the names and types in the EXASolution table.
+#' Please make sure that the column names and types of the data frame are consistent with the names
+#' and types in the EXASolution table.
 #'
 #' @param tableName Name of the table to write the data to. The table has to exist and the records will be appended.
-#' @param tableColumns If your data frame contains only a subset of the columns you can specify these here. The columns and types have to be specified as a vector of strings like: \code{c("col1 INT", "col2 VARCHAR(20)")}
+#' @param tableColumns If your data frame contains only a subset of the columns you can specify these
+#' here. The columns and types have to be specified as a vector of strings like: \code{c("col1", "col2")}
+#' Please take a look at the documentation of the cols parameter in the EXASolution User Manual sec. 2.2.2 '\code{IMPORT}', for details.
 #'
-#' Please look at the documentation of the cols parameter in \code{IMPORT INTO}
-#' in the EXASolution manual for details.
+#' @param writer This parameter is for the rare cases where you want to customize the writer receiving
+#' the data frame and writing the data to the communication channel.
+#' @param server This parameter is only relevant in rare cases where you want to customize the address
+#' of the data channel. Per default, the data channel uses the same host and port as the RODBC connection.
 #'
-#' @param writer This parameter is for the rare cases where you want to customize the writer receiving the data frame and writing the data to the communication channel.
-#' @param server This parameter is only relevant in rare cases where you want to customize the address of the data channel. Per default, the data channel uses the same host and port as the RODBC connection.
-#'
-#' @return The function returns the value returned by the writer, which is by
-#'   default \code{NULL}.
+#' @return The function returns the value returned by the writer, or TRUE if there is none.
 #'
 #' @author EXASOL AG <support@@exasol.com>
 #' @example examples/writeData.R
 #' @export
-exa.writeData <- function(channel, data, tableName, tableColumns = NA,
+exa.writeData <- function(channel, data, tableName, tableColumns=NA,
                           writer = function(data, conn) {
                             write.table(data,
                                         file = conn,
@@ -39,14 +39,12 @@ exa.writeData <- function(channel, data, tableName, tableColumns = NA,
                                         sep = ",",
                                         qmethod = "double")
                           },
-                          server = NA) {
+                          server) {
   slot <- 0
-  m <- match.call()
-  m$tableColumns[[1]] <- NULL
 
   try(.Call(C_asyncRODBCQueryFinish, slot, 1))
 
-  if (is.na(server)) {
+  if (missing(server)) {
     server <- odbcGetInfo(channel)[["Server_Name"]]
   }
 
@@ -59,13 +57,11 @@ exa.writeData <- function(channel, data, tableName, tableColumns = NA,
   proxyHost <- .Call(C_asyncRODBCProxyHost, slot)
   proxyPort <- .Call(C_asyncRODBCProxyPort, slot)
 
-  query <- paste("IMPORT INTO ", tableName,
-                 if (is.null(m$tableColumns)) ""
-                 else paste("(", do.call(paste, c(lapply(tableColumns, as.character),
-                                                  sep = ", ")),
-                            ")", sep = ""),
+  query <- paste0("IMPORT INTO ", tableName,
+                 if (is.na(tableColumns)) ""
+                 else {paste("(",paste(tableColumns,collapse=", "),")")},
                  " FROM CSV AT 'http://", proxyHost, ":",
-                 proxyPort, "' FILE 'importData.csv'", sep = "")
+                 proxyPort, "' FILE 'importData.csv'")
   on.exit(.Call(C_asyncRODBCQueryFinish, slot, 1))
 
   fd <- .Call(C_asyncRODBCQueryStart, slot,
@@ -73,7 +69,6 @@ exa.writeData <- function(channel, data, tableName, tableColumns = NA,
 
   res <- writer(data, fd)
   flush(fd)
-  on.exit(NULL)
   .Call(C_asyncRODBCQueryFinish, slot, 0)
-  res
+  ifelse(is.null(res), return(TRUE), return(res))
 }

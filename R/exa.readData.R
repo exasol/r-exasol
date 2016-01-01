@@ -1,5 +1,4 @@
-#' Execute a SQL query on an EXASolution database and read results in a fast
-#' way.
+#' Execute a SQL query on an EXASolution database and read results fast.
 #'
 #' @description This function executes the given SQL query using a given RODBC
 #' connection and returns the results as a data frame.

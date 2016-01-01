@@ -2,8 +2,7 @@
 % Please edit documentation in R/exa.createScript.R
 \name{exa.createScript}
 \alias{exa.createScript}
-\title{Create an R function as an UDF script on the EXASolution database
-to prepare the parallel execution.}
+\title{Deploys an R function as an UDF in the EXASolution database.}
 \usage{
 exa.createScript(channel, name, func = NA, env = list(), initCode = NA,
   cleanCode = NA, inType = SET, inArgs = list(), outType = EMITS,

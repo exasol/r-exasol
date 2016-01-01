@@ -1,21 +1,29 @@
 Package: exasol
 Type: Package
-Title: EXASolution R Package
-Version: 5.2.3
-Date: 2015-12-08
-Author: EXASOL AG
-Maintainer: EXASOL AG <support@exasol.com>
+Title: R Interface & SDK for the EXASOL Database
+Version: 5.3.0
+Date: 2016-01-01
+Author: EXASOL AG & Community
+Maintainer: Marcel Boldt <marcel.boldt@exasol.com>
 Depends:
     R (>= 3.0.0)
 Imports:
-    RODBC,
+    RODBC (>= 1.3-12),
+    DBI (>= 0.3.1),
     assertthat
-Description: The EXASolution R Package is a wrapper for RODBC offering
-    addition functionality to speedup data transfer and to improve the usability
-    of EXASolution UDF R scripts from an R environment.
+Description: The EXASOL R Package offers interface functionality such as connecting to,
+	querying and writing into an EXASOL Database (version 5 onwards). It is optimised for
+	massively parallel reading & writing from and to a multinode cluster. Further functinality is
+	DBI compatiblity, and use of EXASOL's InDB R capabilities (deploying & executing R code dynamically
+	from an R application running on a client). EXASOL is an InMemory RDBMS that runs in a
+	MPP cluster (shared-nothing) environment. Leading the TPC-H benckmark, it is considered
+	the fastest analytical data warehouse available. A community edition can be downloaded
+	for free on <https://www.exasol.com/portal>.
 License: BSD_3_clause + file LICENSE
-URL: https://github.com/EXASOL/r-exasol
+URL: https://github.com/EXASOL/r-exasol https://www.exasol.com/portal
 LazyData: yes
 Suggests:
     testthat
+SystemRequirements: EXASOL DB v5 onwards
+BugReports: https://github.com/EXASOL/r-exasol/issues
 RoxygenNote: 5.0.1

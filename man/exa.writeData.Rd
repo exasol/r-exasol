@@ -2,34 +2,33 @@
 % Please edit documentation in R/exa.writeData.R
 \name{exa.writeData}
 \alias{exa.writeData}
-\title{Write data frame from R to an EXASolution table.}
+\title{Write a data.frame into an EXASOL table fast.}
 \usage{
 exa.writeData(channel, data, tableName, tableColumns = NA,
   writer = function(data, conn) {     write.table(data, file = conn, row.names
-  = FALSE, col.names = FALSE, na = "", sep = ",", qmethod = "double") },
-  server = NA)
+  = FALSE, col.names = FALSE, na = "", sep = ",", qmethod = "double") }, server)
 }
 \arguments{
 \item{channel}{The RODBC connection channel, typically created via odbcConnect.}
 
 \item{data}{The data frame to be written to the table specified in tableName.
-
-Please make sure that the column names and types of the data frame are consistent with the names and types in the EXASolution table.}
+Please make sure that the column names and types of the data frame are consistent with the names
+and types in the EXASolution table.}
 
 \item{tableName}{Name of the table to write the data to. The table has to exist and the records will be appended.}
 
-\item{tableColumns}{If your data frame contains only a subset of the columns you can specify these here. The columns and types have to be specified as a vector of strings like: \code{c("col1 INT", "col2 VARCHAR(20)")}
+\item{tableColumns}{If your data frame contains only a subset of the columns you can specify these
+here. The columns and types have to be specified as a vector of strings like: \code{c("col1", "col2")}
+Please take a look at the documentation of the cols parameter in the EXASolution User Manual sec. 2.2.2 '\code{IMPORT}', for details.}
 
-Please look at the documentation of the cols parameter in \code{IMPORT INTO}
-in the EXASolution manual for details.}
+\item{writer}{This parameter is for the rare cases where you want to customize the writer receiving
+the data frame and writing the data to the communication channel.}
 
-\item{writer}{This parameter is for the rare cases where you want to customize the writer receiving the data frame and writing the data to the communication channel.}
-
-\item{server}{This parameter is only relevant in rare cases where you want to customize the address of the data channel. Per default, the data channel uses the same host and port as the RODBC connection.}
+\item{server}{This parameter is only relevant in rare cases where you want to customize the address
+of the data channel. Per default, the data channel uses the same host and port as the RODBC connection.}
 }
 \value{
-The function returns the value returned by the writer, which is by
-  default \code{NULL}.
+The function returns the value returned by the writer, or TRUE if there is none.
 }
 \description{
 This function writes the given data frame to a database table.

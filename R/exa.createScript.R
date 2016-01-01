@@ -1,5 +1,4 @@
-#' Create an R function as an UDF script on the EXASolution database
-#' to prepare the parallel execution.
+#' Deploys an R function as an UDF in the EXASolution database.
 #'
 #' This function takes an R function and creates a R UDF script on the
 #' EXASolution database. A \code{CREATE SCRIPT} call will be used behind the
