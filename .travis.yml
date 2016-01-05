@@ -11,7 +11,7 @@ notifications:
 
 before_install:
   - sudo apt-get install unixodbc-dev
-  - openssl aes-256-cbc -K $encrypted_242f4de21546_key -iv $encrypted_242f4de21546_iv -in exaodbc.sh.enc -out exaodbc.sh -d
+  - openssl aes-256-cbc -K $encrypted_b6bf71f94aa7_key -iv $encrypted_b6bf71f94aa7_iv -in exaodbc.sh.enc -out exaodbc.sh -d
   - chmod +777 exaodbc.sh
   - ./exaodbc.sh
 
