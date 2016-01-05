@@ -5,7 +5,7 @@
 ##
 ## First version written in 2015 by Marcel Boldt <marcel.boldt@exasol.com>
 ## as part of the EXASOL R interface & SDK package. It may be used, changed and distributed freely with no further restrictions than
-## already stipulated in the package license, with the exception that this statement stay included and unchanged.
+## already stipulated in the package license, with the exception that this statement must stay included and unchanged.
 
 #' @export dbDriver
 #' @export dbUnloadDriver
@@ -157,6 +157,15 @@ exasol <- function() {
   new("EXADriver")
 }
 
+#' Checks if an EXAObject is still valid.
+#'
+#' @name dbIsValid
+#' @param conn An object that inherits EXAObject.
+#' @return A logical indicating if the connection still works.
+setMethod("dbIsValid", signature("EXAObject"),
+          def=function(dbObj) {
+            return(TRUE) # TODO
+          })
 
 
 # Connection -------------------------------------------------------------------
@@ -194,9 +203,30 @@ exasol <- function() {
 #' @param dsn A preconfigured ODBC Data Source Name. Parameter being evaluated with priority to EXAHOST.
 #' @param connection_string alternatively to everything else, a custom ODBC connection sting can be
 #'      provided. See EXASOL DB manual secion 4.2.5 for details, available at \url{https://www.exasol.com/portal}.
-#' @return a fresh EXAConnection object.
+#' @return A fresh EXAConnection object.
+#' @examples \dontrun{
+#' con <- dbConnect("exa",dsn="EXASolo")
+#'
+#' con <- dbConnect("exa",exahost="212.209.123.20..25:8563",uid="peter",pwd="password123",schema="sales")
+#' }
 setMethod("dbConnect", "EXADriver",
-          def = function(drv, ...) EXANewConnection(...),
+          def = function(    drv, # change defaults also below
+                             exahost="",
+                             uid="",
+                             pwd="",
+                             schema="SYS",
+                             exalogfile=tempfile(pattern="EXAODBC_",fileext = ".log"),
+                             logmode="NONE",
+                             encryption="N",
+                             autocommit="N",
+                             querytimeout="0",
+                             connectionlcctype=Sys.getlocale(category="LC_CTYPE"),
+                             connectionlcnumeric=Sys.getlocale(category="LC_NUMERIC"),
+                             ...,
+                             dsn="",
+                             connection_string="")
+          EXANewConnection(drv,exahost, uid, pwd,schema, exalogfile, logmode, encryption, autocommit,
+                           querytimeout, connectionlcctype, connectionlcnumeric, ..., dsn,connection_string),
           valueClass = "EXAConnection"
 )
 
@@ -206,7 +236,7 @@ setMethod("dbConnect", "EXADriver",
 #
 # @inheritParams dbConnect
 setMethod("dbConnect", "character",
-          def = function(drv, ...) EXANewConnection(dbDriver(drv), ...),
+          def = function(drv, ...) EXANewConnection(drv=dbDriver(drv), ...),
           valueClass = "EXAConnection"
 )
 
@@ -238,11 +268,12 @@ dbCurrentSchema <- function(con) {
 
 
 
-EXANewConnection <- function(
+EXANewConnection <- function( # change defaults also above
+    drv,
     exahost="",
     uid="",
     pwd="",
-    schema="",
+    schema="SYS",
     exalogfile=tempfile(pattern="EXAODBC_",fileext = ".log"),
     logmode="NONE",
     encryption="N",
@@ -254,6 +285,7 @@ EXANewConnection <- function(
     dsn="",
     connection_string=""
 ) {
+  exaschema <- c(schema)
 
     if(connection_string != ""){
         con_str <- connection_string
@@ -263,7 +295,7 @@ EXANewConnection <- function(
             con_str <- paste0("DSN=",dsn)
         }
         else if (exahost!="" & uid!="") {
-            conn_str <- paste0("DRIVER={EXASolution Driver};EXAHOST=",exahost)
+            con_str <- paste0("DRIVER={EXASolution Driver};EXAHOST=",exahost)
         }
         else {
             stop("Connect failed. Either DSN, host & db_user or a connection string must be given.")
@@ -273,12 +305,11 @@ EXANewConnection <- function(
             con_str <- paste0(con_str,";UID=",uid,";PWD=",pwd)
         }
         # EXASCHEMA
-        if(schema!="") {
-            con_str <- paste0(con_str,";EXASCHEMA=",schema)
-        } else {
-            schema <- "SYS" # the default schema if none provided
+        if(exaschema!="SYS") {
+            con_str <- paste0(con_str,";EXASCHEMA=",exaschema)
         }
         # EXALOGFILE
+        #print(exalogfile)
         con_str <- paste0(con_str,";EXALOGFILE=",exalogfile)
 
         # LOGMODE
@@ -301,7 +332,7 @@ EXANewConnection <- function(
 
     con <- odbcDriverConnect(con_str)
     new("EXAConnection",init_connection_string = con_str,
-        current_schema=schema,
+        current_schema=exaschema,
         autocom_default=ifelse(autocommit=="Y",TRUE,FALSE),
         con)
 }
@@ -451,6 +482,8 @@ setMethod("dbDisconnect",signature("EXAConnection"),
           def=function(conn) {
             odbcClose(conn)
           })
+
+
 
 # Querying ----------------------------------------------------------------------------------------
 #
@@ -873,3 +906,31 @@ EXARemoveTable <- function(con, tbl_name, schema, cascade=FALSE) {
     )
 
 }
+
+
+
+#' Applies an R function to a result set.
+#' The R code is transfered and deployed in an EXASOL database and executed massively parallel.
+#'
+#' @param res An EXAResult set.
+#' @param fun A function to be applied to the result set.
+#' @param simplify A logical indicating whether the result set may be transfered to the client and
+#'      stored in a data.frame. Default: FALSE.
+#' @return An EXAResult object relating to the result set in the EXASOL database, or if SIMPLIFY=TRUE
+#'      a data.frame containing the result set.
+setGeneric("dbApply",
+           def = function(res,fun,...) standardGeneric("dbApply"),
+           valueClass=c("DBIResult","data.frame")
+)
+
+setMethod("dbApply",signature("EXAResult"),
+          def = function(res,fun,simplify=FALSE,...) {EXAApply(res,fun,simplify,...)}
+)
+
+EXAApply <- function(res, fun,simplify,...) {
+
+# TODO
+
+  res2
+}
+

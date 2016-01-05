@@ -59,12 +59,12 @@ The community edition can be downloaded for free from the [EXASOL Community Port
 
 To use the package import it as follows:
 ``` r
-library(EXASOL)
+library(exasol)
 ```
 
 ## Manual
 
-The package comes with documentation accessible from R via the command `?EXASOL`.
+The package comes with documentation accessible from R via the command `?exasol`.
 
 ## Package index
 
@@ -112,10 +112,7 @@ dbListTables
 :	TODO
 
 dbReadTable
-:	TODO
-
-Reads a DB table.
-:	TODO
+:	Reads a DB table.
 
 dbWriteTable
 :	Writes a data.frame into a table. If the table does not exist, it is created.

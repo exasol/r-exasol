@@ -5,13 +5,16 @@
 \alias{dbConnect}
 \title{Creates a connection to an EXASOL Database.}
 \usage{
-\S4method{dbConnect}{EXADriver}(drv, ...)
+\S4method{dbConnect}{EXADriver}(drv, exahost = "", uid = "", pwd = "",
+  schema = "SYS", exalogfile = tempfile(pattern = "EXAODBC_", fileext =
+  ".log"), logmode = "NONE", encryption = "N", autocommit = "N",
+  querytimeout = "0", connectionlcctype = Sys.getlocale(category =
+  "LC_CTYPE"), connectionlcnumeric = Sys.getlocale(category = "LC_NUMERIC"),
+  ..., dsn = "", connection_string = "")
 }
 \arguments{
 \item{drv}{An EXAdriver object, a character string "exasol" or "exa", or an existing
 EXAConnection object (for connection cloning).}
-
-\item{...}{Additional parameters to the connection string. If a connection is cloned, these override the old connection settings.}
 
 \item{exahost}{DNS or IP and port of the database cluster, e.g. '10.0.2.15..20:8563'}
 
@@ -45,18 +48,27 @@ no timeout, i.e. runs until finished.}
 
 \item{connectionlcnumeric}{Sets the connection locale LC NUMERIC. The default is the setting of the client's current R session.}
 
-\item{encoding}{The connection encoding. TODO.}
+\item{...}{Additional parameters to the connection string. If a connection is cloned, these override the old connection settings.}
 
 \item{dsn}{A preconfigured ODBC Data Source Name. Parameter being evaluated with priority to EXAHOST.}
 
 \item{connection_string}{alternatively to everything else, a custom ODBC connection sting can be
 provided. See EXASOL DB manual secion 4.2.5 for details, available at \url{https://www.exasol.com/portal}.}
+
+\item{encoding}{The connection encoding. TODO.}
 }
 \value{
-a fresh EXAConnection object.
+A fresh EXAConnection object.
 }
 \description{
 Creates a connection to an EXASOL Database.
+}
+\examples{
+\dontrun{
+con <- dbConnect("exa",dsn="EXASolo")
+
+con <- dbConnect("exa",exahost="212.209.123.20..25:8563",uid="peter",pwd="password123",schema="sales")
+}
 }
 \seealso{
 Other EXAConnection related objects: \code{\link{EXAConnection-class}},
