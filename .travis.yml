@@ -11,9 +11,9 @@ notifications:
 
 before_install:
   - sudo apt-get install unixodbc-dev
-  - openssl aes-256-cbc -K $encrypted_38a684a4bcac_key -iv $encrypted_38a684a4bcac_iv -in exaodbc.sh.enc -out exaodbc.sh -d
-  - chmod +x exaodbc.sh
-  - ./exaodbc.sh
+  - wget $EXAODBC_URL$EXAODBC_DRV_FILE".tar.gz" 
+  - tar -xzf $EXAODBC_DRV_FILE".tar.gz" 
+  - ./$EXAODBC_DRV_FILE/config_odbc --mode=config --host=$EXAHOST --user=$EXAUSER --password=$EXAPW
 
 r_github_packages:
   - jimhester/covr
