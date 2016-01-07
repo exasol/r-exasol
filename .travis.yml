@@ -11,10 +11,15 @@ notifications:
 
 before_install:
   - sudo apt-get install unixodbc-dev
+  - wget $EXAODBC_URL$EXAODBC_DRV_FILE".tar.gz" 
+  - tar -xzf $EXAODBC_DRV_FILE".tar.gz" 
+  - ./$EXAODBC_DRV_FILE/config_odbc --mode=config --host=$EXAHOST --user=$EXAUSER --password=$EXAPW
 
 r_github_packages:
   - jimhester/covr
   - jimhester/lintr
+  - rstats-db/DBI 		# development version needed for DBItest
+  - rstats-db/DBItest
 
 after_success:
   - Rscript -e 'library(covr);codecov()'

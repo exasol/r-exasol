@@ -2,8 +2,8 @@
 Copyright © EXASOL AG, Nuremberg (Germany). All rights reserved.  
 2004 - 2016
 
-[![Build Status](https://travis-ci.org/EXASOL/r-exasol.svg)](https://travis-ci.org/EXASOL/r-exasol)
-[![codecov.io](https://codecov.io/github/EXASOL/r-exasol/coverage.svg?branch=master)](https://codecov.io/github/EXASOL/r-exasol?branch=master)
+[![Build Status](https://travis-ci.org/marcelboldt/r-exasol.svg)](https://travis-ci.org/marcelboldt/r-exasol)
+[![codecov.io](https://codecov.io/github/marcelboldt/r-exasol/coverage.svg?branch=master)](https://codecov.io/github/marcelboldt/r-exasol?branch=master)
 
 ## Installation
 
@@ -59,12 +59,12 @@ The community edition can be downloaded for free from the [EXASOL Community Port
 
 To use the package import it as follows:
 ``` r
-library(EXASOL)
+library(exasol)
 ```
 
 ## Manual
 
-The package comes with documentation accessible from R via the command `?EXASOL`.
+The package comes with documentation accessible from R via the command `?exasol`.
 
 ## Package index
 
@@ -112,10 +112,7 @@ dbListTables
 :	TODO
 
 dbReadTable
-:	TODO
-
-Reads a DB table.
-:	TODO
+:	Reads a DB table.
 
 dbWriteTable
 :	Writes a data.frame into a table. If the table does not exist, it is created.
