@@ -16,6 +16,20 @@ An Object holding a connection to an EXASOL Database.
 
 \item{\code{autocom_default}}{A logical indicating if autocommit is active.}
 
+\item{\code{db_host}}{A string containing the hostname or IP.}
+
+\item{\code{db_port}}{An integer containing the connection port.}
+
+\item{\code{db_user}}{A string containing the DB user name.}
+
+\item{\code{db_name}}{A string containing the database name.}
+
+\item{\code{db_prod_name}}{A string containing the database product name.}
+
+\item{\code{db_version}}{A string containing the database version.}
+
+\item{\code{drv_name}}{A string containing the connection driver version.}
+
 \item{\code{connection.string}}{RODBC}
 
 \item{\code{handle_ptr}}{RODBC}
@@ -35,6 +49,8 @@ An Object holding a connection to an EXASOL Database.
 \item{\code{rows_at_time}}{RODBC}
 }}
 \seealso{
+\code{\link{DBIConnection-class}}
+
 Other DBI classes: \code{\link{EXADriver-class}},
   \code{\link{EXAResult-class}}
 

@@ -8,6 +8,8 @@
 An interface driver object to the EXASOL Database.
 }
 \seealso{
+\code{\link{DBIDriver-class}}
+
 Other DBI classes: \code{\link{EXAConnection-class}},
   \code{\link{EXAResult-class}}
 
