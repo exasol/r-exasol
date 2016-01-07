@@ -19,10 +19,23 @@ can be downloaded for free on \url{https://www.exasol.com/portal}.
 \section{Package index}{
 
 
+\subsection{DBI: General}{
+
+\describe{
+\item{\code{\link{EXAObject-class}}}{A virtual meta Object for all other EXASOL DBI objects.}
+\item{\code{\link{dbGetInfo}}}{}
+\item{\code{\link{summary}}}{}
+\item{\code{\link{dbIsValid}}}{Checks if an EXAObject is still valid.}
+\item{\code{\link{dbDataType}}}{Determine the EXASOL data type of an object.}
+}
+}
+
 \subsection{DBI: Driver-related}{
 
 \describe{
 \item{\code{\link{EXADriver-class}}}{An interface driver object to the EXASOL Database.}
+\item{\code{\link{dbGetInfo}}}{}
+\item{\code{\link{summary}}}{}
 \item{\code{\link{dbDriver}}}{Load database drivers.}
 \item{\code{\link{dbUnloadDriver}}}{Unload a driver.}
 \item{\code{\link{dbConnect}}}{Creates a connection to an EXASOL Database.}
@@ -33,6 +46,8 @@ can be downloaded for free on \url{https://www.exasol.com/portal}.
 \subsection{DBI: Connection-related}{
 \describe{
 \item{\code{\link{EXAConnection-class}}}{An object holding a connection to an EXASOL Database.}
+\item{\code{\link{dbGetInfo}}}{}
+\item{\code{\link{summary}}}{}
 \item{\code{\link{dbDisconnect}}}{Disconnects the connection.}
 \item{\code{\link{dbSendQuery}}}{Sends an SQL statment to an EXASOL DB, prepares for result fetching.}
 \item{\code{\link{dbGetQuery}}}{Executes the query, fetches and returns the entire result set.}
@@ -53,6 +68,8 @@ can be downloaded for free on \url{https://www.exasol.com/portal}.
 \subsection{DBI: Result set-related}{
 \describe{
 \item{\code{\link{EXAResult-class}}}{An object that is associated with a result set in an EXASOL Database.}
+\item{\code{\link{dbGetInfo}}}{}
+\item{\code{\link{summary}}}{}
 \item{\code{\link{dbFetch}}}{Fetches a subset of an result set.}
 \item{\code{\link{dbClearResult}}}{Frees all resources associated with an \code{EXAResult}.}
 \item{\code{\link{dbColumnInfo}}}{}

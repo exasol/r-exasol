@@ -45,6 +45,8 @@ An object that is associated with a result set in an EXASOL Database.
 \item{\code{refreshMetaData(x)}}{Refreshes the object's metadata.}
 }}
 \seealso{
+\code{\link{DBIResult-class}}
+
 Other DBI classes: \code{\link{EXAConnection-class}},
   \code{\link{EXADriver-class}}
 

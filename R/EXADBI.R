@@ -35,25 +35,81 @@
 #' @export dbGetRowsAffected
 #' @export dbGetRowCount
 #' Class definitions -------------------------------------------------------------------------------
+
+ #' EXAObject class.
+ #'
  #' The virtual object constituting a basis to all other EXA DBI Objects.
+ #' @seealso \code{\link{DBIObject-class}}
  #' @family DBI classes
+ #'
+ #' @docType class
  setClass("EXAObject", contains = c("DBIObject", "VIRTUAL"))
+
+#' Returns metadata on a given EXAObject.
+#' @name dbGetInfo
+#'
+#' @param dbObj An EXAObject.
+#' @return A named list.
+#' @export
+setMethod("dbGetInfo","EXAObject",
+          def= function(dbObj) {
+            print("TODO")
+
+
+          })
+
+setMethod("summary", "EXAObject",
+          def = function(object, ...) {
+            NextMethod(generic = "summary", object,...)
+          }
+)
+
 
 setOldClass("RODBC") # the S3 class RODBC will be registered as a superclass of EXAConnection
 
  #' An interface driver object to the EXASOL Database.
+ #'
+ #' @seealso \code{\link{DBIDriver-class}}
  #' @family DBI classes
  #' @family EXADriver related objects
- setClass("EXADriver", contains = c("DBIDriver", "EXAObject"))
+ setClass("EXADriver",
+          contains = c("DBIDriver", "EXAObject"))
 
+
+setMethod("dbGetInfo","EXADriver",
+          def= function(dbObj) {
+          list(
+            driver.version = packageVersion("exasol"),
+            max.connections = 999,
+            DBI.version = packageVersion("DBI"),
+            RODBC.version = packageVersion("RODBC"),
+            client.version = R.Version()$version.string
+          )
+    }
+)
+
+setMethod("summary", "EXADriver",
+          def = function(object, ...) {
+            NextMethod(generic = "summary", object,...)
+          }
+)
 
 #' An Object holding a connection to an EXASOL Database.
+#'
+#' @seealso \code{\link{DBIConnection-class}}
 #' @family DBI classes
 #' @family EXAConnection related objects
 #'
 #' @slot init_connection_string A string containing the ODBC connection sting used to initialise the connection.
 #' @slot current_schema A string reflecting the current schema.
 #' @slot autocom_default A logical indicating if autocommit is active.
+#' @slot db_host A string containing the hostname or IP.
+#' @slot db_port An integer containing the connection port.
+#' @slot db_user A string containing the DB user name.
+#' @slot db_name A string containing the database name.
+#' @slot db_prod_name A string containing the database product name.
+#' @slot db_version A string containing the database version.
+#' @slot drv_name A string containing the connection driver version.
 #' @slot connection.string RODBC
 #' @slot handle_ptr RODBC
 #' @slot case RODBC
@@ -67,14 +123,41 @@ setOldClass("RODBC") # the S3 class RODBC will be registered as a superclass of 
 setClass("EXAConnection",
                               slots = c(init_connection_string="character",
                                         current_schema="character",
-                                        autocom_default="logical"
+                                        autocom_default="logical",
+                                        db_host="character",
+                                        db_port="numeric",
+                                        db_user="character",
+                                        db_name="character",
+                                        db_prod_name="character",
+                                        db_version="character",
+                                        drv_name="character"
                                         ),
                             contains = c("DBIConnection", "EXAObject","RODBC")
 )
 
+# db.version, dbname, username, host, port
 
+setMethod("dbGetInfo","EXAConnection",
+          def= function(dbObj) {
+            if (!dbIsValid(dbObj)) stop("Connection exipired.")
+
+            list(db.version=paste(dbObj@db_prod_name, dbObj@db_version),
+                 dbname=dbObj@db_name,
+                 username=dbObj@db_user,
+                 host=dbObj@db_host,
+                 port=dbObj@db_port)
+
+          })
+
+setMethod("summary", "EXAConnection",
+          def = function(object, ...) {
+            NextMethod(generic = "summary", object,...)
+          }
+)
 
 #' An object that is associated with a result set in an EXASOL Database.
+#'
+#' @seealso \code{\link{DBIResult-class}}
 #' @family DBI classes
 #' @family EXAResult related objects
 #'
@@ -141,7 +224,18 @@ EXAResult <- setRefClass("EXAResult",
     )
 )
 
+setMethod("dbGetInfo","EXAResult",
+          def= function(dbObj) {
+            print("TODO")
 
+
+          })
+
+setMethod("summary", "EXAResult",
+          def = function(object, ...) {
+            NextMethod(generic = "summary", object,...)
+          }
+)
 
 # Instantiates an EXADriver object.
 # @family EXADriver related objects
@@ -168,9 +262,44 @@ setMethod("dbIsValid", signature("EXAObject"),
           })
 
 
+#' Determine the EXASOL data type of an object.
+#'
+#'@seealso \code{\link{dbDataType,DBIObject-method}}
+#' @export
+#' @name dbDataType
+setMethod("dbDataType", "EXAObject", function(dbObj, obj, ...) {
+  EXADataType(obj)
+})
+setGeneric("EXADataType", function(x) standardGeneric("EXADataType"))
+setMethod("EXADataType", "data.frame", function(x) {
+  vapply(x, EXADataType, FUN.VALUE = character(1), USE.NAMES = FALSE)
+})
+setMethod("EXADataType", "integer",  function(x) "int")
+setMethod("EXADataType", "numeric",  function(x) "double")
+setMethod("EXADataType", "logical",  function(x) "smallint")
+setMethod("EXADataType", "Date",     function(x) "date")
+setMethod("EXADataType", "POSIXct",  function(x) "timestamp")
+varchar <- function(x) {
+  paste0("varchar(", max(nchar(as.character(x))), ")")
+}
+setMethod("EXADataType", "character", varchar)
+setMethod("EXADataType", "factor",    varchar)
+setMethod("EXADataType", "list", function(x) {
+  vapply(x, EXADataType, FUN.VALUE = character(1), USE.NAMES = FALSE)
+})
+setMethod("EXADataType", "raw",  varchar)
+
+
+
+setMethod("dbListConnections", "EXADriver",
+          def = function(drv, ...) dbGetInfo(drv, "connectionIds")[[1]]
+)
+
+
 # Connection -------------------------------------------------------------------
 
 #' Creates a connection to an EXASOL Database.
+#'
 #' @family EXADriver related objects
 #' @family EXAConnection related objects
 #'
@@ -225,8 +354,23 @@ setMethod("dbConnect", "EXADriver",
                              ...,
                              dsn="",
                              connection_string="")
-          EXANewConnection(drv,exahost, uid, pwd,schema, exalogfile, logmode, encryption, autocommit,
-                           querytimeout, connectionlcctype, connectionlcnumeric, ..., dsn,connection_string),
+          {
+          EXANewConnection(drv = drv,
+                           exahost = exahost,
+                           uid = uid,
+                           pwd = pwd,
+                           schema = schema,
+                           exalogfile = exalogfile,
+                           logmode = logmode,
+                           encryption = encryption,
+                           autocommit = autocommit,
+                           querytimeout = querytimeout,
+                           connectionlcctype = connectionlcctype,
+                           connectionlcnumeric = connectionlcnumeric,
+                           ... = ...,
+                           dsn = dsn,
+                           connection_string = connection_string)
+            },
           valueClass = "EXAConnection"
 )
 
@@ -285,6 +429,7 @@ EXANewConnection <- function( # change defaults also above
     dsn="",
     connection_string=""
 ) {
+
   exaschema <- c(schema)
 
     if(connection_string != ""){
@@ -309,7 +454,6 @@ EXANewConnection <- function( # change defaults also above
             con_str <- paste0(con_str,";EXASCHEMA=",exaschema)
         }
         # EXALOGFILE
-        #print(exalogfile)
         con_str <- paste0(con_str,";EXALOGFILE=",exalogfile)
 
         # LOGMODE
@@ -331,9 +475,25 @@ EXANewConnection <- function( # change defaults also above
     }
 
     con <- odbcDriverConnect(con_str)
+    exa_metadata <- odbcGetInfo(con)
+
     new("EXAConnection",init_connection_string = con_str,
         current_schema=exaschema,
         autocom_default=ifelse(autocommit=="Y",TRUE,FALSE),
+        db_host = strsplit(exa_metadata["Server_Name"],":")[[1]][1],
+        db_port = as.numeric(strsplit(exa_metadata["Server_Name"],":")[[1]][2]),
+        db_user = substring(
+          regmatches(attributes(con)$connection.string, gregexpr("UID=[\\w]+?;", attributes(con)$connection.string,perl=TRUE)
+          )[[1]],
+            5,
+            nchar(
+              regmatches(attributes(con)$connection.string, gregexpr("UID=[\\w]+?;", attributes(con)$connection.string,perl=TRUE))[[1]]
+            )-1
+          ),
+        db_name = exa_metadata["Data_Source_name"],
+        db_prod_name = exa_metadata["DBMS_Name"],
+        db_version = exa_metadata["DBMS_Ver"],
+        drv_name = exa_metadata["Driver_Name"],
         con)
 }
 
@@ -381,10 +541,25 @@ EXACloneConnection <- function(drv, autocommit, ...) { # todo: parameters
     if(con == -1) {
         stop(paste("EXACloneConnection error: failed to initialise connection.\nConnection String:",con_str))
     }
+    exa_metadata <- odbcGetinfo(con)
     new("EXAConnection",
         init_connection_string = con_str,
         current_schema=drv@current_schema,
         autocom_default=ifelse(!missing(autocommit),ifelse(autocommit=="Y",TRUE,FALSE),drv@autocom_default),
+        db_host = strsplit(exa_metadata["Server_Name"],":")[[1]][1],
+        db_port = as.numeric(strsplit(exa_metadata["Server_Name"],":")[[1]][2]),
+        db_user = substring(
+          regmatches(attributes(con)$connection.string, gregexpr("UID=[\\w]+?;", attributes(con)$connection.string,perl=TRUE)
+          )[[1]],
+          5,
+          nchar(
+            regmatches(attributes(con)$connection.string, gregexpr("UID=[\\w]+?;", attributes(con)$connection.string,perl=TRUE))[[1]]
+          )-1
+        ),
+        db_name = exa_metadata["Data_Source_name"],
+        db_prod_name = exa_metadata["DBMS_Name"],
+        db_version = exa_metadata["DBMS_Ver"],
+        drv_name = exa_metadata["Driver_Name"],
         con)
 }
 
@@ -485,9 +660,8 @@ setMethod("dbDisconnect",signature("EXAConnection"),
 
 
 
-# Querying ----------------------------------------------------------------------------------------
+# Querying & Result -------------------------------------------------------------------------------
 #
-
 
 
 #' Sends an SQL statment to an EXASOL DB, prepares for result fetching.
