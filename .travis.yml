@@ -19,7 +19,7 @@ r_github_packages:
   - jimhester/covr
   - jimhester/lintr
   - rstats-db/DBI 		# development version needed for DBItest
-  - rstats-db/DBItest
+  - marcelboldt/DBItest
 
 after_success:
   - Rscript -e 'library(covr);codecov()'
