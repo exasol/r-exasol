@@ -53,7 +53,7 @@
 #' @export
 setMethod("dbGetInfo","EXAObject",
           def= function(dbObj) {
-            print("TODO")
+            return("EXASOL DBI Object.")
 
 
           })
@@ -165,7 +165,7 @@ setMethod("summary", "EXAConnection",
 #' @field statement A string containing the SQL query statement.
 #' @field rows_fetched An int reflecting the rows already fetched from the DB.
 #' @field rows_affected An int reflecting the length of the dataset in the DB.
-#' @field is_complete A logical indcating if the query processing by the DB has been completed.
+#' @field is_complete A logical indcating if the result set has been entirely fetched.
 #' @field with_output A logical indicating whether the query produced a result set.
 #' @field profile A data.frame containing profile information on the query.
 #' @field columns A data.frame containing column metadata.
@@ -194,42 +194,56 @@ EXAResult <- setRefClass("EXAResult",
             "Refreshes the object's metadata."
             print("todo")
         },
+
         addRowsFetched = function(x) {
             "Add an int (the length of a newly fetched result set) to rows_fetched."
             rows_fetched <<- rows_fetched + as.numeric(x)
         },
-        close = function(commit=FALSE) {
-            "Frees up all resources, in particular drops the temporary table in the DB."
-            if(odbcEndTran(connection, commit)==0) {
-                message("Changes commited.")
-            } else stop("Commit failed. Changes NOT commited. Closing aborted.")
 
-            message("Closing connection...")
-            res <- try(odbcClose(connection),silent=TRUE)
-            if(res==1) {
-                message("Connection closed.")
-                return(TRUE)
-            } else if(res==0) {
-                warning("Closing not successful.")
-                return(FALSE)
-            } else {
-                    warning(res)
-                    return(FALSE)
-                }
-        },
+#         close = function(commit=TRUE) {                              # dbClearResult is in row 880
+#           "Frees up all resources, in particular drops the temporary table in the DB."
+#
+#             if (!dbIsValid(.self)) {
+#               warning("Connection seems exipired.\n    ...it's gone...")
+#               return(FALSE)
+#             }
+#
+#             if(odbcEndTran(connection, commit)==0) {
+#                 if(commit) message("Changes commited.")
+#             } else stop("Commit failed. Changes NOT commited. Closing aborted.")
+#           message("Closing connection...")
+#             res <- try(odbcClose(connection),silent=TRUE)
+#             if(res==1) {
+#                 message("Connection closed.")
+#                 return(TRUE)
+#             } else if(res==0) {
+#                 warning("Closing not successful.")
+#                 return(FALSE)
+#             } else {
+#                     warning(res)
+#                     return(FALSE)
+#                 }
+#         },
+
         finalize = function(...) {
-            close()
-            message("Object terminated.")
+            #close()
+            message("EXAResult object disposed.")
         }
     )
 )
 
 setMethod("dbGetInfo","EXAResult",
           def= function(dbObj) {
-            print("TODO")
 
 
-          })
+            list(statement = dbObj$statement,
+                 row.count = dbObj$rows_fetched,
+                 rows.affected = dbObj$rows_affected,
+                 has.completed = dbObj$is_complete,
+                 is.select = dbObj$with_output
+            )
+          }
+        )
 
 setMethod("summary", "EXAResult",
           def = function(object, ...) {
@@ -318,11 +332,9 @@ setMethod("dbListConnections", "EXADriver",
 #'          'ON ERROR ONLY'     (only errors are logged),
 #'          'DEBUGCOMM'         (extended logs, similar to verbose but w/o data & parameter tables).
 #' @param encryption ODBC encryption. By default off. Switch on with 'Y'.
-#' @param autocommit By default 'N'. If Y' each SQL statement is committed. Off means that
+#' @param autocommit By default 'Y'. If Y' each SQL statement is committed. 'N' means that
 #'     no commits are executed automatically. The transaction will be rolled back on disconnect, which
-#'     causes the loss of all data written during the transaction. The methods in the EXASOL package
-#'     handle their transaction themselves, but but if the connection is used otherwise it might be advisable to
-#'     switch autocommit to 'Y'.
+#'     causes the loss of all data written during the transaction.
 #' @param querytimeout Time EXASOL DB computes a query before it is aborted. The default '0' (zero) means
 #'      no timeout, i.e. runs until finished.
 #' @param connectionlcctype Sets the connection locale LC CTYPE. The default is the setting of the client's current R session.
@@ -347,7 +359,7 @@ setMethod("dbConnect", "EXADriver",
                              exalogfile=tempfile(pattern="EXAODBC_",fileext = ".log"),
                              logmode="NONE",
                              encryption="N",
-                             autocommit="N",
+                             autocommit="Y",
                              querytimeout="0",
                              connectionlcctype=Sys.getlocale(category="LC_CTYPE"),
                              connectionlcnumeric=Sys.getlocale(category="LC_NUMERIC"),
@@ -421,7 +433,7 @@ EXANewConnection <- function( # change defaults also above
     exalogfile=tempfile(pattern="EXAODBC_",fileext = ".log"),
     logmode="NONE",
     encryption="N",
-    autocommit="N",
+    autocommit="Y",
     querytimeout="0",
     connectionlcctype=Sys.getlocale(category="LC_CTYPE"),
     connectionlcnumeric=Sys.getlocale(category="LC_NUMERIC"),
@@ -443,7 +455,9 @@ EXANewConnection <- function( # change defaults also above
             con_str <- paste0("DRIVER={EXASolution Driver};EXAHOST=",exahost)
         }
         else {
-            stop("Connect failed. Either DSN, host & db_user or a connection string must be given.")
+            stop("Connect failed. Either DSN, host & db_user or a connection string must be given.\n
+                 Hint: No lazy declaration of onnection parameters - these have to be stated ' dsn=...'.\n
+                 See also the examples in the help ('?dbConnect').")
         }
         # all additional parameters...
         if(uid!="") {
@@ -541,7 +555,7 @@ EXACloneConnection <- function(drv, autocommit, ...) { # todo: parameters
     if(con == -1) {
         stop(paste("EXACloneConnection error: failed to initialise connection.\nConnection String:",con_str))
     }
-    exa_metadata <- odbcGetinfo(con)
+    exa_metadata <- odbcGetInfo(con)
     new("EXAConnection",
         init_connection_string = con_str,
         current_schema=drv@current_schema,
@@ -669,8 +683,8 @@ setMethod("dbDisconnect",signature("EXAConnection"),
 #' @family DQL functions
 #'
 #' @name dbSendQuery
-#' @param con a valid EXAConnection
-#' @param stmt vector mode character : an SQL statement to be executed in EXASOL db
+#' @param conn A valid EXAConnection
+#' @param statement vector mode character : an SQL statement to be executed in EXASOL db
 #' @param schema vector mode character : a focus schema. This must have write access for the result set to be temporarily stored. If the user has only read permission on the schema to be read, another schema may be entered here, and table identifiers in stmt parameter must be fully qualified (schema.table).
 #' @param profile logical, default TRUE : collect profiling information
 #' @param default_fetch_req numeric, default 100 :
@@ -678,7 +692,20 @@ setMethod("dbDisconnect",signature("EXAConnection"),
 #' @return EXAResult object which can be used for fetching rows. It also contains metadata.
 setMethod("dbSendQuery",
           signature(conn = "EXAConnection", statement = "character"),
-          def = function(conn,statement,...) EXAExecStatement(conn, statement,...),
+          def = function(
+            conn,
+            statement,
+            schema="",
+            profile=TRUE,
+            default_fetch_rec=100,
+            ...
+          ) EXAExecStatement(
+              con = conn,
+              stmt = statement,
+              schema = schema,
+              profile = profile,
+              default_fetch_rec = default_fetch_rec,
+              ... = ...),
           valueClass = "EXAResult"
 )
 
@@ -698,41 +725,85 @@ grep_schema <- function(stmt) {
 
 EXAExecStatement <- function(con, stmt, schema="", profile=TRUE, default_fetch_rec=100,...) {
 
+
+    stmt_cmd <- toupper(regmatches(stmt,gregexpr("^\\w+",stmt,perl=TRUE))[[1]])
+
     qtime <- Sys.time()
     err <- vector(mode="character")
+
+    if(profile) {
+      err <- append(err,sqlQuery(con, "alter session set profile='ON'"))
+    }
+
+    dbBegin(con)
+    on.exit(dbEnd(con,commit=FALSE))
+
+    if (stmt_cmd == "SELECT") {
+
     temp_schema <- FALSE
     tbl_name <- paste0("TEMP_",floor(rnorm(1,1000,100)^2),"_CREATED_BY_R")
-    con <- dbConnect(con, autocommit="N",...) # clone the connection with autocommit=off
+    # con <- dbConnect(con, autocommit="N",...) # clone the connection with autocommit=off
+
 
     if(schema=="") { # try to grep schema from stmt
         s <- grep_schema(stmt)
         if(length(s)>1) {
             warning("Multiple schemas found in statement: ",s,"Using ",s[length(s)])
 
+        } else if (length(s)<1) {
+           warning(paste("No schema defined. Using connection schema: ",con@current_schema))
+          schema <- con@current_schema
+        } else {
+        schema <- s[1]
         }
-        schema <- s[length(s)]
     }
-    if(schema=="") { # if nothing helps use temp_schema
+    if (schema=="") { # if nothing helps use temp_schema
         schema <- tbl_name
         temp_schema <- TRUE
+        err <- append(err, paste("Using temporary schema:", schema))
     }
 
 
-    if(profile) {
-        err <- append(err,sqlQuery(con, "alter session set profile='ON'"))
+    if (temp_schema) err <- append(err, sqlQuery(con, paste("create schema", schema)))
+    errr <- try(sqlQuery(con, paste0("create table ", schema, ".", tbl_name," as (", stmt, ")"), errors = FALSE)) # on success this won't return anything
+
+    # dbCommit(con)
+
+    if (errr == -1) {
+      warning(odbcGetErrMsg(con))
+      err <- append(err, odbcGetErrMsg(con))
+    } else {
+      on.exit(dbEnd(con, commit = TRUE)) # commit = TRUE after select in order to store indices that may have been created.
     }
 
-    if (temp_schema) err <- append(err, sqlQuery(con, paste("create schema",schema)))
-    errr <- sqlQuery(con,paste0("create table ",schema,".",tbl_name," as (",stmt,")")) # on success this won't return anything
-    err <- append(err, errr)
+    } else {
+      # if NOT SELECT ------------------
+      #
 
+      if (schema != "") {
+        err1 <- try(sqlQuery(con, paste("open schema", schema), errors = FALSE))
+        if (err1 == -1) { # schema cannot be opened
+          warning(paste("Schema cannot be opened:", schema,"\n",err1))
+          err <- append(err, odbcGetErrMsg(con))
+        }
+      }
 
+      err2 <- try(sqlQuery(con, stmt, errors = FALSE))
+
+      if (err2 == -1) {
+        err <- append(err, odbcGetErrMsg(con))
+        stop(paste("Query failed.\n", odbcGetErrMsg(con)))
+      } else {
+        on.exit(dbEnd(con,commit=TRUE))
+      }
+    }
 
     sqlQuery(con,"flush statistics")
     p <- exa.readData(con, "select
                       session_id,
                       stmt_id,
                       part_id,
+                      command_name,
                       object_name,
                       object_rows,
                       duration,
@@ -742,15 +813,17 @@ EXAExecStatement <- function(con, stmt, schema="", profile=TRUE, default_fetch_r
                       net
                       from exa_user_profile_last_day
                       where session_id = current_session and stmt_id=current_statement-2
-                      order by part_id desc") # current_statement: -2 if autocommit=N, otherwise -4
+                      order by part_id desc") # current_statement: -2 if autocommit=N, otherwise -4, -3 if dbCommit
 
-    if (length(errr)==0) {
+    cols <- data.frame()
+
+    if (stmt_cmd == "SELECT") {
+
+      if (errr != -1) {
         message(p$OBJECT_ROWS[1]," rows prepared in ",sum(p$DURATION)," seconds.")
-    } else {
-        warning(errr)
-    }
+      }
 
-    cols <- exa.readData(con, paste0("select
+      cols <- exa.readData(con, paste0("select
                                      column_ordinal_position,
                                      column_name, column_comment,
                                      column_type, column_maxsize,
@@ -762,16 +835,21 @@ EXAExecStatement <- function(con, stmt, schema="", profile=TRUE, default_fetch_r
                                      from exa_user_columns
                                      where column_schema = '",schema,"' and column_table = '",tbl_name,"'"))
 
+    }
+
+    if (stmt_cmd == "SELECT") res_tbl <- paste0(schema,".",tbl_name)
+    else res_tbl <- ""
+
     EXAResult$new(
         connection=con,
         statement=stmt,
         rows_fetched=0,
         rows_affected=as.numeric(p$OBJECT_ROWS[1]),
-        is_complete=TRUE,
-        with_output=TRUE,
+        is_complete=ifelse(stmt_cmd == "SELECT",FALSE,TRUE),
+        with_output=ifelse(stmt_cmd == "SELECT",TRUE,FALSE),
         profile=p,
         columns=cols,
-        temp_result_tbl=paste0(schema,".",tbl_name),
+        temp_result_tbl=res_tbl,
         query_sent_time=qtime,
         errors=err,
         default_fetch_rec=default_fetch_rec
@@ -806,13 +884,22 @@ setMethod("fetch",signature(res="EXAResult",
 
 EXAFetch <- function(res,n=res$default_fetch_rec,...) {
 
-    if(n==-1) {
+  if (res$with_output & !res$is_complete) {
+
+    if (n == -1) {
         n <- res$rows_affected
     }
     query <- paste("select * from",res$temp_result_tbl,"order by rownum limit",n,"offset",res$rows_fetched)
     df <- exa.readData(res$connection, query,...)
     res$rows_fetched <- res$addRowsFetched(nrow(df))
-    df
+    if (res$rows_fetched >= res$rows_affected) {
+      res$is_complete <- TRUE
+    }
+    return(df)
+  } else {
+    warning("Nothing to fetch.")
+    return(data.frame())
+  }
 }
 
 
@@ -823,13 +910,38 @@ EXAFetch <- function(res,n=res$default_fetch_rec,...) {
 #' @name dbClearResult
 #' @param res An EXAResult object.
 #' @param ... Further arguments to passed to res$close(). This may be 'commit=TRUE' (not advisable).
+#' @return A logical indicating success.
 #' @export
 setMethod("dbClearResult", signature(res="EXAResult"),
           def=function(res,...) EXAClearResult(res,...)
 )
 
-EXAClearResult <- function(res,...) {
-    res$close()
+EXAClearResult <- function(res,...) { # close is in row 203
+
+    if (!res$with_output | res$temp_result_tbl == "") { # if not a SELECT stmt OR nothing to drop...
+        #res$close()
+        message("No result set to clear.")
+        return(TRUE)
+      } else { # if a SELECT stmt...
+        # 1. drop the table...
+          err <- try(sqlQuery(res$connection, paste("drop table",res$temp_result_tbl), errors=FALSE))
+          if (err == -1) {
+            stop(paste("Couldn't remove temporary table. Delete:", res$temp_result_tbl))
+            return(FALSE)
+          }
+          stbl <- strsplit(res$temp_result_tbl,".",fixed=TRUE) # 2. check if the schema had been created...
+        if (stbl[[1]][1]==stbl[[1]][2] & gregexpr("CREATED_BY_R",stbl[[1]][1])[[1]][1] > 0 ) {
+          # if the tbl_name & schemaname are equal and contain 'CREATED_BY_R'...
+          err <- try(sqlQuery(con, paste("drop schema",stbl[[1]][1]), errors=FALSE)) # ...drop schema if empty
+          if (err == -1) {
+            stop(paste("Couldn't remove temp. schema:",stbl[[1]][1],"\n",err))
+            return(FALSE)
+          }
+        }
+      res$temp_result_tbl <- ""
+      return(TRUE) # if table (and schema) has been removed return true
+      }
+
 }
 
 #' Executes the query, fetches and returns the entire result set.
@@ -839,11 +951,15 @@ EXAClearResult <- function(res,...) {
 #' @name dbGetQuery
 #' @param conn An EXAConnection object.
 #' @param statement An SQL query statement to be executed in an EXASOL DB.
-#' @param ... further arguements to be passed on to exa.readData.
+#' @param ... further arguments to be passed on to exa.readData.
 #' @return The result exa.readData, by default a data.frame containing the result set.
 setMethod("dbGetQuery", signature("EXAConnection","character"),
           def=function(conn, statement,...) {
-              exa.readData(conn,statement,...)
+             if (toupper(regmatches(statement,gregexpr("^\\w+",statement,perl=TRUE))[[1]]) == "SELECT") {
+               return(exa.readData(conn,statement,...))
+             } else {
+               sqlQuery(conn, statement, errors = TRUE)
+             }
           }
 )
 
