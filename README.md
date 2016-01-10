@@ -20,7 +20,15 @@ require(devtools)
 install_github("EXASOL/r-exasol")
 ```
 
-## Code coverage
+## Status
+
+The low-level methods as regards exa.readData, exa.writeData and exa.createScript may work as expected, so 
+should the DBI connection methods (dbConnect etc.; all tests passed). DBI querying methods still needs some improvement,
+but errors are mostly related to encoding and quoting of identifiers, so these may do as well.
+Writing tests have not yet been implemented, but it hopefully happens in the near future.
+
+Code coverage of tests:
+
 ![codecov.io](https://codecov.io/github/EXASOL/r-exasol/branch.svg?branch=master)
 
 # EXASOL R Package
