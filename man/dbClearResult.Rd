@@ -12,6 +12,9 @@
 
 \item{...}{Further arguments to passed to res$close(). This may be 'commit=TRUE' (not advisable).}
 }
+\value{
+A logical indicating success.
+}
 \description{
 Frees all resources associated with an \code{EXAResult}.
 }

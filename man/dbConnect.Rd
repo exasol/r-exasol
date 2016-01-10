@@ -7,7 +7,7 @@
 \usage{
 \S4method{dbConnect}{EXADriver}(drv, exahost = "", uid = "", pwd = "",
   schema = "SYS", exalogfile = tempfile(pattern = "EXAODBC_", fileext =
-  ".log"), logmode = "NONE", encryption = "N", autocommit = "N",
+  ".log"), logmode = "NONE", encryption = "N", autocommit = "Y",
   querytimeout = "0", connectionlcctype = Sys.getlocale(category =
   "LC_CTYPE"), connectionlcnumeric = Sys.getlocale(category = "LC_NUMERIC"),
   ..., dsn = "", connection_string = "")
@@ -35,11 +35,9 @@ accessed with 'EXAlog(EXAConnection)'.}
 
 \item{encryption}{ODBC encryption. By default off. Switch on with 'Y'.}
 
-\item{autocommit}{By default 'N'. If Y' each SQL statement is committed. Off means that
+\item{autocommit}{By default 'Y'. If Y' each SQL statement is committed. 'N' means that
 no commits are executed automatically. The transaction will be rolled back on disconnect, which
-causes the loss of all data written during the transaction. The methods in the EXASOL package
-handle their transaction themselves, but but if the connection is used otherwise it might be advisable to
-switch autocommit to 'Y'.}
+causes the loss of all data written during the transaction.}
 
 \item{querytimeout}{Time EXASOL DB computes a query before it is aborted. The default '0' (zero) means
 no timeout, i.e. runs until finished.}

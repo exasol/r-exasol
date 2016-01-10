@@ -19,7 +19,7 @@ An object that is associated with a result set in an EXASOL Database.
 
 \item{\code{rows_affected}}{An int reflecting the length of the dataset in the DB.}
 
-\item{\code{is_complete}}{A logical indcating if the query processing by the DB has been completed.}
+\item{\code{is_complete}}{A logical indcating if the result set has been entirely fetched.}
 
 \item{\code{with_output}}{A logical indicating whether the query produced a result set.}
 
@@ -39,8 +39,6 @@ An object that is associated with a result set in an EXASOL Database.
 
 \describe{
 \item{\code{addRowsFetched(x)}}{Add an int (the length of a newly fetched result set) to rows_fetched.}
-
-\item{\code{close(commit = FALSE)}}{Frees up all resources, in particular drops the temporary table in the DB.}
 
 \item{\code{refreshMetaData(x)}}{Refreshes the object's metadata.}
 }}

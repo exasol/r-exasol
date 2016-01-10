@@ -5,18 +5,19 @@
 \alias{dbSendQuery}
 \title{Sends an SQL statment to an EXASOL DB, prepares for result fetching.}
 \usage{
-\S4method{dbSendQuery}{EXAConnection,character}(conn, statement, ...)
+\S4method{dbSendQuery}{EXAConnection,character}(conn, statement, schema = "",
+  profile = TRUE, default_fetch_rec = 100, ...)
 }
 \arguments{
-\item{...}{additional parameters to be passed on to dbConnect (used to clone the connection to one without autocommit)}
+\item{conn}{A valid EXAConnection}
 
-\item{con}{a valid EXAConnection}
-
-\item{stmt}{vector mode character : an SQL statement to be executed in EXASOL db}
+\item{statement}{vector mode character : an SQL statement to be executed in EXASOL db}
 
 \item{schema}{vector mode character : a focus schema. This must have write access for the result set to be temporarily stored. If the user has only read permission on the schema to be read, another schema may be entered here, and table identifiers in stmt parameter must be fully qualified (schema.table).}
 
 \item{profile}{logical, default TRUE : collect profiling information}
+
+\item{...}{additional parameters to be passed on to dbConnect (used to clone the connection to one without autocommit)}
 
 \item{default_fetch_req}{numeric, default 100 :}
 }
