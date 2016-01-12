@@ -1181,7 +1181,7 @@ EXAWriteTable <- function(con, tbl_name, data, schema, field_types, overwrite=FA
         )
         # setting up the table definition string
         ddl_str <- paste0("create table ",schema,".",tbl_name, "( ")
-        for(i in 1:length(col_names)) {
+        for (i in 1:length(col_names)) {
             ddl_str <- paste0(ddl_str, col_names[i]," ", field_types[i], ", ")
         }
         ddl_str <- substr(ddl_str,1,nchar(ddl_str)-2) # remove the final comma & space
@@ -1276,13 +1276,13 @@ EXARemoveTable <- function(con, tbl_name, schema, cascade=FALSE) {
 #'      a data.frame containing the result set.
 setGeneric(
   "dbApply",
-  def = function(res,fun,...)
+  def = function(res, fun,...)
     standardGeneric("dbApply"),
   valueClass = c("DBIResult","data.frame")
 )
 
 setMethod(
-  "dbApply",signature("EXAResult"),
+  "dbApply", signature("EXAResult"),
   definition = function(res, fun, simplify = FALSE, ...)
     EXAApply(res, fun, simplify,...)
 )

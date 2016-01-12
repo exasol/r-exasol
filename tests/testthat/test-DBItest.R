@@ -16,3 +16,10 @@ DBItest::test_connection(skip = c("stress_load_connect_unload"))
 #DBItest::test_sql()
 #DBItest::test_meta()
 #DBItest::test_compliance()
+
+context("Additional tests")
+test_that("dbCurrentSchema", {
+  ctx <- DBItest::get_default_context()
+  con <- DBItest:::connect(ctx)
+  expect_is(dbCurrentSchema(con), "EXAConnection")
+})
