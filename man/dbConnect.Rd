@@ -13,45 +13,57 @@
   ..., dsn = "", connection_string = "")
 }
 \arguments{
-\item{drv}{An EXAdriver object, a character string "exasol" or "exa", or an existing
-EXAConnection object (for connection cloning).}
+\item{drv}{An EXAdriver object, a character string "exasol" or "exa", or an
+existing EXAConnection object (for connection cloning).}
 
-\item{exahost}{DNS or IP and port of the database cluster, e.g. '10.0.2.15..20:8563'}
+\item{exahost}{DNS or IP (or range of IPs) and port of the database cluster,
+e.g. '10.0.2.15..20:8563'}
 
 \item{uid}{DB username, e.g. 'sys'}
 
 \item{pwd}{DB user password, e.g. 'exasol'}
 
-\item{schema}{Schema in EXASOL db which is opened directly after the connection.}
+\item{schema}{Schema in EXASOL db which is opened directly after the
+connection.}
 
-\item{exalogfile}{the EXASOL odbc driver log file. By standard a tempfile is created. Log data may be
-accessed with 'EXAlog(EXAConnection)'.}
+\item{exalogfile}{the EXASOL odbc driver log file. By standard a tempfile is
+created. Log data may be accessed with 'EXAlog(EXAConnection)'.}
 
-\item{logmode}{EXASOL ODBC driver log mode. By default, no log is written ('NONE'). Other options are
-'DEFAULT'           (most important function calls & SQL commands),
-'VERBOSE'           (also additional data about internal steps & result data),
-'ON ERROR ONLY'     (only errors are logged),
-'DEBUGCOMM'         (extended logs, similar to verbose but w/o data & parameter tables).}
+\item{logmode}{EXASOL ODBC driver log mode. Allowed options are:
+\describe{
+ \item{NONE}{no log is written (default)}
+ \item{DEFAULT}{most important function calls & SQL commands}
+ \item{VERBOSE}{also additional data about internal steps & result data}
+ \item{ON ERROR ONLY}{only errors are logged}
+ \item{DEBUGCOMM}{extended logs, similar to verbose but w/o data & parameter
+ tables}
+}}
 
 \item{encryption}{ODBC encryption. By default off. Switch on with 'Y'.}
 
-\item{autocommit}{By default 'Y'. If Y' each SQL statement is committed. 'N' means that
-no commits are executed automatically. The transaction will be rolled back on disconnect, which
-causes the loss of all data written during the transaction.}
+\item{autocommit}{By default 'Y'. If Y' each SQL statement is committed. 'N'
+means that no commits are executed automatically. The transaction will be
+rolled back on disconnect, which causes the loss of all data written during
+the transaction.}
 
-\item{querytimeout}{Time EXASOL DB computes a query before it is aborted. The default '0' (zero) means
-no timeout, i.e. runs until finished.}
+\item{querytimeout}{Time EXASOL DB computes a query before it is aborted.
+The default \code{'0'} (zero) means no timeout, i.e. runs until finished.}
 
-\item{connectionlcctype}{Sets the connection locale LC CTYPE. The default is the setting of the client's current R session.}
+\item{connectionlcctype}{Sets the connection locale \code{LC CTYPE}.
+The default is the setting of the client's current R session.}
 
-\item{connectionlcnumeric}{Sets the connection locale LC NUMERIC. The default is the setting of the client's current R session.}
+\item{connectionlcnumeric}{Sets the connection locale \code{LC NUMERIC}.
+The default is the setting of the client's current R session.}
 
-\item{...}{Additional parameters to the connection string. If a connection is cloned, these override the old connection settings.}
+\item{...}{Additional parameters to the connection string. If a connection is
+cloned, these override the old connection settings.}
 
-\item{dsn}{A preconfigured ODBC Data Source Name. Parameter being evaluated with priority to EXAHOST.}
+\item{dsn}{A preconfigured ODBC Data Source Name. Parameter being evaluated
+with priority to \code{EXAHOST}.}
 
-\item{connection_string}{alternatively to everything else, a custom ODBC connection sting can be
-provided. See EXASOL DB manual secion 4.2.5 for details, available at \url{https://www.exasol.com/portal}.}
+\item{connection_string}{alternatively to everything else, a custom ODBC
+connection sting can be provided. See EXASOL DB manual secion 4.2.5 for
+details, available at \url{https://www.exasol.com/portal}.}
 
 \item{encoding}{The connection encoding. TODO.}
 }
