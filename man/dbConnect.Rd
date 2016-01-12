@@ -75,9 +75,9 @@ Creates a connection to an EXASOL Database.
 }
 \examples{
 \dontrun{
-con <- dbConnect("exa",dsn="EXASolo")
-
-con <- dbConnect("exa",exahost="212.209.123.20..25:8563",uid="peter",pwd="password123",schema="sales")
+ con <- dbConnect("exa", dsn = "EXASolo")
+ con <- dbConnect("exa", exahost = "212.209.123.20..25:8563",
+                  uid = "peter", pwd = "password123", schema = "sales")
 }
 }
 \seealso{

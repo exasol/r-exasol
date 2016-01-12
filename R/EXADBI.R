@@ -54,7 +54,7 @@ setClass("EXAObject", contains = c("DBIObject", "VIRTUAL"))
 #' @return A named list.
 #' @export
 setMethod(
-  "dbGetInfo","EXAObject",
+  "dbGetInfo", "EXAObject",
   definition = function(dbObj) {
     return("EXASOL DBI Object.")
   }
@@ -79,7 +79,7 @@ setClass("EXADriver",
          contains = c("DBIDriver", "EXAObject"))
 
 setMethod(
-  "dbGetInfo","EXADriver",
+  "dbGetInfo", "EXADriver",
   definition = function(dbObj) {
     list(
       driver.version = packageVersion("exasol"),
