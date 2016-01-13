@@ -46,7 +46,8 @@ An object that is associated with a result set in an EXASOL Database.
 \code{\link{DBIResult-class}}
 
 Other DBI classes: \code{\link{EXAConnection-class}},
-  \code{\link{EXADriver-class}}
+  \code{\link{EXADriver-class}},
+  \code{\link{EXAObject-class}}
 
 Other EXAResult related objects: \code{\link{dbClearResult}},
   \code{\link{dbFetch}}

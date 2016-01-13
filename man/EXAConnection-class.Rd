@@ -52,6 +52,7 @@ An Object holding a connection to an EXASOL Database.
 \code{\link{DBIConnection-class}}
 
 Other DBI classes: \code{\link{EXADriver-class}},
+  \code{\link{EXAObject-class}},
   \code{\link{EXAResult-class}}
 
 Other EXAConnection related objects: \code{\link{dbBegin}},
