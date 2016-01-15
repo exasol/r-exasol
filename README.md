@@ -2,8 +2,8 @@
 Copyright © EXASOL AG, Nuremberg (Germany). All rights reserved.  
 2004 - 2016
 
-[![Build Status](https://travis-ci.org/marcelboldt/r-exasol.svg)](https://travis-ci.org/marcelboldt/r-exasol)
-[![codecov.io](https://codecov.io/github/marcelboldt/r-exasol/coverage.svg?branch=master)](https://codecov.io/github/marcelboldt/r-exasol?branch=master)
+[![Build Status](https://travis-ci.org/EXASOL/r-exasol.svg)](https://travis-ci.org/EXASOL/r-exasol)
+[![codecov.io](https://codecov.io/github/EXASOL/r-exasol/coverage.svg?branch=master)](https://codecov.io/github/EXASOL/r-exasol?branch=master)
 
 ## Installation
 
@@ -19,6 +19,17 @@ To install the EXASOL package:
 require(devtools)
 install_github("EXASOL/r-exasol")
 ```
+
+## Status
+
+The low-level methods as regards exa.readData, exa.writeData and exa.createScript may work as expected, so 
+should the DBI connection methods (dbConnect etc.; all tests passed). DBI querying methods still need some improvement,
+but errors are mostly related to encoding and identifiers, so these may do as well.
+Writing tests have not yet been implemented, but it hopefully happens in the near future.
+
+Code coverage of tests:
+
+![codecov.io](https://codecov.io/github/EXASOL/r-exasol/branch.svg?branch=master)
 
 # EXASOL R Package
 
