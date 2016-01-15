@@ -34,16 +34,18 @@
 #' @export dbHasCompleted
 #' @export dbGetRowsAffected
 #' @export dbGetRowCount
-#' Class definitions -------------------------------------------------------------------------------
+NULL
 
- #' EXAObject class.
- #'
- #' The virtual object constituting a basis to all other EXA DBI Objects.
- #' @seealso \code{\link{DBIObject-class}}
- #' @family DBI classes
- #'
- #' @docType class
- setClass("EXAObject", contains = c("DBIObject", "VIRTUAL"))
+# Class definitions ------------------------------------------------------------
+
+#' EXAObject class.
+#'
+#' The virtual object constituting a basis to all other EXA DBI Objects.
+#' @seealso \code{\link{DBIObject-class}}
+#' @family DBI classes
+#'
+#' @docType class
+setClass("EXAObject", contains = c("DBIObject", "VIRTUAL"))
 
 #' Returns metadata on a given EXAObject.
 #' @name dbGetInfo
@@ -51,47 +53,48 @@
 #' @param dbObj An EXAObject.
 #' @return A named list.
 #' @export
-setMethod("dbGetInfo","EXAObject",
-          def= function(dbObj) {
-            return("EXASOL DBI Object.")
-
-
-          })
-
-setMethod("summary", "EXAObject",
-          def = function(object, ...) {
-            NextMethod(generic = "summary", object,...)
-          }
+setMethod(
+  "dbGetInfo", "EXAObject",
+  definition = function(dbObj) {
+    return("EXASOL DBI Object.")
+  }
 )
 
-
-setOldClass("RODBC") # the S3 class RODBC will be registered as a superclass of EXAConnection
-
- #' An interface driver object to the EXASOL Database.
- #'
- #' @seealso \code{\link{DBIDriver-class}}
- #' @family DBI classes
- #' @family EXADriver related objects
- setClass("EXADriver",
-          contains = c("DBIDriver", "EXAObject"))
-
-
-setMethod("dbGetInfo","EXADriver",
-          def= function(dbObj) {
-          list(
-            driver.version = packageVersion("exasol"),
-            max.connections = 999,
-            DBI.version = packageVersion("DBI"),
-            RODBC.version = packageVersion("RODBC"),
-            client.version = R.Version()$version.string
-          )
-    }
+setMethod(
+  "summary", "EXAObject",
+  definition = function(object, ...) {
+    NextMethod(generic = "summary", object, ...)
+  }
 )
 
-setMethod("summary", "EXADriver",
-          def = function(object, ...) {
-            NextMethod(generic = "summary", object,...)
-          }
+# the S3 class RODBC will be registered as a superclass of EXAConnection
+setOldClass("RODBC")
+
+#' An interface driver object to the EXASOL Database.
+#'
+#' @seealso \code{\link{DBIDriver-class}}
+#' @family DBI classes
+#' @family EXADriver related objects
+setClass("EXADriver",
+         contains = c("DBIDriver", "EXAObject"))
+
+setMethod(
+  "dbGetInfo", "EXADriver",
+  definition = function(dbObj) {
+    list(
+      driver.version = packageVersion("exasol"),
+      max.connections = 999,
+      DBI.version = packageVersion("DBI"),
+      RODBC.version = packageVersion("RODBC"),
+      client.version = R.Version()$version.string
+    )
+  }
+)
+
+setMethod(
+  "summary", "EXADriver",
+  definition = function(object, ...)
+    NextMethod(generic = "summary", object,...)
 )
 
 #' An Object holding a connection to an EXASOL Database.
@@ -120,39 +123,47 @@ setMethod("summary", "EXADriver",
 #' @slot encoding RODBC
 #' @slot rows_at_time RODBC
 #' @export
-setClass("EXAConnection",
-                              slots = c(init_connection_string="character",
-                                        current_schema="character",
-                                        autocom_default="logical",
-                                        db_host="character",
-                                        db_port="numeric",
-                                        db_user="character",
-                                        db_name="character",
-                                        db_prod_name="character",
-                                        db_version="character",
-                                        drv_name="character"
-                                        ),
-                            contains = c("DBIConnection", "EXAObject","RODBC")
+setClass(
+  "EXAConnection",
+  slots = c(
+    init_connection_string = "character",
+    current_schema = "character",
+    autocom_default = "logical",
+    db_host = "character",
+    db_port = "numeric",
+    db_user = "character",
+    db_name = "character",
+    db_prod_name = "character",
+    db_version = "character",
+    drv_name = "character"
+  ),
+  contains = c("DBIConnection", "EXAObject", "RODBC")
 )
 
 # db.version, dbname, username, host, port
 
-setMethod("dbGetInfo","EXAConnection",
-          def= function(dbObj) {
-            if (!dbIsValid(dbObj)) stop("Connection exipired.")
+setMethod(
+  "dbGetInfo","EXAConnection",
+  definition = function(dbObj) {
+    if (!dbIsValid(dbObj)) {
+      stop("Connection exipired.")
+    }
+    list(
+      db.version = paste(dbObj@db_prod_name, dbObj@db_version),
+      dbname = dbObj@db_name,
+      username = dbObj@db_user,
+      host = dbObj@db_host,
+      port = dbObj@db_port
+    )
 
-            list(db.version=paste(dbObj@db_prod_name, dbObj@db_version),
-                 dbname=dbObj@db_name,
-                 username=dbObj@db_user,
-                 host=dbObj@db_host,
-                 port=dbObj@db_port)
+  }
+)
 
-          })
-
-setMethod("summary", "EXAConnection",
-          def = function(object, ...) {
-            NextMethod(generic = "summary", object,...)
-          }
+setMethod(
+  "summary", "EXAConnection",
+  definition = function(object, ...) {
+    NextMethod(generic = "summary", object,...)
+  }
 )
 
 #' An object that is associated with a result set in an EXASOL Database.
@@ -232,23 +243,24 @@ EXAResult <- setRefClass("EXAResult",
     )
 )
 
-setMethod("dbGetInfo","EXAResult",
-          def= function(dbObj) {
+setMethod(
+  "dbGetInfo","EXAResult",
+  definition = function(dbObj) {
+    list(
+      statement = dbObj$statement,
+      row.count = dbObj$rows_fetched,
+      rows.affected = dbObj$rows_affected,
+      has.completed = dbObj$is_complete,
+      is.select = dbObj$with_output
+    )
+  }
+)
 
-
-            list(statement = dbObj$statement,
-                 row.count = dbObj$rows_fetched,
-                 rows.affected = dbObj$rows_affected,
-                 has.completed = dbObj$is_complete,
-                 is.select = dbObj$with_output
-            )
-          }
-        )
-
-setMethod("summary", "EXAResult",
-          def = function(object, ...) {
-            NextMethod(generic = "summary", object,...)
-          }
+setMethod(
+  "summary", "EXAResult",
+  definition = function(object, ...) {
+    NextMethod(generic = "summary", object,...)
+  }
 )
 
 # Instantiates an EXADriver object.
@@ -256,8 +268,8 @@ setMethod("summary", "EXAResult",
 #
 # @return An EXADriver object.
 exa <- function() {
-    print("EXASOL driver loaded")
-    new("EXADriver")
+  print("EXASOL driver loaded")
+  new("EXADriver")
 }
 
 exasol <- function() {
@@ -270,10 +282,12 @@ exasol <- function() {
 #' @name dbIsValid
 #' @param conn An object that inherits EXAObject.
 #' @return A logical indicating if the connection still works.
-setMethod("dbIsValid", signature("EXAObject"),
-          def=function(dbObj) {
-            return(TRUE) # TODO
-          })
+setMethod(
+  "dbIsValid", signature("EXAObject"),
+  definition = function(dbObj) {
+    return(TRUE) # TODO
+  }
+)
 
 
 #' Determine the EXASOL data type of an object.
@@ -303,12 +317,11 @@ setMethod("EXADataType", "list", function(x) {
 })
 setMethod("EXADataType", "raw",  varchar)
 
-
-
-setMethod("dbListConnections", "EXADriver",
-          def = function(drv, ...) dbGetInfo(drv, "connectionIds")[[1]]
+setMethod(
+  "dbListConnections", "EXADriver",
+  definition =  function(drv, ...)
+    dbGetInfo(drv, "connectionIds")[[1]]
 )
-
 
 # Connection -------------------------------------------------------------------
 
@@ -318,72 +331,87 @@ setMethod("dbListConnections", "EXADriver",
 #' @family EXAConnection related objects
 #'
 #' @name dbConnect
-#' @param drv An EXAdriver object, a character string "exasol" or "exa", or an existing
-#'        EXAConnection object (for connection cloning).
-#' @param exahost DNS or IP and port of the database cluster, e.g. '10.0.2.15..20:8563'
+#' @param drv An EXAdriver object, a character string "exasol" or "exa", or an
+#'   existing EXAConnection object (for connection cloning).
+#' @param exahost DNS or IP (or range of IPs) and port of the database cluster,
+#'   e.g. '10.0.2.15..20:8563'
 #' @param uid DB username, e.g. 'sys'
 #' @param pwd DB user password, e.g. 'exasol'
-#' @param schema Schema in EXASOL db which is opened directly after the connection.
-#' @param exalogfile the EXASOL odbc driver log file. By standard a tempfile is created. Log data may be
-#'        accessed with 'EXAlog(EXAConnection)'.
-#' @param logmode EXASOL ODBC driver log mode. By default, no log is written ('NONE'). Other options are
-#'          'DEFAULT'           (most important function calls & SQL commands),
-#'          'VERBOSE'           (also additional data about internal steps & result data),
-#'          'ON ERROR ONLY'     (only errors are logged),
-#'          'DEBUGCOMM'         (extended logs, similar to verbose but w/o data & parameter tables).
+#' @param schema Schema in EXASOL db which is opened directly after the
+#'   connection.
+#' @param exalogfile the EXASOL odbc driver log file. By standard a tempfile is
+#'   created. Log data may be accessed with 'EXAlog(EXAConnection)'.
+#' @param logmode EXASOL ODBC driver log mode. Allowed options are:
+#' \describe{
+#'  \item{NONE}{no log is written (default)}
+#'  \item{DEFAULT}{most important function calls & SQL commands}
+#'  \item{VERBOSE}{also additional data about internal steps & result data}
+#'  \item{ON ERROR ONLY}{only errors are logged}
+#'  \item{DEBUGCOMM}{extended logs, similar to verbose but w/o data & parameter
+#'  tables}
+#' }
 #' @param encryption ODBC encryption. By default off. Switch on with 'Y'.
-#' @param autocommit By default 'Y'. If Y' each SQL statement is committed. 'N' means that
-#'     no commits are executed automatically. The transaction will be rolled back on disconnect, which
-#'     causes the loss of all data written during the transaction.
-#' @param querytimeout Time EXASOL DB computes a query before it is aborted. The default '0' (zero) means
-#'      no timeout, i.e. runs until finished.
-#' @param connectionlcctype Sets the connection locale LC CTYPE. The default is the setting of the client's current R session.
-#' @param connectionlcnumeric Sets the connection locale LC NUMERIC. The default is the setting of the client's current R session.
+#' @param autocommit By default 'Y'. If Y' each SQL statement is committed. 'N'
+#'   means that no commits are executed automatically. The transaction will be
+#'   rolled back on disconnect, which causes the loss of all data written during
+#'   the transaction.
+#' @param querytimeout Time EXASOL DB computes a query before it is aborted.
+#'   The default \code{'0'} (zero) means no timeout, i.e. runs until finished.
+#' @param connectionlcctype Sets the connection locale \code{LC CTYPE}.
+#'   The default is the setting of the client's current R session.
+#' @param connectionlcnumeric Sets the connection locale \code{LC NUMERIC}.
+#'   The default is the setting of the client's current R session.
 #' @param encoding The connection encoding. TODO.
-#' @param ... Additional parameters to the connection string. If a connection is cloned, these override the old connection settings.
-#' @param dsn A preconfigured ODBC Data Source Name. Parameter being evaluated with priority to EXAHOST.
-#' @param connection_string alternatively to everything else, a custom ODBC connection sting can be
-#'      provided. See EXASOL DB manual secion 4.2.5 for details, available at \url{https://www.exasol.com/portal}.
+#' @param ... Additional parameters to the connection string. If a connection is
+#'   cloned, these override the old connection settings.
+#' @param dsn A preconfigured ODBC Data Source Name. Parameter being evaluated
+#'   with priority to \code{EXAHOST}.
+#' @param connection_string alternatively to everything else, a custom ODBC
+#'   connection sting can be provided. See EXASOL DB manual secion 4.2.5 for
+#'   details, available at \url{https://www.exasol.com/portal}.
 #' @return A fresh EXAConnection object.
 #' @examples \dontrun{
-#' con <- dbConnect("exa",dsn="EXASolo")
-#'
-#' con <- dbConnect("exa",exahost="212.209.123.20..25:8563",uid="peter",pwd="password123",schema="sales")
+#'  con <- dbConnect("exa", dsn = "EXASolo")
+#'  con <- dbConnect("exa", exahost = "212.209.123.20..25:8563",
+#'                   uid = "peter", pwd = "password123", schema = "sales")
 #' }
-setMethod("dbConnect", "EXADriver",
-          def = function(    drv, # change defaults also below
-                             exahost="",
-                             uid="",
-                             pwd="",
-                             schema="SYS",
-                             exalogfile=tempfile(pattern="EXAODBC_",fileext = ".log"),
-                             logmode="NONE",
-                             encryption="N",
-                             autocommit="Y",
-                             querytimeout="0",
-                             connectionlcctype=Sys.getlocale(category="LC_CTYPE"),
-                             connectionlcnumeric=Sys.getlocale(category="LC_NUMERIC"),
-                             ...,
-                             dsn="",
-                             connection_string="")
-          {
-          EXANewConnection(drv = drv,
-                           exahost = exahost,
-                           uid = uid,
-                           pwd = pwd,
-                           schema = schema,
-                           exalogfile = exalogfile,
-                           logmode = logmode,
-                           encryption = encryption,
-                           autocommit = autocommit,
-                           querytimeout = querytimeout,
-                           connectionlcctype = connectionlcctype,
-                           connectionlcnumeric = connectionlcnumeric,
-                           ... = ...,
-                           dsn = dsn,
-                           connection_string = connection_string)
-            },
-          valueClass = "EXAConnection"
+setMethod(
+  "dbConnect", "EXADriver",
+  definition = function(drv, # change defaults also below
+                        exahost = "",
+                        uid = "",
+                        pwd = "",
+                        schema = "SYS",
+                        exalogfile = tempfile(pattern = "EXAODBC_", fileext = ".log"),
+                        logmode = "NONE",
+                        encryption = "N",
+                        autocommit = "Y",
+                        querytimeout = "0",
+                        connectionlcctype = Sys.getlocale(category = "LC_CTYPE"),
+                        connectionlcnumeric = Sys.getlocale(category = "LC_NUMERIC"),
+                        ...,
+                        dsn = "",
+                        connection_string = "")
+  {
+    EXANewConnection(
+      drv = drv,
+      exahost = exahost,
+      uid = uid,
+      pwd = pwd,
+      schema = schema,
+      exalogfile = exalogfile,
+      logmode = logmode,
+      encryption = encryption,
+      autocommit = autocommit,
+      querytimeout = querytimeout,
+      connectionlcctype = connectionlcctype,
+      connectionlcnumeric = connectionlcnumeric,
+      ... = ...,
+      dsn = dsn,
+      connection_string = connection_string
+    )
+  },
+  valueClass = "EXAConnection"
 )
 
 
@@ -391,18 +419,22 @@ setMethod("dbConnect", "EXADriver",
 # @family EXAConnection related objects
 #
 # @inheritParams dbConnect
-setMethod("dbConnect", "character",
-          def = function(drv, ...) EXANewConnection(drv=dbDriver(drv), ...),
-          valueClass = "EXAConnection"
+setMethod(
+  "dbConnect", "character",
+  definition = function(drv, ...)
+    EXANewConnection(drv = dbDriver(drv), ...),
+  valueClass = "EXAConnection"
 )
 
 # @family EXADriver related objects
 # @family EXAConnection related objects
 #
 # @inheritParams dbConnect
-setMethod("dbConnect", "EXAConnection",
-          def = function(drv, ...) EXACloneConnection(drv, ...),
-          valueClass = "EXAConnection"
+setMethod(
+  "dbConnect", "EXAConnection",
+  definition = function(drv, ...)
+    EXACloneConnection(drv, ...),
+  valueClass = "EXAConnection"
 )
 
 
@@ -414,12 +446,10 @@ setMethod("dbConnect", "EXAConnection",
 #' @return an updated EXAConnection
 #' @export
 dbCurrentSchema <- function(con) {
-
-    res <- sqlQuery(con, "select current_schema")
-    con@current_schema <- as.character(res[1,1])
-    message(paste("Schema: ",con@current_schema))
-    con
-
+  res <- sqlQuery(con, "select current_schema")
+  con@current_schema <- as.character(res[1,1])
+  message(paste("Schema: ", con@current_schema))
+  con
 }
 
 
@@ -430,13 +460,13 @@ EXANewConnection <- function( # change defaults also above
     uid="",
     pwd="",
     schema="SYS",
-    exalogfile=tempfile(pattern="EXAODBC_",fileext = ".log"),
+    exalogfile=tempfile(pattern = "EXAODBC_", fileext = ".log"),
     logmode="NONE",
     encryption="N",
     autocommit="Y",
     querytimeout="0",
-    connectionlcctype=Sys.getlocale(category="LC_CTYPE"),
-    connectionlcnumeric=Sys.getlocale(category="LC_NUMERIC"),
+    connectionlcctype=Sys.getlocale(category = "LC_CTYPE"),
+    connectionlcnumeric=Sys.getlocale(category = "LC_NUMERIC"),
     ...,
     dsn="",
     connection_string=""
@@ -444,7 +474,7 @@ EXANewConnection <- function( # change defaults also above
 
   exaschema <- c(schema)
 
-    if(connection_string != ""){
+    if (connection_string != ""){
         con_str <- connection_string
     }
     else {
@@ -492,8 +522,8 @@ EXANewConnection <- function( # change defaults also above
     exa_metadata <- odbcGetInfo(con)
 
     new("EXAConnection",init_connection_string = con_str,
-        current_schema=exaschema,
-        autocom_default=ifelse(autocommit=="Y",TRUE,FALSE),
+        current_schema = exaschema,
+        autocom_default = ifelse(autocommit == "Y",TRUE,FALSE),
         db_host = strsplit(exa_metadata["Server_Name"],":")[[1]][1],
         db_port = as.numeric(strsplit(exa_metadata["Server_Name"],":")[[1]][2]),
         db_user = substring(
@@ -502,7 +532,7 @@ EXANewConnection <- function( # change defaults also above
             5,
             nchar(
               regmatches(attributes(con)$connection.string, gregexpr("UID=[\\w]+?;", attributes(con)$connection.string,perl=TRUE))[[1]]
-            )-1
+            ) - 1
           ),
         db_name = exa_metadata["Data_Source_name"],
         db_prod_name = exa_metadata["DBMS_Name"],
@@ -527,39 +557,43 @@ EXACloneConnection <- function(drv, autocommit, ...) { # todo: parameters
     names(d) <- toupper(names(d))
     con_str <- drv@init_connection_string
     s <- strsplit(con_str, ";")
-    s <- sapply(s, strsplit,"=")
+    s <- sapply(s, strsplit, "=")
     s <- lapply(s, function(x) toupper(x))
 
     con_str <- ""
 
-    while (length(s)>0) { # as long as there is at least one parameter in S
-        if(is.null(d[[s[[1]][1]]])) {          # if the first parameter of s (S is the conn_str) is not in d (the dots parameters)
-            con_str <- paste0(con_str,";",s[[1]][1],"=",s[[1]][2])      # take the s parameter
-            s[1] <- NULL # delete the first parameter from S
+    while (length(s) > 0) {
+      # as long as there is at least one parameter in S
+      if (is.null(d[[s[[1]][1]]])) {
+        # if the first parameter of s (S is the conn_str) is not in d (the dots
+        # parameters)
+        con_str <- paste0(con_str, ";", s[[1]][1],"=", s[[1]][2]) # take the s parameter
+        s[1] <- NULL # delete the first parameter from S
+      } else {
+        # else take the value out of d, delete the parameter from d, then
+        # delete the first S parameter
+        con_str <- paste0(con_str, ";", s[[1]][1], "=", d[[s[[1]][1]]])
+        d[[s[[1]][1]]] <- NULL
+        s[1] <- NULL
+      }
+    } # add the remaining dots parameters
 
-        } else {                                # else take the value out of d, delete the parameter from d, then delete the first S parameter
-            con_str <- paste0(con_str,";",s[[1]][1],"=",d[[s[[1]][1]]])
-            d[[s[[1]][1]]] <- NULL
-            s[1] <- NULL
-        }
-    }                           # add the remaining dots parameters
-    while (ncol(d)>0) {
-        con_str <- paste0(con_str,";", names(d)[1],"=",d[[1]])
-        d[1] <- NULL
+    while (ncol(d) > 0) {
+      con_str <- paste0(con_str, ";", names(d)[1], "=", d[[1]])
+      d[1] <- NULL
     }
-
 
     con_str <- substr(con_str,2,nchar(con_str)) # remove the initial semicolon
 
     con <- odbcDriverConnect(con_str)
-    if(con == -1) {
-        stop(paste("EXACloneConnection error: failed to initialise connection.\nConnection String:",con_str))
+    if (con == -1) {
+        stop(paste("EXACloneConnection error: failed to initialise connection.\nConnection String:", con_str))
     }
     exa_metadata <- odbcGetInfo(con)
     new("EXAConnection",
         init_connection_string = con_str,
-        current_schema=drv@current_schema,
-        autocom_default=ifelse(!missing(autocommit),ifelse(autocommit=="Y",TRUE,FALSE),drv@autocom_default),
+        current_schema = drv@current_schema,
+        autocom_default = ifelse(!missing(autocommit),ifelse(autocommit == "Y",TRUE,FALSE),drv@autocom_default),
         db_host = strsplit(exa_metadata["Server_Name"],":")[[1]][1],
         db_port = as.numeric(strsplit(exa_metadata["Server_Name"],":")[[1]][2]),
         db_user = substring(
@@ -607,16 +641,23 @@ setMethod("dbCommit", signature("EXAConnection"),
 #' @param conn An EXAConnection object
 #' @return a logical indicating success.
 setMethod("dbRollback", signature("EXAConnection"),
-          function(conn) {
-              switch(as.character(odbcEndTran(conn,commit=FALSE)),
-                     "-1" = {stop(paste0("Rollback failed:\n",odbcGetErrMsg(conn)));return(FALSE)},
-                     "0" = {message("Transaction rolled back.");return(TRUE)},
-                     {    print("Rollback failed.")
-                         stop(odbcGetErrMsg(conn))
-                         return(FALSE)
-                     }
-              )
-          }
+  function(conn) {
+    switch(as.character(odbcEndTran(conn,commit = FALSE)),
+      "-1" = {
+        stop(paste0("Rollback failed:\n", odbcGetErrMsg(conn)))
+        return(FALSE)
+      },
+      "0" = {
+        message("Transaction rolled back.")
+        return(TRUE)
+      },
+      {
+        print("Rollback failed.")
+        stop(odbcGetErrMsg(conn))
+        return(FALSE) # this line gets never executed
+      }
+    )
+  }
 )
 
 
@@ -629,11 +670,11 @@ setMethod("dbRollback", signature("EXAConnection"),
 #' @param conn An EXAConnection object
 #' @return a logical indicating success.
 setMethod("dbBegin", signature("EXAConnection"),
-          function(conn) {
-            odbcSetAutoCommit(conn, autoCommit = FALSE)
-            #message("Transaction started.")
-              return(TRUE)
-          }
+  function(conn) {
+    odbcSetAutoCommit(conn, autoCommit = FALSE)
+    #message("Transaction started.")
+    return(TRUE)
+  }
 )
 
 
@@ -649,17 +690,17 @@ setMethod("dbBegin", signature("EXAConnection"),
 #' @return a logical indicating success.
 #' @export
 setGeneric("dbEnd",
-           def = function(conn,...) standardGeneric("dbEnd"),
-           valueClass="logical"
+   def = function(conn,...) standardGeneric("dbEnd"),
+   valueClass = "logical"
 )
 
 setMethod("dbEnd", signature("EXAConnection"),
-          function(conn,commit=TRUE) {
-            ifelse(commit, dbCommit(conn), dbRollback(conn))
-            odbcSetAutoCommit(conn, autoCommit = conn@autocom_default)
-           # message("Transaction completed.")
-            return(TRUE)
-          }
+  function(conn,commit = TRUE) {
+    ifelse(commit, dbCommit(conn), dbRollback(conn))
+    odbcSetAutoCommit(conn, autoCommit = conn@autocom_default)
+    # message("Transaction completed.")
+    return(TRUE)
+  }
 )
 
 #' Disconnects the connection.
@@ -667,16 +708,16 @@ setMethod("dbEnd", signature("EXAConnection"),
 #' @name dbDisconnect
 #' @param conn An EXAConnection object.
 #' @return A logical indicating success.
-setMethod("dbDisconnect",signature("EXAConnection"),
-          def=function(conn) {
-            odbcClose(conn)
-          })
+setMethod(
+  "dbDisconnect",signature("EXAConnection"),
+  definition = function(conn) {
+    odbcClose(conn)
+  }
+)
 
 
 
-# Querying & Result -------------------------------------------------------------------------------
-#
-
+# Querying & Result ------------------------------------------------------------
 
 #' Sends an SQL statment to an EXASOL DB, prepares for result fetching.
 #' @family EXAConnection related objects
@@ -690,23 +731,24 @@ setMethod("dbDisconnect",signature("EXAConnection"),
 #' @param default_fetch_req numeric, default 100 :
 #' @param ... additional parameters to be passed on to dbConnect (used to clone the connection to one without autocommit)
 #' @return EXAResult object which can be used for fetching rows. It also contains metadata.
-setMethod("dbSendQuery",
-          signature(conn = "EXAConnection", statement = "character"),
-          def = function(
-            conn,
-            statement,
-            schema="",
-            profile=TRUE,
-            default_fetch_rec=100,
-            ...
-          ) EXAExecStatement(
-              con = conn,
-              stmt = statement,
-              schema = schema,
-              profile = profile,
-              default_fetch_rec = default_fetch_rec,
-              ... = ...),
-          valueClass = "EXAResult"
+setMethod(
+  "dbSendQuery",
+  signature(conn = "EXAConnection", statement = "character"),
+  definition = function(
+    conn,
+    statement,
+    schema="",
+    profile=TRUE,
+    default_fetch_rec=100,
+    ...
+  ) EXAExecStatement(
+      con = conn,
+      stmt = statement,
+      schema = schema,
+      profile = profile,
+      default_fetch_rec = default_fetch_rec,
+      ... = ...),
+        valueClass = "EXAResult"
 )
 
 # Tries to extrapolate the schema name from the statement given. It looks for strings framed by 'from' and a dot (not case sensitive).
@@ -715,28 +757,30 @@ setMethod("dbSendQuery",
 # @param alt Alternative that is returned if no schema is found. Default: 'R_temp'
 # @return a character vector containing all schemas found, or alt
 grep_schema <- function(stmt) {
-    grep_a <- gregexpr("from\\s[\\w]+?\\.",stmt, perl=TRUE,ignore.case=TRUE)
-    if(length(grep_a[[1]][1])==-1) {return("")}
-    grep_b <- regmatches(stmt,grep_a)
-    schema <- substring(grep_b[[1]],6,nchar(grep_b[[1]])-1)
+  grep_a <- gregexpr("from\\s[\\w]+?\\.",
+                     stmt, perl = TRUE, ignore.case = TRUE)
+
+  if (length(grep_a[[1]][1]) == -1) {
+      return("")
+    }
+    grep_b <- regmatches(stmt, grep_a)
+    schema <- substring(grep_b[[1]], 6, nchar(grep_b[[1]]) - 1)
     schema
 }
 
-
-EXAExecStatement <- function(con, stmt, schema="", profile=TRUE, default_fetch_rec=100,...) {
-
+EXAExecStatement <- function(con, stmt, schema = "", profile = TRUE, default_fetch_rec = 100, ...) {
 
     stmt_cmd <- toupper(regmatches(stmt,gregexpr("^\\w+",stmt,perl=TRUE))[[1]])
 
     qtime <- Sys.time()
-    err <- vector(mode="character")
+    err <- vector(mode = "character")
 
-    if(profile) {
+    if (profile) {
       err <- append(err,sqlQuery(con, "alter session set profile='ON'"))
     }
 
     dbBegin(con)
-    on.exit(dbEnd(con,commit=FALSE))
+    on.exit(dbEnd(con,commit = FALSE))
 
     if (stmt_cmd == "SELECT") {
 
@@ -745,19 +789,19 @@ EXAExecStatement <- function(con, stmt, schema="", profile=TRUE, default_fetch_r
     # con <- dbConnect(con, autocommit="N",...) # clone the connection with autocommit=off
 
 
-    if(schema=="") { # try to grep schema from stmt
+    if (schema == "") { # try to grep schema from stmt
         s <- grep_schema(stmt)
-        if(length(s)>1) {
+        if (length(s) > 1) {
             warning("Multiple schemas found in statement: ",s,"Using ",s[length(s)])
 
-        } else if (length(s)<1) {
+        } else if (length(s) < 1) {
            warning(paste("No schema defined. Using connection schema: ",con@current_schema))
           schema <- con@current_schema
         } else {
         schema <- s[1]
         }
     }
-    if (schema=="") { # if nothing helps use temp_schema
+    if (schema == "") { # if nothing helps use temp_schema
         schema <- tbl_name
         temp_schema <- TRUE
         err <- append(err, paste("Using temporary schema:", schema))
@@ -865,9 +909,10 @@ EXAExecStatement <- function(con, stmt, schema="", profile=TRUE, default_fetch_r
 #' @param res An EXAResult object.
 #' @param n An int declaring the size of the subset to fetch. If missing, the whole subset is fetched.
 #' @param ... further arguments to be passed on to exa.readData.
-setMethod("fetch",signature(res="EXAResult",
-                            n="numeric"),
-          def=function(res,n,...) EXAFetch(res,n,...)
+setMethod(
+  "fetch", signature(res = "EXAResult", n = "numeric"),
+  definition = function(res,n,...)
+    EXAFetch(res,n,...)
 )
 
 # @family EXAResult related objects
@@ -875,14 +920,15 @@ setMethod("fetch",signature(res="EXAResult",
 #
 # @inheritParams fetch
 # @export
-setMethod("fetch",signature(res="EXAResult",
-                            n="missing"),
-          def=function(res,...) EXAFetch(res,...)
+setMethod(
+  "fetch",signature(res = "EXAResult", n = "missing"),
+  definition = function(res,...)
+    EXAFetch(res,...)
 )
 
 
 
-EXAFetch <- function(res,n=res$default_fetch_rec,...) {
+EXAFetch <- function(res, n = res$default_fetch_rec, ...) {
 
   if (res$with_output & !res$is_complete) {
 
@@ -912,8 +958,10 @@ EXAFetch <- function(res,n=res$default_fetch_rec,...) {
 #' @param ... Further arguments to passed to res$close(). This may be 'commit=TRUE' (not advisable).
 #' @return A logical indicating success.
 #' @export
-setMethod("dbClearResult", signature(res="EXAResult"),
-          def=function(res,...) EXAClearResult(res,...)
+setMethod(
+  "dbClearResult", signature(res = "EXAResult"),
+  definition = function(res,...)
+    EXAClearResult(res,...)
 )
 
 EXAClearResult <- function(res,...) { # close is in row 203
@@ -953,14 +1001,15 @@ EXAClearResult <- function(res,...) { # close is in row 203
 #' @param statement An SQL query statement to be executed in an EXASOL DB.
 #' @param ... further arguments to be passed on to exa.readData.
 #' @return The result exa.readData, by default a data.frame containing the result set.
-setMethod("dbGetQuery", signature("EXAConnection","character"),
-          def=function(conn, statement,...) {
-             if (toupper(regmatches(statement,gregexpr("^\\w+",statement,perl=TRUE))[[1]]) == "SELECT") {
-               return(exa.readData(conn,statement,...))
-             } else {
-               sqlQuery(conn, statement, errors = TRUE)
-             }
-          }
+setMethod(
+  "dbGetQuery", signature("EXAConnection","character"),
+  definition = function(conn, statement,...) {
+    if (toupper(regmatches(statement,gregexpr("^\\w+",statement,perl = TRUE))[[1]]) == "SELECT") {
+      return(exa.readData(conn,statement,...))
+    } else {
+      sqlQuery(conn, statement, errors = TRUE)
+    }
+  }
 )
 
 #' Reads a DB table.
@@ -976,17 +1025,18 @@ setMethod("dbGetQuery", signature("EXAConnection","character"),
 #'        i.e. subsequent runs of the same statement may deliver differing result sets.
 #' @param ... further arguements to be passed on to exa.readData.
 #' @return The result exa.readData, by default a data.frame containing the result set.
-setMethod("dbReadTable", signature("EXAConnection","character"),
-          def=function(conn, name,order_col=NA,limit=NA,...) {
-              statement <- paste("select * from",name)
-              if(!is.na(order_col)) {
-                  statement <- paste(statement, "order by (",order_col,")")
-              }
-              if(!is.na(limit)) {
-                  statement <- paste(statement,"limit",limit)
-              }
-              exa.readData(conn,statement,...)
-          }
+setMethod(
+  "dbReadTable", signature("EXAConnection","character"),
+  definition = function(conn, name, order_col = NA, limit = NA, ...) {
+    statement <- paste("select * from", name)
+    if (!is.na(order_col)) {
+      statement <- paste(statement, "order by (", order_col, ")")
+    }
+    if (!is.na(limit)) {
+      statement <- paste(statement, "limit", limit)
+    }
+    exa.readData(conn, statement, ...)
+  }
 )
 
 #' Changes an identifier into uppercase, except for it is quoted.
@@ -996,11 +1046,15 @@ setMethod("dbReadTable", signature("EXAConnection","character"),
 #' @return A character vector containing one or many processed identifiers.
 #' @export
 EXAupper <- function(identifier) {
-    for(i in 1:length(identifier))
-    if(substr(identifier[i],1,1) == "\"" & substr(identifier[i],nchar(identifier[i]),nchar(identifier[i])) == "\"")
-        identifier[i] <- identifier[i] # quoted
-    else identifier[i] <- toupper(identifier[i]) # not quoted
-    identifier
+  for (i in 1:length(identifier)) {
+    if (substr(identifier[i], 1, 1) == "\"" &
+        substr(identifier[i], nchar(identifier[i]), nchar(identifier[i])) == "\"") {
+      identifier[i] <- identifier[i] # quoted
+    } else {
+      identifier[i] <- toupper(identifier[i]) # not quoted
+    }
+  }
+  identifier
 }
 
 #' Checks if a table exists in an EXASOL DB.
@@ -1011,18 +1065,27 @@ EXAupper <- function(identifier) {
 #' @param conn An EXAConnection object.
 #' @param name A fully qualified table name in the form schema.table.
 #' @return A logical indicating if the table exists.
-setMethod("dbExistsTable", signature("EXAConnection", "character"),
-          def=function(conn,name) {
-              n <- strsplit(name,".",fixed=TRUE)[[1]]
-              if(length(n) != 2) stop("Error: Schema/table identifier ambiguous. Use SCHEMA.TABLE.")
-              n <- EXAupper(n)
-              qstr <- paste0("select * from exa_all_tables where table_schema = '",n[1],"' and table_name='",n[2],"'")
-              res <- sqlQuery(con, qstr)
-              if(nrow(res) == 0) {return(FALSE)}
-              else if(nrow(res) == 1) {return(TRUE)}
-              else if (nrow(res) > 1) {warning("Identifier ambiguous. Multiple matches.")}
-              else {stop("Unknown error.")}
-          }
+setMethod(
+  "dbExistsTable", signature("EXAConnection", "character"),
+  definition = function(conn,name) {
+      n <- strsplit(name, ".", fixed = TRUE)[[1]]
+      if (length(n) != 2) {
+        stop("Error: Schema/table identifier ambiguous. Use SCHEMA.TABLE.")
+      }
+      n <- EXAupper(n)
+      qstr <- paste0("select * from exa_all_tables where table_schema = '",
+                     n[1], "' and table_name='", n[2], "'")
+      res <- sqlQuery(conn, qstr)
+      if (nrow(res) == 0) {
+        return(FALSE)
+      } else if (nrow(res) == 1) {
+        return(TRUE)
+      } else if (nrow(res) > 1) {
+        warning("Identifier ambiguous. Multiple matches.")
+      } else {
+        stop("Unknown error.")
+      }
+  }
 )
 
 #' Writes a data.frame into a table. If the table does not exist, it is created.
@@ -1044,16 +1107,18 @@ setMethod("dbExistsTable", signature("EXAConnection", "character"),
 #'      Default is NA. Useful to change if the DB table contains more columns than the data.frame, or if the column order differs.
 #' @param ... additional parameters to be passed on to exa.writeData.
 #' @return a logical indicating success.
-setMethod("dbWriteTable", signature("EXAConnection","character","data.frame"),
-          def = function(conn, name, value, ...) {
-              EXAWriteTable(conn, name, value,...)
-          })
+setMethod(
+  "dbWriteTable", signature("EXAConnection", "character", "data.frame"),
+  definition = function(conn, name, value, ...) {
+    EXAWriteTable(conn, name, value,...)
+  }
+)
 
 EXAWriteTable <- function(con, tbl_name, data, schema, field_types, overwrite=FALSE, writeCols=NA, ...) {
 
-    if(missing(schema)) { # getting the schema if missing
+    if (missing(schema)) { # getting the schema if missing
         n <- strsplit(tbl_name,".",fixed=TRUE)[[1]]
-        if(length(n) != 2) stop("Error: Schema/table identifier ambiguous. Use SCHEMA.TABLE or provide schema separately.")
+        if (length(n) != 2) stop("Error: Schema/table identifier ambiguous. Use SCHEMA.TABLE or provide schema separately.")
         n <- EXAupper(n)
         schema <- n[1]
         tbl_name <- n[2]
@@ -1116,7 +1181,7 @@ EXAWriteTable <- function(con, tbl_name, data, schema, field_types, overwrite=FA
         )
         # setting up the table definition string
         ddl_str <- paste0("create table ",schema,".",tbl_name, "( ")
-        for(i in 1:length(col_names)) {
+        for (i in 1:length(col_names)) {
             ddl_str <- paste0(ddl_str, col_names[i]," ", field_types[i], ", ")
         }
         ddl_str <- substr(ddl_str,1,nchar(ddl_str)-2) # remove the final comma & space
@@ -1135,9 +1200,9 @@ EXAWriteTable <- function(con, tbl_name, data, schema, field_types, overwrite=FA
        else if (writeCols[1] == TRUE) {writeCols <- names(data)} # if TRUE, use the data.frame colnames, else use whatever is in it
 
     message("Writing into table...")
-    if(
+    if (
         exa.writeData(con, data, paste0(schema,".",tbl_name),
-                  tableColumns=writeCols,...
+                  tableColumns = writeCols,...
              )
     ) {
         on.exit(dbEnd(con))
@@ -1159,17 +1224,20 @@ EXAWriteTable <- function(con, tbl_name, data, schema, field_types, overwrite=FA
 #' @param cascade A logical indicating whether also foreign key constraints referencing the table to
 #'      be deleted shall be removed. Default is FALSE.
 #' @return A logicl indicating success.
-setMethod("dbRemoveTable",signature("EXAConnection"),
-          def = function(conn, name, schema, cascade=FALSE) {EXARemoveTable(con, name, schema, cascade)}
+setMethod(
+  "dbRemoveTable", signature("EXAConnection"),
+  definition = function(conn, name, schema, cascade = FALSE) {
+    EXARemoveTable(conn, name, schema, cascade)
+  }
 )
 
 
 
 EXARemoveTable <- function(con, tbl_name, schema, cascade=FALSE) {
 
-    if(missing(schema)) { # getting the schema if missing
+    if (missing(schema)) { # getting the schema if missing
         n <- strsplit(tbl_name,".",fixed=TRUE)[[1]]
-        if(length(n) != 2) stop("Error: Schema/table identifier ambiguous. Use SCHEMA.TABLE or provide schema separately.")
+        if (length(n) != 2) stop("Error: Schema/table identifier ambiguous. Use SCHEMA.TABLE or provide schema separately.")
         n <- EXAupper(n)
         schema <- n[1]
         tbl_name <- n[2]
@@ -1183,7 +1251,7 @@ EXARemoveTable <- function(con, tbl_name, schema, cascade=FALSE) {
     on.exit(dbEnd(con,FALSE))
 
     ddl_str <- paste0("DROP TABLE ",schema,".",tbl_name)
-    if(cascade) ddl_str <- paste(ddl_str,"CASCADE CONSTRAINTS")
+    if (cascade) ddl_str <- paste(ddl_str,"CASCADE CONSTRAINTS")
     switch(as.character(sqlQuery(con,ddl_str,errors=FALSE)),
            # "-1" = {stop(paste0("Couldn't remove table: ",schema,".",tbl_name,":\n",odbcGetErrMsg(con)))},
            "-2" = {
@@ -1197,8 +1265,6 @@ EXARemoveTable <- function(con, tbl_name, schema, cascade=FALSE) {
 
 }
 
-
-
 #' Applies an R function to a result set.
 #' The R code is transfered and deployed in an EXASOL database and executed massively parallel.
 #'
@@ -1208,16 +1274,20 @@ EXARemoveTable <- function(con, tbl_name, schema, cascade=FALSE) {
 #'      stored in a data.frame. Default: FALSE.
 #' @return An EXAResult object relating to the result set in the EXASOL database, or if SIMPLIFY=TRUE
 #'      a data.frame containing the result set.
-setGeneric("dbApply",
-           def = function(res,fun,...) standardGeneric("dbApply"),
-           valueClass=c("DBIResult","data.frame")
+setGeneric(
+  "dbApply",
+  def = function(res, fun,...)
+    standardGeneric("dbApply"),
+  valueClass = c("DBIResult","data.frame")
 )
 
-setMethod("dbApply",signature("EXAResult"),
-          def = function(res,fun,simplify=FALSE,...) {EXAApply(res,fun,simplify,...)}
+setMethod(
+  "dbApply", signature("EXAResult"),
+  definition = function(res, fun, simplify = FALSE, ...)
+    EXAApply(res, fun, simplify,...)
 )
 
-EXAApply <- function(res, fun,simplify,...) {
+EXAApply <- function(res, fun, simplify, ...) {
 
 # TODO
 
