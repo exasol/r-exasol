@@ -4,15 +4,19 @@
 \alias{exa.readData}
 \title{Execute a SQL query on an EXASolution database and read results fast.}
 \usage{
-exa.readData(channel, query, reader = function(x, ...) {     read.csv(x, ...,
-  stringsAsFactors = FALSE, blank.lines.skip = FALSE, numerals = "no.loss") },
-  server = NA, ...)
+exa.readData(channel, query, encoding = "UTF-8", reader = function(x, ...,
+  enc = encoding) {     read.csv(x, ..., stringsAsFactors = FALSE, encoding =
+  enc, blank.lines.skip = FALSE, numerals = "no.loss") }, server = NA, ...)
 }
 \arguments{
 \item{channel}{The RODBC connection channel, typically created via
 odbcConnect.}
 
 \item{query}{A string with the SQL query to be executed on EXASolution.}
+
+\item{encoding}{A string containing the DB encoding. By default "UTF-8".
+There should be no need to change this as the DB will convert the result set before
+sending if necessary.}
 
 \item{reader}{This is a function reading and processing the results coming
   from the database. The read.csv function is used per default.
