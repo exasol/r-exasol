@@ -15,6 +15,10 @@
 #' @param channel The RODBC connection channel, typically created via
 #'   odbcConnect.
 #' @param query A string with the SQL query to be executed on EXASolution.
+#' @param encoding A string containing the DB encoding. By default "UTF-8".
+#' There should be no need to change this as the DB will convert the result set before
+#' sending if necessary.
+#'
 #' @param reader This is a function reading and processing the results coming
 #'   from the database. The read.csv function is used per default.
 #'
@@ -41,9 +45,9 @@
 #'
 #' @example examples/readData.R
 #' @export
-exa.readData <- function(channel, query,
-                         reader = function(x,...) {
-                           read.csv(x,..., stringsAsFactors = FALSE,
+exa.readData <- function(channel, query, encoding = 'UTF-8',
+                         reader = function(x,..., enc = encoding) {
+                           read.csv(x,..., stringsAsFactors = FALSE, encoding = enc,
                                     blank.lines.skip = FALSE, numerals="no.loss")
                          },
                          server = NA,...) {
@@ -66,7 +70,7 @@ exa.readData <- function(channel, query,
   proxyHost <- .Call(C_asyncRODBCProxyHost, slot)
   proxyPort <- .Call(C_asyncRODBCProxyPort, slot)
   query <- paste("EXPORT (", query, ") INTO CSV AT 'http://",  proxyHost, ":",
-                 proxyPort, "' FILE 'executeSQL.csv' WITH COLUMN NAMES",
+                 proxyPort, "' FILE 'executeSQL.csv' ENCODING = '",encoding,"'  WITH COLUMN NAMES",
                  sep = "")
 
   on.exit(.Call(C_asyncRODBCQueryFinish, slot, 1))

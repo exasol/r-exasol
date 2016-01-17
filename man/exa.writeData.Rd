@@ -5,8 +5,12 @@
 \title{Write a data.frame into an EXASOL table fast.}
 \usage{
 exa.writeData(channel, data, tableName, tableColumns = NA,
-  writer = function(data, conn) {     write.table(data, file = conn, row.names
-  = FALSE, col.names = FALSE, na = "", sep = ",", qmethod = "double") }, server)
+  encoding = tryCatch(strsplit(Sys.getlocale("LC_CTYPE"), ".", fixed =
+  TRUE)[[1]][2], error = function(e)
+  stop(paste("Cannot get system encoding.\\n                                                                             Please set manually.\\n",
+  e))), writer = function(data, conn, fileEncoding = encoding) {    
+  write.table(data, file = conn, row.names = FALSE, col.names = FALSE, na = "",
+  sep = ",", qmethod = "double", fileEncoding = fileEncoding) }, server)
 }
 \arguments{
 \item{channel}{The RODBC connection channel, typically created via odbcConnect.}
@@ -20,6 +24,10 @@ and types in the EXASolution table.}
 \item{tableColumns}{If your data frame contains only a subset of the columns you can specify these
 here. The columns and types have to be specified as a vector of strings like: \code{c("col1", "col2")}
 Please take a look at the documentation of the cols parameter in the EXASolution User Manual sec. 2.2.2 '\code{IMPORT}', for details.}
+
+\item{encoding}{A string containing the source encoding (iconv format). By default, the encoding is being
+read from /code{Sys.getlocale("LC_CTYPE")}, which might fail on some OSes. In that case, an error
+is returned, asking to set this parameter manually (see example below).}
 
 \item{writer}{This parameter is for the rare cases where you want to customize the writer receiving
 the data frame and writing the data to the communication channel.}
@@ -60,6 +68,9 @@ twogroups <- data.frame(group = rep(1:2, each = 10),
 odbcQuery(C, "CREATE SCHEMA test")
 odbcQuery(C, "CREATE TABLE test.twogroups (groupid INT, val DOUBLE)")
 exa.writeData(C, twogroups, tableName = "test.twogroups")
+
+# setting the write encoding manually (See also EXASOL User Manual, Appendix D. "Supported Encodings")
+exa.writeData(con, twogroups, "test.twogroups", encoding="1252")
 }
 }
 \author{

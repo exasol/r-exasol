@@ -19,6 +19,10 @@
 #' here. The columns and types have to be specified as a vector of strings like: \code{c("col1", "col2")}
 #' Please take a look at the documentation of the cols parameter in the EXASolution User Manual sec. 2.2.2 '\code{IMPORT}', for details.
 #'
+#' @param encoding A string containing the source encoding (iconv format). By default, the encoding is being
+#'     read from /code{Sys.getlocale("LC_CTYPE")}, which might fail on some OSes. In that case, an error
+#'     is returned, asking to set this parameter manually (see example below).
+#'
 #' @param writer This parameter is for the rare cases where you want to customize the writer receiving
 #' the data frame and writing the data to the communication channel.
 #' @param server This parameter is only relevant in rare cases where you want to customize the address
@@ -29,15 +33,21 @@
 #' @author EXASOL AG <support@@exasol.com>
 #' @example examples/writeData.R
 #' @export
-exa.writeData <- function(channel, data, tableName, tableColumns=NA,
-                          writer = function(data, conn) {
+exa.writeData <- function(channel, data, tableName, tableColumns = NA,
+                          encoding = tryCatch(strsplit(Sys.getlocale("LC_CTYPE"),".", fixed=TRUE)[[1]][2],
+                                              error = function(e) stop(paste("Cannot get system encoding.
+                                                                             Please set manually.\n",e)
+                                                                       )
+                                              ),
+                          writer = function(data, conn, fileEncoding = encoding) {
                             write.table(data,
                                         file = conn,
                                         row.names = FALSE,
                                         col.names = FALSE,
                                         na = "",
                                         sep = ",",
-                                        qmethod = "double")
+                                        qmethod = "double",
+                                        fileEncoding = fileEncoding)
                           },
                           server) {
   slot <- 0
@@ -61,7 +71,7 @@ exa.writeData <- function(channel, data, tableName, tableColumns=NA,
                  if (is.na(tableColumns)) ""
                  else {paste("(",paste(tableColumns,collapse=", "),")")},
                  " FROM CSV AT 'http://", proxyHost, ":",
-                 proxyPort, "' FILE 'importData.csv'")
+                 proxyPort, "' FILE 'importData.csv' ENCODING = '", encoding, "'")
   on.exit(.Call(C_asyncRODBCQueryFinish, slot, 1))
 
   fd <- .Call(C_asyncRODBCQueryStart, slot,

@@ -5,13 +5,15 @@
 \alias{dbReadTable}
 \title{Reads a DB table.}
 \usage{
-\S4method{dbReadTable}{EXAConnection,character}(conn, name, order_col = NA,
-  limit = NA, ...)
+\S4method{dbReadTable}{EXAConnection,character}(conn, name, schema = "",
+  order_col = NA, limit = NA, ...)
 }
 \arguments{
 \item{conn}{An EXAConnection object.}
 
 \item{name}{A fully qualified table name in the form schema.table.}
+
+\item{schema}{Alternatively and with preference to `name`, a schema can be specified separately.}
 
 \item{order_col}{A string containing columns to have the result set ordered upon, e.g. "col1 desc, col2"}
 

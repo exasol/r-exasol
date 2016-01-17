@@ -1,11 +1,16 @@
-
-## These are the DBI related classes and methods, which work as an abstraction layer over the basic exa functions
-## and provide compabibility to the DBI package. The structure may also serve as a foundation for a later implemntation
-## of a proprietary CLI interface that does not depend on RODBC.
+#' @include EXADBI-internal.R
+#' @include exa.readData.R
+#' @include exa.writeData.R
+#' @include exa.createScript.R
+#'
+## These are the DBI related classes and methods, which work as an abstraction layer over the basic
+## exa functions and provide compabibility to the DBI package. The structure may also serve as a
+## foundation for a later implemntation of a proprietary CLI interface that does not depend on RODBC.
 ##
 ## First version written in 2015 by Marcel Boldt <marcel.boldt@exasol.com>
-## as part of the EXASOL R interface & SDK package. It may be used, changed and distributed freely with no further restrictions than
-## already stipulated in the package license, with the exception that this statement must stay included and unchanged.
+## as part of the EXASOL R interface & SDK package. It may be used, changed and distributed freely
+## with no further restrictions than already stipulated in the package license, with the exception
+## that this statement must stay included and unchanged.
 
 #' @export dbDriver
 #' @export dbUnloadDriver
@@ -35,6 +40,7 @@
 #' @export dbGetRowsAffected
 #' @export dbGetRowCount
 NULL
+
 
 # Class definitions ------------------------------------------------------------
 
@@ -103,7 +109,8 @@ setMethod(
 #' @family DBI classes
 #' @family EXAConnection related objects
 #'
-#' @slot init_connection_string A string containing the ODBC connection sting used to initialise the connection.
+#' @slot init_connection_string A string containing the ODBC connection sting used to
+#'     initialise the connection.
 #' @slot current_schema A string reflecting the current schema.
 #' @slot autocom_default A logical indicating if autocommit is active.
 #' @slot db_host A string containing the hostname or IP.
@@ -123,7 +130,7 @@ setMethod(
 #' @slot encoding RODBC
 #' @slot rows_at_time RODBC
 #' @export
-setClass(
+EXAConnection <- setClass(
   "EXAConnection",
   slots = c(
     init_connection_string = "character",
@@ -185,62 +192,64 @@ setMethod(
 #' @field errors A character vector containing errors.
 #' @field default_fetch_rec An int reflecting the default fetch size.
 #' @export
-EXAResult <- setRefClass("EXAResult",
-                         fields = c(connection="EXAConnection",
-                                statement="character",
-                                rows_fetched="numeric",
-                                rows_affected="numeric",
-                                is_complete="logical",
-                                with_output="logical",
-                                profile="data.frame",
-                                columns="data.frame",
-                                temp_result_tbl="character",
-                                query_sent_time="POSIXct",
-                                errors="character",
-                                default_fetch_rec="numeric"
-                                ),
-    contains = c("DBIResult", "EXAObject"),
-    methods = list(
-        refreshMetaData = function(x) {
-            "Refreshes the object's metadata."
-            print("todo")
-        },
+EXAResult <- setRefClass(
+  "EXAResult",
+  fields = c(
+    connection = "EXAConnection",
+    statement = "character",
+    rows_fetched = "numeric",
+    rows_affected = "numeric",
+    is_complete = "logical",
+    with_output = "logical",
+    profile = "data.frame",
+    columns = "data.frame",
+    temp_result_tbl = "character",
+    query_sent_time = "POSIXct",
+    errors = "character",
+    default_fetch_rec = "numeric"
+  ),
+  contains = c("DBIResult", "EXAObject"),
+  methods = list(
+    refreshMetaData = function(x) {
+      "Refreshes the object's metadata."
+      print("todo")
+    },
 
-        addRowsFetched = function(x) {
-            "Add an int (the length of a newly fetched result set) to rows_fetched."
-            rows_fetched <<- rows_fetched + as.numeric(x)
-        },
+    addRowsFetched = function(x) {
+      "Add an int (the length of a newly fetched result set) to rows_fetched."
+      rows_fetched <<- rows_fetched + as.numeric(x)
+    },
 
-#         close = function(commit=TRUE) {                              # dbClearResult is in row 880
-#           "Frees up all resources, in particular drops the temporary table in the DB."
-#
-#             if (!dbIsValid(.self)) {
-#               warning("Connection seems exipired.\n    ...it's gone...")
-#               return(FALSE)
-#             }
-#
-#             if(odbcEndTran(connection, commit)==0) {
-#                 if(commit) message("Changes commited.")
-#             } else stop("Commit failed. Changes NOT commited. Closing aborted.")
-#           message("Closing connection...")
-#             res <- try(odbcClose(connection),silent=TRUE)
-#             if(res==1) {
-#                 message("Connection closed.")
-#                 return(TRUE)
-#             } else if(res==0) {
-#                 warning("Closing not successful.")
-#                 return(FALSE)
-#             } else {
-#                     warning(res)
-#                     return(FALSE)
-#                 }
-#         },
+    #         close = function(commit=TRUE) {                              # dbClearResult is in row 880
+    #           "Frees up all resources, in particular drops the temporary table in the DB."
+    #
+    #             if (!dbIsValid(.self)) {
+    #               warning("Connection seems exipired.\n    ...it's gone...")
+    #               return(FALSE)
+    #             }
+    #
+    #             if(odbcEndTran(connection, commit)==0) {
+    #                 if(commit) message("Changes commited.")
+    #             } else stop("Commit failed. Changes NOT commited. Closing aborted.")
+    #           message("Closing connection...")
+    #             res <- try(odbcClose(connection),silent=TRUE)
+    #             if(res==1) {
+    #                 message("Connection closed.")
+    #                 return(TRUE)
+    #             } else if(res==0) {
+    #                 warning("Closing not successful.")
+    #                 return(FALSE)
+    #             } else {
+    #                     warning(res)
+    #                     return(FALSE)
+    #                 }
+    #         },
 
-        finalize = function(...) {
-            #close()
-            message("EXAResult object disposed.")
-        }
-    )
+    finalize = function(...) {
+      #close()
+      message("EXAResult object disposed.")
+    }
+  )
 )
 
 setMethod(
@@ -298,15 +307,21 @@ setMethod(
 setMethod("dbDataType", "EXAObject", function(dbObj, obj, ...) {
   EXADataType(obj)
 })
-setGeneric("EXADataType", function(x) standardGeneric("EXADataType"))
+setGeneric("EXADataType", function(x)
+  standardGeneric("EXADataType"))
 setMethod("EXADataType", "data.frame", function(x) {
   vapply(x, EXADataType, FUN.VALUE = character(1), USE.NAMES = FALSE)
 })
-setMethod("EXADataType", "integer",  function(x) "int")
-setMethod("EXADataType", "numeric",  function(x) "double")
-setMethod("EXADataType", "logical",  function(x) "smallint")
-setMethod("EXADataType", "Date",     function(x) "date")
-setMethod("EXADataType", "POSIXct",  function(x) "timestamp")
+setMethod("EXADataType", "integer",  function(x)
+  "int")
+setMethod("EXADataType", "numeric",  function(x)
+  "double")
+setMethod("EXADataType", "logical",  function(x)
+  "smallint")
+setMethod("EXADataType", "Date",     function(x)
+  "date")
+setMethod("EXADataType", "POSIXct",  function(x)
+  "timestamp")
 varchar <- function(x) {
   paste0("varchar(", max(nchar(as.character(x))), ")")
 }
@@ -454,92 +469,100 @@ dbCurrentSchema <- function(con) {
 
 
 
-EXANewConnection <- function( # change defaults also above
-    drv,
-    exahost="",
-    uid="",
-    pwd="",
-    schema="SYS",
-    exalogfile=tempfile(pattern = "EXAODBC_", fileext = ".log"),
-    logmode="NONE",
-    encryption="N",
-    autocommit="Y",
-    querytimeout="0",
-    connectionlcctype=Sys.getlocale(category = "LC_CTYPE"),
-    connectionlcnumeric=Sys.getlocale(category = "LC_NUMERIC"),
-    ...,
-    dsn="",
-    connection_string=""
-) {
-
+EXANewConnection <- function(# change defaults also above
+  drv,
+  exahost = "",
+  uid = "",
+  pwd = "",
+  schema = "SYS",
+  exalogfile = tempfile(pattern = "EXAODBC_", fileext = ".log"),
+  logmode = "NONE",
+  encryption = "N",
+  autocommit = "Y",
+  querytimeout = "0",
+  connectionlcctype = Sys.getlocale(category = "LC_CTYPE"),
+  connectionlcnumeric = Sys.getlocale(category = "LC_NUMERIC"),
+  ...,
+  dsn = "",
+  connection_string = "") {
   exaschema <- c(schema)
 
-    if (connection_string != ""){
-        con_str <- connection_string
+  if (connection_string != "") {
+    con_str <- connection_string
+  }
+  else {
+    if (dsn != "") {
+      con_str <- paste0("DSN=",dsn)
+    }
+    else if (exahost != "" & uid != "") {
+      con_str <- paste0("DRIVER={EXASolution Driver};EXAHOST=",exahost)
     }
     else {
-        if(dsn!="") {
-            con_str <- paste0("DSN=",dsn)
-        }
-        else if (exahost!="" & uid!="") {
-            con_str <- paste0("DRIVER={EXASolution Driver};EXAHOST=",exahost)
-        }
-        else {
-            stop("Connect failed. Either DSN, host & db_user or a connection string must be given.\n
-                 Hint: No lazy declaration of onnection parameters - these have to be stated ' dsn=...'.\n
-                 See also the examples in the help ('?dbConnect').")
-        }
-        # all additional parameters...
-        if(uid!="") {
-            con_str <- paste0(con_str,";UID=",uid,";PWD=",pwd)
-        }
-        # EXASCHEMA
-        if(exaschema!="SYS") {
-            con_str <- paste0(con_str,";EXASCHEMA=",exaschema)
-        }
-        # EXALOGFILE
-        con_str <- paste0(con_str,";EXALOGFILE=",exalogfile)
+      stop(
+        "Connect failed. Either DSN, host & db_user or a connection string must be given.\n
+        Hint: No lazy declaration of onnection parameters - these have to be stated ' dsn=...'.\n
+        See also the examples in the help ('?dbConnect')."
+      )
+    }
+    # all additional parameters...
+    if (uid != "") {
+      con_str <- paste0(con_str,";UID=",uid,";PWD=",pwd)
+    }
+    # EXASCHEMA
+    if (exaschema != "SYS") {
+      con_str <- paste0(con_str,";EXASCHEMA=",exaschema)
+    }
+    # EXALOGFILE
+    con_str <- paste0(con_str,";EXALOGFILE=",exalogfile)
 
-        # LOGMODE
-        con_str <- paste0(con_str,";LOGMODE=",logmode)
+    # LOGMODE
+    con_str <- paste0(con_str,";LOGMODE=",logmode)
 
-        # locale
-        con_str <- paste0(con_str,";CONNECTIONLCCTYPE=",connectionlcctype,";CONNECTIONLCNUMERIC=",connectionlcnumeric)
+    # locale
+    con_str <-
+      paste0(
+        con_str,";CONNECTIONLCCTYPE=",connectionlcctype,";CONNECTIONLCNUMERIC=",connectionlcnumeric
+      )
 
-        # autocommit
+    # autocommit
 
-        con_str <- paste0(con_str,";autocommit=",autocommit)
+    con_str <- paste0(con_str,";autocommit=",autocommit)
 
-        # dots
-        d <- list(...)
-        while (length(d)>0) {
-            con_str <- paste0(con_str,";", names(d[1]),"=",d[1])
-            d[1] <- NULL
-        }
+    # dots
+    d <- list(...)
+    while (length(d) > 0) {
+      con_str <- paste0(con_str,";", names(d[1]),"=",d[1])
+      d[1] <- NULL
+    }
     }
 
-    con <- odbcDriverConnect(con_str)
-    exa_metadata <- odbcGetInfo(con)
+  con <- odbcDriverConnect(con_str)
+  exa_metadata <- odbcGetInfo(con)
 
-    new("EXAConnection",init_connection_string = con_str,
-        current_schema = exaschema,
-        autocom_default = ifelse(autocommit == "Y",TRUE,FALSE),
-        db_host = strsplit(exa_metadata["Server_Name"],":")[[1]][1],
-        db_port = as.numeric(strsplit(exa_metadata["Server_Name"],":")[[1]][2]),
-        db_user = substring(
-          regmatches(attributes(con)$connection.string, gregexpr("UID=[\\w]+?;", attributes(con)$connection.string,perl=TRUE)
-          )[[1]],
-            5,
-            nchar(
-              regmatches(attributes(con)$connection.string, gregexpr("UID=[\\w]+?;", attributes(con)$connection.string,perl=TRUE))[[1]]
-            ) - 1
-          ),
-        db_name = exa_metadata["Data_Source_name"],
-        db_prod_name = exa_metadata["DBMS_Name"],
-        db_version = exa_metadata["DBMS_Ver"],
-        drv_name = exa_metadata["Driver_Name"],
-        con)
-}
+  new(
+    "EXAConnection",init_connection_string = con_str,
+    current_schema = exaschema,
+    autocom_default = ifelse(autocommit == "Y",TRUE,FALSE),
+    db_host = strsplit(exa_metadata["Server_Name"],":")[[1]][1],
+    db_port = as.numeric(strsplit(exa_metadata["Server_Name"],":")[[1]][2]),
+    db_user = substring(
+      regmatches(
+        attributes(con)$connection.string, gregexpr("UID=[\\w]+?;", attributes(con)$connection.string,perl =
+                                                      TRUE)
+      )[[1]],
+      5,
+      nchar(regmatches(
+        attributes(con)$connection.string, gregexpr("UID=[\\w]+?;", attributes(con)$connection.string,perl =
+                                                      TRUE)
+      )[[1]]) - 1
+    ),
+    db_name = exa_metadata["Data_Source_name"],
+    db_prod_name = exa_metadata["DBMS_Name"],
+    db_version = exa_metadata["DBMS_Ver"],
+    drv_name = exa_metadata["Driver_Name"],
+    con
+  )
+  }
 
 # Opens a new connection with the same settings as an existing one.
 # @family EXADriver related objects
@@ -548,7 +571,9 @@ EXANewConnection <- function( # change defaults also above
 # @param drv an EXAConnection object to be dublicated.
 # @param ... additional connection string parameter that may override the old settings.
 # @return a fresh EXAConnection
-EXACloneConnection <- function(drv, autocommit, ...) { # todo: parameters
+EXACloneConnection <-
+  function(drv, autocommit, ...) {
+    # todo: parameters
 
     drv <- dbCurrentSchema(drv) # update schema metadata
 
@@ -558,7 +583,8 @@ EXACloneConnection <- function(drv, autocommit, ...) { # todo: parameters
     con_str <- drv@init_connection_string
     s <- strsplit(con_str, ";")
     s <- sapply(s, strsplit, "=")
-    s <- lapply(s, function(x) toupper(x))
+    s <- lapply(s, function(x)
+      toupper(x))
 
     con_str <- ""
 
@@ -567,12 +593,14 @@ EXACloneConnection <- function(drv, autocommit, ...) { # todo: parameters
       if (is.null(d[[s[[1]][1]]])) {
         # if the first parameter of s (S is the conn_str) is not in d (the dots
         # parameters)
-        con_str <- paste0(con_str, ";", s[[1]][1],"=", s[[1]][2]) # take the s parameter
+        con_str <-
+          paste0(con_str, ";", s[[1]][1],"=", s[[1]][2]) # take the s parameter
         s[1] <- NULL # delete the first parameter from S
       } else {
         # else take the value out of d, delete the parameter from d, then
         # delete the first S parameter
-        con_str <- paste0(con_str, ";", s[[1]][1], "=", d[[s[[1]][1]]])
+        con_str <-
+          paste0(con_str, ";", s[[1]][1], "=", d[[s[[1]][1]]])
         d[[s[[1]][1]]] <- NULL
         s[1] <- NULL
       }
@@ -583,33 +611,45 @@ EXACloneConnection <- function(drv, autocommit, ...) { # todo: parameters
       d[1] <- NULL
     }
 
-    con_str <- substr(con_str,2,nchar(con_str)) # remove the initial semicolon
+    con_str <-
+      substr(con_str,2,nchar(con_str)) # remove the initial semicolon
 
     con <- odbcDriverConnect(con_str)
     if (con == -1) {
-        stop(paste("EXACloneConnection error: failed to initialise connection.\nConnection String:", con_str))
+      stop(
+        paste(
+          "EXACloneConnection error: failed to initialise connection.\nConnection String:", con_str
+        )
+      )
     }
     exa_metadata <- odbcGetInfo(con)
-    new("EXAConnection",
-        init_connection_string = con_str,
-        current_schema = drv@current_schema,
-        autocom_default = ifelse(!missing(autocommit),ifelse(autocommit == "Y",TRUE,FALSE),drv@autocom_default),
-        db_host = strsplit(exa_metadata["Server_Name"],":")[[1]][1],
-        db_port = as.numeric(strsplit(exa_metadata["Server_Name"],":")[[1]][2]),
-        db_user = substring(
-          regmatches(attributes(con)$connection.string, gregexpr("UID=[\\w]+?;", attributes(con)$connection.string,perl=TRUE)
-          )[[1]],
-          5,
-          nchar(
-            regmatches(attributes(con)$connection.string, gregexpr("UID=[\\w]+?;", attributes(con)$connection.string,perl=TRUE))[[1]]
-          )-1
-        ),
-        db_name = exa_metadata["Data_Source_name"],
-        db_prod_name = exa_metadata["DBMS_Name"],
-        db_version = exa_metadata["DBMS_Ver"],
-        drv_name = exa_metadata["Driver_Name"],
-        con)
-}
+    new(
+      "EXAConnection",
+      init_connection_string = con_str,
+      current_schema = drv@current_schema,
+      autocom_default = ifelse(
+        !missing(autocommit),ifelse(autocommit == "Y",TRUE,FALSE),drv@autocom_default
+      ),
+      db_host = strsplit(exa_metadata["Server_Name"],":")[[1]][1],
+      db_port = as.numeric(strsplit(exa_metadata["Server_Name"],":")[[1]][2]),
+      db_user = substring(
+        regmatches(
+          attributes(con)$connection.string, gregexpr("UID=[\\w]+?;", attributes(con)$connection.string,perl =
+                                                        TRUE)
+        )[[1]],
+        5,
+        nchar(regmatches(
+          attributes(con)$connection.string, gregexpr("UID=[\\w]+?;", attributes(con)$connection.string,perl =
+                                                        TRUE)
+        )[[1]]) - 1
+      ),
+      db_name = exa_metadata["Data_Source_name"],
+      db_prod_name = exa_metadata["DBMS_Name"],
+      db_version = exa_metadata["DBMS_Ver"],
+      drv_name = exa_metadata["Driver_Name"],
+      con
+    )
+  }
 
 #' Sends a commit.
 #'
@@ -621,16 +661,19 @@ EXACloneConnection <- function(drv, autocommit, ...) { # todo: parameters
 #' @return a logical indicating success.
 setMethod("dbCommit", signature("EXAConnection"),
           function(conn) {
-              switch(as.character(odbcEndTran(conn,commit=TRUE)),
-                     "-1" = {stop(paste0("Commit failed:\n",odbcGetErrMsg(conn)));return(FALSE)},
-                     "0" = {message("Transaction committed.");return(TRUE)},
-                     {    print("Commit failed.")
-                         stop(odbcGetErrMsg(conn))
-                         return(FALSE)
-                     }
-              )
-          }
-)
+            switch(as.character(odbcEndTran(conn,commit = TRUE)),
+                   "-1" = {
+                     stop(paste0("Commit failed:\n",odbcGetErrMsg(conn)));return(FALSE)
+                   },
+                   "0" = {
+                     message("Transaction committed.");return(TRUE)
+                   },
+                   {
+                     print("Commit failed.")
+                     stop(odbcGetErrMsg(conn))
+                     return(FALSE)
+                   })
+          })
 
 #' Rolls the current DB transaction back.
 #'
@@ -641,24 +684,22 @@ setMethod("dbCommit", signature("EXAConnection"),
 #' @param conn An EXAConnection object
 #' @return a logical indicating success.
 setMethod("dbRollback", signature("EXAConnection"),
-  function(conn) {
-    switch(as.character(odbcEndTran(conn,commit = FALSE)),
-      "-1" = {
-        stop(paste0("Rollback failed:\n", odbcGetErrMsg(conn)))
-        return(FALSE)
-      },
-      "0" = {
-        message("Transaction rolled back.")
-        return(TRUE)
-      },
-      {
-        print("Rollback failed.")
-        stop(odbcGetErrMsg(conn))
-        return(FALSE) # this line gets never executed
-      }
-    )
-  }
-)
+          function(conn) {
+            switch(as.character(odbcEndTran(conn,commit = FALSE)),
+                   "-1" = {
+                     stop(paste0("Rollback failed:\n", odbcGetErrMsg(conn)))
+                     return(FALSE)
+                   },
+                   "0" = {
+                     message("Transaction rolled back.")
+                     return(TRUE)
+                   },
+                   {
+                     print("Rollback failed.")
+                     stop(odbcGetErrMsg(conn))
+                     return(FALSE) # this line gets never executed
+                   })
+          })
 
 
 #' Starts a DB transaction. In EXASOL, it disables autocommit.
@@ -670,12 +711,11 @@ setMethod("dbRollback", signature("EXAConnection"),
 #' @param conn An EXAConnection object
 #' @return a logical indicating success.
 setMethod("dbBegin", signature("EXAConnection"),
-  function(conn) {
-    odbcSetAutoCommit(conn, autoCommit = FALSE)
-    #message("Transaction started.")
-    return(TRUE)
-  }
-)
+          function(conn) {
+            odbcSetAutoCommit(conn, autoCommit = FALSE)
+            #message("Transaction started.")
+            return(TRUE)
+          })
 
 
 #' Ends a DB transaction. In EXASOL, it commits and reinstates the connection's standard autocommit mode.
@@ -689,19 +729,20 @@ setMethod("dbBegin", signature("EXAConnection"),
 #' @param commit Logical. on TRUE the transaction is commmitted, otherwise rolled back.
 #' @return a logical indicating success.
 #' @export
-setGeneric("dbEnd",
-   def = function(conn,...) standardGeneric("dbEnd"),
-   valueClass = "logical"
+setGeneric(
+  "dbEnd",
+  def = function(conn,...)
+    standardGeneric("dbEnd"),
+  valueClass = "logical"
 )
 
 setMethod("dbEnd", signature("EXAConnection"),
-  function(conn,commit = TRUE) {
-    ifelse(commit, dbCommit(conn), dbRollback(conn))
-    odbcSetAutoCommit(conn, autoCommit = conn@autocom_default)
-    # message("Transaction completed.")
-    return(TRUE)
-  }
-)
+          function(conn,commit = TRUE) {
+            ifelse(commit, dbCommit(conn), dbRollback(conn))
+            odbcSetAutoCommit(conn, autoCommit = conn@autocom_default)
+            # message("Transaction completed.")
+            return(TRUE)
+          })
 
 #' Disconnects the connection.
 #'
@@ -726,51 +767,41 @@ setMethod(
 #' @name dbSendQuery
 #' @param conn A valid EXAConnection
 #' @param statement vector mode character : an SQL statement to be executed in EXASOL db
-#' @param schema vector mode character : a focus schema. This must have write access for the result set to be temporarily stored. If the user has only read permission on the schema to be read, another schema may be entered here, and table identifiers in stmt parameter must be fully qualified (schema.table).
+#' @param schema vector mode character : a focus schema. This must have write access for the result
+#'      set to be temporarily stored. If the user has only read permission on the schema to be read,
+#'      another schema may be entered here, and table identifiers in stmt parameter must be
+#'      fully qualified (schema.table).
 #' @param profile logical, default TRUE : collect profiling information
 #' @param default_fetch_req numeric, default 100 :
-#' @param ... additional parameters to be passed on to dbConnect (used to clone the connection to one without autocommit)
+#' @param ... additional parameters to be passed on to dbConnect (used to clone the connection to
+#'      one without autocommit)
 #' @return EXAResult object which can be used for fetching rows. It also contains metadata.
 setMethod(
   "dbSendQuery",
   signature(conn = "EXAConnection", statement = "character"),
-  definition = function(
-    conn,
-    statement,
-    schema="",
-    profile=TRUE,
-    default_fetch_rec=100,
-    ...
-  ) EXAExecStatement(
+  definition = function(conn,
+                        statement,
+                        schema = "",
+                        profile = TRUE,
+                        default_fetch_rec = 100,
+                        ...)
+    EXAExecStatement(
       con = conn,
       stmt = statement,
       schema = schema,
       profile = profile,
       default_fetch_rec = default_fetch_rec,
-      ... = ...),
-        valueClass = "EXAResult"
+      ... = ...
+    ),
+  valueClass = "EXAResult"
 )
 
-# Tries to extrapolate the schema name from the statement given. It looks for strings framed by 'from' and a dot (not case sensitive).
-#
-# @param stmt The statement used
-# @param alt Alternative that is returned if no schema is found. Default: 'R_temp'
-# @return a character vector containing all schemas found, or alt
-grep_schema <- function(stmt) {
-  grep_a <- gregexpr("from\\s[\\w]+?\\.",
-                     stmt, perl = TRUE, ignore.case = TRUE)
 
-  if (length(grep_a[[1]][1]) == -1) {
-      return("")
-    }
-    grep_b <- regmatches(stmt, grep_a)
-    schema <- substring(grep_b[[1]], 6, nchar(grep_b[[1]]) - 1)
-    schema
-}
 
-EXAExecStatement <- function(con, stmt, schema = "", profile = TRUE, default_fetch_rec = 100, ...) {
-
-    stmt_cmd <- toupper(regmatches(stmt,gregexpr("^\\w+",stmt,perl=TRUE))[[1]])
+EXAExecStatement <-
+  function(con, stmt, schema = "", profile = TRUE, default_fetch_rec = 100, ...) {
+    stmt_cmd <-
+      toupper(regmatches(stmt,gregexpr("^\\w+",stmt,perl = TRUE))[[1]])
 
     qtime <- Sys.time()
     err <- vector(mode = "character")
@@ -783,50 +814,58 @@ EXAExecStatement <- function(con, stmt, schema = "", profile = TRUE, default_fet
     on.exit(dbEnd(con,commit = FALSE))
 
     if (stmt_cmd == "SELECT") {
+      temp_schema <- FALSE
+      tbl_name <-
+        paste0("TEMP_",floor(rnorm(1,1000,100) ^ 2),"_CREATED_BY_R")
+      # con <- dbConnect(con, autocommit="N",...) # clone the connection with autocommit=off
 
-    temp_schema <- FALSE
-    tbl_name <- paste0("TEMP_",floor(rnorm(1,1000,100)^2),"_CREATED_BY_R")
-    # con <- dbConnect(con, autocommit="N",...) # clone the connection with autocommit=off
+      ids <- EXAGetIdentifier(stmt, statement = TRUE)
 
-
-    if (schema == "") { # try to grep schema from stmt
-        s <- grep_schema(stmt)
-        if (length(s) > 1) {
-            warning("Multiple schemas found in statement: ",s,"Using ",s[length(s)])
-
-        } else if (length(s) < 1) {
-           warning(paste("No schema defined. Using connection schema: ",con@current_schema))
-          schema <- con@current_schema
+      if (schema == "") {
+        # try to grep schema from stmt
+        schema <- ids[[length(ids)]][1]
+        if (schema != "") {
+          message(paste("Using Schema from statement:", schema))
         } else {
-        schema <- s[1]
+          message(paste("Using connection schema: ", con@current_schema))
+          schema <- con@current_schema
         }
-    }
-    if (schema == "") { # if nothing helps use temp_schema
+      }
+      if (schema == "") {
+        # if nothing helps use temp_schema
         schema <- tbl_name
         temp_schema <- TRUE
         err <- append(err, paste("Using temporary schema:", schema))
-    }
+        message(paste("Using temporary schema:", schema))
+      }
+      schema <- processIDs(schema)
 
+      if (temp_schema)
+        err <-
+        append(err, sqlQuery(con, paste("create schema", schema)))
+      errr <-
+        try(sqlQuery(con, paste0("create table ", schema, ".", tbl_name," as (", stmt, ")"), errors = FALSE))
+      # on success this won't return anything
 
-    if (temp_schema) err <- append(err, sqlQuery(con, paste("create schema", schema)))
-    errr <- try(sqlQuery(con, paste0("create table ", schema, ".", tbl_name," as (", stmt, ")"), errors = FALSE)) # on success this won't return anything
+      # dbCommit(con)
 
-    # dbCommit(con)
-
-    if (errr == -1) {
-      warning(odbcGetErrMsg(con))
-      err <- append(err, odbcGetErrMsg(con))
-    } else {
-      on.exit(dbEnd(con, commit = TRUE)) # commit = TRUE after select in order to store indices that may have been created.
-    }
+      if (errr == -1) {
+        warning(odbcGetErrMsg(con))
+        err <- append(err, odbcGetErrMsg(con))
+      } else {
+        on.exit(dbEnd(con, commit = TRUE)) # commit after select in order to store indices that may have been created.
+      }
 
     } else {
       # if NOT SELECT ------------------
       #
 
       if (schema != "") {
-        err1 <- try(sqlQuery(con, paste("open schema", schema), errors = FALSE))
-        if (err1 == -1) { # schema cannot be opened
+        schema <- processIDs(schema)
+        err1 <-
+          try(sqlQuery(con, paste("open schema", schema), errors = FALSE))
+        if (err1 == -1) {
+          # schema cannot be opened
           warning(paste("Schema cannot be opened:", schema,"\n",err1))
           err <- append(err, odbcGetErrMsg(con))
         }
@@ -838,67 +877,74 @@ EXAExecStatement <- function(con, stmt, schema = "", profile = TRUE, default_fet
         err <- append(err, odbcGetErrMsg(con))
         stop(paste("Query failed.\n", odbcGetErrMsg(con)))
       } else {
-        on.exit(dbEnd(con,commit=TRUE))
+        on.exit(dbEnd(con,commit = TRUE))
       }
     }
 
     sqlQuery(con,"flush statistics")
-    p <- exa.readData(con, "select
-                      session_id,
-                      stmt_id,
-                      part_id,
-                      command_name,
-                      object_name,
-                      object_rows,
-                      duration,
-                      cpu,
-                      temp_db_ram_peak,
-                      hdd_read,
-                      net
-                      from exa_user_profile_last_day
-                      where session_id = current_session and stmt_id=current_statement-2
-                      order by part_id desc") # current_statement: -2 if autocommit=N, otherwise -4, -3 if dbCommit
+    p <- exa.readData(
+      con, "select
+      session_id,
+      stmt_id,
+      part_id,
+      command_name,
+      object_name,
+      object_rows,
+      duration,
+      cpu,
+      temp_db_ram_peak,
+      hdd_read,
+      net
+      from exa_user_profile_last_day
+      where session_id = current_session and stmt_id=current_statement-2
+      order by part_id desc"
+    ) # current_statement: -2 if autocommit=N, otherwise -4, -3 if dbCommit
 
     cols <- data.frame()
 
     if (stmt_cmd == "SELECT") {
-
       if (errr != -1) {
         message(p$OBJECT_ROWS[1]," rows prepared in ",sum(p$DURATION)," seconds.")
       }
 
-      cols <- exa.readData(con, paste0("select
-                                     column_ordinal_position,
-                                     column_name, column_comment,
-                                     column_type, column_maxsize,
-                                     column_is_nullable,
-                                     column_default,
-                                     column_identity,
-                                     column_owner,
-                                     column_is_distribution_key
-                                     from exa_user_columns
-                                     where column_schema = '",schema,"' and column_table = '",tbl_name,"'"))
+      cols <- exa.readData(
+        con, paste0(
+          "select
+          column_ordinal_position,
+          column_name, column_comment,
+          column_type, column_maxsize,
+          column_is_nullable,
+          column_default,
+          column_identity,
+          column_owner,
+          column_is_distribution_key
+          from exa_user_columns
+          where column_schema = '",schema,"' and column_table = '",tbl_name,"'"
+        )
+        )
 
     }
 
-    if (stmt_cmd == "SELECT") res_tbl <- paste0(schema,".",tbl_name)
-    else res_tbl <- ""
+    if (stmt_cmd == "SELECT")
+      res_tbl <- paste0(schema,".",tbl_name)
+    else
+      res_tbl <- ""
 
     EXAResult$new(
-        connection=con,
-        statement=stmt,
-        rows_fetched=0,
-        rows_affected=as.numeric(p$OBJECT_ROWS[1]),
-        is_complete=ifelse(stmt_cmd == "SELECT",FALSE,TRUE),
-        with_output=ifelse(stmt_cmd == "SELECT",TRUE,FALSE),
-        profile=p,
-        columns=cols,
-        temp_result_tbl=res_tbl,
-        query_sent_time=qtime,
-        errors=err,
-        default_fetch_rec=default_fetch_rec
+      connection = con,
+      statement = stmt,
+      rows_fetched = 0,
+      rows_affected = as.numeric(p$OBJECT_ROWS[1]),
+      is_complete = ifelse(stmt_cmd == "SELECT",FALSE,TRUE),
+      with_output = ifelse(stmt_cmd == "SELECT",TRUE,FALSE),
+      profile = p,
+      columns = cols,
+      temp_result_tbl = res_tbl,
+      query_sent_time = qtime,
+      errors = err,
+      default_fetch_rec = default_fetch_rec
     )
-}
+  }
 
 #' Fetches a subset of an result set.
 #' @family EXAResult related objects
@@ -929,13 +975,14 @@ setMethod(
 
 
 EXAFetch <- function(res, n = res$default_fetch_rec, ...) {
-
   if (res$with_output & !res$is_complete) {
-
     if (n == -1) {
-        n <- res$rows_affected
+      n <- res$rows_affected
     }
-    query <- paste("select * from",res$temp_result_tbl,"order by rownum limit",n,"offset",res$rows_fetched)
+    query <-
+      paste(
+        "select * from",res$temp_result_tbl,"order by rownum limit",n,"offset",res$rows_fetched
+      )
     df <- exa.readData(res$connection, query,...)
     res$rows_fetched <- res$addRowsFetched(nrow(df))
     if (res$rows_fetched >= res$rows_affected) {
@@ -964,31 +1011,43 @@ setMethod(
     EXAClearResult(res,...)
 )
 
-EXAClearResult <- function(res,...) { # close is in row 203
+EXAClearResult <- function(res,...) {
+  # close is in row 203
 
-    if (!res$with_output | res$temp_result_tbl == "") { # if not a SELECT stmt OR nothing to drop...
-        #res$close()
-        message("No result set to clear.")
-        return(TRUE)
-      } else { # if a SELECT stmt...
-        # 1. drop the table...
-          err <- try(sqlQuery(res$connection, paste("drop table",res$temp_result_tbl), errors=FALSE))
-          if (err == -1) {
-            stop(paste("Couldn't remove temporary table. Delete:", res$temp_result_tbl))
-            return(FALSE)
-          }
-          stbl <- strsplit(res$temp_result_tbl,".",fixed=TRUE) # 2. check if the schema had been created...
-        if (stbl[[1]][1]==stbl[[1]][2] & gregexpr("CREATED_BY_R",stbl[[1]][1])[[1]][1] > 0 ) {
-          # if the tbl_name & schemaname are equal and contain 'CREATED_BY_R'...
-          err <- try(sqlQuery(con, paste("drop schema",stbl[[1]][1]), errors=FALSE)) # ...drop schema if empty
-          if (err == -1) {
-            stop(paste("Couldn't remove temp. schema:",stbl[[1]][1],"\n",err))
-            return(FALSE)
-          }
-        }
-      res$temp_result_tbl <- ""
-      return(TRUE) # if table (and schema) has been removed return true
+  if (!res$with_output |
+      res$temp_result_tbl == "") {
+    # if not a SELECT stmt OR nothing to drop...
+    #res$close()
+    message("No result set to clear.")
+    return(TRUE)
+  } else {
+    # if a SELECT stmt...
+    # 1. drop the table...
+    err <-
+      try(sqlQuery(res$connection, paste("drop table",res$temp_result_tbl), errors =
+                     FALSE))
+    if (err == -1) {
+      stop(paste(
+        "Couldn't remove temporary table. Delete:", res$temp_result_tbl
+      ))
+      return(FALSE)
+    }
+    stbl <-
+      strsplit(res$temp_result_tbl,".",fixed = TRUE) # 2. check if the schema had been created...
+    if (stbl[[1]][1] == stbl[[1]][2] &
+        gregexpr("CREATED_BY_R",stbl[[1]][1])[[1]][1] > 0) {
+      # if the tbl_name & schemaname are equal and contain 'CREATED_BY_R'...
+      err <-
+        try(sqlQuery(con, paste("drop schema",stbl[[1]][1]), errors = FALSE))
+      # ...drop schema if empty
+      if (err == -1) {
+        stop(paste("Couldn't remove temp. schema:",stbl[[1]][1],"\n",err))
+        return(FALSE)
       }
+    }
+    res$temp_result_tbl <- ""
+    return(TRUE) # if table (and schema) has been removed return true
+  }
 
 }
 
@@ -1019,6 +1078,7 @@ setMethod(
 #' @name dbReadTable
 #' @param conn An EXAConnection object.
 #' @param name A fully qualified table name in the form schema.table.
+#' @param schema Alternatively and with preference to `name`, a schema can be specified separately.
 #' @param order_col A string containing columns to have the result set ordered upon, e.g. "col1 desc, col2"
 #' @param limit A row limit to the result set.
 #'        CAUTION: a limit without order clause is non-deterministic in EXASOL,
@@ -1027,10 +1087,20 @@ setMethod(
 #' @return The result exa.readData, by default a data.frame containing the result set.
 setMethod(
   "dbReadTable", signature("EXAConnection","character"),
-  definition = function(conn, name, order_col = NA, limit = NA, ...) {
-    statement <- paste("select * from", name)
+  definition = function(conn, name, schema = "", order_col = NA, limit = NA, ...) {
+    if (schema == "") {
+      ids <- EXAGetIdentifier(name)
+      schema <- ids[[1]][1]
+      name <- ids[[1]][2]
+    } else {
+      schema <- processIDs(schema)
+      name <- processIDs(name)
+    }
+
+    statement <- paste0("select * from ", schema, ".", name)
     if (!is.na(order_col)) {
-      statement <- paste(statement, "order by (", order_col, ")")
+      statement <-
+        paste(statement, "order by (", processIDs(order_col), ")")
     }
     if (!is.na(limit)) {
       statement <- paste(statement, "limit", limit)
@@ -1039,23 +1109,7 @@ setMethod(
   }
 )
 
-#' Changes an identifier into uppercase, except for it is quoted.
-#'
-#' @name EXAupper
-#' @param identifier A character vector containing one or many (table, schema, column,...) identifiers.
-#' @return A character vector containing one or many processed identifiers.
-#' @export
-EXAupper <- function(identifier) {
-  for (i in 1:length(identifier)) {
-    if (substr(identifier[i], 1, 1) == "\"" &
-        substr(identifier[i], nchar(identifier[i]), nchar(identifier[i])) == "\"") {
-      identifier[i] <- identifier[i] # quoted
-    } else {
-      identifier[i] <- toupper(identifier[i]) # not quoted
-    }
-  }
-  identifier
-}
+
 
 #' Checks if a table exists in an EXASOL DB.
 #' @family EXAConnection related objects
@@ -1064,27 +1118,33 @@ EXAupper <- function(identifier) {
 #' @name dbExistsTable
 #' @param conn An EXAConnection object.
 #' @param name A fully qualified table name in the form schema.table.
+#' @param schema Alternatively to `name`, a schema can be specified separately.
 #' @return A logical indicating if the table exists.
 setMethod(
   "dbExistsTable", signature("EXAConnection", "character"),
-  definition = function(conn,name) {
-      n <- strsplit(name, ".", fixed = TRUE)[[1]]
-      if (length(n) != 2) {
-        stop("Error: Schema/table identifier ambiguous. Use SCHEMA.TABLE.")
-      }
-      n <- EXAupper(n)
-      qstr <- paste0("select * from exa_all_tables where table_schema = '",
-                     n[1], "' and table_name='", n[2], "'")
-      res <- sqlQuery(conn, qstr)
-      if (nrow(res) == 0) {
-        return(FALSE)
-      } else if (nrow(res) == 1) {
-        return(TRUE)
-      } else if (nrow(res) > 1) {
-        warning("Identifier ambiguous. Multiple matches.")
-      } else {
-        stop("Unknown error.")
-      }
+  definition = function(conn, name, schema = "") {
+    if (schema == "") {
+      ids <- EXAGetIdentifier(name, quotes = "'")
+      schema <- ids[[1]][1]
+      name <- ids[[1]][2]
+    } else {
+      schema <- processIDs(schema, quotes = "'")
+      name <- processIDs(name, quotes = "'")
+    }
+
+    qstr <-
+      paste0("select * from exa_all_tables where table_schema = ",
+             schema, " and table_name=", name)
+    res <- sqlQuery(conn, qstr)
+    if (nrow(res) == 0) {
+      return(FALSE)
+    } else if (nrow(res) == 1) {
+      return(TRUE)
+    } else if (nrow(res) > 1) {
+      warning("Identifier ambiguous. Multiple matches.")
+    } else {
+      stop("Unknown error.")
+    }
   }
 )
 
@@ -1094,17 +1154,21 @@ setMethod(
 #'
 #' @name dbWriteTable
 #' @param conn An EXAConnection object.
-#' @param name A fully qualified table name (schema.table). Alternatively the schema can be given via the parameter 'schema' (see below).
+#' @param name A fully qualified table name (schema.table). Alternatively the schema can be given
+#'    via the parameter 'schema' (see below).
 #' @param value A data.frame containing data.
 #' @param schema A schema identifier.
-#' @param field_types A character vector containing the column data types, in the form of c("varchar(20)","int").
+#' @param field_types A character vector containing the column data types, in the form
+#'     of c("varchar(20)","int").
 #'        If missing, the column types of the data.frame are being converted and used.
 #' @param overwrite A logical indicating if existing data shall be overwritten. Default is 'FALSE',
 #'        i.e. new data is appended to the DB table.
 #' @param writeCols a logical or a character vector containing the cols of the DB table to be
-#'      written into, in the form of c("col1","col4","col3"). If set to TRUE, then the column names of the data.frame are used.
+#'      written into, in the form of c("col1","col4","col3"). If set to TRUE, then the column names
+#'      of the data.frame are used.
 #'      If FALSE, NA, or missing, no write columns are defined and columns are matched by column order.
-#'      Default is NA. Useful to change if the DB table contains more columns than the data.frame, or if the column order differs.
+#'      Default is NA. Useful to change if the DB table contains more columns than the data.frame, or
+#'      if the column order differs.
 #' @param ... additional parameters to be passed on to exa.writeData.
 #' @return a logical indicating success.
 setMethod(
@@ -1114,102 +1178,136 @@ setMethod(
   }
 )
 
-EXAWriteTable <- function(con, tbl_name, data, schema, field_types, overwrite=FALSE, writeCols=NA, ...) {
-
-    if (missing(schema)) { # getting the schema if missing
-        n <- strsplit(tbl_name,".",fixed=TRUE)[[1]]
-        if (length(n) != 2) stop("Error: Schema/table identifier ambiguous. Use SCHEMA.TABLE or provide schema separately.")
-        n <- EXAupper(n)
-        schema <- n[1]
-        tbl_name <- n[2]
-    }
-    else {
-        schema <- EXAupper(schema)
-        tbl_name <- EXAupper(tbl_name)
+EXAWriteTable <-
+  function(con, tbl_name, data, schema = "", field_types, overwrite = FALSE, writeCols =
+             NA, ...) {
+    if (schema == "") {
+      ids <- EXAGetIdentifier(tbl_name)
+      schema <- ids[[1]][1]
+      tbl_name <- ids[[1]][2]
+    } else {
+      schema <- processIDs(schema)
+      tbl_name <- processIDs(tbl_name)
     }
 
     dbBegin(con)
     on.exit(dbEnd(con,FALSE))
 
-    if(dbExistsTable(con,paste0(schema,".",tbl_name))) { # if the table exists
-        if(overwrite) {
-            switch(as.character(sqlQuery(con, paste0("truncate table ",schema,".",tbl_name),errors=FALSE)),
-                   "-1" = stop(paste("Error. Couldn't truncate table:",tbl_name,"\n",odbcGetErrMsg(con))),
-                   "-2" = message(paste("Table",tbl_name,"successfully truncated.")),
-                   {    print("Truncate failed.")
-                       stop(odbcGetErrMsg(con))
-                   }
-            )
+    if (dbExistsTable(con,paste0(schema,".",tbl_name))) {
+      # if the table exists
+      if (overwrite) {
+        switch(as.character(sqlQuery(
+          con, paste0("truncate table ",schema,".",tbl_name),errors = FALSE
+        )),
+        "-1" = stop(
+          paste(
+            "Error. Couldn't truncate table:",tbl_name,"\n",odbcGetErrMsg(con)
+          )
+        ),
+        "-2" = message(paste(
+          "Table",tbl_name,"successfully truncated."
+        )),
+        {
+          print("Truncate failed.")
+          stop(odbcGetErrMsg(con))
+        })
+      }
+    } else {
+      # tbl does not exist, create...
+      ## DDL - table definition
+
+      # field types
+      if (missing(field_types)) {
+        field_types <- dbDataType(con, data)
+      } else {
+        if (length(field_types != ncol(data)))
+          stop(
+            "Error creating database table: number of field
+            types provided does not match number of data columns in data.frame."
+          )
+      }
+
+      # column names
+      col_names <- names(data)
+      if (is.null(col_names)) {
+        ## todo
+        for (i in 1:ncol(data)) {
+          col_names <- append(col_names, paste0("col_",i))
         }
-    } else { # tbl does not exist, create...
-        ## DDL - table definition
+      }
 
-        # field types
-        if(missing(field_types)) {
-            field_types <- dbDataType(con, data)
-        } else {
-            if(length(field_types != ncol(data))) stop("Error creating database table: number of field
-                                                       types provided does not match number of data columns in data.frame.")
-        }
+      # create the table definition
+      # first check if the schema exists, otherwise create
+      tryCatch({
+        switch(as.character(sqlQuery(
+          con, paste("open schema",schema),errors = FALSE
+        )),
+        "-1" = warning(
+          paste("Cannot open schema",schema,". Trying to create...")
+        ),
+        "-2" = message(paste("Schema",schema, "found.")),
+        {
+          warning(odbcGetErrMsg(con))
+        })
+      },
+      warning = function(war) {
+        switch(as.character(sqlQuery(
+          con, paste("create schema",schema),errors = FALSE
+        )),
+        "-1" = stop(paste(
+          "failed. Couldn't create schema:",schema
+        )),
+        "-2" = message(paste(
+          "Schema",schema,"successfully created."
+        )),
+        {
+          print("failed.")
+          stop(odbcGetErrMsg(con))
+        })
+      })
+      # setting up the table definition string
+      ddl_str <- paste0("create table ",schema,".",tbl_name, "( ")
+      for (i in 1:length(col_names)) {
+        ddl_str <-
+          paste0(ddl_str, processIDs(col_names[i])," ", field_types[i], ", ")
+      }
+      ddl_str <-
+        substr(ddl_str,1,nchar(ddl_str) - 2) # remove the final comma & space
+      ddl_str <- paste0(ddl_str, " )")
 
-        # column names
-        col_names <- names(data)
-        if(is.null(col_names)) { ## todo
-            for(i in 1:ncol(data)) {
-                col_names <- append(col_names, paste0("col_",i))
-            }
-        }
+      switch(as.character(sqlQuery(con,ddl_str,errors = FALSE)),
+             "-1" = {
+               stop(paste0(
+                 "Couldn't create table: ",schema,".",tbl_name,":\n",odbcGetErrMsg(con)
+               ))
+             },
+             "-2" = {
+               message(paste0("Table ",schema,".",tbl_name," created:\n",ddl_str))
+             },
+             {
+               print("failed.")
+               stop(odbcGetErrMsg(con))
+             })
+      } # end of else (table creation)
 
-        # create the table definition
-        # first check if the schema exists, otherwise create
-        tryCatch(
-            {
-                switch(as.character(sqlQuery(con, paste("open schema",schema),errors=FALSE)),
-                       "-1" = warning(paste("Cannot open schema",schema,". Trying to create...")),
-                       "-2" = message(paste("Schema",schema, "found.")),
-                       {    warning(odbcGetErrMsg(con)) } )
-            },
-            warning=function(war) {
-                switch(as.character(sqlQuery(con, paste("create schema",schema),errors=FALSE)),
-                       "-1" = stop(paste("failed. Couldn't create schema:",schema)),
-                       "-2" = message(paste("successful. Schema",schema,"created.")),
-                       {    print("failed.")
-                           stop(odbcGetErrMsg(con))
-                       }
-                )
-            }
-        )
-        # setting up the table definition string
-        ddl_str <- paste0("create table ",schema,".",tbl_name, "( ")
-        for (i in 1:length(col_names)) {
-            ddl_str <- paste0(ddl_str, col_names[i]," ", field_types[i], ", ")
-        }
-        ddl_str <- substr(ddl_str,1,nchar(ddl_str)-2) # remove the final comma & space
-        ddl_str <- paste0(ddl_str, " )")
-
-        switch(as.character(sqlQuery(con,ddl_str,errors=FALSE)),
-               "-1" = {stop(paste0("Couldn't create table: ",schema,".",tbl_name,":\n",odbcGetErrMsg(con)))},
-               "-2" = {message(paste0("Table ",schema,".",tbl_name," created:\n",ddl_str))},
-               {    print("failed.")
-                   stop(odbcGetErrMsg(con))
-               }
-        )
-    } # end of else (table creation)
-
-    if(missing(writeCols) | writeCols[1] == FALSE) {writeCols <- NA} # if write cols are missing or NA, write w/o specifying col names.
-       else if (writeCols[1] == TRUE) {writeCols <- names(data)} # if TRUE, use the data.frame colnames, else use whatever is in it
+    if (missing(writeCols) |
+        writeCols[1] == FALSE) {
+      writeCols <-
+        NA
+    } # if write cols are missing or NA, write w/o specifying col names.
+    else if (writeCols[1] == TRUE) {
+      writeCols <-
+        names(data)
+    } # if TRUE, use the data.frame colnames, else use whatever is in it
 
     message("Writing into table...")
-    if (
-        exa.writeData(con, data, paste0(schema,".",tbl_name),
-                  tableColumns = writeCols,...
-             )
-    ) {
-        on.exit(dbEnd(con))
-        return(TRUE)
+    if (exa.writeData(con, data, paste0(schema,".",tbl_name),
+                      tableColumns = processIDs(writeCols),...)) {
+      on.exit(dbEnd(con))
+      return(TRUE)
     }
     return(FALSE)
-}
+  }
 
 #' Removes a table.
 #' @family EXAConnection related objects
@@ -1226,43 +1324,42 @@ EXAWriteTable <- function(con, tbl_name, data, schema, field_types, overwrite=FA
 #' @return A logicl indicating success.
 setMethod(
   "dbRemoveTable", signature("EXAConnection"),
-  definition = function(conn, name, schema, cascade = FALSE) {
+  definition = function(conn, name, schema = "", cascade = FALSE) {
     EXARemoveTable(conn, name, schema, cascade)
   }
 )
 
 
 
-EXARemoveTable <- function(con, tbl_name, schema, cascade=FALSE) {
+EXARemoveTable <- function(con, tbl_name, schema, cascade = FALSE) {
+  if (schema == "") {
+    ids <- EXAGetIdentifier(tbl_name)
+    schema <- ids[[1]][1]
+    tbl_name <- ids[[1]][2]
+  } else {
+    schema <- processIDs(schema)
+    tbl_name <- processIDs(tbl_name)
+  }
 
-    if (missing(schema)) { # getting the schema if missing
-        n <- strsplit(tbl_name,".",fixed=TRUE)[[1]]
-        if (length(n) != 2) stop("Error: Schema/table identifier ambiguous. Use SCHEMA.TABLE or provide schema separately.")
-        n <- EXAupper(n)
-        schema <- n[1]
-        tbl_name <- n[2]
-    }
-    else {
-        schema <- EXAupper(schema)
-        tbl_name <- EXAupper(tbl_name)
-    }
+  dbBegin(con)
+  on.exit(dbEnd(con,FALSE))
 
-    dbBegin(con)
-    on.exit(dbEnd(con,FALSE))
-
-    ddl_str <- paste0("DROP TABLE ",schema,".",tbl_name)
-    if (cascade) ddl_str <- paste(ddl_str,"CASCADE CONSTRAINTS")
-    switch(as.character(sqlQuery(con,ddl_str,errors=FALSE)),
-           # "-1" = {stop(paste0("Couldn't remove table: ",schema,".",tbl_name,":\n",odbcGetErrMsg(con)))},
-           "-2" = {
-                    message(paste0("Table ",schema,".",tbl_name," removed:\n",ddl_str))
-                    on.exit(dbEnd(con))
-                    return(TRUE)
-                  },
-           {stop(paste0("Couldn't remove table: ",schema,".",tbl_name,":\n",odbcGetErrMsg(con)))
-            return(FALSE)}
-    )
-
+  ddl_str <- paste0("DROP TABLE ",schema,".",tbl_name)
+  if (cascade)
+    ddl_str <- paste(ddl_str,"CASCADE CONSTRAINTS")
+  switch(as.character(sqlQuery(con,ddl_str,errors = FALSE)),
+         # "-1" = {stop(paste0("Couldn't remove table: ",schema,".",tbl_name,":\n",odbcGetErrMsg(con)))},
+         "-2" = {
+           message(paste0("Table ",schema,".",tbl_name," removed:\n",ddl_str))
+           on.exit(dbEnd(con))
+           return(TRUE)
+         },
+         {
+           stop(paste0(
+             "Couldn't remove table: ",schema,".",tbl_name,":\n",odbcGetErrMsg(con)
+           ))
+           return(FALSE)
+         })
 }
 
 #' Applies an R function to a result set.
@@ -1288,9 +1385,39 @@ setMethod(
 )
 
 EXAApply <- function(res, fun, simplify, ...) {
-
-# TODO
+  # TODO
 
   res2
 }
 
+
+#' Shows the EXASOL ODBC connection log.
+#' @param con An EXAConnection object
+#' @param view logical If true, the log is shown in R View, otherwise, a data.frame is returned.
+#' @return a data.frame, if View is FALSE.
+#' @export
+EXAConnectionLog <- function (con, view = TRUE) {
+  logItems <- function(l) {
+    time <-
+      regmatches(l,gregexpr("^\\d\\d:\\d\\d:\\d\\d.\\d\\d\\d",l, perl = TRUE))
+    time <- substr(time,0,nchar(time))
+    num <-
+      substr(regmatches(l,gregexpr("^.{12}\\t\\d+?\\t",l, perl = TRUE)),14,18)
+    text <- sub("^.{12}\\t\\d+?\\t", "",l)
+    data.frame(time = time,num = num, text = text)
+  }
+
+  lstr <-
+    regmatches(
+      con@init_connection_string,gregexpr("EXALOGFILE=\\S+?;",con@init_connection_string,perl =
+                                            TRUE)
+    )[[1]]
+  lstr <- substring(lstr, 12, nchar(lstr) - 1)
+  con <- file(lstr)
+  df <- logItems(readLines(con))
+  df$time <- strptime(df$time, format = "%T")
+  if (view)
+    View(df)
+  else
+    return(df)
+}
