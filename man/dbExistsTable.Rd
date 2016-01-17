@@ -5,12 +5,14 @@
 \alias{dbExistsTable}
 \title{Checks if a table exists in an EXASOL DB.}
 \usage{
-\S4method{dbExistsTable}{EXAConnection,character}(conn, name)
+\S4method{dbExistsTable}{EXAConnection,character}(conn, name, schema = "")
 }
 \arguments{
 \item{conn}{An EXAConnection object.}
 
 \item{name}{A fully qualified table name in the form schema.table.}
+
+\item{schema}{Alternatively to `name`, a schema can be specified separately.}
 }
 \value{
 A logical indicating if the table exists.

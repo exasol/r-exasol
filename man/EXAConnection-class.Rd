@@ -2,6 +2,7 @@
 % Please edit documentation in R/EXADBI.R
 \docType{class}
 \name{EXAConnection-class}
+\alias{EXAConnection}
 \alias{EXAConnection-class}
 \title{An Object holding a connection to an EXASOL Database.}
 \description{
