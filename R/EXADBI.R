@@ -824,7 +824,7 @@ EXAExecStatement <-
       if (schema == "") {
         # try to grep schema from stmt
         schema <- ids[[length(ids)]][1]
-        if (schema != "") {
+        if (schema != "" & schema != "\"\"") {
           message(paste("Using Schema from statement:", schema))
         } else {
           message(paste("Using connection schema: ", con@current_schema))

@@ -11,7 +11,7 @@ DBItest::test_driver(skip = c("constructor_strict",
                               "stress_load_unload"))
 DBItest::test_connection(skip = c("stress_load_connect_unload"))
 
-#DBItest::test_result(skip="stale_result_warning")
+DBItest::test_result(skip="stale_result_warning")
 
 #DBItest::test_sql()
 #DBItest::test_meta()
