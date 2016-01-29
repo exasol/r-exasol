@@ -11,7 +11,8 @@ An Object holding a connection to an EXASOL Database.
 \section{Slots}{
 
 \describe{
-\item{\code{init_connection_string}}{A string containing the ODBC connection sting used to initialise the connection.}
+\item{\code{init_connection_string}}{A string containing the ODBC connection sting used to
+initialise the connection.}
 
 \item{\code{current_schema}}{A string reflecting the current schema.}
 

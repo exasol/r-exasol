@@ -11,7 +11,8 @@
 \arguments{
 \item{conn}{An EXAConnection object.}
 
-\item{name}{A fully qualified table name (schema.table). Alternatively the schema can be given via the parameter 'schema' (see below).}
+\item{name}{A fully qualified table name (schema.table). Alternatively the schema can be given
+via the parameter 'schema' (see below).}
 
 \item{value}{A data.frame containing data.}
 
@@ -19,16 +20,19 @@
 
 \item{schema}{A schema identifier.}
 
-\item{field_types}{A character vector containing the column data types, in the form of c("varchar(20)","int").
-If missing, the column types of the data.frame are being converted and used.}
+\item{field_types}{A character vector containing the column data types, in the form
+of c("varchar(20)","int").
+   If missing, the column types of the data.frame are being converted and used.}
 
 \item{overwrite}{A logical indicating if existing data shall be overwritten. Default is 'FALSE',
 i.e. new data is appended to the DB table.}
 
 \item{writeCols}{a logical or a character vector containing the cols of the DB table to be
-written into, in the form of c("col1","col4","col3"). If set to TRUE, then the column names of the data.frame are used.
+written into, in the form of c("col1","col4","col3"). If set to TRUE, then the column names
+of the data.frame are used.
 If FALSE, NA, or missing, no write columns are defined and columns are matched by column order.
-Default is NA. Useful to change if the DB table contains more columns than the data.frame, or if the column order differs.}
+Default is NA. Useful to change if the DB table contains more columns than the data.frame, or
+if the column order differs.}
 }
 \value{
 a logical indicating success.
