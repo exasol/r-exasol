@@ -220,7 +220,7 @@ EXAResult <- setRefClass(
       rows_fetched <<- rows_fetched + as.numeric(x)
     },
 
-    #         close = function(commit=TRUE) {                              # dbClearResult is in row 880
+    #         close = function(commit=TRUE) {                         # dbClearResult is in row 880
     #           "Frees up all resources, in particular drops the temporary table in the DB."
     #
     #             if (!dbIsValid(.self)) {
@@ -255,6 +255,7 @@ EXAResult <- setRefClass(
 setMethod(
   "dbGetInfo","EXAResult",
   definition = function(dbObj) {
+    if(dbObj$temp_result_tbl == "CLEARED") stop("GetInfo: Result set cleared.")
     list(
       statement = dbObj$statement,
       row.count = dbObj$rows_fetched,
@@ -823,7 +824,7 @@ EXAExecStatement <-
 
       if (schema == "") {
         # try to grep schema from stmt
-        schema <- ids[[length(ids)]][1]
+        if (length(ids)>0) schema <- ids[[length(ids)]][1]
         if (schema != "" & schema != "\"\"") {
           message(paste("Using Schema from statement:", schema))
         } else {
@@ -841,10 +842,11 @@ EXAExecStatement <-
       schema <- processIDs(schema)
 
       if (temp_schema)
-        err <-
-        append(err, sqlQuery(con, paste("create schema", schema)))
+        err <- append(err, sqlQuery(con, paste("create schema", schema)))
+      sq1 <- paste0("create table ", schema, ".", tbl_name," as (", stmt, ")")
+      print(paste("-sql: ", sq1, " -END"))
       errr <-
-        try(sqlQuery(con, paste0("create table ", schema, ".", tbl_name," as (", stmt, ")"), errors = FALSE))
+        try(sqlQuery(con, sq1, errors = FALSE))
       # on success this won't return anything
 
       # dbCommit(con)
@@ -882,6 +884,11 @@ EXAExecStatement <-
     }
 
     sqlQuery(con,"flush statistics")
+
+    if (stmt_cmd == "SELECT") {
+      rowcount <- sqlQuery(con, paste0("select count(*) from ", schema, ".", tbl_name))[1,1]
+    } else rowcount <- 0
+
     p <- exa.readData(
       con, "select
       session_id,
@@ -896,15 +903,15 @@ EXAExecStatement <-
       hdd_read,
       net
       from exa_user_profile_last_day
-      where session_id = current_session and stmt_id=current_statement-2
+      where session_id = current_session and stmt_id=current_statement-3
       order by part_id desc"
-    ) # current_statement: -2 if autocommit=N, otherwise -4, -3 if dbCommit
+    ) # current_statement: -2 if autocommit=N, otherwise -4, -3 if dbCommit (all +1 due to rowcount)
 
     cols <- data.frame()
 
     if (stmt_cmd == "SELECT") {
       if (errr != -1) {
-        message(p$OBJECT_ROWS[1]," rows prepared in ",sum(p$DURATION)," seconds.")
+        message(rowcount," rows prepared in ",sum(p$DURATION)," seconds.")
       }
 
       cols <- exa.readData(
@@ -934,7 +941,7 @@ EXAExecStatement <-
       connection = con,
       statement = stmt,
       rows_fetched = 0,
-      rows_affected = as.numeric(p$OBJECT_ROWS[1]),
+      rows_affected = as.numeric(rowcount),
       is_complete = ifelse(stmt_cmd == "SELECT",FALSE,TRUE),
       with_output = ifelse(stmt_cmd == "SELECT",TRUE,FALSE),
       profile = p,
@@ -975,6 +982,13 @@ setMethod(
 
 
 EXAFetch <- function(res, n = res$default_fetch_rec, ...) {
+  if(res$temp_result_tbl == "CLEARED") {
+    stop("Fetch: trying to fetch from a cleared EXAResult.")
+  }
+  if (res$temp_result_tbl == "" | is.na(res$temp_result_tbl)) {
+    warning("Fetch: Invalid EXAResult or no result set composed.")
+    return(data.frame())
+  }
   if (res$with_output & !res$is_complete) {
     if (n == -1) {
       n <- res$rows_affected
@@ -988,9 +1002,12 @@ EXAFetch <- function(res, n = res$default_fetch_rec, ...) {
     if (res$rows_fetched >= res$rows_affected) {
       res$is_complete <- TRUE
     }
+    print("\n--------------\n")
+    print(df)
+    print("\n--------------\n")
     return(df)
   } else {
-    warning("Nothing to fetch.")
+    warning("Fetch: No more to fetch.")
     return(data.frame())
   }
 }
@@ -1014,11 +1031,16 @@ setMethod(
 EXAClearResult <- function(res,...) {
   # close is in row 203
 
+  if (res$temp_result_tbl == "CLEARED") {
+    message("Clear result: already cleared.")
+    return(TRUE)
+  }
   if (!res$with_output |
       res$temp_result_tbl == "") {
     # if not a SELECT stmt OR nothing to drop...
     #res$close()
     message("No result set to clear.")
+    res$temp_result_tbl <- "CLEARED"
     return(TRUE)
   } else {
     # if a SELECT stmt...
@@ -1045,7 +1067,7 @@ EXAClearResult <- function(res,...) {
         return(FALSE)
       }
     }
-    res$temp_result_tbl <- ""
+    res$temp_result_tbl <- "CLEARED"
     return(TRUE) # if table (and schema) has been removed return true
   }
 
