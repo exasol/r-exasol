@@ -35,5 +35,5 @@ r_github_packages:
   - marcelboldt/DBItest
 
 after_success:
-  - Rscript -e 'library(covr);codecov()'
-  - Rscript -e 'lintr::lint_package()'
+  - Rscript -e 'library(covr); codecov()'
+  - Rscript -e 'devtools::install(); lintr::lint_package()'
