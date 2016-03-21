@@ -70,7 +70,7 @@ exa.readData <- function(channel, query, encoding = 'UTF-8',
   proxyHost <- .Call(C_asyncRODBCProxyHost, slot)
   proxyPort <- .Call(C_asyncRODBCProxyPort, slot)
   query <- paste("EXPORT (", query, ") INTO CSV AT 'http://",  proxyHost, ":",
-                 proxyPort, "' FILE 'executeSQL.csv' ENCODING = '",encoding,"'  WITH COLUMN NAMES",
+                 proxyPort, "' FILE 'executeSQL.csv' ENCODING = '",encoding,"' BOOLEAN = 'TRUE/FALSE' WITH COLUMN NAMES",
                  sep = "")
 
   on.exit(.Call(C_asyncRODBCQueryFinish, slot, 1))

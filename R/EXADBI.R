@@ -306,38 +306,57 @@ setMethod(
 #' @export
 #' @name dbDataType
 setMethod("dbDataType", "EXAObject", function(dbObj, obj, ...) {
-  EXADataType(obj)
+  if(any(class(obj) %in% c("factor", "data.frame")))
+    EXADataType(obj)
+  else
+    EXADataType(unclass(obj))
 })
+
+
+
 setGeneric("EXADataType", function(x)
   standardGeneric("EXADataType"))
 setMethod("EXADataType", "data.frame", function(x) {
   vapply(x, EXADataType, FUN.VALUE = character(1), USE.NAMES = FALSE)
 })
 setMethod("EXADataType", "integer",  function(x)
-  "int")
+  "INT")
 setMethod("EXADataType", "numeric",  function(x)
-  "double")
+  "DECIMAL(36,15)")
 setMethod("EXADataType", "logical",  function(x)
-  "smallint")
+  "BOOLEAN")
 setMethod("EXADataType", "Date",     function(x)
-  "date")
+  "DATE")
 setMethod("EXADataType", "POSIXct",  function(x)
-  "timestamp")
+  "TIMESTAMP")
 varchar <- function(x) {
-  paste0("varchar(", max(nchar(as.character(x))), ")")
+  paste0("VARCHAR(", max(nchar(as.character(x))), ")")
 }
 setMethod("EXADataType", "character", varchar)
 setMethod("EXADataType", "factor",    varchar)
 setMethod("EXADataType", "list", function(x) {
   vapply(x, EXADataType, FUN.VALUE = character(1), USE.NAMES = FALSE)
 })
+
 setMethod("EXADataType", "raw",  varchar)
+
+#setOldClass("AsIs")
+#setMethod("EXADataType", "ANY",  definition=function(x) EXADataType(unclass(x)))
+
+setMethod("EXADataType", "ANY", function(x) {
+
+  warning(paste("Unrecognised datatype:", x, "Trying to convert to varchar."))
+  varchar(x)
+})
+
 
 setMethod(
   "dbListConnections", "EXADriver",
   definition =  function(drv, ...)
     dbGetInfo(drv, "connectionIds")[[1]]
 )
+
+
 
 # Connection -------------------------------------------------------------------
 
@@ -844,7 +863,7 @@ EXAExecStatement <-
       if (temp_schema)
         err <- append(err, sqlQuery(con, paste("create schema", schema)))
       sq1 <- paste0("create table ", schema, ".", tbl_name," as (", stmt, ")")
-      print(paste("-sql: ", sq1, " -END"))
+      #print(paste("-sql: ", sq1, " -END"))
       errr <-
         try(sqlQuery(con, sq1, errors = FALSE))
       # on success this won't return anything
@@ -1002,9 +1021,9 @@ EXAFetch <- function(res, n = res$default_fetch_rec, ...) {
     if (res$rows_fetched >= res$rows_affected) {
       res$is_complete <- TRUE
     }
-    print("\n--------------\n")
-    print(df)
-    print("\n--------------\n")
+    #print("\n--------------\n")
+    #print(df)
+    #print("\n--------------\n")
     return(df)
   } else {
     warning("Fetch: No more to fetch.")
