@@ -9,13 +9,13 @@ DBItest::test_getting_started()
 # stress_load_unload and stress_load_connect_unload are also skipped on travis
 DBItest::test_driver(skip = c("constructor_strict",
                               "stress_load_unload"))
-#DBItest::test_connection(skip = c("stress_load_connect_unload"))
+DBItest::test_connection(skip = c("stress_load_connect_unload"))
 
-DBItest::test_result(skip = c("stale_result_warning",
-                              "fetch_premature_close",
-                              "data_logical_int",
-                              "data_logical_int_null_below",
-                              "data_logical_int_null_above"))
+#DBItest::test_result(skip = c("stale_result_warning",
+#                              "fetch_premature_close",
+#                              "data_logical_int",
+#                              "data_logical_int_null_below",
+#                              "data_logical_int_null_above"))
 
 #DBItest::test_sql()
 #DBItest::test_meta()
