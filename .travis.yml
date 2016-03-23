@@ -1,8 +1,22 @@
 language: r
-warnings_are_errors: false
-sudo: required
+# see also https://docs.travis-ci.com/user/languages/r
 
-cache: apt
+# Using the package cache to store R package dependencies can significantly
+# speed up build times and is recommended for most builds.
+cache:
+  - apt
+  - packages
+
+# You will need to set sudo: false in order to use the container based builds
+# and package caching.
+sudo: false
+
+warnings_are_errors: false
+
+addons:
+  apt:
+    packages:
+    - unixodbc-dev
 
 notifications:
   email:
@@ -10,9 +24,8 @@ notifications:
     on_failure: change
 
 before_install:
-  - sudo apt-get install unixodbc-dev
-  - wget $EXAODBC_URL$EXAODBC_DRV_FILE".tar.gz" 
-  - tar -xzf $EXAODBC_DRV_FILE".tar.gz" 
+  - wget $EXAODBC_URL$EXAODBC_DRV_FILE".tar.gz"
+  - tar -xzf $EXAODBC_DRV_FILE".tar.gz"
   - ./$EXAODBC_DRV_FILE/config_odbc --mode=config --host=$EXAHOST --user=$EXAUSER --password=$EXAPW
 
 r_github_packages:
@@ -22,5 +35,5 @@ r_github_packages:
   - marcelboldt/DBItest
 
 after_success:
-  - Rscript -e 'library(covr);codecov()'
-  - Rscript -e 'lintr::lint_package()'
+  - Rscript -e 'library(covr); codecov()'
+  - Rscript -e 'devtools::install(); lintr::lint_package()'
