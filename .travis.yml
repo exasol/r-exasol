@@ -31,7 +31,7 @@ before_install:
 r_github_packages:
   - jimhester/covr
   - jimhester/lintr
-  - rstats-db/DBI 		# development version needed for DBItest
+  - marcelboldt/DBI 		# development version needed for DBItest
   - marcelboldt/DBItest
 
 after_success:
