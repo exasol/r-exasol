@@ -8,6 +8,7 @@ DBItest::test_getting_started()
 # some tests stay skipped for now
 # stress_load_unload and stress_load_connect_unload are also skipped on travis
 DBItest::test_driver(skip = c("constructor_strict",
+                              "constructor",
                               "stress_load_unload"))
 DBItest::test_connection(skip = c("stress_load_connect_unload"))
 
