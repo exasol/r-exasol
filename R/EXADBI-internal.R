@@ -50,6 +50,7 @@ EXAupper <- function(identifier) {
 }
 
 # Takes an identifier, and transforms it into an EXASOL compatible identifier. In Detail: it
+#  - removes surrounding whitespaces
 #  - doubles quotes inside the string,
 #  - changes dots to underscores,
 #  - adds surrounding quotes.
@@ -60,31 +61,30 @@ EXAupper <- function(identifier) {
 #  via as.data.frame fails for the method strips escaped quotes.
 processIDs <- function(id, quotes = "\"") {
 
-  if (length(id <=1)) if(is.na(id) | is.null(id) | missing(id)) return(id)
-  # remove surrounding quotes if present
+  if (length(id) < 1 ) return("")
+#   if (length(id) == 1 )
+#     if (gsub("^\\s+|\\s+$", "", id) == "" | is.null(id) | is.na(id))
+#       return(sql("")) # empty string is NULL in EXASOL
+#
+
+  if (length(id) == 1 & is.na(id) ) return(NA)
+
+  id <- gsub("^\\s+|\\s+$", "", id) # remove surr whitespaces
+  # remove surr quotes if present
   id <-
-    sapply(id, function(x)
-      if (substr(x, 1,1) == "\"")
-        substr(x, 2, nchar(x))
-      else
-        x) # remove init quote
-  id <-
-    sapply(id, function(x)
-      if (substring(x, nchar(x)) == "\"")
-        substr(x, 1, nchar(x) - 1)
-      else
-        x) # remove final quote
+    sapply(id, function(x) {
+      if (is.na(x) | x == "") return("NA")
+      if (substr(x, 1,1) == "\"" & substring(x, nchar(x)) == "\"")
+        return(substr(x, 2, nchar(x) - 1))
+      x
+    })
 
   id <-
     gsub('"', '""', id, fixed = TRUE) #double every remaining quote
-  id <-
-    gsub('.', '_', id, fixed = TRUE)# change dots to underscores
-  if (quotes == "\"") {
-    paste('"', encodeString(id), '"', sep = "") # escape non-printable chr & add surrounding quotes
-  } else if (quotes == "'") {
-    paste("'", encodeString(id), "'", sep = "")
-  }
+  id <- gsub('.', '_', id, fixed = TRUE)# change dots to underscores
 
+  #  ...add surr quotes
+  paste0(quotes,make.unique(encodeString(id)),quotes)
 }
 
 # This method recognises schema and table identifiers, and applies proper quoting.
@@ -94,8 +94,8 @@ processIDs <- function(id, quotes = "\"") {
 # @param quoting_style A string, either "R" or "EXASOL", indicating the quoting behaviour. If "R", the R identifier
 # behaviour is kept, which means all identifiers are quoted when sent to EXASOL. if "EXASOL", identifiers
 # are being converted to uppercase, except for they are quoted.
-# @param quotes the quotes to be used. (see method `processIDs()`)
-# @return A character vector containing schema & table identifier.
+# @param quotes The quotes to be used. (see method `processIDs()`)
+# @return A character vector containing schema & table identifiers.
 EXAGetIdentifier <-
   function (string, statement = FALSE, quoting_style = "R", quotes = "\"") {
 

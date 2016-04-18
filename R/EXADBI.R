@@ -275,15 +275,17 @@ setMethod(
 
 # Instantiates an EXADriver object.
 # @family EXADriver related objects
-#
+# @param silent If TRUE, no message is print.
 # @return An EXADriver object.
-exa <- function() {
-  print("EXASOL driver loaded")
+exa <- function(silent = FALSE) {
+  if (!silent)
+    print("EXASOL driver loaded")
   new("EXADriver")
 }
 
-exasol <- function() {
-  print("EXASOL driver loaded")
+exasol <- function(silent = FALSE) {
+  if (!silent)
+    print("EXASOL driver loaded")
   new("EXADriver")
 }
 
@@ -480,9 +482,14 @@ setMethod(
 #' @param con a valid EXAConnection
 #' @return an updated EXAConnection
 #' @export
-dbCurrentSchema <- function(con) {
-  res <- sqlQuery(con, "select current_schema")
-  con@current_schema <- as.character(res[1,1])
+dbCurrentSchema <- function(con, setSchema=NULL) {
+  if(!missing(setSchema)) {
+    sqlQuery(con, paste("open schema", processIDs(setSchema)))
+    con@current_schema <- setSchema
+  } else {
+    res <- sqlQuery(con, "select current_schema")
+    con@current_schema <- as.character(res[1,1])
+  }
   message(paste("Schema: ", con@current_schema))
   con
 }
@@ -680,13 +687,13 @@ EXACloneConnection <-
 #' @param conn An EXAConnection object
 #' @return a logical indicating success.
 setMethod("dbCommit", signature("EXAConnection"),
-          function(conn) {
+          function(conn, silent = FALSE) {
             switch(as.character(odbcEndTran(conn,commit = TRUE)),
                    "-1" = {
                      stop(paste0("Commit failed:\n",odbcGetErrMsg(conn)));return(FALSE)
                    },
                    "0" = {
-                     message("Transaction committed.");return(TRUE)
+                     if (!silent) message("Transaction committed.");return(TRUE)
                    },
                    {
                      print("Commit failed.")
@@ -757,8 +764,8 @@ setGeneric(
 )
 
 setMethod("dbEnd", signature("EXAConnection"),
-          function(conn,commit = TRUE) {
-            ifelse(commit, dbCommit(conn), dbRollback(conn))
+          function(conn,commit = TRUE, silent = FALSE) {
+            ifelse(commit, dbCommit(conn, silent = silent), dbRollback(conn))
             odbcSetAutoCommit(conn, autoCommit = conn@autocom_default)
             # message("Transaction completed.")
             return(TRUE)
@@ -833,7 +840,7 @@ EXAExecStatement <-
     dbBegin(con)
     on.exit(dbEnd(con,commit = FALSE))
 
-    if (stmt_cmd == "SELECT") {
+    if (stmt_cmd == "SELECT") {# ---------------if select ----------------------------------------
       temp_schema <- FALSE
       tbl_name <-
         paste0("TEMP_",floor(rnorm(1,1000,100) ^ 2),"_CREATED_BY_R")
@@ -847,11 +854,13 @@ EXAExecStatement <-
         if (schema != "" & schema != "\"\"") {
           message(paste("Using Schema from statement:", schema))
         } else {
-          message(paste("Using connection schema: ", con@current_schema))
-          schema <- con@current_schema
-        }
+            if (con@current_schema != "SYS") {
+            message(paste("Using connection schema: ", con@current_schema))
+            schema <- con@current_schema
+            }
+         }
       }
-      if (schema == "") {
+      if (schema == "" || schema == "\"\"") {
         # if nothing helps use temp_schema
         schema <- tbl_name
         temp_schema <- TRUE
@@ -874,7 +883,8 @@ EXAExecStatement <-
         warning(odbcGetErrMsg(con))
         err <- append(err, odbcGetErrMsg(con))
       } else {
-        on.exit(dbEnd(con, commit = TRUE)) # commit after select in order to store indices that may have been created.
+        dbEnd(con, commit = TRUE)
+       # on.exit(dbEnd(con, commit = TRUE)) # commit after select in order to store indices that may have been created.
       }
 
     } else {
@@ -898,14 +908,17 @@ EXAExecStatement <-
         err <- append(err, odbcGetErrMsg(con))
         stop(paste("Query failed.\n", odbcGetErrMsg(con)))
       } else {
-        on.exit(dbEnd(con,commit = TRUE))
+        #on.exit(
+          dbEnd(con,commit = TRUE)
+        #)
       }
     }
 
     sqlQuery(con,"flush statistics")
 
     if (stmt_cmd == "SELECT") {
-      rowcount <- sqlQuery(con, paste0("select count(*) from ", schema, ".", tbl_name))[1,1]
+      rc <- try(sqlQuery(con, paste0("select count(*) from ", schema, ".", tbl_name))[1,1], silent = TRUE)
+      rowcount <- ifelse(is.numeric(rc), rc, 0)
     } else rowcount <- 0
 
     p <- exa.readData(
@@ -922,7 +935,7 @@ EXAExecStatement <-
       hdd_read,
       net
       from exa_user_profile_last_day
-      where session_id = current_session and stmt_id=current_statement-3
+      where session_id = current_session and stmt_id=current_statement-4
       order by part_id desc"
     ) # current_statement: -2 if autocommit=N, otherwise -4, -3 if dbCommit (all +1 due to rowcount)
 
@@ -945,16 +958,15 @@ EXAExecStatement <-
           column_owner,
           column_is_distribution_key
           from exa_user_columns
-          where column_schema = '",schema,"' and column_table = '",tbl_name,"'"
+          where column_schema = ", processIDs(schema, quotes="'"),
+          " and column_table = ", processIDs(tbl_name, quotes="'")
         )
         )
 
-    }
-
-    if (stmt_cmd == "SELECT")
       res_tbl <- paste0(schema,".",tbl_name)
-    else
+  } else {
       res_tbl <- ""
+  }
 
     EXAResult$new(
       connection = con,
@@ -1112,6 +1124,69 @@ setMethod(
   }
 )
 
+#' Lists all fields of a table.
+#' @family EXAConnection related objects
+#' @family DQL functions
+#'
+#' @name dbListFields
+#' @param conn An EXAConnection object
+#' @param schema Filter on DB schema
+#' @param ... further parameters passed on to `exa.readData()`
+#' @return a character vector. If no tables present, a character vector of length 0.
+#' @export
+setMethod(
+  "dbListFields", signature("EXAConnection"),
+  definition = function(conn, name, schema, ...) {
+
+    if (missing(schema)) {
+      ids <- EXAGetIdentifier(name, statement = FALSE)
+      # try to grep schema from stmt
+      if (length(ids)>0) {
+        schema <- ids[[length(ids)]][1]
+        name <- ids[[length(ids)]][2]
+      }
+      if (schema != "" & schema != "\"\"") {
+       # message(paste("Using Schema from statement:", schema))
+      } else {
+         # message(paste("Using connection schema: ", con@current_schema))
+          schema <- con@current_schema
+      }
+    }
+    schema <- processIDs(schema, quotes = "'")
+    name <- processIDs(name, quotes = "'")
+
+    qstr <- paste0("select column_name from exa_all_columns where column_schema = ", schema, " and
+                   column_table = ", name, " order by column_ordinal_position")
+    res <- exa.readData(conn, qstr, ...)
+    return(res$COLUMN_NAME)
+  })
+
+setMethod("dbListFields", signature("EXAResult"),
+          definition = function(conn, ...) {
+            conn$columns$COLUMN_NAME
+          })
+
+#' Lists all tables in the DB.
+#' @family EXAConnection related objects
+#' @family DQL functions
+#'
+#' @name dbListTables
+#' @param conn An EXAConnection object
+#' @param schema Filter on DB schema
+#' @param ... further parameters passed on to `exa.readData()`
+#' @return a character vector. If no tables present, a character vector of length 0.
+#' @export
+setMethod(
+  "dbListTables", signature("EXAConnection"),
+  definition = function(conn, schema, ...) {
+
+    qstr <-
+      paste0("select table_schema, table_name from exa_all_tables ", ifelse(!missing(schema), paste("where table_schema =",
+             processIDs(schema)), ""), " order by 1,2" )
+    res <- exa.readData(conn, qstr, ...)
+    return(paste0(res$TABLE_SCHEMA, ".", res$TABLE_NAME))
+  })
+
 #' Reads a DB table.
 #' @family EXAConnection related objects
 #' @family DQL functions
@@ -1166,7 +1241,7 @@ setMethod(
   definition = function(conn, name, schema = "") {
     if (schema == "") {
       ids <- EXAGetIdentifier(name, quotes = "'")
-      schema <- ids[[1]][1]
+      schema <- ifelse(ids[[1]][1] != "\'\'", ids[[1]][1], processIDs(conn@current_schema, quotes="'"))
       name <- ids[[1]][2]
     } else {
       schema <- processIDs(schema, quotes = "'")
