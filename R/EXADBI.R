@@ -275,15 +275,17 @@ setMethod(
 
 # Instantiates an EXADriver object.
 # @family EXADriver related objects
-#
+# @param silent If TRUE, no message is print.
 # @return An EXADriver object.
-exa <- function() {
-  print("EXASOL driver loaded")
+exa <- function(silent = FALSE) {
+  if (!silent)
+    print("EXASOL driver loaded")
   new("EXADriver")
 }
 
-exasol <- function() {
-  print("EXASOL driver loaded")
+exasol <- function(silent = FALSE) {
+  if (!silent)
+    print("EXASOL driver loaded")
   new("EXADriver")
 }
 
