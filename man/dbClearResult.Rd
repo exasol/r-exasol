@@ -21,6 +21,7 @@ Frees all resources associated with an \code{EXAResult}.
 \seealso{
 Other DQL functions: \code{\link{dbExistsTable}},
   \code{\link{dbFetch}}, \code{\link{dbGetQuery}},
+  \code{\link{dbListFields}}, \code{\link{dbListTables}},
   \code{\link{dbReadTable}}, \code{\link{dbSendQuery}}
 
 Other EXAResult related objects: \code{\link{EXAResult-class}},

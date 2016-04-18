@@ -5,7 +5,7 @@
 \alias{dbCommit}
 \title{Sends a commit.}
 \usage{
-\S4method{dbCommit}{EXAConnection}(conn)
+\S4method{dbCommit}{EXAConnection}(conn, silent = FALSE)
 }
 \arguments{
 \item{conn}{An EXAConnection object}
@@ -21,6 +21,7 @@ Other EXAConnection related objects: \code{\link{EXAConnection-class}},
   \code{\link{dbBegin}}, \code{\link{dbConnect}},
   \code{\link{dbCurrentSchema}}, \code{\link{dbEnd}},
   \code{\link{dbExistsTable}}, \code{\link{dbGetQuery}},
+  \code{\link{dbListFields}}, \code{\link{dbListTables}},
   \code{\link{dbReadTable}}, \code{\link{dbRemoveTable}},
   \code{\link{dbRollback}}, \code{\link{dbSendQuery}},
   \code{\link{dbWriteTable}}

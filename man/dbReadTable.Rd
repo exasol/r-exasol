@@ -32,13 +32,15 @@ Reads a DB table.
 \seealso{
 Other DQL functions: \code{\link{dbClearResult}},
   \code{\link{dbExistsTable}}, \code{\link{dbFetch}},
-  \code{\link{dbGetQuery}}, \code{\link{dbSendQuery}}
+  \code{\link{dbGetQuery}}, \code{\link{dbListFields}},
+  \code{\link{dbListTables}}, \code{\link{dbSendQuery}}
 
 Other EXAConnection related objects: \code{\link{EXAConnection-class}},
   \code{\link{dbBegin}}, \code{\link{dbCommit}},
   \code{\link{dbConnect}}, \code{\link{dbCurrentSchema}},
   \code{\link{dbEnd}}, \code{\link{dbExistsTable}},
-  \code{\link{dbGetQuery}}, \code{\link{dbRemoveTable}},
+  \code{\link{dbGetQuery}}, \code{\link{dbListFields}},
+  \code{\link{dbListTables}}, \code{\link{dbRemoveTable}},
   \code{\link{dbRollback}}, \code{\link{dbSendQuery}},
   \code{\link{dbWriteTable}}
 }

@@ -26,8 +26,11 @@ install_github("EXASOL/r-exasol")
 
 The low-level methods as regards exa.readData, exa.writeData and exa.createScript may work as expected, so 
 should the DBI connection methods (dbConnect etc.; all tests passed). DBI querying methods also get close to 
-being error-free: encoding and quoting should work properly, there could be errors about data type conversion.
+being error-free.
+
 Writing tests have not yet been implemented (only quick-tests), but it hopefully happens in the near future.
+
+`dplyr` support looks promising, but errors are still likely to occur.
 
 Code coverage of tests:
 
