@@ -26,7 +26,8 @@ URL: https://github.com/EXASOL/r-exasol https://www.exasol.com/portal
 LazyData: yes
 Suggests:
     testthat,
-    DBItest
+    DBItest,
+    dplyr
 SystemRequirements: EXASOL DB v5 onwards
 BugReports: https://github.com/EXASOL/r-exasol/issues
 RoxygenNote: 5.0.1
@@ -36,4 +37,5 @@ Collate:
     'exa.writeData.R'
     'exa.readData.R'
     'EXADBI.R'
+    'EXAdplyr.R'
     'exasol.R'
