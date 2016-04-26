@@ -511,6 +511,7 @@ EXANewConnection <- function(# change defaults also above
   connectionlcnumeric = Sys.getlocale(category = "LC_NUMERIC"),
   ...,
   dsn = "",
+  driver = "{EXASolution Driver}",
   connection_string = "") {
   exaschema <- c(schema)
 
@@ -522,7 +523,7 @@ EXANewConnection <- function(# change defaults also above
       con_str <- paste0("DSN=",dsn)
     }
     else if (exahost != "" & uid != "") {
-      con_str <- paste0("DRIVER={EXASolution Driver};EXAHOST=",exahost)
+            con_str <- paste0("DRIVER=", driver ,";", "EXAHOST=",exahost)
     }
     else {
       stop(

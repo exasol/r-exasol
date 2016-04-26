@@ -95,6 +95,8 @@ db_explain.EXAConnection <- function(con, ...) {
 
 #' @export
 copy_to.src_exasol <- function(dest, df, name = deparse(substitute(df)), ...) {
+  # TODO: tbl/schema identifier handling as in src_exasol
+  df<- as.data.frame(df)
   dbWriteTable(dest$con, name, df, ...)
   tbl(dest, name)
 }
