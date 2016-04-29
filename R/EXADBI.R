@@ -81,8 +81,64 @@ setOldClass("RODBC")
 #' @seealso \code{\link{DBIDriver-class}}
 #' @family DBI classes
 #' @family EXADriver related objects
+#'
+#' @slot driver A string containing the path to the EXASOL ODBC driver file.
 setClass("EXADriver",
-         contains = c("DBIDriver", "EXAObject"))
+         contains = c("DBIDriver", "EXAObject"),
+         slots = c(odbc_drv = "character")
+         )
+
+# Instantiates an EXADriver object.
+# @family EXADriver related objects
+# @param driver The path to an ODBC driver file. If missing, the driver contained in the exasol package
+# is used if possible, otherwise the driver installed on the system is used.
+# If "SYSTEM": the EXASOL ODBC driver installed on the system is used immediately.
+# Alternatively a path to an ODBC driver library can be provided.
+# @param silent If TRUE, no message is print.
+# @return An EXADriver object.
+exasol <- function(driver = NULL, silent = FALSE) {
+
+  #TODO: determine driver file according to OS
+  # path.package("exasol")
+
+
+  if(missing(driver)) {
+    if (!silent) print("Using the included driver...")
+    driver <- file.path(
+      switch(
+        Sys.info()['sysname'],
+        'Darwin' = paste0(system.file(package = packageName()),
+                          'odbc/lib/darwin/x86_64/libexaodbc-io418sys.dylib'
+                          ),  # Mac OS
+        'Linux' = paste0(system.file(package = packageName()),
+                         'odbc/lib/linux/x86_64/libexaodbc-uo2214lv1.so'
+                         ),     # Linux
+        "{EXASolution Driver}"              # default
+      )
+    )
+  } else if (driver =="SYSTEM") {
+    if(!silent) print("Using the system driver...")
+    driver <- "{EXASolution Driver}"
+  } else {
+    if (!silent) print(paste("Using the driver at", driver))
+  }
+
+  if (!silent) print("EXASOL driver loaded")
+  new("EXADriver", odbc_drv = driver)
+}
+
+exa <- exasol # define an alias
+
+#TODO: set method dbDriver
+
+setMethod(
+  "summary", "EXADriver",
+  definition = function(object, ...)
+    NextMethod(generic = "summary", object,...)
+)
+
+
+
 
 setMethod(
   "dbGetInfo", "EXADriver",
@@ -97,11 +153,6 @@ setMethod(
   }
 )
 
-setMethod(
-  "summary", "EXADriver",
-  definition = function(object, ...)
-    NextMethod(generic = "summary", object,...)
-)
 
 #' An Object holding a connection to an EXASOL Database.
 #'
@@ -273,21 +324,7 @@ setMethod(
   }
 )
 
-# Instantiates an EXADriver object.
-# @family EXADriver related objects
-# @param silent If TRUE, no message is print.
-# @return An EXADriver object.
-exa <- function(silent = FALSE) {
-  if (!silent)
-    print("EXASOL driver loaded")
-  new("EXADriver")
-}
 
-exasol <- function(silent = FALSE) {
-  if (!silent)
-    print("EXASOL driver loaded")
-  new("EXADriver")
-}
 
 #' Checks if an EXAObject is still valid.
 #'
@@ -511,7 +548,6 @@ EXANewConnection <- function(# change defaults also above
   connectionlcnumeric = Sys.getlocale(category = "LC_NUMERIC"),
   ...,
   dsn = "",
-  driver = "{EXASolution Driver}",
   connection_string = "") {
   exaschema <- c(schema)
 
@@ -523,7 +559,7 @@ EXANewConnection <- function(# change defaults also above
       con_str <- paste0("DSN=",dsn)
     }
     else if (exahost != "" & uid != "") {
-            con_str <- paste0("DRIVER=", driver ,";", "EXAHOST=",exahost)
+            con_str <- paste0("DRIVER=", drv@odbc_drv ,";", "EXAHOST=",exahost)
     }
     else {
       stop(
