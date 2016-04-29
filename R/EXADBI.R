@@ -102,7 +102,7 @@ exasol <- function(driver = NULL, silent = FALSE) {
   # path.package("exasol")
 
 
-  if(missing(driver)) {
+  if(missing(driver) | is.null(driver)) {
     if (!silent) print("Using the included driver...")
     driver <- file.path(
       switch(
