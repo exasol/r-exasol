@@ -13,6 +13,7 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <dlfcn.h>
+#include <arpa/inet.h>
 #else
 #include <winsock2.h>
 #include <windows.h>
@@ -394,9 +395,9 @@ SEXP asyncRODBCIOStart(SEXP slotA, SEXP hostA, SEXP portA) {
 
 	if ((r = recv(t->fd, (void*)&(proxy_answer), sizeof(proxy_answer), MSG_WAITALL)) != sizeof(proxy_answer)) {
 #ifndef _WIN32
-	  error("Failed to receive proxy header from %s:%d (%d != %d)", (char *) serv_addr.sin_addr.s_addr, serv_addr.sin_port, r, sizeof(proxy_answer));
+	  error("Failed to receive proxy header from %s:%d (%d != %d)", inet_ntoa(serv_addr.sin_addr), serv_addr.sin_port, r, sizeof(proxy_answer));
 #else
-	  error("Failed to receive proxy header from %s:%d (%d != %d; WS error code: %d)",  serv_addr.sin_addr.s_addr, serv_addr.sin_port, r, sizeof(proxy_answer), WSAGetLastError());
+	  error("Failed to receive proxy header from %s:%d (%d != %d; WS error code: %d)",  inet_ntoa(serv_addr.sin_addr), serv_addr.sin_port, r, sizeof(proxy_answer), WSAGetLastError());
 #endif
             goto error;
         }
