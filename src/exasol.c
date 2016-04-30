@@ -395,9 +395,9 @@ SEXP asyncRODBCIOStart(SEXP slotA, SEXP hostA, SEXP portA) {
 
 	if ((r = recv(t->fd, (void*)&(proxy_answer), sizeof(proxy_answer), MSG_WAITALL)) != sizeof(proxy_answer)) {
 #ifndef _WIN32
-	  error("Failed to receive proxy header from %s:%d (%d != %d)", inet_ntoa(serv_addr.sin_addr), serv_addr.sin_port, r, sizeof(proxy_answer));
+	  error("Failed to receive proxy header from %s:%d (%d != %d)", inet_ntoa(serv_addr.sin_addr), ntohl(serv_addr.sin_port), r, sizeof(proxy_answer));
 #else
-	  error("Failed to receive proxy header from %s:%d (%d != %d; WS error code: %d)",  inet_ntoa(serv_addr.sin_addr), serv_addr.sin_port, r, sizeof(proxy_answer), WSAGetLastError());
+	  error("Failed to receive proxy header from %s:%d (%d != %d; WS error code: %d)",  inet_ntoa(serv_addr.sin_addr), ntohl(serv_addr.sin_port), r, sizeof(proxy_answer), WSAGetLastError());
 #endif
             goto error;
         }
