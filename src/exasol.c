@@ -326,6 +326,7 @@ SEXP asyncRODBCIOStart(SEXP slotA, SEXP hostA, SEXP portA) {
     struct { int m:32; int x:32; int y:32; } proxy_header;
     struct { int v:32; int port:32; char s[16]; } proxy_answer;
 
+    memset((char *) &proxy_header, 0, sizeof(proxy_header));
     proxy_header.m = 0x02212102;
 #if __BYTE_ORDER == __BIG_ENDIAN
 #ifndef _WIN32
