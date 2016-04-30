@@ -14,6 +14,7 @@
 #include <netinet/in.h>
 #include <dlfcn.h>
 #include <arpa/inet.h>
+#include <errno.h>
 #else
 #include <winsock2.h>
 #include <windows.h>
@@ -392,6 +393,10 @@ SEXP asyncRODBCIOStart(SEXP slotA, SEXP hostA, SEXP portA) {
    	    error("Failed to send proxy header (%d != %d)", r, sizeof(proxy_header));
 	    goto error;
         }
+
+#ifndef _WIN32
+	errno = 0;
+#endif
 
 	if ((r = recv(t->fd, (void*)&(proxy_answer), sizeof(proxy_answer), MSG_WAITALL)) != sizeof(proxy_answer)) {
 #ifndef _WIN32
