@@ -74,7 +74,7 @@ exa.readData <- function(channel, query, encoding = 'UTF-8',
                  sep = "")
 
   on.exit(.Call(C_asyncRODBCQueryFinish, slot, 1))
-  print("Starting RODBCQueryStart...")
+
   fd <- .Call(C_asyncRODBCQueryStart, slot,
               attr(channel, "handle_ptr"), query, 0)
 
