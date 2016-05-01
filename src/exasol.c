@@ -337,9 +337,15 @@ SEXP asyncRODBCIOStart(SEXP slotA, SEXP hostA, SEXP portA) {
     proxy_header.y = 1;
 #endif
 #else
+#ifdef __APPLE__
+    proxy_header.x = 0x01000000;
+    proxy_header.y = 0x01000000;
+#else
     proxy_header.x = 1;
     proxy_header.y = 1;
 #endif
+#endif
+
 
     if (slot < 0 || slot >= MAX_RODBC_THREADS) {
         error("Slot need to be from 0 to %d.", MAX_RODBC_THREADS);
