@@ -331,7 +331,7 @@ SEXP asyncRODBCIOStart(SEXP slotA, SEXP hostA, SEXP portA) {
 #if __BYTE_ORDER == __BIG_ENDIAN
 #ifndef _WIN32
     proxy_header.x = 0x01000000;
-    proxy_header.y = 0x01000000;
+    proxy_header.y = 1;
 #else
     proxy_header.x = 1;
     proxy_header.y = 1;
