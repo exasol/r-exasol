@@ -338,7 +338,7 @@ SEXP asyncRODBCIOStart(SEXP slotA, SEXP hostA, SEXP portA) {
 #endif
 #else
 #ifdef __APPLE__
-    proxy_header.x = 0x01000000;
+    proxy_header.x = 0x01010000;
     proxy_header.y = 0x01000000;
 #else
     proxy_header.x = 1;
