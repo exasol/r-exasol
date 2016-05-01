@@ -328,23 +328,8 @@ SEXP asyncRODBCIOStart(SEXP slotA, SEXP hostA, SEXP portA) {
 
     memset((char *) &proxy_header, 0, sizeof(proxy_header));
     proxy_header.m = 0x02212102;
-#if __BYTE_ORDER == __BIG_ENDIAN
-#ifndef _WIN32
     proxy_header.x = 1;
     proxy_header.y = 1;
-#else
-    proxy_header.x = 1;
-    proxy_header.y = 1;
-#endif
-#else
-#ifdef __APPLE__
-    proxy_header.x = 1;
-    proxy_header.y = 1;
-#else
-    proxy_header.x = 1;
-    proxy_header.y = 1;
-#endif
-#endif
 
 
     if (slot < 0 || slot >= MAX_RODBC_THREADS) {
@@ -406,20 +391,17 @@ SEXP asyncRODBCIOStart(SEXP slotA, SEXP hostA, SEXP portA) {
 #endif
 
 	if ((r = recv(t->fd, (void*)&(proxy_answer), sizeof(proxy_answer), MSG_WAITALL)) != sizeof(proxy_answer)) {
-#ifdef __APPLE__
-	  error("Proxy header... - M = %d; x = %d; y = %d", proxy_header.m, proxy_header.x, proxy_header.y);
-#endif
 #ifndef _WIN32
-	  error("Proxy header... - M = %d; x = %d; y = %d", proxy_header.m, proxy_header.x, proxy_header.y);
-	  // error("Failed to receive proxy header from %s:%d (%d != %d); errno: %d", inet_ntoa(serv_addr.sin_addr), ntohs(serv_addr.sin_port), r, sizeof(proxy_answer), errno);
+	 // error("Proxy header... - M = %d; x = %d; y = %d", proxy_header.m, proxy_header.x, proxy_header.y);
+	  error("Failed to receive proxy header from %s:%d (%d != %d); errno: %d", inet_ntoa(serv_addr.sin_addr), ntohs(serv_addr.sin_port), r, sizeof(proxy_answer), errno);
 #else
 	  error("Failed to receive proxy header from %s:%d (%d != %d; WS error code: %d)",  inet_ntoa(serv_addr.sin_addr), ntohs(serv_addr.sin_port), r, sizeof(proxy_answer), WSAGetLastError());
 #endif
             goto error;
         }
-	else {
-	  REprintf("Successfully received proxy header from %s:%d (%d != %d)\n", inet_ntoa(serv_addr.sin_addr), ntohs(serv_addr.sin_port), r, sizeof(proxy_answer));
-	}
+//	else {
+//	  REprintf("Successfully received proxy header from %s:%d (%d != %d)\n", inet_ntoa(serv_addr.sin_addr), ntohs(serv_addr.sin_port), r, sizeof(proxy_answer));
+//	}
     }
     proxy_answer.s[15] = '\0';
     memcpy(t->proxyHost, proxy_answer.s, 16);
