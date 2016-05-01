@@ -108,7 +108,7 @@ exasol <- function(driver = NULL, silent = FALSE) {
       switch(
         Sys.info()['sysname'],
         'Darwin' = paste0(system.file(package = packageName()),
-                          '/odbc/lib/darwin/x86_64/libexaodbc-io418sys.dylib'
+                          '/odbc/lib/darwin/x86_64/libexaodbc-io352fw.dylib'
                           ),  # Mac OS
         'Linux' = paste0(system.file(package = packageName()),
                          '/odbc/lib/linux/x86_64/libexaodbc-uo2214lv1.so'
