@@ -13,6 +13,8 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <dlfcn.h>
+#include <arpa/inet.h>
+#include <errno.h>
 #else
 #include <winsock2.h>
 #include <windows.h>
@@ -324,19 +326,11 @@ SEXP asyncRODBCIOStart(SEXP slotA, SEXP hostA, SEXP portA) {
     struct { int m:32; int x:32; int y:32; } proxy_header;
     struct { int v:32; int port:32; char s[16]; } proxy_answer;
 
+    memset((char *) &proxy_header, 0, sizeof(proxy_header));
     proxy_header.m = 0x02212102;
-#if __BYTE_ORDER == __BIG_ENDIAN
-#ifndef _WIN32
-    proxy_header.x = 0x01000000;
-    proxy_header.y = 0x01000000;
-#else
     proxy_header.x = 1;
     proxy_header.y = 1;
-#endif
-#else
-    proxy_header.x = 1;
-    proxy_header.y = 1;
-#endif
+
 
     if (slot < 0 || slot >= MAX_RODBC_THREADS) {
         error("Slot need to be from 0 to %d.", MAX_RODBC_THREADS);
@@ -392,10 +386,22 @@ SEXP asyncRODBCIOStart(SEXP slotA, SEXP hostA, SEXP portA) {
 	    goto error;
         }
 
+#ifndef _WIN32
+	errno = 0;
+#endif
+
 	if ((r = recv(t->fd, (void*)&(proxy_answer), sizeof(proxy_answer), MSG_WAITALL)) != sizeof(proxy_answer)) {
-            error("Failed to receive proxy header (%d != %d)", r, sizeof(proxy_answer));
+#ifndef _WIN32
+	 // error("Proxy header... - M = %d; x = %d; y = %d", proxy_header.m, proxy_header.x, proxy_header.y);
+	  error("Failed to receive proxy header from %s:%d (%d != %d); errno: %d", inet_ntoa(serv_addr.sin_addr), ntohs(serv_addr.sin_port), r, sizeof(proxy_answer), errno);
+#else
+	  error("Failed to receive proxy header from %s:%d (%d != %d; WS error code: %d)",  inet_ntoa(serv_addr.sin_addr), ntohs(serv_addr.sin_port), r, sizeof(proxy_answer), WSAGetLastError());
+#endif
             goto error;
         }
+//	else {
+//	  REprintf("Successfully received proxy header from %s:%d (%d != %d)\n", inet_ntoa(serv_addr.sin_addr), ntohs(serv_addr.sin_port), r, sizeof(proxy_answer));
+//	}
     }
     proxy_answer.s[15] = '\0';
     memcpy(t->proxyHost, proxy_answer.s, 16);

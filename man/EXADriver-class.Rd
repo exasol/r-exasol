@@ -7,6 +7,11 @@
 \description{
 An interface driver object to the EXASOL Database.
 }
+\section{Slots}{
+
+\describe{
+\item{\code{driver}}{A string containing the path to the EXASOL ODBC driver file.}
+}}
 \seealso{
 \code{\link{DBIDriver-class}}
 

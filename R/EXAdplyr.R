@@ -9,7 +9,7 @@
 
 
 #' @export
-src_exasol <- function(host, port = 8563, user = "sys", password = "exasol", ..., dsn = NULL) {
+src_exasol <- function(host, port = 8563, user = "sys", password = "exasol", ..., dsn = NULL, driver = NULL) {
 
   if (!require(dplyr))
     stop("Please install dplyr: install.packages('dplyr')")
@@ -19,7 +19,8 @@ src_exasol <- function(host, port = 8563, user = "sys", password = "exasol", ...
   if (missing(host))
     stop("No host specified. Please provide a valid IP or URL.")
 
-  con <- dbConnect("exa", exahost = paste0(host,":",port), uid = user, pwd = password, ... = ...)
+  d <- dbDriver("exasol", driver = driver)
+  con <- dbConnect(d, exahost = paste0(host,":",port), uid = user, pwd = password, ... = ...)
 }
   src_sql("exasol", con)
 }
@@ -95,6 +96,8 @@ db_explain.EXAConnection <- function(con, ...) {
 
 #' @export
 copy_to.src_exasol <- function(dest, df, name = deparse(substitute(df)), ...) {
+  # TODO: tbl/schema identifier handling as in src_exasol
+  df<- as.data.frame(df)
   dbWriteTable(dest$con, name, df, ...)
   tbl(dest, name)
 }
