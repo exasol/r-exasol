@@ -6,7 +6,10 @@
 \alias{EXAResult-class}
 \title{An object that is associated with a result set in an EXASOL Database.}
 \description{
-An object that is associated with a result set in an EXASOL Database.
+The result set is persisted
+in a DB table, which is dropped when the object is deleted in R (on garbage collection), or manually by
+`dbClearResult()'. R versions before 3.3.0 do not finalise objects on R exit, so if R is quit with an
+active EXAResult object, the table may stay in the DB.
 }
 \section{Fields}{
 
