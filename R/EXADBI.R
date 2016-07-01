@@ -1379,7 +1379,7 @@ EXAWriteTable <-
       if (missing(field_types)) {
         field_types <- dbDataType(con, data)
       } else {
-        if (length(field_types != ncol(data)))
+        if (length(field_types) != ncol(data))
           stop(
             "Error creating database table: number of field
             types provided does not match number of data columns in data.frame."
