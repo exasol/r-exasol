@@ -6,7 +6,7 @@ Date: 2016-01-01
 Author: EXASOL AG & Community
 Maintainer: Marcel Boldt <marcel.boldt@exasol.com>
 Depends:
-    R (>= 3.0.0),
+    R (>= 3.3.0),
     DBI (>= 0.3.1)
 Imports:
     methods,
@@ -26,8 +26,7 @@ URL: https://github.com/EXASOL/r-exasol https://www.exasol.com/portal
 LazyData: yes
 Suggests:
     testthat,
-    DBItest,
-    dplyr
+    DBItest
 SystemRequirements: EXASOL DB v5 onwards
 BugReports: https://github.com/EXASOL/r-exasol/issues
 RoxygenNote: 5.0.1
@@ -37,5 +36,4 @@ Collate:
     'exa.writeData.R'
     'exa.readData.R'
     'EXADBI.R'
-    'EXAdplyr.R'
     'exasol.R'

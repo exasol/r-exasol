@@ -11,26 +11,29 @@ Copyright © EXASOL AG, Nuremberg (Germany). All rights reserved.
 
 You need to have [Rtools](https://cran.r-project.org/bin/windows/Rtools/)
 installed on Windows for R to be able to compile the package (for Linux see below).
-Plus, the R package **devtools** must be available in your workspace
-as it contains the `install_github()` method. The EXASOL package itself
+Plus, the R package **devtools** must be available as it contains the `install_github()` method. The EXASOL package itself
 depends on the R package **RODBC**, which should be available on install
 from Github.
 
 To install the EXASOL package:
 ```r
-require(devtools)
-install_github("EXASOL/r-exasol")
+devtools::install_github("EXASOL/r-exasol")
 ```
 
 ## Status
 
+The package is currently tested with R 3.3.1. The packages however (DBI 0.3.1 and a fork of DBItest 1.0-1) are not the current versions. 
+The EXASOL R package may however work with DBI 0.4.1, but until this is resolved the fitting older packages can be loaded from here:
+
+- https://github.com/marcelboldt/DBI
+- https://github.com/marcelboldt/DBItest
+
 The low-level methods as regards exa.readData, exa.writeData and exa.createScript may work as expected, so 
-should the DBI connection methods (dbConnect etc.; all tests passed). DBI querying methods also get close to 
-being error-free.
+should the DBI connection methods (dbConnect etc.; all tests passed). DBI querying methods also get close to being production ready.
 
 Writing tests have not yet been implemented (only quick-tests), but it hopefully happens in the near future.
 
-`dplyr` support looks promising, but errors are still likely to occur.
+`dplyr` methods have been moved to a [separate package](https://github.com/marcelboldt/r-exasol-dplyr).
 
 Code coverage of tests:
 
