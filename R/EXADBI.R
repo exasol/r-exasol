@@ -226,6 +226,11 @@ setMethod(
 
 #' An object that is associated with a result set in an EXASOL Database.
 #'
+#' The result set is persisted
+#' in a DB table, which is dropped when the object is deleted in R (on garbage collection), or manually by
+#' `dbClearResult()'. R versions before 3.3.0 do not finalise objects on R exit, so if R is quit with an
+#' active EXAResult object, the table may stay in the DB.
+#'
 #' @seealso \code{\link{DBIResult-class}}
 #' @family DBI classes
 #' @family EXAResult related objects
@@ -263,7 +268,7 @@ EXAResult <- setRefClass(
   methods = list(
     refreshMetaData = function(x) {
       "Refreshes the object's metadata."
-      print("todo")
+      print("TODO: not yet implemented.")
     },
 
     addRowsFetched = function(x) {
@@ -298,6 +303,7 @@ EXAResult <- setRefClass(
 
     finalize = function(...) {
       #close()
+      if(dbClearResult(.self)) message("Table dropped in EXASOL DB.") else warning("Table not dropped in EXASOL DB")
       message("EXAResult object disposed.")
     }
   )
@@ -1373,7 +1379,7 @@ EXAWriteTable <-
       if (missing(field_types)) {
         field_types <- dbDataType(con, data)
       } else {
-        if (length(field_types != ncol(data)))
+        if (length(field_types) != ncol(data))
           stop(
             "Error creating database table: number of field
             types provided does not match number of data columns in data.frame."
