@@ -37,5 +37,4 @@ Collate:
     'exa.writeData.R'
     'exa.readData.R'
     'EXADBI.R'
-    'EXAdplyr.R'
     'exasol.R'

@@ -18,19 +18,23 @@ from Github.
 
 To install the EXASOL package:
 ```r
-require(devtools)
-install_github("EXASOL/r-exasol")
+devtools::install_github("EXASOL/r-exasol")
 ```
 
 ## Status
 
+The package is currently tested with DBI 0.3.1 and a fork of DBItest 1.0-1; these are not the current versions. 
+The package may however work with DBI 0.4.1, but until this is resolved the fitting packages can be loaded from here:
+
+- https://github.com/marcelboldt/DBI
+- https://github.com/marcelboldt/DBItest
+
 The low-level methods as regards exa.readData, exa.writeData and exa.createScript may work as expected, so 
-should the DBI connection methods (dbConnect etc.; all tests passed). DBI querying methods also get close to 
-being error-free.
+should the DBI connection methods (dbConnect etc.; all tests passed). DBI querying methods also get close to being production ready.
 
 Writing tests have not yet been implemented (only quick-tests), but it hopefully happens in the near future.
 
-`dplyr` support looks promising, but errors are still likely to occur.
+`dplyr` methods have been moved to a [separate package](https://github.com/marcelboldt/r-exasol-dplyr).
 
 Code coverage of tests:
 

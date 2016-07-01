@@ -375,7 +375,7 @@ setMethod("EXADataType", "Date",     function(x)
 setMethod("EXADataType", "POSIXct",  function(x)
   "TIMESTAMP")
 varchar <- function(x) {
-  paste0("VARCHAR(", max(nchar(as.character(x))), ")")
+  paste0("VARCHAR(", max(nchar(as.character(x)), na.rm=TRUE), ")")
 }
 setMethod("EXADataType", "character", varchar)
 setMethod("EXADataType", "factor",    varchar)
