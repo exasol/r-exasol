@@ -6,7 +6,7 @@ Date: 2016-01-01
 Author: EXASOL AG & Community
 Maintainer: Marcel Boldt <marcel.boldt@exasol.com>
 Depends:
-    R (>= 3.0.0),
+    R (>= 3.3.0),
     DBI (>= 0.3.1)
 Imports:
     methods,
