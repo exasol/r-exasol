@@ -1245,8 +1245,14 @@ setMethod(
 #' @param ... further arguements to be passed on to exa.readData.
 #' @return The result exa.readData, by default a data.frame containing the result set.
 setMethod(
-  "dbReadTable", signature("EXAConnection","character"),
-  definition = function(conn, name, schema = "", order_col = NA, limit = NA, ...) {
+  "dbReadTable",
+  signature("EXAConnection", "character"),
+  definition = function(conn,
+                        name,
+                        schema = "",
+                        order_col = NA,
+                        limit = NA,
+                        ...) {
     if (schema == "") {
       ids <- EXAGetIdentifier(name)
       schema <- ids[[1]][1]
@@ -1256,7 +1262,10 @@ setMethod(
       name <- processIDs(name)
     }
 
-    statement <- paste0("select * from ", schema, ".", name)
+    statement <-
+      ifelse(schema != "",
+             paste0("select * from ", schema, ".", name),
+             paste0("select * from ", name))
     if (!is.na(order_col)) {
       statement <-
         paste(statement, "order by (", processIDs(order_col), ")")
