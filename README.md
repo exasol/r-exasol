@@ -7,6 +7,8 @@ Copyright © EXASOL AG, Nuremberg (Germany). All rights reserved.
 [![Issue Stats](http://issuestats.com/github/EXASOL/r-exasol/badge/pr)](http://issuestats.com/github/EXASOL/r-exasol)
 [![Issue Stats](http://issuestats.com/github/EXASOL/r-exasol/badge/issue)](http://issuestats.com/github/EXASOL/r-exasol)
 
+###### Please note that this is an open source project which is officially supported by EXASOL. For any question, you can contact our support team.
+
 ## Installation
 
 You need to have [Rtools](https://cran.r-project.org/bin/windows/Rtools/)
