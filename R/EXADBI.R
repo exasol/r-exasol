@@ -570,7 +570,7 @@ EXANewConnection <- function(# change defaults also above
     else {
       stop(
         "Connect failed. Either DSN, host & db_user or a connection string must be given.\n
-        Hint: No lazy declaration of onnection parameters - these have to be stated ' dsn=...'.\n
+        Hint: No lazy declaration of connection parameters - these have to be stated ' dsn=...'.\n
         See also the examples in the help ('?dbConnect')."
       )
     }
