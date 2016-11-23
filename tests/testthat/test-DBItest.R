@@ -1,5 +1,5 @@
 DBItest::make_context(exasol(),
-                      list(dsn = "exasolution-uo2214lv1_64", schema = "PUB864"),
+                      list(dsn = "exasolution-uo2214lv1_64", schema = "PUB1092"),
                       tweaks = list(dummy_table = "DUAL"))
 
 #DBItest::make_context(exasol(), list(dsn="EXASolo", schema="TEST"), tweaks = list(dummy_table = "DUAL"))
