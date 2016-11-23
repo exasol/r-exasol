@@ -1,11 +1,11 @@
 # R Interface & SDK for the EXASOL Database
-Copyright © EXASOL AG, Nuremberg (Germany). All rights reserved.  
-2004 - 2016
 
 [![Build Status](https://travis-ci.org/EXASOL/r-exasol.svg)](https://travis-ci.org/EXASOL/r-exasol)
 [![codecov.io](https://codecov.io/github/EXASOL/r-exasol/coverage.svg?branch=master)](https://codecov.io/github/EXASOL/r-exasol?branch=master)
-[![Issue Stats](http://issuestats.com/github/EXASOL/r-exasol/badge/pr)](http://issuestats.com/github/EXASOL/r-exasol)
-[![Issue Stats](http://issuestats.com/github/EXASOL/r-exasol/badge/issue)](http://issuestats.com/github/EXASOL/r-exasol)
+[![Issue Stats](http://issuestats.com/github/EXASOL/r-exasol/badge/pr?style=flat-square)](http://issuestats.com/github/EXASOL/r-exasol)
+[![Issue Stats](http://issuestats.com/github/EXASOL/r-exasol/badge/issue?style=flat-square)](http://issuestats.com/github/EXASOL/r-exasol)
+
+###### Please note that this is an open source project which is officially supported by EXASOL. For any question, you can contact our support team.
 
 ## Installation
 
@@ -40,6 +40,38 @@ Code coverage of tests:
 ![codecov.io](https://codecov.io/github/EXASOL/r-exasol/branch.svg?branch=master)
 
 # EXASOL R Package
+
+## Example
+
+```r
+devtools::install_github("exasol/r-exasol")
+library(exasol)
+
+# display package documentation with examples for each method
+?exasol 
+
+
+# connect to EXASOL DB with an ODBC DSN
+con <- dbConnect("exa", dsn="ExaSolo", schema="TEST") 
+
+
+# list all tables in EXASOL (returns a character vector).
+dbListTables(con)
+
+
+# send a query and read the result into a data.frame
+df <- dbGetQuery(con, "select * from TEST.MYTAB")
+
+
+#send a query and return a result set handler, then fetch 2 rows
+res <- dbSendQuery(con, "select * from TEST.MYTAB")
+df <- dbFetch(res, 2)
+
+
+# disconnect
+dbDisconnect(con)
+```
+
 
 ## Description
 
