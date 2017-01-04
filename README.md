@@ -15,20 +15,20 @@ Plus, the R package **devtools** must be available as it contains the `install_g
 depends on the R package **RODBC**, which should be available on install
 from Github.
 
-To install the EXASOL package:
+To install the EXASOL package (after having installed the pre-requisites described further down):
 ```r
 devtools::install_github("EXASOL/r-exasol")
 ```
 
 ## Status
 
-The package is currently tested with R 3.3.1. The packages however (DBI 0.3.1 and a fork of DBItest 1.0-1) are not the current versions. 
+The package is currently tested with R 3.3.1. The packages however (DBI 0.3.1 and a fork of DBItest 1.0-1) are not the current versions.
 The EXASOL R package may however work with DBI 0.4.1, but until this is resolved the fitting older packages can be loaded from here:
 
 - https://github.com/marcelboldt/DBI
 - https://github.com/marcelboldt/DBItest
 
-The low-level methods as regards exa.readData, exa.writeData and exa.createScript may work as expected, so 
+The low-level methods as regards exa.readData, exa.writeData and exa.createScript may work as expected, so
 should the DBI connection methods (dbConnect etc.; all tests passed). DBI querying methods also get close to being production ready.
 
 Writing tests have not yet been implemented (only quick-tests), but it hopefully happens in the near future.
@@ -48,11 +48,15 @@ devtools::install_github("exasol/r-exasol")
 library(exasol)
 
 # display package documentation with examples for each method
-?exasol 
-
+?exasol
+# display documentation of individual commands with Exasol-specific parameters
+?dbConnect
 
 # connect to EXASOL DB with an ODBC DSN
-con <- dbConnect("exa", dsn="ExaSolo", schema="TEST") 
+con <- dbConnect("exa", dsn="ExaSolo", schema="TEST")
+# OR connect to EXASOL DB running on default port (8563) with a hostname, default 'sys' user and default schema ('SYS')
+# (e.g. Exasol on AWS)
+con <- dbConnect("exa", exahost = "<hostname>:8563", uid = "sys", pwd = "<password>")
 
 
 # list all tables in EXASOL (returns a character vector).
@@ -75,14 +79,14 @@ dbDisconnect(con)
 
 ## Description
 
-The EXASOL R Package offers interface functionality such as connecting to, querying and writing 
-into an EXASOL Database (version 5 onwards). It is optimised for massively parallel reading & 
-writing from and to a multinode cluster. Implemented are DBI compliant methods for database access, 
-querying and modiifcation. The package integrates with EXASOL's InDB R UDF capabilities, which 
+The EXASOL R Package offers interface functionality such as connecting to, querying and writing
+into an EXASOL Database (version 5 onwards). It is optimised for massively parallel reading &
+writing from and to a multinode cluster. Implemented are DBI compliant methods for database access,
+querying and modiifcation. The package integrates with EXASOL's InDB R UDF capabilities, which
 allows to deploy and execute R code dynamically from an R application running on a client.
 
-EXASOL is an InMemory RDBMS that runs in a MPP cluster (shared-nothing) environment. 
-Leading the TPC-H benckmark, it is considered the fastest analytical data warehouse available. 
+EXASOL is an InMemory RDBMS that runs in a MPP cluster (shared-nothing) environment.
+Leading the TPC-H benckmark, it is considered the fastest analytical data warehouse available.
 The community edition can be downloaded for free from the [EXASOL Community Portal](https://www.exasol.com/portal).
 
 
@@ -101,7 +105,7 @@ The community edition can be downloaded for free from the [EXASOL Community Port
    configured on your system. We recommend to create a DSN pointing to
    your database instance. Read the README of EXASOL's ODBC
    driver package for details.
-   
+
    On Linux, you also need to install the development files for ODBC.
    Therefore please install `unixodbc-devel` (RPM) or `unixodbc-dev`
    (Debian) package.
