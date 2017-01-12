@@ -15,7 +15,7 @@ Plus, the R package **devtools** must be available as it contains the `install_g
 depends on the R package **RODBC**, which should be available on install
 from Github.
 
-To install the EXASOL package (after having installed the pre-requisites described further down):
+To install the EXASOL package (after having installed the pre-requisites described in the 'Prerequisites and Installation' section below):
 ```r
 devtools::install_github("EXASOL/r-exasol")
 ```
