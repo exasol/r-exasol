@@ -55,7 +55,6 @@ library(exasol)
 # connect to EXASOL DB with an ODBC DSN
 con <- dbConnect("exa", dsn="ExaSolo", schema="TEST")
 # OR connect to EXASOL DB running on default port (8563) with a hostname, default 'sys' user and default schema ('SYS')
-# (e.g. Exasol on AWS)
 con <- dbConnect("exa", exahost = "<hostname>:8563", uid = "sys", pwd = "<password>")
 
 
