@@ -18,7 +18,7 @@ allows to deploy and execute R code dynamically from an R application running on
 
 EXASOL is an InMemory RDBMS that runs in a MPP cluster (shared-nothing) environment.
 Leading the TPC-H benckmark, it is considered the fastest analytical data warehouse available.
-**The community edition can be downloaded for free from the [EXASOL Community Portal](https://www.exasol.com/portal).**
+*The community edition can be downloaded for free from the [EXASOL Community Portal](https://www.exasol.com/portal).*
 =======
 ### Prerequisites
 
