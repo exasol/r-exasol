@@ -9,6 +9,7 @@
 
 ## Description
 
+<<<<<<< HEAD
 The EXASOL R Package offers interface functionality such as connecting to, querying and writing
 into an EXASOL Database (version 5 onwards). It is optimised for fast reading &
 writing from and to a multinode cluster. Implemented are DBI compliant methods for database access,
@@ -18,6 +19,45 @@ allows to deploy and execute R code dynamically from an R application running on
 EXASOL is an InMemory RDBMS that runs in a MPP cluster (shared-nothing) environment.
 Leading the TPC-H benckmark, it is considered the fastest analytical data warehouse available.
 The community edition can be downloaded for free from the [EXASOL Community Portal](https://www.exasol.com/portal).
+=======
+### Prerequisites
+
+1. Install developer extensions for R to be able to build from sources
+
+   For Windows: Install `Rtools`
+   For Linux: Install the `R-devel` (RPM) or `r-base-dev` (Debian) package.
+
+   The packages might change over time, so generally you can go to the
+   official R-project website download section for your OS to find the
+   package that are needed to build packages.
+
+2. Make sure you have ODBC and EXASOL ODBC installed and
+   configured on your system. We recommend to create a DSN pointing to
+   your database instance. Read the README of EXASOL's ODBC
+   driver package for details.
+
+   On Linux, you also need to install the development files for ODBC.
+   Therefore please install `unixodbc-devel` (RPM) or `unixodbc-dev`
+   (Debian) package.
+   
+3. The R package **devtools** must be available as it contains the `install_github()` method
+	and the things needed to build the package.
+   
+### Installation
+
+To load the EXASOL package from GitHub and have R compile and build the package for use:
+```r
+devtools::install_github("EXASOL/r-exasol")
+```   
+
+### Loading the package
+
+To use the package import it as follows:
+``` r
+library(exasol)
+```
+>>>>>>> ff0c8e274ecb7f9e040e745bcf33c9c625374912
+
 
 ## Status
 
@@ -114,6 +154,23 @@ dbDisconnect(con)
 ```
 
 
+<<<<<<< HEAD
+=======
+## Description
+
+The EXASOL R Package offers interface functionality such as connecting to, querying and writing
+into an EXASOL Database (version 5 onwards). It is optimised for massively parallel reading &
+writing from and to a multinode cluster. Implemented are DBI compliant methods for database access,
+querying and modiifcation. The package integrates with EXASOL's InDB R UDF capabilities, which
+allows to deploy and execute R code dynamically from an R application running on a client.
+
+EXASOL is an InMemory RDBMS that runs in a MPP cluster (shared-nothing) environment.
+Leading the TPC-H benckmark, it is considered the fastest analytical data warehouse available.
+The community edition can be downloaded for free from the [EXASOL Community Portal](https://www.exasol.com/portal).
+
+
+
+>>>>>>> ff0c8e274ecb7f9e040e745bcf33c9c625374912
 ## Manual
 
 The package comes with documentation accessible from R via the command `?exasol`.
