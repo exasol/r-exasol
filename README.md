@@ -9,16 +9,43 @@
 
 ## Installation
 
-You need to have [Rtools](https://cran.r-project.org/bin/windows/Rtools/)
-installed on Windows for R to be able to compile the package (for Linux see below).
-Plus, the R package **devtools** must be available as it contains the `install_github()` method. The EXASOL package itself
-depends on the R package **RODBC**, which should be available on install
-from Github.
+### Prerequisites
 
-To install the EXASOL package (after having installed the pre-requisites described in the 'Prerequisites and Installation' section below):
+1. Install developer extensions for R to be able to build from sources
+
+   For Windows: Install `Rtools`
+   For Linux: Install the `R-devel` (RPM) or `r-base-dev` (Debian) package.
+
+   The packages might change over time, so generally you can go to the
+   official R-project website download section for your OS to find the
+   package that are needed to build packages.
+
+2. Make sure you have ODBC and EXASOL ODBC installed and
+   configured on your system. We recommend to create a DSN pointing to
+   your database instance. Read the README of EXASOL's ODBC
+   driver package for details.
+
+   On Linux, you also need to install the development files for ODBC.
+   Therefore please install `unixodbc-devel` (RPM) or `unixodbc-dev`
+   (Debian) package.
+   
+3. The R package **devtools** must be available as it contains the `install_github()` method
+	and the things needed to build the package.
+   
+### Installation
+
+To load the EXASOL package from GitHub and have R compile and build the package for use:
 ```r
 devtools::install_github("EXASOL/r-exasol")
+```   
+
+### Loading the package
+
+To use the package import it as follows:
+``` r
+library(exasol)
 ```
+
 
 ## Status
 
@@ -89,32 +116,6 @@ Leading the TPC-H benckmark, it is considered the fastest analytical data wareho
 The community edition can be downloaded for free from the [EXASOL Community Portal](https://www.exasol.com/portal).
 
 
-## Prerequisites and Installation
-
-1. Install developer extensions for R to be able to build from sources
-
-   For Windows: Install `Rtools`
-   For Linux: Install the `R-devel` (RPM) or `r-base-dev` (Debian) package.
-
-   The packages might change over time, so generally you can go to the
-   official R-project website download section for your OS to find the
-   package that are needed to build packages.
-
-2. Make sure you have ODBC and EXASOL ODBC installed and
-   configured on your system. We recommend to create a DSN pointing to
-   your database instance. Read the README of EXASOL's ODBC
-   driver package for details.
-
-   On Linux, you also need to install the development files for ODBC.
-   Therefore please install `unixodbc-devel` (RPM) or `unixodbc-dev`
-   (Debian) package.
-
-## Importing the package
-
-To use the package import it as follows:
-``` r
-library(exasol)
-```
 
 ## Manual
 
