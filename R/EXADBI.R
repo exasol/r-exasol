@@ -1261,7 +1261,7 @@ setMethod(
       schema <- processIDs(schema)
       name <- processIDs(name)
     }
-    
+
     statement <-
       ifelse(schema != "",
              paste0("select * from ", schema, ".", name),
