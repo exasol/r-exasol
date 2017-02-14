@@ -16,4 +16,3 @@ A named list.
 \description{
 Returns metadata on a given EXAObject.
 }
-

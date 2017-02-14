@@ -21,11 +21,6 @@ a character vector. If no tables present, a character vector of length 0.
 Lists all fields of a table.
 }
 \seealso{
-Other DQL functions: \code{\link{dbClearResult}},
-  \code{\link{dbExistsTable}}, \code{\link{dbFetch}},
-  \code{\link{dbGetQuery}}, \code{\link{dbListTables}},
-  \code{\link{dbReadTable}}, \code{\link{dbSendQuery}}
-
 Other EXAConnection related objects: \code{\link{EXAConnection-class}},
   \code{\link{dbBegin}}, \code{\link{dbCommit}},
   \code{\link{dbConnect}}, \code{\link{dbCurrentSchema}},
@@ -34,5 +29,9 @@ Other EXAConnection related objects: \code{\link{EXAConnection-class}},
   \code{\link{dbReadTable}}, \code{\link{dbRemoveTable}},
   \code{\link{dbRollback}}, \code{\link{dbSendQuery}},
   \code{\link{dbWriteTable}}
-}
 
+Other DQL functions: \code{\link{dbClearResult}},
+  \code{\link{dbExistsTable}}, \code{\link{dbFetch}},
+  \code{\link{dbGetQuery}}, \code{\link{dbListTables}},
+  \code{\link{dbReadTable}}, \code{\link{dbSendQuery}}
+}

@@ -32,11 +32,6 @@ EXAResult object which can be used for fetching rows. It also contains metadata.
 Sends an SQL statment to an EXASOL DB, prepares for result fetching.
 }
 \seealso{
-Other DQL functions: \code{\link{dbClearResult}},
-  \code{\link{dbExistsTable}}, \code{\link{dbFetch}},
-  \code{\link{dbGetQuery}}, \code{\link{dbListFields}},
-  \code{\link{dbListTables}}, \code{\link{dbReadTable}}
-
 Other EXAConnection related objects: \code{\link{EXAConnection-class}},
   \code{\link{dbBegin}}, \code{\link{dbCommit}},
   \code{\link{dbConnect}}, \code{\link{dbCurrentSchema}},
@@ -45,5 +40,9 @@ Other EXAConnection related objects: \code{\link{EXAConnection-class}},
   \code{\link{dbListTables}}, \code{\link{dbReadTable}},
   \code{\link{dbRemoveTable}}, \code{\link{dbRollback}},
   \code{\link{dbWriteTable}}
-}
 
+Other DQL functions: \code{\link{dbClearResult}},
+  \code{\link{dbExistsTable}}, \code{\link{dbFetch}},
+  \code{\link{dbGetQuery}}, \code{\link{dbListFields}},
+  \code{\link{dbListTables}}, \code{\link{dbReadTable}}
+}

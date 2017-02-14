@@ -12,6 +12,7 @@ An interface driver object to the EXASOL Database.
 \describe{
 \item{\code{driver}}{A string containing the path to the EXASOL ODBC driver file.}
 }}
+
 \seealso{
 \code{\link{DBIDriver-class}}
 
@@ -21,4 +22,3 @@ Other DBI classes: \code{\link{EXAConnection-class}},
 
 Other EXADriver related objects: \code{\link{dbConnect}}
 }
-

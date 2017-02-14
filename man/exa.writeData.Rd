@@ -76,4 +76,3 @@ exa.writeData(con, twogroups, "test.twogroups", encoding="1252")
 \author{
 EXASOL AG <support@exasol.com>
 }
-

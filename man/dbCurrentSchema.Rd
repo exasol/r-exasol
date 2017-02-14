@@ -25,4 +25,3 @@ Other EXAConnection related objects: \code{\link{EXAConnection-class}},
   \code{\link{dbRollback}}, \code{\link{dbSendQuery}},
   \code{\link{dbWriteTable}}
 }
-

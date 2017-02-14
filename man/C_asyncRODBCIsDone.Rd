@@ -12,4 +12,3 @@ C_asyncRODBCIsDone
 TODO comment
 }
 \keyword{datasets}
-

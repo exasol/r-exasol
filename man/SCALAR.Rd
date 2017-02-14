@@ -12,4 +12,3 @@ SCALAR
 SCALAR input type of UDF script will call the function once for each record.
 }
 \keyword{datasets}
-

@@ -77,4 +77,3 @@ print(tables$TABLE_NAME[1])  # print first value of specified column
 \author{
 EXASOL AG <support@exasol.com>
 }
-

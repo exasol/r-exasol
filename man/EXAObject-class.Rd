@@ -14,4 +14,3 @@ Other DBI classes: \code{\link{EXAConnection-class}},
   \code{\link{EXADriver-class}},
   \code{\link{EXAResult-class}}
 }
-

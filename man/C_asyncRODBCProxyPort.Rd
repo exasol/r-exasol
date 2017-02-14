@@ -12,4 +12,3 @@ C_asyncRODBCProxyPort
 TODO comment
 }
 \keyword{datasets}
-

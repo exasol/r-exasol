@@ -41,8 +41,6 @@ a logical indicating success.
 Writes a data.frame into a table. If the table does not exist, it is created.
 }
 \seealso{
-Other DML functions: \code{\link{dbRemoveTable}}
-
 Other EXAConnection related objects: \code{\link{EXAConnection-class}},
   \code{\link{dbBegin}}, \code{\link{dbCommit}},
   \code{\link{dbConnect}}, \code{\link{dbCurrentSchema}},
@@ -51,5 +49,6 @@ Other EXAConnection related objects: \code{\link{EXAConnection-class}},
   \code{\link{dbListTables}}, \code{\link{dbReadTable}},
   \code{\link{dbRemoveTable}}, \code{\link{dbRollback}},
   \code{\link{dbSendQuery}}
-}
 
+Other DML functions: \code{\link{dbRemoveTable}}
+}

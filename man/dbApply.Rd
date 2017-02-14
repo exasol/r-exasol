@@ -23,4 +23,3 @@ An EXAResult object relating to the result set in the EXASOL database, or if SIM
 Applies an R function to a result set.
 The R code is transfered and deployed in an EXASOL database and executed massively parallel.
 }
-

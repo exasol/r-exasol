@@ -29,4 +29,3 @@ Other EXAConnection related objects: \code{\link{EXAConnection-class}},
 Other transaction management functions: \code{\link{dbBegin}},
   \code{\link{dbCommit}}, \code{\link{dbEnd}}
 }
-

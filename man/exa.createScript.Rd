@@ -154,4 +154,3 @@ testscript("groupid", "val", table = "test.twogroups" , groupBy = "groupid")
 \author{
 EXASOL AG <support@exasol.com>
 }
-

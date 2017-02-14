@@ -12,4 +12,3 @@ EMITS
 EMITS output type of UDF script -- function emits any number of values.
 }
 \keyword{datasets}
-

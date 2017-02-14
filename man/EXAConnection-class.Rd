@@ -2,8 +2,8 @@
 % Please edit documentation in R/EXADBI.R
 \docType{class}
 \name{EXAConnection-class}
-\alias{EXAConnection}
 \alias{EXAConnection-class}
+\alias{EXAConnection}
 \title{An Object holding a connection to an EXASOL Database.}
 \description{
 An Object holding a connection to an EXASOL Database.
@@ -50,6 +50,7 @@ initialise the connection.}
 
 \item{\code{rows_at_time}}{RODBC}
 }}
+
 \seealso{
 \code{\link{DBIConnection-class}}
 
@@ -66,4 +67,3 @@ Other EXAConnection related objects: \code{\link{dbBegin}},
   \code{\link{dbRollback}}, \code{\link{dbSendQuery}},
   \code{\link{dbWriteTable}}
 }
-
