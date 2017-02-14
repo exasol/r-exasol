@@ -12,4 +12,3 @@ RETURNS
 RETURNS output type of UDF script -- function emits just a single value.
 }
 \keyword{datasets}
-

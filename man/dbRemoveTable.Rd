@@ -27,8 +27,6 @@ A logicl indicating success.
 Removes a table.
 }
 \seealso{
-Other DML functions: \code{\link{dbWriteTable}}
-
 Other EXAConnection related objects: \code{\link{EXAConnection-class}},
   \code{\link{dbBegin}}, \code{\link{dbCommit}},
   \code{\link{dbConnect}}, \code{\link{dbCurrentSchema}},
@@ -37,5 +35,6 @@ Other EXAConnection related objects: \code{\link{EXAConnection-class}},
   \code{\link{dbListTables}}, \code{\link{dbReadTable}},
   \code{\link{dbRollback}}, \code{\link{dbSendQuery}},
   \code{\link{dbWriteTable}}
-}
 
+Other DML functions: \code{\link{dbWriteTable}}
+}

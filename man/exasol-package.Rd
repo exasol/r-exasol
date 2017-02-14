@@ -2,8 +2,8 @@
 % Please edit documentation in R/exasol.R
 \docType{package}
 \name{exasol-package}
-\alias{exasol}
 \alias{exasol-package}
+\alias{exasol}
 \title{R Interface & SDK for the EXASOL Database}
 \description{
 The EXASOL R Package offers interface functionality such as connecting to, querying
@@ -88,11 +88,7 @@ can be downloaded for free on \url{https://www.exasol.com/portal}.
 \item{\code{\link{dbCurrentSchema}}}{Fetches and outputs the current schema from an EXASOL DB.}
 }}
 }
-\author{
-EXASOL AG & Community
 
-Maintainer: \packageMaintainer{exasol}
-}
 \references{
 \enumerate{
 \item The development version of the package is available on \url{https://github.com/EXASOL/r-exasol}
@@ -101,7 +97,11 @@ Maintainer: \packageMaintainer{exasol}
 \item Q & A: \url{https://www.exasol.com/portal/questions}
 }
 }
+\author{
+EXASOL AG & Community
+
+Maintainer: \packageMaintainer{exasol}
+}
 \keyword{distributed}
 \keyword{in-memory}
 \keyword{sql}
-

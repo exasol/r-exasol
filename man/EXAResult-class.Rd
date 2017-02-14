@@ -2,8 +2,8 @@
 % Please edit documentation in R/EXADBI.R
 \docType{class}
 \name{EXAResult-class}
-\alias{EXAResult}
 \alias{EXAResult-class}
+\alias{EXAResult}
 \title{An object that is associated with a result set in an EXASOL Database.}
 \description{
 The result set is persisted
@@ -38,6 +38,7 @@ active EXAResult object, the table may stay in the DB.
 
 \item{\code{default_fetch_rec}}{An int reflecting the default fetch size.}
 }}
+
 \section{Methods}{
 
 \describe{
@@ -45,6 +46,7 @@ active EXAResult object, the table may stay in the DB.
 
 \item{\code{refreshMetaData(x)}}{Refreshes the object's metadata.}
 }}
+
 \seealso{
 \code{\link{DBIResult-class}}
 
@@ -55,4 +57,3 @@ Other DBI classes: \code{\link{EXAConnection-class}},
 Other EXAResult related objects: \code{\link{dbClearResult}},
   \code{\link{dbFetch}}
 }
-

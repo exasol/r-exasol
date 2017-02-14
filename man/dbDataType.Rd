@@ -13,4 +13,3 @@ Determine the EXASOL data type of an object.
 \seealso{
 \code{\link{dbDataType,DBIObject-method}}
 }
-

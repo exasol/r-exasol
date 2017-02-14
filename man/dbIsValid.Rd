@@ -16,4 +16,3 @@ A logical indicating if the connection still works.
 \description{
 Checks if an EXAObject is still valid.
 }
-

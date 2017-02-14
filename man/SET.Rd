@@ -12,4 +12,3 @@ SET
 SET input type of UDF script will call the function once for each group
 }
 \keyword{datasets}
-

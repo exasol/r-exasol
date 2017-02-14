@@ -21,11 +21,6 @@ A logical indicating if the table exists.
 Checks if a table exists in an EXASOL DB.
 }
 \seealso{
-Other DQL functions: \code{\link{dbClearResult}},
-  \code{\link{dbFetch}}, \code{\link{dbGetQuery}},
-  \code{\link{dbListFields}}, \code{\link{dbListTables}},
-  \code{\link{dbReadTable}}, \code{\link{dbSendQuery}}
-
 Other EXAConnection related objects: \code{\link{EXAConnection-class}},
   \code{\link{dbBegin}}, \code{\link{dbCommit}},
   \code{\link{dbConnect}}, \code{\link{dbCurrentSchema}},
@@ -34,5 +29,9 @@ Other EXAConnection related objects: \code{\link{EXAConnection-class}},
   \code{\link{dbReadTable}}, \code{\link{dbRemoveTable}},
   \code{\link{dbRollback}}, \code{\link{dbSendQuery}},
   \code{\link{dbWriteTable}}
-}
 
+Other DQL functions: \code{\link{dbClearResult}},
+  \code{\link{dbFetch}}, \code{\link{dbGetQuery}},
+  \code{\link{dbListFields}}, \code{\link{dbListTables}},
+  \code{\link{dbReadTable}}, \code{\link{dbSendQuery}}
+}

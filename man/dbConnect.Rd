@@ -81,6 +81,8 @@ Creates a connection to an EXASOL Database.
 }
 }
 \seealso{
+Other EXADriver related objects: \code{\link{EXADriver-class}}
+
 Other EXAConnection related objects: \code{\link{EXAConnection-class}},
   \code{\link{dbBegin}}, \code{\link{dbCommit}},
   \code{\link{dbCurrentSchema}}, \code{\link{dbEnd}},
@@ -89,7 +91,4 @@ Other EXAConnection related objects: \code{\link{EXAConnection-class}},
   \code{\link{dbReadTable}}, \code{\link{dbRemoveTable}},
   \code{\link{dbRollback}}, \code{\link{dbSendQuery}},
   \code{\link{dbWriteTable}}
-
-Other EXADriver related objects: \code{\link{EXADriver-class}}
 }
-

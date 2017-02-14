@@ -19,12 +19,11 @@
 Fetches a subset of an result set.
 }
 \seealso{
+Other EXAResult related objects: \code{\link{EXAResult-class}},
+  \code{\link{dbClearResult}}
+
 Other DQL functions: \code{\link{dbClearResult}},
   \code{\link{dbExistsTable}}, \code{\link{dbGetQuery}},
   \code{\link{dbListFields}}, \code{\link{dbListTables}},
   \code{\link{dbReadTable}}, \code{\link{dbSendQuery}}
-
-Other EXAResult related objects: \code{\link{EXAResult-class}},
-  \code{\link{dbClearResult}}
 }
-

@@ -12,4 +12,3 @@ ALLOWED_UDF_IN_TYPES
 All input types of UDF scripts
 }
 \keyword{datasets}
-

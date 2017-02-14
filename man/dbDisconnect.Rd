@@ -16,4 +16,3 @@ A logical indicating success.
 \description{
 Disconnects the connection.
 }
-

@@ -12,4 +12,3 @@ ALLOWED_UDF_OUT_TYPES
 All output types of UDF scripts
 }
 \keyword{datasets}
-

@@ -17,4 +17,3 @@ a data.frame, if View is FALSE.
 \description{
 Shows the EXASOL ODBC connection log.
 }
-
