@@ -483,7 +483,7 @@ SEXP asyncRODBCQueryStart(SEXP slotA, SEXP chan, SEXP query, SEXP writerA) {
     t->stmt = NULL;
     t->res = SQLAllocHandle(SQL_HANDLE_STMT, rodbc->hDbc, &t->stmt);
     if (t->res != SQL_SUCCESS && t->res != SQL_SUCCESS_WITH_INFO) {
-        error("Could not allocate SQLAllocHandle");
+        error("Could not allocate SQLAllocHandle (%i)", t->res);
         goto error;
     }
 
@@ -564,7 +564,7 @@ SEXP asyncRODBCQueryCheck(SEXP slotA) {
 }
 
 SEXP asyncRODBCQueryFinish(SEXP slotA, SEXP closeA) {
-    int err = 0, i = 0, ret = -1, reterr = 0;
+    int err = 0, ret = -1, reterr = 0;
     const int slot = asInteger(slotA);
     const int closefd = asInteger(closeA);
     SQLCHAR sqlstate[6], msg[SQL_MAX_MESSAGE_LENGTH];
