@@ -19,14 +19,17 @@ install:
 - sudo pip install pipenv
 - git clone https://github.com/exasol/integration-test-docker-environment.git
 - Rscript -e 'install.packages("testthat")'
-r_github_packages:
-  - jimhester/covr
-  - jimhester/lintr
-  - marcelboldt/DBI 		# development version needed for DBItest
-  - marcelboldt/DBItest
+- Rscript -e 'install.packages("devtools")'
+- Rscript -e 'install.packages("RODBC")'
+- Rscript -e 'install.packages("assertthat")'
+- Rscript -e 'devtools::install_github("jimhester/covr")'
+- Rscript -e 'devtools::install_github("jimhester/lintr")'
+- Rscript -e 'devtools::install_github("marcelboldt/DBI")'
+- Rscript -e 'devtools::install_github("marcelboldt/DBItest")'
 before_script:
   - bash -x ./integration-test-docker-environment/start-test-env.sh --environment-name test --database-port-forward 8888 --bucketfs-port-forward 6666
 script:
+  - Rscript -e 'devtools::install()'
   - cd tests && R -f testthat.R
 after_success:
   - Rscript -e 'library(covr); codecov()'
