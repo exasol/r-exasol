@@ -1,5 +1,5 @@
 DBItest::make_context(exasol(),
-                      list(exahost = "localhost:8888", uid="sys", pwd="exasol" , schema = "TEST"),
+                      list(exahost = "localhost:8888", uid="sys", pwd="exasol"),
                       tweaks = list(dummy_table = "DUAL"))
 
 #DBItest::make_context(exasol(), list(dsn="EXASolo", schema="TEST"), tweaks = list(dummy_table = "DUAL"))
