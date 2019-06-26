@@ -81,7 +81,6 @@ setOldClass("RODBC")
 #' @seealso \code{\link{DBIDriver-class}}
 #' @family DBI classes
 #' @family EXADriver related objects
-#'
 #' @slot driver A string containing the path to the EXASOL ODBC driver file.
 setClass("EXADriver",
          contains = c("DBIDriver", "EXAObject"),
@@ -270,7 +269,6 @@ EXAResult <- setRefClass(
       "Refreshes the object's metadata."
       print("TODO: not yet implemented.")
     },
-
     addRowsFetched = function(x) {
       "Add an int (the length of a newly fetched result set) to rows_fetched."
       rows_fetched <<- rows_fetched + as.numeric(x)
@@ -330,6 +328,9 @@ setMethod(
   }
 )
 
+setMethod("dbGetRowsAffected", signature("EXAResult"), function(res) {
+  return(res$rows_affected)
+})
 
 
 #' Checks if an EXAObject is still valid.
@@ -866,13 +867,18 @@ setMethod(
   valueClass = "EXAResult"
 )
 
-
+isSelectStatement <-
+  function(statement) {
+    return(grepl("^\\s*(\\/\\*.*\\*\\/)?\\s*(WITH.*)?SELECT",toupper(statement),perl=TRUE))
+}
 
 EXAExecStatement <-
   function(con, stmt, schema = "", profile = TRUE, default_fetch_rec = 100, ...) {
-    stmt_cmd <-
-      toupper(regmatches(stmt,gregexpr("^\\w+",stmt,perl = TRUE))[[1]])
-
+    if (isSelectStatement(stmt)){
+      stmt_cmd <- "SELECT"
+    } else {
+      stmt_cmd <- "NOSELECT"
+    }
     qtime <- Sys.time()
     err <- vector(mode = "character")
 
@@ -1015,7 +1021,7 @@ EXAExecStatement <-
       connection = con,
       statement = stmt,
       rows_fetched = 0,
-      rows_affected = as.numeric(rowcount),
+      rows_affected = rowcount,
       is_complete = ifelse(stmt_cmd == "SELECT",FALSE,TRUE),
       with_output = ifelse(stmt_cmd == "SELECT",TRUE,FALSE),
       profile = p,
@@ -1159,7 +1165,7 @@ EXAClearResult <- function(res,...) {
 setMethod(
   "dbGetQuery", signature("EXAConnection","character"),
   definition = function(conn, statement,...) {
-    if (toupper(regmatches(statement,gregexpr("^\\w+",statement,perl = TRUE))[[1]]) == "SELECT") {
+    if (isSelectStatement(statement)) {
       return(exa.readData(conn,statement,...))
     } else {
       sqlQuery(conn, statement, errors = TRUE)

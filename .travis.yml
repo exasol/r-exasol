@@ -1,3 +1,4 @@
+dist: xenial
 language: r
 # see also https://docs.travis-ci.com/user/languages/r
 
@@ -6,34 +7,30 @@ language: r
 cache:
   - apt
   - packages
-
-# You will need to set sudo: false in order to use the container based builds
-# and package caching.
-sudo: false
-
+sudo: required
 warnings_are_errors: false
-
-addons:
-  apt:
-    packages:
-    - unixodbc-dev
-
-notifications:
-  email:
-    on_success: change
-    on_failure: change
-
-before_install:
-  - wget $EXAODBC_URL$EXAODBC_DRV_FILE".tar.gz"
-  - tar -xzf $EXAODBC_DRV_FILE".tar.gz"
-  - ./$EXAODBC_DRV_FILE/config_odbc --mode=config --host=$EXAHOST --user=$EXAUSER --password=$EXAPW
-
-r_github_packages:
-  - jimhester/covr
-  - jimhester/lintr
-  - marcelboldt/DBI 		# development version needed for DBItest
-  - marcelboldt/DBItest
-
+services:
+- docker
+install:
+- sudo add-apt-repository -y ppa:deadsnakes/ppa
+- sudo apt-get update
+- sudo apt-get install -y python3.6 curl unixodbc-dev
+- curl https://bootstrap.pypa.io/get-pip.py | sudo python3.6
+- sudo pip install pipenv
+- git clone https://github.com/exasol/integration-test-docker-environment.git
+- Rscript -e 'install.packages("testthat")'
+- Rscript -e 'install.packages("devtools")'
+- Rscript -e 'install.packages("RODBC")'
+- Rscript -e 'install.packages("assertthat")'
+- Rscript -e 'devtools::install_github("jimhester/covr")'
+- Rscript -e 'devtools::install_github("jimhester/lintr")'
+- Rscript -e 'devtools::install_github("marcelboldt/DBI")'
+- Rscript -e 'devtools::install_github("marcelboldt/DBItest")'
+before_script:
+  - bash -x ./integration-test-docker-environment/start-test-env.sh --environment-name test --database-port-forward 8888 --bucketfs-port-forward 6666
+script:
+  - Rscript -e 'devtools::install()'
+  - cd tests && R -f testthat.R
 after_success:
   - Rscript -e 'library(covr); codecov()'
   - Rscript -e 'devtools::install(); lintr::lint_package()'

@@ -1,4 +1,5 @@
 library(testthat)
 library(exasol)
-
+library(DBI)
+library(RODBC)
 test_check("exasol")
