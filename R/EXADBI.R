@@ -867,7 +867,7 @@ setMethod(
   valueClass = "EXAResult"
 )
 
-isSelectStatement <- 
+isSelectStatement <-
   function(statement) {
     return(grepl("^\\s*(\\/\\*.*\\*\\/)?\\s*(WITH.*)?SELECT",toupper(statement),perl=TRUE))
 }
@@ -1021,7 +1021,7 @@ EXAExecStatement <-
       connection = con,
       statement = stmt,
       rows_fetched = 0,
-      rows_affected = as.numeric(rowcount),
+      rows_affected = rowcount,
       is_complete = ifelse(stmt_cmd == "SELECT",FALSE,TRUE),
       with_output = ifelse(stmt_cmd == "SELECT",TRUE,FALSE),
       profile = p,
