@@ -1,5 +1,8 @@
 dist: xenial
 language: r
+r:
+  - oldrel
+  - release
 # see also https://docs.travis-ci.com/user/languages/r
 
 # Using the package cache to store R package dependencies can significantly
