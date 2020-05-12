@@ -23,7 +23,7 @@ Leading the TPC-H benckmark, it is considered the fastest analytical data wareho
 
 ## Status
 
-The package is currently tested with R 3.3.1. The packages however (DBI 0.3.1 and a fork of DBItest 1.0-1) are not the current versions.
+The package is currently tested with R 3.6 and R 4.0, but it is also worked on R 3.3 and R 3.4 The packages however (DBI 0.3.1 and a fork of DBItest 1.0-1) are not the current versions.
 The Exasol R package may however work with DBI 0.4.1, but until this is resolved the fitting older packages can be loaded from here:
 
 - https://github.com/marcelboldt/DBI
