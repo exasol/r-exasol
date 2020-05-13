@@ -30,7 +30,7 @@ install:
 - Rscript -e 'devtools::install_github("marcelboldt/DBI")'
 - Rscript -e 'devtools::install_github("marcelboldt/DBItest")'
 before_script:
-  - cd ./integration-test-docker-environment && bash -x start-test-env ./start-test-env spawn-test-environment --environment-name test --database-port-forward 8888 --bucketfs-port-forward 6666
+  - cd ./integration-test-docker-environment && bash -x start-test-env spawn-test-environment --environment-name test --database-port-forward 8888 --bucketfs-port-forward 6666
 script:
   - Rscript -e 'devtools::install()'
   - cd tests && R -f testthat.R
