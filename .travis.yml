@@ -30,10 +30,10 @@ install:
 - Rscript -e 'devtools::install_github("marcelboldt/DBI")'
 - Rscript -e 'devtools::install_github("marcelboldt/DBItest")'
 before_script:
-  - cd ./integration-test-docker-environment && bash -x start-test-env spawn-test-environment --environment-name test --database-port-forward 8888 --bucketfs-port-forward 6666
+  - pushd ./integration-test-docker-environment && bash -x start-test-env spawn-test-environment --environment-name test --database-port-forward 8888 --bucketfs-port-forward 6666 && popd
 script:
   - Rscript -e 'devtools::install()'
-  - cd tests && R -f testthat.R
+  - pushd tests && R -f testthat.R && popd
 after_success:
   - Rscript -e 'library(covr); codecov()'
   - Rscript -e 'devtools::install(); lintr::lint_package()'
