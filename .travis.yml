@@ -23,7 +23,8 @@ install:
 - git clone https://github.com/exasol/integration-test-docker-environment.git
 - Rscript -e 'install.packages("testthat")'
 - Rscript -e 'install.packages("devtools")'
-- Rscript -e 'install.packages("RODBC")'
+- Rscript -e 'install.packages("remotes")'
+- Rscript -e 'library(remotes);install_version("RODBC","v1.3-16")'
 - Rscript -e 'install.packages("assertthat")'
 - Rscript -e 'devtools::install_github("jimhester/covr")'
 - Rscript -e 'devtools::install_github("jimhester/lintr")'
