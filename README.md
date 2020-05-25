@@ -23,13 +23,12 @@ Leading the TPC-H benckmark, it is considered the fastest analytical data wareho
 
 ## Status
 
-The package is currently tested with R 3.6 and R 4.0, but it is also worked on R 3.3 and R 3.4 The packages however (DBI 0.3.1 and a fork of DBItest 1.0-1) are not the current versions.
-The Exasol R package may however work with DBI 0.4.1, but until this is resolved the fitting older packages can be loaded from here:
+The package gets tested in Travis against R 3.6 and R 4.0, but it is also worked on R 3.3 and R 3.4 in the past. For R 3.6 and ealier, an older RODBC package is necassary, the newer versions (1.3-17 and upwards) only support R 4.0. You can use the [remotes package](https://remotes.r-lib.org/) to install specific versions of RODBC. The packages DBI 0.3.1 and a fork of DBItest 1.0-1 are not the current versions. The Exasol R package may however work with DBI 0.4.1, but until this is resolved the fitting older packages can be loaded from here: 
 
 - https://github.com/marcelboldt/DBI
 - https://github.com/marcelboldt/DBItest
 
-The low-level methods sucb as regards `exa.readData`, `exa.writeData` and `exa.createScript` may work as expected, so
+The low-level methods such as regards `exa.readData`, `exa.writeData` and `exa.createScript` may work as expected, so
 should the DBI connection methods (`dbConnect`, etc.; all tests passed). DBI querying methods also get close to being production ready.
 
 Writing tests have not yet been implemented (only quick-tests), but it hopefully happens in the near future.
@@ -65,9 +64,12 @@ Code coverage of tests:
    On Linux, you also need to install the development files for ODBC.
    Therefore please install `unixodbc-devel` (RPM) or `unixodbc-dev`
    (Debian) package.
-   
+
 3. The R package **devtools** must be available as it contains the `install_github()` method
    and the things needed to build the package.
+
+4. Install the necassary dependencies, such as RODBC or the DBI packages. For the versions of these package, checkout the section [Status](#status). Have a look into the [Travis config](https://github.com/exasol/r-exasol/blob/master/.travis.yml), if you look for an example, how to install the necassary dependencies. 
+
    
 ### Installation
 
