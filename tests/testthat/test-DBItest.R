@@ -81,6 +81,15 @@ test_that("dbGetQuery_comment_before_select_stmt_with_CTE", {
   dbDisconnect(con)
 })
 
+test_that("dbHasCompleted", {
+  ctx <- DBItest::get_default_context()
+  con <- DBItest:::connect(ctx)
+  rs <- dbSendQuery(con, "SELECT *")
+  completed <- dbHasCompleted(rs)
+  expect_equal(completed,FALSE)
+  dbDisconnect(con)
+})
+
 # TODO need to be disabled for Travis, because they fail in Travis. Probably, due to the special version of DBI.
 # test_that("dbExecute_comment_before_select_stmt", {
 #   ctx <- DBItest::get_default_context()
