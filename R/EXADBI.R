@@ -321,6 +321,16 @@ setMethod(
   }
 )
 
+
+setMethod(
+  "dbHasCompleted", signature("EXAResult"),
+  definition = function(res) {
+    if(res$temp_result_tbl == "CLEARED") stop("GetInfo: Result set cleared.");
+    return(res$is_complete);
+  }
+)
+
+
 setMethod(
   "summary", "EXAResult",
   definition = function(object, ...) {
