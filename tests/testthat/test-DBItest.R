@@ -9,7 +9,8 @@ DBItest::test_getting_started(skip = c("package_name"))
 # stress_load_unload and stress_load_connect_unload are also skipped on travis
 DBItest::test_driver(skip = c("constructor_strict",
                               "constructor",
-                              "stress_load_unload"))
+                              "stress_load_unload"
+                              ))
 DBItest::test_connection(skip = c("stress_load_connect_unload"))
 
 DBItest::test_result(skip = c("stale_result_warning",
@@ -81,12 +82,32 @@ test_that("dbGetQuery_comment_before_select_stmt_with_CTE", {
   dbDisconnect(con)
 })
 
-test_that("dbHasCompleted", {
+test_that("test_dbHasCompleted", {
   ctx <- DBItest::get_default_context()
   con <- DBItest:::connect(ctx)
   rs <- dbSendQuery(con, "SELECT *")
   completed <- dbHasCompleted(rs)
   expect_equal(completed,FALSE)
+  dbDisconnect(con)
+})
+
+test_that("test_dbListTables_with_schema_filter", {
+  ctx <- DBItest::get_default_context()
+  con <- DBItest:::connect(ctx)
+  schema=toupper("test_dbListTables_with_schema_filter")
+  table=toupper("test_table")
+  drop_schema=paste0("DROP SCHEMA IF EXISTS ",schema," CASCADE")
+  rs=dbSendQuery(con, drop_schema)
+  dbClearResult(rs)
+  create_schema = paste0("CREATE SCHEMA ",schema)
+  rs=dbSendQuery(con, create_schema)
+  dbClearResult(rs)
+  create_table = paste0("CREATE OR REPLACE TABLE ",schema,".",table," (i int)")
+  rs=dbSendQuery(con, create_table)
+  dbClearResult(rs)
+  tables <- dbListTables(con,schema=schema)
+  expect_equal(tables,c(paste0(schema,".",table)))
+  dbGetQuery(con, paste0("DROP SCHEMA IF EXISTS ",schema," CASCADE"))
   dbDisconnect(con)
 })
 
