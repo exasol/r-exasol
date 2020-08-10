@@ -1241,7 +1241,7 @@ setMethod(
 
     qstr <-
       paste0("select table_schema, table_name from exa_all_tables ", ifelse(!missing(schema), paste("where table_schema =",
-             processIDs(schema)), ""), " order by 1,2" )
+             processIDs(schema,"'")), ""), " order by 1,2" )
     res <- exa.readData(conn, qstr, ...)
     return(paste0(res$TABLE_SCHEMA, ".", res$TABLE_NAME))
   })
