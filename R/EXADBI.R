@@ -386,7 +386,12 @@ setMethod("EXADataType", "Date",     function(x)
 setMethod("EXADataType", "POSIXct",  function(x)
   "TIMESTAMP")
 varchar <- function(x) {
-  paste0("VARCHAR(", max(nchar(as.character(x)), na.rm=TRUE), ")")
+  max_varchar_length = max(nchar(as.character(x)), na.rm=TRUE)
+  if (is.infinite(max_varchar_length)) {
+    paste0("CLOB")
+  } else {
+    paste0("VARCHAR(", max_varchar_length, ")")
+  }
 }
 setMethod("EXADataType", "character", varchar)
 setMethod("EXADataType", "factor",    varchar)
