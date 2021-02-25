@@ -30,7 +30,7 @@ Suggests:
     DBItest
 SystemRequirements: EXASOL DB v5 onwards
 BugReports: https://github.com/EXASOL/r-exasol/issues
-RoxygenNote: 6.0.1
+RoxygenNote: 7.1.1
 Collate:
     'EXADBI-internal.R'
     'exa.createScript.R'

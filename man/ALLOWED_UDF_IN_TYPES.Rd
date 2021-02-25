@@ -4,7 +4,9 @@
 \name{ALLOWED_UDF_IN_TYPES}
 \alias{ALLOWED_UDF_IN_TYPES}
 \title{All input types of UDF scripts}
-\format{An object of class \code{character} of length 2.}
+\format{
+An object of class \code{character} of length 2.
+}
 \usage{
 ALLOWED_UDF_IN_TYPES
 }

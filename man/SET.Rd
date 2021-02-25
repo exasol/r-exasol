@@ -4,7 +4,9 @@
 \name{SET}
 \alias{SET}
 \title{SET input type of UDF script will call the function once for each group}
-\format{An object of class \code{character} of length 1.}
+\format{
+An object of class \code{character} of length 1.
+}
 \usage{
 SET
 }
