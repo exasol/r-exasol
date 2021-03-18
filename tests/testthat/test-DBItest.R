@@ -130,3 +130,12 @@ test_that("test_dbListTables_with_schema_filter", {
 #   dbExecute(con,"/* */with t as (select 1 as x) select x from t")
 #   dbDisconnect(con)
 # })
+
+context("data mapping tests")
+test_that("dbDataType converts empty characters to CLOB data type", {
+  df <- data.frame(name=character())
+  ctx <- DBItest::get_default_context()
+  con <- DBItest:::connect(ctx)
+  expect_equal(dbDataType(con, df), "CLOB")
+  dbDisconnect(con)
+})
