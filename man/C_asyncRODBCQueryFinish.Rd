@@ -4,7 +4,9 @@
 \name{C_asyncRODBCQueryFinish}
 \alias{C_asyncRODBCQueryFinish}
 \title{TODO comment}
-\format{An object of class \code{CallRoutine} (inherits from \code{NativeSymbolInfo}) of length 4.}
+\format{
+An object of class \code{CallRoutine} (inherits from \code{NativeSymbolInfo}) of length 4.
+}
 \usage{
 C_asyncRODBCQueryFinish
 }

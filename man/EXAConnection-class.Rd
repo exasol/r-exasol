@@ -54,16 +54,26 @@ initialise the connection.}
 \seealso{
 \code{\link{DBIConnection-class}}
 
-Other DBI classes: \code{\link{EXADriver-class}},
-  \code{\link{EXAObject-class}},
-  \code{\link{EXAResult-class}}
+Other DBI classes: 
+\code{\link{EXADriver-class}},
+\code{\link{EXAObject-class}},
+\code{\link{EXAResult-class}}
 
-Other EXAConnection related objects: \code{\link{dbBegin}},
-  \code{\link{dbCommit}}, \code{\link{dbConnect}},
-  \code{\link{dbCurrentSchema}}, \code{\link{dbEnd}},
-  \code{\link{dbExistsTable}}, \code{\link{dbGetQuery}},
-  \code{\link{dbListFields}}, \code{\link{dbListTables}},
-  \code{\link{dbReadTable}}, \code{\link{dbRemoveTable}},
-  \code{\link{dbRollback}}, \code{\link{dbSendQuery}},
-  \code{\link{dbWriteTable}}
+Other EXAConnection related objects: 
+\code{\link{dbBegin}()},
+\code{\link{dbCommit}()},
+\code{\link{dbConnect}()},
+\code{\link{dbCurrentSchema}()},
+\code{\link{dbEnd}()},
+\code{\link{dbExistsTable}()},
+\code{\link{dbGetQuery}()},
+\code{\link{dbListFields}()},
+\code{\link{dbListTables}()},
+\code{\link{dbReadTable}()},
+\code{\link{dbRemoveTable}()},
+\code{\link{dbRollback}()},
+\code{\link{dbSendQuery}()},
+\code{\link{dbWriteTable}()}
 }
+\concept{DBI classes}
+\concept{EXAConnection related objects}

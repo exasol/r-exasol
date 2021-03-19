@@ -4,13 +4,20 @@
 \alias{exa.writeData}
 \title{Write a data.frame into an EXASOL table fast.}
 \usage{
-exa.writeData(channel, data, tableName, tableColumns = NA,
-  encoding = tryCatch(strsplit(Sys.getlocale("LC_CTYPE"), ".", fixed =
-  TRUE)[[1]][2], error = function(e)
-  stop(paste("Cannot get system encoding.\\n                                                                             Please set manually.\\n",
-  e))), writer = function(data, conn, fileEncoding = encoding) {    
-  write.table(data, file = conn, row.names = FALSE, col.names = FALSE, na = "",
-  sep = ",", qmethod = "double", fileEncoding = fileEncoding) }, server)
+exa.writeData(
+  channel,
+  data,
+  tableName,
+  tableColumns = NA,
+  encoding = tryCatch(strsplit(Sys.getlocale("LC_CTYPE"), ".", fixed = TRUE)[[1]][2],
+    error = function(e)
+    stop(paste("Cannot get system encoding.\\n                                                                             Please set manually.\\n",
+    e))),
+  writer = function(data, conn, fileEncoding = encoding) {     write.table(data, file =
+    conn, row.names = FALSE, col.names = FALSE, na = "", sep = ",", qmethod = "double",
+    fileEncoding = fileEncoding) },
+  server
+)
 }
 \arguments{
 \item{channel}{The RODBC connection channel, typically created via odbcConnect.}

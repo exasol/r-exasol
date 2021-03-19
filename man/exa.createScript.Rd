@@ -4,10 +4,21 @@
 \alias{exa.createScript}
 \title{Deploys an R function as an UDF in the EXASolution database.}
 \usage{
-exa.createScript(channel, name, func = NA, env = list(), initCode = NA,
-  cleanCode = NA, inType = SET, inArgs = list(), outType = EMITS,
-  outArgs = list(), outputAddress = NA, replaceIfExists = TRUE,
-  mockOnly = FALSE)
+exa.createScript(
+  channel,
+  name,
+  func = NA,
+  env = list(),
+  initCode = NA,
+  cleanCode = NA,
+  inType = SET,
+  inArgs = list(),
+  outType = EMITS,
+  outArgs = list(),
+  outputAddress = NA,
+  replaceIfExists = TRUE,
+  mockOnly = FALSE
+)
 }
 \arguments{
 \item{channel}{The RODBC connection channel, typically created via

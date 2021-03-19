@@ -16,9 +16,13 @@ An interface driver object to the EXASOL Database.
 \seealso{
 \code{\link{DBIDriver-class}}
 
-Other DBI classes: \code{\link{EXAConnection-class}},
-  \code{\link{EXAObject-class}},
-  \code{\link{EXAResult-class}}
+Other DBI classes: 
+\code{\link{EXAConnection-class}},
+\code{\link{EXAObject-class}},
+\code{\link{EXAResult-class}}
 
-Other EXADriver related objects: \code{\link{dbConnect}}
+Other EXADriver related objects: 
+\code{\link{dbConnect}()}
 }
+\concept{DBI classes}
+\concept{EXADriver related objects}

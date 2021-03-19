@@ -4,9 +4,15 @@
 \alias{exa.readData}
 \title{Execute a SQL query on an EXASolution database and read results fast.}
 \usage{
-exa.readData(channel, query, encoding = "UTF-8", reader = function(x, ...,
-  enc = encoding) {     read.csv(x, ..., stringsAsFactors = FALSE, encoding =
-  enc, blank.lines.skip = FALSE, numerals = "no.loss") }, server = NA, ...)
+exa.readData(
+  channel,
+  query,
+  encoding = "UTF-8",
+  reader = function(x, ..., enc = encoding) {     read.csv(x, ..., stringsAsFactors =
+    FALSE, encoding = enc, blank.lines.skip = FALSE, numerals = "no.loss") },
+  server = NA,
+  ...
+)
 }
 \arguments{
 \item{channel}{The RODBC connection channel, typically created via

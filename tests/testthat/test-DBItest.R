@@ -130,3 +130,72 @@ test_that("test_dbListTables_with_schema_filter", {
 #   dbExecute(con,"/* */with t as (select 1 as x) select x from t")
 #   dbDisconnect(con)
 # })
+
+context("data mapping tests")
+
+test_that("dbDataType converts empty characters to CLOB data type", {
+  ctx <- DBItest::get_default_context()
+  con <- DBItest:::connect(ctx)
+  df <- data.frame(name=character())
+  expect_equal(dbDataType(con, df), "CLOB")
+  dbDisconnect(con)
+})
+
+test_that("dbDataType converts non-empty characters to data type", {
+  ctx <- DBItest::get_default_context()
+  con <- DBItest:::connect(ctx)
+  df <- data.frame(name=c("a", "b"))
+  expect_equal(dbDataType(con, df), "VARCHAR(1)")
+  dbDisconnect(con)
+})
+
+test_that("dbWriteTable skips importing empty dataframe", {
+  ctx <- DBItest::get_default_context()
+  con <- DBItest:::connect(ctx)
+  df <- data.frame(name=character())
+  expect_true(dbWriteTable(con, "TESTTABLE", df, "TESTSCHEMA"))
+  dbDisconnect(con)
+})
+
+test_that("dbWriteTable imports dataframe", {
+  ctx <- DBItest::get_default_context()
+  con <- DBItest:::connect(ctx)
+  df <- data.frame(name=c("a", "b"))
+  dbWriteTable(con, "TESTTABLE", df, "TESTSCHEMA")
+  result <- dbGetQuery(con, "select * from testschema.testtable")
+  expect_equal(nrow(result), 2)
+  dbDisconnect(con)
+})
+
+test_that("dbWriteTable imports dataframe with all <NA>", {
+  ctx <- DBItest::get_default_context()
+  con <- DBItest:::connect(ctx)
+  df <- data.frame(name=c(NA, NA, NA))
+  dbWriteTable(con, "TESTTABLE_NA", df, "TESTSCHEMA")
+  result <- dbGetQuery(con, "select * from testschema.testtable_na")
+  expect_equal(nrow(result), 3)
+  expect_type(result$name, "logical")
+  dbDisconnect(con)
+})
+
+test_that("dbWriteTable imports dataframe with all empty characters", {
+  ctx <- DBItest::get_default_context()
+  con <- DBItest:::connect(ctx)
+  df <- data.frame(name=c("", ""))
+  dbWriteTable(con, "TESTTABLE_EMPTY", df, "TESTSCHEMA")
+  result <- dbGetQuery(con, "select * from testschema.testtable_empty")
+  expect_equal(nrow(result), 2)
+  expect_type(result$name, "logical")
+  dbDisconnect(con)
+})
+
+test_that("dbWriteTable imports dataframe with mixed characters", {
+  ctx <- DBItest::get_default_context()
+  con <- DBItest:::connect(ctx)
+  df <- data.frame(name=c("a", NA, "b", ""))
+  dbWriteTable(con, "TESTTABLE_MIXED", df, "TESTSCHEMA")
+  result <- dbGetQuery(con, "select * from testschema.testtable_mixed")
+  expect_equal(nrow(result), 4)
+  expect_type(result$name, "character")
+  dbDisconnect(con)
+})

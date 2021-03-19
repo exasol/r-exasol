@@ -20,15 +20,26 @@ Ends a DB transaction. In EXASOL, it commits and reinstates the connection's sta
 This is an EXASOL specific addition to the DBI interface and may not work with other RDBMS.
 }
 \seealso{
-Other EXAConnection related objects: \code{\link{EXAConnection-class}},
-  \code{\link{dbBegin}}, \code{\link{dbCommit}},
-  \code{\link{dbConnect}}, \code{\link{dbCurrentSchema}},
-  \code{\link{dbExistsTable}}, \code{\link{dbGetQuery}},
-  \code{\link{dbListFields}}, \code{\link{dbListTables}},
-  \code{\link{dbReadTable}}, \code{\link{dbRemoveTable}},
-  \code{\link{dbRollback}}, \code{\link{dbSendQuery}},
-  \code{\link{dbWriteTable}}
+Other EXAConnection related objects: 
+\code{\link{EXAConnection-class}},
+\code{\link{dbBegin}()},
+\code{\link{dbCommit}()},
+\code{\link{dbConnect}()},
+\code{\link{dbCurrentSchema}()},
+\code{\link{dbExistsTable}()},
+\code{\link{dbGetQuery}()},
+\code{\link{dbListFields}()},
+\code{\link{dbListTables}()},
+\code{\link{dbReadTable}()},
+\code{\link{dbRemoveTable}()},
+\code{\link{dbRollback}()},
+\code{\link{dbSendQuery}()},
+\code{\link{dbWriteTable}()}
 
-Other transaction management functions: \code{\link{dbBegin}},
-  \code{\link{dbCommit}}, \code{\link{dbRollback}}
+Other transaction management functions: 
+\code{\link{dbBegin}()},
+\code{\link{dbCommit}()},
+\code{\link{dbRollback}()}
 }
+\concept{EXAConnection related objects}
+\concept{transaction management functions}

@@ -4,7 +4,9 @@
 \name{EMITS}
 \alias{EMITS}
 \title{EMITS output type of UDF script -- function emits any number of values.}
-\format{An object of class \code{character} of length 1.}
+\format{
+An object of class \code{character} of length 1.
+}
 \usage{
 EMITS
 }

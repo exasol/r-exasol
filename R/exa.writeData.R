@@ -50,6 +50,10 @@ exa.writeData <- function(channel, data, tableName, tableColumns = NA,
                                         fileEncoding = fileEncoding)
                           },
                           server) {
+  if (is.null(data) || nrow(data) == 0) {
+    message(paste0("Empty dataframe, skipping writing into Exasol table.\n"))
+    return(TRUE)
+  }
   slot <- 0
 
   try(.Call(C_asyncRODBCQueryFinish, slot, 1))

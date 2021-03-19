@@ -4,7 +4,9 @@
 \name{ALLOWED_UDF_OUT_TYPES}
 \alias{ALLOWED_UDF_OUT_TYPES}
 \title{All output types of UDF scripts}
-\format{An object of class \code{character} of length 2.}
+\format{
+An object of class \code{character} of length 2.
+}
 \usage{
 ALLOWED_UDF_OUT_TYPES
 }

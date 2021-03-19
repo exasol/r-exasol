@@ -4,7 +4,9 @@
 \name{RETURNS}
 \alias{RETURNS}
 \title{RETURNS output type of UDF script -- function emits just a single value.}
-\format{An object of class \code{character} of length 1.}
+\format{
+An object of class \code{character} of length 1.
+}
 \usage{
 RETURNS
 }

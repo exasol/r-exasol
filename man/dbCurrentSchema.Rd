@@ -16,12 +16,20 @@ an updated EXAConnection
 Fetches and outputs the current schema from an EXASOL DB. Also updates EXAConnection metadata.
 }
 \seealso{
-Other EXAConnection related objects: \code{\link{EXAConnection-class}},
-  \code{\link{dbBegin}}, \code{\link{dbCommit}},
-  \code{\link{dbConnect}}, \code{\link{dbEnd}},
-  \code{\link{dbExistsTable}}, \code{\link{dbGetQuery}},
-  \code{\link{dbListFields}}, \code{\link{dbListTables}},
-  \code{\link{dbReadTable}}, \code{\link{dbRemoveTable}},
-  \code{\link{dbRollback}}, \code{\link{dbSendQuery}},
-  \code{\link{dbWriteTable}}
+Other EXAConnection related objects: 
+\code{\link{EXAConnection-class}},
+\code{\link{dbBegin}()},
+\code{\link{dbCommit}()},
+\code{\link{dbConnect}()},
+\code{\link{dbEnd}()},
+\code{\link{dbExistsTable}()},
+\code{\link{dbGetQuery}()},
+\code{\link{dbListFields}()},
+\code{\link{dbListTables}()},
+\code{\link{dbReadTable}()},
+\code{\link{dbRemoveTable}()},
+\code{\link{dbRollback}()},
+\code{\link{dbSendQuery}()},
+\code{\link{dbWriteTable}()}
 }
+\concept{EXAConnection related objects}
