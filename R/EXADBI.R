@@ -389,6 +389,8 @@ varchar <- function(x) {
   max_varchar_length = max(nchar(as.character(x)), na.rm=TRUE)
   if (is.infinite(max_varchar_length)) {
     paste0("CLOB")
+  } else if (max_varchar_length == 0) {
+    paste0("VARCHAR(1)")
   } else {
     paste0("VARCHAR(", max_varchar_length, ")")
   }
