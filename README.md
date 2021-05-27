@@ -2,8 +2,6 @@
 
 [![Build Status](https://travis-ci.org/EXASOL/r-exasol.svg)](https://travis-ci.org/EXASOL/r-exasol)
 [![codecov.io](https://codecov.io/github/EXASOL/r-exasol/coverage.svg?branch=master)](https://codecov.io/github/EXASOL/r-exasol?branch=master)
-[![Issue Stats](http://issuestats.com/github/EXASOL/r-exasol/badge/pr?style=flat-square)](http://issuestats.com/github/EXASOL/r-exasol)
-[![Issue Stats](http://issuestats.com/github/EXASOL/r-exasol/badge/issue?style=flat-square)](http://issuestats.com/github/EXASOL/r-exasol)
 
 ###### Please note that this is an open source project which is officially supported by Exasol. For any question, you can contact our support team.
 
