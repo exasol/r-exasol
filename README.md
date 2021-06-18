@@ -1,7 +1,7 @@
 # R Interface & SDK for the EXASOL Database
 
-[![Build Status](https://travis-ci.org/EXASOL/r-exasol.svg)](https://travis-ci.org/EXASOL/r-exasol)
-[![codecov.io](https://codecov.io/github/EXASOL/r-exasol/coverage.svg?branch=master)](https://codecov.io/github/EXASOL/r-exasol?branch=master)
+[![Build Status](https://travis-ci.com/exasol/r-exasol.svg)](https://travis-ci.com/exasol/r-exasol)
+[![codecov.io](https://codecov.io/github/exasol/r-exasol/coverage.svg?branch=main)](https://codecov.io/github/exasol/r-exasol?branch=main)
 
 ###### Please note that this is an open source project which is officially supported by Exasol. For any question, you can contact our support team.
 
@@ -9,19 +9,19 @@
 
 
 The Exasol R Package offers interface functionality such as connecting to, querying and writing
-into an Exasol Database (version 5 onwards). It is optimised for fast reading &
+into an Exasol Database (version 5 onwards). It is optimized for fast reading &
 writing from and to a multinode cluster. Implemented are DBI compliant methods for database access,
 querying and modification. The package integrates with Exasol's in-DB R UDF capabilities, which
 allows to deploy and execute R code dynamically from an R application running on a client.
 
 Exasol is an in-memory RDBMS that runs in a MPP cluster (shared-nothing) environment.
-Leading the TPC-H benckmark, it is considered the fastest analytical data warehouse available.
+Leading the TPC-H benchmark, it is considered the fastest analytical data warehouse available.
 
 *The community edition can be downloaded for free from the [Exasol Community Portal](https://www.exasol.com/portal).*
 
 ## Status
 
-The package gets tested in Travis against R 3.6 and R 4.0, but it is also worked on R 3.3 and R 3.4 in the past. For R 3.6 and ealier, an older RODBC package is necassary, the newer versions (1.3-17 and upwards) only support R 4.0. You can use the [remotes package](https://remotes.r-lib.org/) to install specific versions of RODBC. The packages DBI 0.3.1 and a fork of DBItest 1.0-1 are not the current versions. The Exasol R package may however work with DBI 0.4.1, but until this is resolved the fitting older packages can be loaded from here: 
+The package gets tested in Travis against R 3.6 and R 4.0, but it is also worked on R 3.3 and R 3.4 in the past. For R 3.6 and earlier, an older RODBC package is necessary, the newer versions (1.3-17 and upwards) only support R 4.0. You can use the [remotes package](https://remotes.r-lib.org/) to install specific versions of RODBC. The packages DBI 0.3.1 and a fork of DBItest 1.0-1 are not the current versions. The Exasol R package may however work with DBI 0.4.1, but until this is resolved the fitting older packages can be loaded from here:
 
 - https://github.com/marcelboldt/DBI
 - https://github.com/marcelboldt/DBItest
@@ -35,7 +35,7 @@ Writing tests have not yet been implemented (only quick-tests), but it hopefully
 
 Code coverage of tests:
 
-![codecov.io](https://codecov.io/github/EXASOL/r-exasol/branch.svg?branch=master)
+![codecov.io](https://codecov.io/github/EXASOL/r-exasol/branch.svg?branch=main)
 
 
 ## Getting started
@@ -66,7 +66,7 @@ Code coverage of tests:
 3. The R package **devtools** must be available as it contains the `install_github()` method
    and the things needed to build the package.
 
-4. Install the necassary dependencies, such as RODBC or the DBI packages. For the versions of these package, checkout the section [Status](#status). Have a look into the [Travis config](https://github.com/exasol/r-exasol/blob/master/.travis.yml), if you look for an example, how to install the necassary dependencies. 
+4. Install the necessary dependencies, such as RODBC or the DBI packages. For the versions of these package, checkout the section [Status](#status). Have a look into the [Travis config](https://github.com/exasol/r-exasol/blob/main/.travis.yml), if you look for an example, how to install the necessary dependencies.
 
    
 ### Installation
