@@ -20,24 +20,11 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python_version:
-          - 3.6
         r-version: ${{fromJson(needs.prep-testbed.outputs.matrix)}}
     runs-on: ubuntu-18.04
 
     steps:
       - uses: actions/checkout@v2
-      - uses: actions/setup-python@v2
-        with:
-          python-version: ${{ matrix.python-version }}
-      - uses: abatilo/actions-poetry@v2.0.0
-        with:
-          poetry-version: 1.1.4
-      - name: Poetry install
-        run: poetry install
-      - name: Poetry build
-        run: poetry build
-
       - name: Checkout test environment
         run: git clone https://github.com/exasol/integration-test-docker-environment.git
         working-directory: ..
