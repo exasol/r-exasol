@@ -8,7 +8,7 @@ if [ $# -lt 1 ]; then
 fi
 
 R_VERSION="$1"
-
+SCRIPT_DIR="$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")"
 IMAGE_NAME="$("$SCRIPT_DIR/construct_docker_runner_image_name.sh" "${R_VERSION}")"
 
 docker pull $IMAGE_NAME || true
