@@ -1,9 +1,9 @@
 name: UpdateDockerImages
 
-on:
-  schedule:
+on: [push]
+#  schedule:
     # * is a special character in YAML so you have to quote this string
-    - cron:  '0 0 * * *'
+#    - cron:  '0 0 * * *'
 jobs:
   prep-env:
     runs-on: ubuntu-18.04
@@ -12,7 +12,8 @@ jobs:
       - id: set-matrix
         run: |
           sudo apt-get install jq
-          echo "::set-output name=matrix::$(bash ./tests/scripts/cran/get_R_releases.sh)"
+          sudo bash ./tests/scripts/cran/install_cran_repos.sh
+          echo "::set-output name=matrix::$(sudo bash ./tests/scripts/cran/get_R_releases.sh)"
     outputs:
       matrix: ${{ steps.set-matrix.outputs.matrix }}
 

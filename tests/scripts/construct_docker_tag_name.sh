@@ -9,4 +9,4 @@ fi
 
 R_VERSION="$1"
 
-echo "exasol/r-exasol:test-container-latest-r$R_VERSION"
+echo "test-container-latest-r$R_VERSION"
