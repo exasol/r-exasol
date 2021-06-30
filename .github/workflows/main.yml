@@ -1,0 +1,49 @@
+name: CI
+
+on: [push, pull_request]
+
+jobs:
+  prep-testbed:
+    runs-on: ubuntu-18.04
+    steps:
+      - uses: actions/checkout@v2
+      - id: set-matrix
+        run: |
+          sudo apt-get install jq
+          echo "::set-output name=matrix::$(bash ./tests/scripts/cran/get_R_releases.sh)"
+    outputs:
+      matrix: ${{ steps.set-matrix.outputs.matrix }}
+
+  integration_tests:
+    needs: prep-testbed
+    strategy:
+      fail-fast: false
+      matrix:
+        python_version:
+          - 3.6
+        r-version: ${{fromJson(needs.prep-testbed.outputs.matrix)}}
+    runs-on: ubuntu-18.04
+
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-python@v2
+        with:
+          python-version: ${{ matrix.python-version }}
+      - uses: abatilo/actions-poetry@v2.0.0
+        with:
+          poetry-version: 1.1.4
+      - name: Poetry install
+        run: poetry install
+      - name: Poetry build
+        run: poetry build
+
+      - name: Checkout test environment
+        run: git clone https://github.com/exasol/integration-test-docker-environment.git
+        working-directory: ..
+      - name: Spawn EXASOL environemnt
+        run: ./start-test-env spawn-test-environment --environment-name test --database-port-forward 8888 --bucketfs-port-forward 6666 --db-mem-size 4GB
+        working-directory: ../integration-test-docker-environment
+      - name: Run all tests
+        run: |
+          ./tests/scripts/pull_docker_image.sh ${{ matrix.r-version }}
+          ./tests/scripts/execute_docker_test_env.sh ${{ matrix.r-version }}
