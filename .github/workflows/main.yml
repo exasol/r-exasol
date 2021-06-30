@@ -10,9 +10,7 @@ jobs:
       - id: set-matrix
         run: |
           sudo apt-get install jq
-          echo "Start get R release"
           echo "::set-output name=matrix::$(bash ./tests/scripts/cran/get_R_releases.sh)"
-          echo "End get R release"
     outputs:
       matrix: ${{ steps.set-matrix.outputs.matrix }}
 
