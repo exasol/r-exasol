@@ -5,19 +5,6 @@ COPY scripts/cran /scripts
 
 RUN bash -c "/scripts/install_cran_repos.sh"
 
-# RUN apt-get update && \
-#     apt-get install -y dirmngr software-properties-common && \
-#     gpg --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys E298A3A825C0D65DFD57CBB651716619E084DAB9 && \
-#     gpg -a --export E298A3A825C0D65DFD57CBB651716619E084DAB9 | apt-key add -
-#
-# ARG REPOS
-#
-# RUN for repo in $REPOS; \
-#         do \
-#         add-apt-repository -y "deb https://cloud.r-project.org/bin/linux/ubuntu "$repo"/"; \
-#         done
-
-
 ARG DEBIAN_FRONTEND=noninteractive
 ARG R_VERSION
 
@@ -32,7 +19,8 @@ ENV LANG=C.UTF-8
 
 RUN add-apt-repository -y ppa:deadsnakes/ppa
 RUN apt-get update && \
-    apt-get install -y r-base-core=$R_VERSION r-base-dev=$R_VERSION curl libcurl4-openssl-dev libssl-dev \
+    apt-get install -y --no-install-recommends "r-base-core=$R_VERSION" "r-base-dev=$R_VERSION" curl \
+                        libcurl4-openssl-dev libssl-dev \
                         libssh2-1-dev libxml2-dev zlib1g-dev unixodbc-dev
 RUN Rscript -e 'install.packages("testthat")'
 RUN  Rscript -e 'install.packages("devtools", dependencies = TRUE)'

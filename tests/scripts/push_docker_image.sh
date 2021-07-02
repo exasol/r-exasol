@@ -19,6 +19,6 @@ TAG_NAME="$("$SCRIPT_DIR/construct_docker_tag_name.sh "${R_VERSION}")"
 AVAILABLE_ON_DOCKER_HUB="$("$SCRIPT_DIR/list_tags.sh" "${IMAGE_NAME} "${TAG_NAME}"")"
 
 if [[ -z $AVAILABLE_ON_DOCKER_HUB ]]; then
-  $SCRIPT_DIR/build_docker_test_env.sh $R_VERSION
+  $SCRIPT_DIR/build_docker_test_env.sh "$R_VERSION"
   docker push "$IMAGE_NAME"
 fi
