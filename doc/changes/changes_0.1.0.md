@@ -23,22 +23,22 @@ t.b.d.
 ## Dependency updates
 
 ### Compile Dependency Updates
-* `DBI`
-* `RODBC`
-* `methods`
-* `devtools`
+# Added `DBI (>= 0.3.1)`
+# Added `RODBC (>= 1.3-12)`
+# Added `methods`
+#Added  `devtools`
 
 #### Linux
-* `unixodbc-dev`
-* `R-devel` (RPM) or `r-base-dev` (Debian) package.
+# Added  `unixodbc-dev`
+# Added `R-devel` (RPM) or `r-base-dev` (Debian) package.
 
 ####Windows
-* `Rtools`
+# Added `Rtools`
 
 ### Runtime Dependency Updates
-* Exasol ODBC driver
+# Added Exasol ODBC driver
 
 ### Test Dependency Updates
-* dbiTest
-* assertthat
+# Added dbiTest
+# Added assertthat
 
