@@ -7,7 +7,7 @@ This document is about the inner working of r-exasol.
 
 ## Problem Statement:
 As described in the [README.md](../../README.md):
->'It is optimised for fast reading & writing from and to a multinode cluster.'
+> It is optimised for fast reading & writing from and to a multinode cluster.
 > 
 This document will describe how the r-exasol library reads/write data from/to the database from high level perspective.
 The focus is hereby on the functions which leverage the fast data transfer, as the other functions make usage of standard DBI / RODBC functions.
@@ -16,7 +16,7 @@ The focus is hereby on the functions which leverage the fast data transfer, as t
 
 ### Connection
 
-When the client calls dbConnect(), the library connects to the Exasol DB via RODBC, this happens in ```EXADBI.R```:
+When the client calls dbConnect(), the library connects to the Exasol DB via RODBC, this happens in `EXADBI.R`:
 ```r
     EXANewConnection <- function(...)
     ...
@@ -32,7 +32,7 @@ Once the connection is ready, the client can read data or manipulate data using 
     exa.writeData()
 ```
 
-Some of the standard SQL functions use internally one of those two methods, for example ```dbGetQuery()```,
+Some of the standard SQL functions use internally one of those two methods, for example `dbGetQuery()`,
 but that is not always the case.
 
 ### Internal data flow when reading from database
