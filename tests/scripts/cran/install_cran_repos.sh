@@ -12,5 +12,5 @@ apt-get update && \
 
 for repo in $REPOS; \
     do \
-    add-apt-repository -y "deb https://cloud.r-project.org/bin/linux/ubuntu "$repo"/"; \
+    add-apt-repository -y "deb https://cloud.r-project.org/bin/linux/ubuntu $repo/"; \
     done

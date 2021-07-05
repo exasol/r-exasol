@@ -1,12 +1,16 @@
 FROM ubuntu:18.04
 
 
-COPY scripts/cran /scripts
-
-RUN bash -c "/scripts/install_cran_repos.sh"
-
 ARG DEBIAN_FRONTEND=noninteractive
 ARG R_VERSION
+ARG CRAN_REPO
+
+RUN apt-get update && \
+    apt-get install -y dirmngr software-properties-common && \
+    gpg --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys E298A3A825C0D65DFD57CBB651716619E084DAB9 && \
+    gpg -a --export E298A3A825C0D65DFD57CBB651716619E084DAB9 | apt-key add -
+
+RUN add-apt-repository -y "deb https://cloud.r-project.org/bin/linux/ubuntu $CRAN_REPO/"
 
 RUN apt-get -y update && \
     apt-get -y install --no-install-recommends locales && \
