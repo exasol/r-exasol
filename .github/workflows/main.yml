@@ -1,6 +1,6 @@
 name: CI
 
-on: [workflow_dispatch] #[push, pull_request]
+on: [push, pull_request]
 
 jobs:
   prep-testbed:
@@ -17,6 +17,7 @@ jobs:
 
   integration_tests:
     needs: prep-testbed
+    if: github.ref != 'refs/heads/main'
     strategy:
       fail-fast: false
       matrix:
@@ -35,3 +36,25 @@ jobs:
         run: |
           ./tests/scripts/pull_docker_image.sh ${{ matrix.r-version }}
           ./tests/scripts/execute_docker_test_env.sh ${{ matrix.r-version }}
+
+  publish-main:
+    needs: prep-testbed
+    if: github.ref == 'refs/heads/main'
+    strategy:
+      fail-fast: false
+      matrix:
+        r-version: ${{fromJson(needs.prep-env.outputs.matrix)}}
+    runs-on: ubuntu-18.04
+
+    environment: publish
+    steps:
+      - uses: actions/checkout@v2
+      - name: Build new Docker image
+        run: "bash tests/scripts/build_docker_test_env.sh ${{ matrix.r-version }}"
+      - name: Docker login
+        run: echo "$SECRET_DOCKER_TOKEN" | docker login --username "$SECRET_DOCKER_USER_NAME" --password-stdin
+        env: # Set the secret as an input
+          SECRET_DOCKER_USER_NAME: ${{ secrets.DOCKER_USER_NAME }}
+          SECRET_DOCKER_TOKEN: ${{ secrets.DOCKER_TOKEN }}
+      - name: Push new Docker images
+        run: "bash tests/scripts/push_docker_image.sh ${{ matrix.r-version }}"
