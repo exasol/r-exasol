@@ -7,26 +7,20 @@ Code name: t.b.d.
 t.b.d.
 
 ## Features / Enhancements
-# Initial implementation
-#41 : added connection pane snippets (#57)
+* Initial implementation
+* #41: Added connection pane snippets (#57)
 
 ## Bug Fixes
-#40: Fixed empty char column data type mapping (#55)
-
-## Documentation
-
-## Refactoring
-
-## Dependency updates
+* #40: Fixed empty char column data type mapping (#55)
 
 ### Compile Dependency Updates
 * Added `DBI (>= 0.3.1)`
 * Added `RODBC (>= 1.3-12)`
 * Added `methods`
-* Added  `devtools`
+* Added `devtools`
 
 #### Linux
-* Added  `unixodbc-dev`
+* Added `unixodbc-dev`
 * Added `R-devel` (RPM) or `r-base-dev` (Debian) package.
 
 ####Windows
