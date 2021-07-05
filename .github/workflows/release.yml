@@ -1,9 +1,9 @@
-name: UpdateDockerImages
+name: CI
 
-on: [push]
-#  schedule:
-    # * is a special character in YAML so you have to quote this string
-#    - cron:  '0 0 * * *'
+on:
+  release:
+      types: [published]
+
 jobs:
   prep-env:
     runs-on: ubuntu-18.04
@@ -36,4 +36,4 @@ jobs:
           SECRET_DOCKER_USER_NAME: ${{ secrets.DOCKER_USER_NAME }}
           SECRET_DOCKER_TOKEN: ${{ secrets.DOCKER_TOKEN }}
       - name: Push new Docker images
-        run: "bash tests/scripts/check_push_docker_image.sh ${{ matrix.r-version }}"
+        run: "bash tests/scripts/push_docker_image.sh ${{ matrix.r-version }}"
