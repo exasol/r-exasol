@@ -6,7 +6,7 @@ DBItest::make_context(exasol(),
 DBItest::test_getting_started(skip = c("package_name"))
 
 # some tests stay skipped for now
-# stress_load_unload and stress_load_connect_unload are also skipped on travis
+# stress_load_unload and stress_load_connect_unload are also skipped on github actions
 DBItest::test_driver(skip = c("constructor_strict",
                               "constructor",
                               "stress_load_unload"

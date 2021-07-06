@@ -1,6 +1,6 @@
 # R Interface & SDK for the EXASOL Database
 
-[![Build Status](https://travis-ci.com/exasol/r-exasol.svg)](https://travis-ci.com/exasol/r-exasol)
+[![Build Status](https://github.com/exasol/r-exasol/actions/workflows/main.yml/badge.svg)](https://github.com/exasol/r-exasol)
 [![codecov.io](https://codecov.io/github/exasol/r-exasol/coverage.svg?branch=main)](https://codecov.io/github/exasol/r-exasol?branch=main)
 
 ###### Please note that this is an open source project which is officially supported by Exasol. For any question, you can contact our support team.
@@ -66,7 +66,7 @@ Code coverage of tests:
 3. The R package **devtools** must be available as it contains the `install_github()` method
    and the things needed to build the package.
 
-4. Install the necessary dependencies, such as RODBC or the DBI packages. For the versions of these package, checkout the section [Status](#status). Have a look into the [Travis config](https://github.com/exasol/r-exasol/blob/main/.travis.yml), if you look for an example, how to install the necessary dependencies.
+4. Install the necessary dependencies, such as RODBC or the DBI packages. For the versions of these package, checkout the section [Status](#status). Have a look into the [Github Actions Docker](https://github.com/exasol/r-exasol/blob/main/tests/Dockerfile), if you look for an example, how to install the necessary dependencies.
 
    
 ### Installation
