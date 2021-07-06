@@ -50,7 +50,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        r-version: ${{fromJson(needs..prep-testbed.outputs.matrix)}}
+        r-version: ${{fromJson(needs.prep-testbed.outputs.matrix)}}
     runs-on: ubuntu-18.04
 
     environment: publish
