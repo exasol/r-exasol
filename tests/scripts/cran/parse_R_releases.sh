@@ -18,7 +18,7 @@ for rel_repo in "${relevant_repos[@]}"
   for minor_version in "${minor_versions[@]}"
     do
       newest_minor_version=$(echo "$relevant_versions" | cut -f 2 -d "|" | sed 's/^ *//;s/ *$//' | grep -E "^$minor_version" | head -n 1)
-      minor_versions_for_images[$minor_version]="$newest_minor_version/$rel_repo"
+      minor_versions_for_images[$minor_version]="$rel_repo/$newest_minor_version"
     done
 
   done

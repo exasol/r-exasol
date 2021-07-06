@@ -7,8 +7,7 @@ if [ $# -lt 1 ]; then
     exit 1
 fi
 
-COMBINED_R_VERSION="$1"
-R_VERSION=$(echo "$1" | cut -f 1 -d "/")
-CRAN_REPO=$(echo "$1" | cut -f 2 -d "/")
+CRAN_REPO=$(echo "$1" | cut -f 1 -d "/")
+R_VERSION=$(echo "$1" | cut -f 2 -d "/")
 
-echo "test-container-latest-r$R_VERSION-$CRAN_REPO"
+echo "test-container-latest-$CRAN_REPO-r$R_VERSION"

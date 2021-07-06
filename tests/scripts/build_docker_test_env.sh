@@ -8,8 +8,8 @@ if [ $# -lt 1 ]; then
 fi
 
 COMBINED_R_VERSION=$1
-R_VERSION=$(echo "$1" | cut -f 1 -d "/")
-CRAN_REPO=$(echo "$1" | cut -f 2 -d "/")
+CRAN_REPO=$(echo "$1" | cut -f 1 -d "/")
+R_VERSION=$(echo "$1" | cut -f 2 -d "/")
 
 
 SCRIPT_DIR="$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")"
