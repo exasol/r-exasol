@@ -56,6 +56,8 @@
 extern void Rf_set_iconv(Rconnection con);
 extern int dummy_fgetc(Rconnection con);
 
+extern SEXP run_testthat_tests(SEXP);
+
 typedef struct rodbcHandle {
     SQLHDBC	    hDbc;      /* connection handle */
     SQLHSTMT	  hStmt;     /* statement handle */
@@ -633,6 +635,7 @@ R_CallMethodDef CallEntries[] = {
     {"asyncRODBCQueryStart", (DL_FUNC) &asyncRODBCQueryStart, 4},
     {"asyncRODBCQueryCheck", (DL_FUNC) &asyncRODBCQueryCheck, 1},
     {"asyncRODBCQueryFinish", (DL_FUNC) &asyncRODBCQueryFinish, 2},
+    {"run_testthat_tests", (DL_FUNC) &run_testthat_tests, 1},
     {NULL, NULL, 0}
 };
 

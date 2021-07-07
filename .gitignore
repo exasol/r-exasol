@@ -10,3 +10,6 @@ src/*.dll
 .DS_Store
 .project
 .cproject
+configure
+config.log
+config.status
