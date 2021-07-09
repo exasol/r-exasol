@@ -19,7 +19,6 @@ AC_ARG_WITH([unit-tests],
             [with_unit_tests=$withval])
 UNIT_TESTFLAGS_CPPFLAGS=""
 if test [ -n "$with_unit_tests" ] ; then
-   echo "YEAHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH"
    UNIT_TESTFLAGS_CPPFLAGS="-DWITH_UNIT_TESTS"
 fi
 
@@ -29,7 +28,7 @@ CXX=`"${RBIN}" CMD config CXX`
 CPPFLAGS=`"${RBIN}" CMD config CPPFLAGS`
 CXXFLAGS=`"${RBIN}" CMD config CXXFLAGS`
 echo "CPPFLAGS:${CPPFLAGS}"
-CPPFLAGS="${CPPFLAGS} ${UNIT_TESTFLAGS_CPPFLAGS}"
+CPPFLAGS="${CPPFLAGS} -I./core ${UNIT_TESTFLAGS_CPPFLAGS}"
 echo "CPPFLAGS:${CPPFLAGS}"
 
 ## We are using C++
@@ -39,6 +38,9 @@ AC_REQUIRE_CPP
 ## Check the C++ compiler using the CXX value set
 AC_PROG_CXX
 
+# substitute externalized source list
+PKG_SOURCES=$(cat src/sources.list)
+AC_SUBST(PKG_SOURCES)
 
 dnl substitute UNIT_TESTFLAGS_CPPFLAGS
 AC_SUBST(UNIT_TESTFLAGS_CPPFLAGS)

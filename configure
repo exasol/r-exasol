@@ -587,6 +587,7 @@ ac_unique_file="r-exasol"
 ac_subst_vars='LTLIBOBJS
 LIBOBJS
 UNIT_TESTFLAGS_CPPFLAGS
+PKG_SOURCES
 CXXCPP
 OBJEXT
 EXEEXT
@@ -1802,7 +1803,6 @@ fi
 
 UNIT_TESTFLAGS_CPPFLAGS=""
 if test  -n "$with_unit_tests"  ; then
-   echo "YEAHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH"
    UNIT_TESTFLAGS_CPPFLAGS="-DWITH_UNIT_TESTS"
 fi
 
@@ -1812,7 +1812,7 @@ CXX=`"${RBIN}" CMD config CXX`
 CPPFLAGS=`"${RBIN}" CMD config CPPFLAGS`
 CXXFLAGS=`"${RBIN}" CMD config CXXFLAGS`
 echo "CPPFLAGS:${CPPFLAGS}"
-CPPFLAGS="${CPPFLAGS} ${UNIT_TESTFLAGS_CPPFLAGS}"
+CPPFLAGS="${CPPFLAGS} -I./core ${UNIT_TESTFLAGS_CPPFLAGS}"
 echo "CPPFLAGS:${CPPFLAGS}"
 
 ## We are using C++
@@ -2724,6 +2724,9 @@ ac_compile='$CXX -c $CXXFLAGS $CPPFLAGS conftest.$ac_ext >&5'
 ac_link='$CXX -o conftest$ac_exeext $CXXFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
 ac_compiler_gnu=$ac_cv_cxx_compiler_gnu
 
+
+# substitute externalized source list
+PKG_SOURCES=$(cat src/sources.list)
 
 
 
