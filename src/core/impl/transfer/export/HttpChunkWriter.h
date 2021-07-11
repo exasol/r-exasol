@@ -15,7 +15,7 @@ namespace exa {
 
         class HttpChunkWriter : public Writer {
         public:
-            ~HttpChunkWriter() override = default;
+            virtual ~HttpChunkWriter() {};
             explicit HttpChunkWriter(Socket &socket, Chunk & chunk);
             size_t pipe_write(const void *ptr, size_t size, size_t nitems) override;
             int pipe_fflush() override;

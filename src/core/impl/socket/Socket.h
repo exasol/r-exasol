@@ -10,6 +10,7 @@
 namespace exa {
     class Socket {
     public:
+        virtual ~Socket() {};
         virtual size_t recv(void *buf, size_t len) = 0;
         virtual ssize_t send(const void *buf, size_t len) = 0;
         virtual void shutdownWr() = 0;

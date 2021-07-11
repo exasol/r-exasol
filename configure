@@ -14,6 +14,9 @@
 ## M4sh Initialization. ##
 ## -------------------- ##
 
+echo Got parameters: "$@"
+
+
 # Be more Bourne compatible
 DUALCASE=1; export DUALCASE # for MKS sh
 if test -n "${ZSH_VERSION+set}" && (emulate sh) >/dev/null 2>&1; then :
@@ -587,6 +590,7 @@ ac_unique_file="r-exasol"
 ac_subst_vars='LTLIBOBJS
 LIBOBJS
 UNIT_TESTFLAGS_CPPFLAGS
+PKG_TEST_SOURCES
 PKG_SOURCES
 CXXCPP
 OBJEXT
@@ -2726,7 +2730,12 @@ ac_compiler_gnu=$ac_cv_cxx_compiler_gnu
 
 
 # substitute externalized source list
-PKG_SOURCES=$(cat src/sources.list)
+PKG_SOURCES=$(cat src/core/sources.list)
+
+
+# substitute unit test source list
+PKG_TEST_SOURCES=$(cat src/tests/sources.list)
+
 
 
 

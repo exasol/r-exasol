@@ -14,7 +14,7 @@ namespace exa {
 
         class HttpChunkReader : public Reader {
         public:
-            ~HttpChunkReader() override = default;
+            ~HttpChunkReader() override {};
             explicit HttpChunkReader(Socket &socket, Chunk & chunk);
 
             int fgetc() override;

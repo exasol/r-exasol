@@ -4,6 +4,7 @@
 
 #include <impl/transfer/import/HttpChunkReader.h>
 #include <cstring>
+#include <iostream>
 
 namespace im = exa::import;
 
@@ -28,15 +29,18 @@ size_t im::HttpChunkReader::read_next_chunk() {
     for (pos = 0; pos < 20; pos++) {
         mChunk.chunk_buf[pos] = mChunk.chunk_buf[pos + 1] = '\0';
         if ((rc = mSocket.recv(&(mChunk.chunk_buf[pos]), 1)) < 1) {
+            std::cerr << "error reading from socket" << std::endl;
             // fprintf(stderr, "### error (%d)\n", rc);
             goto error;
         }
+        std::cerr << "Got:" << mChunk.chunk_buf[pos] << std::endl;
         if (mChunk.chunk_buf[pos] == '\n') {
             break;
         }
     }
 
     if (pos > 19) {
+        std::cerr << "buffer length exceed size" << std::endl;
         goto error;
     }
 
@@ -44,8 +48,11 @@ size_t im::HttpChunkReader::read_next_chunk() {
     buflen = -1;
 
     if (::sscanf(mChunk.chunk_buf, "%x", &buflen) < 1) {
+        std::cerr << "invalid buffer size provided" << std::endl;
         goto error;
     }
+
+    std::cerr << "Buflen=" << buflen << std::endl;
 
     if (buflen == 0) {
         mSocket.send(ok_answer, strlen(ok_answer));
@@ -59,13 +66,16 @@ size_t im::HttpChunkReader::read_next_chunk() {
 
     buflen = mSocket.recv(mChunk.chunk_buf, buflen + 2);
     if (buflen < 3) {
+        std::cerr << "invalid buffer length" << std::endl;
         goto error;
     }
+    std::cerr << "Recv Buflen=" << buflen << std::endl;
 
     mChunk.chunk_len = buflen - 2;
     mChunk.chunk_pos = 0;
     mChunk.chunk_buf[buflen-2] = '\0';
     mChunk.chunk_num ++;
+    std::cerr << "Recv buf:" << static_cast<const char*>(mChunk.chunk_buf) << std::endl;
     return mChunk.chunk_len;
 
     error:

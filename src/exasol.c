@@ -27,7 +27,6 @@
 #endif
 #include <R.h>
 #include <Rdefines.h>
-#include <R_ext/Connections.h>
 
 #define MAX_RODBC_THREADS 1
 #define MAX_HTTP_HEADER_LEN 16384
@@ -53,8 +52,7 @@
 # define OFF_T long
 #endif
 
-extern void Rf_set_iconv(Rconnection con);
-extern int dummy_fgetc(Rconnection con);
+#include <connection_gen.h>
 
 extern SEXP run_testthat_tests(SEXP);
 
@@ -92,219 +90,10 @@ typedef struct {
     char proxyHost[16];
     int proxyPort;
     char asyncThread_started;
-    Rconnection conn;
     pthread_t asyncThread;
-    char chunk_buf[MAX_HTTP_CHUNK_SIZE];
-    size_t chunk_len, chunk_pos, chunk_num;
 } asyncODBC_t;
 
 static asyncODBC_t asyncODBC[MAX_RODBC_THREADS];
-
-static inline ssize_t read_next_chunk(asyncODBC_t *t) {
-    size_t pos = 0;
-    int buflen, rc;
-    const char *ok_answer =
-        "HTTP/1.1 200 OK\r\n"
-        "Server: EXASolution R Package\r\n"
-        "Connection: close\r\n\r\n";
-    const char *error_answer =
-        "HTTP/1.1 404 ERROR\r\n"
-        "Server: EXASolution R Package\r\n"
-        "Connection: close\r\n\r\n";
-
-    for (pos = 0; pos < 20; pos++) {
-        t->chunk_buf[pos] = t->chunk_buf[pos + 1] = '\0';
-        if ((rc = recv(t->fd, &(t->chunk_buf[pos]), 1, MSG_WAITALL)) < 1) {
-            // fprintf(stderr, "### error (%d)\n", rc);
-            goto error;
-        }
-        if (t->chunk_buf[pos] == '\n') {
-          break;
-        }
-    }
-
-    if (pos > 19) {
-      goto error;
-    }
-
-    t->chunk_buf[pos] = '\0';
-    buflen = -1;
-
-    if (sscanf(t->chunk_buf, "%x", &buflen) < 1) {
-      goto error;
-    }
-
-    if (buflen == 0) {
-        send(t->fd, ok_answer, strlen(ok_answer), 0);
-        shutdown(t->fd, 1);
-        t->fd = -1;
-        return 0;
-    }
-
-    if ((buflen + 2) > MAX_HTTP_CHUNK_SIZE) {
-      goto error;
-    }
-
-    buflen = recv(t->fd, t->chunk_buf, buflen + 2, MSG_WAITALL);
-    if (buflen < 3) {
-      goto error;
-    }
-
-    t->chunk_len = buflen - 2;
-    t->chunk_pos = 0;
-    t->chunk_buf[buflen-2] = '\0';
-    t->chunk_num ++;
-    return t->chunk_len;
-
-error:
-    send(t->fd, error_answer, strlen(error_answer), 0);
-    shutdown(t->fd, 1);
-    t->fd = -1;
-    return -1;
-}
-
-static inline ssize_t write_next_chunk(asyncODBC_t *t) {
-    const char *ok_answer =
-        "HTTP/1.1 200 OK\r\n"
-        "Server: EXASolution R Package\r\n"
-        "Content-type: application/octet-stream\r\n"
-        "Content-disposition: attachment; filename=data.csv\r\n"
-        "Connection: close\r\n\r\n";
-
-    const size_t ok_len = strlen(ok_answer);
-    const size_t chunk_len = t->chunk_len;
-    const char *error_answer =
-        "HTTP/1.1 404 ERROR\r\n"
-        "Server: EXASolution R Package\r\n"
-        "Connection: close\r\n\r\n";
-
-    //fprintf(stderr, "### write_next_chunk %d (%d)\n", t->chunk_len, t->chunk_num);
-    if (chunk_len == 0) {
-      goto error;
-    }
-
-    if (t->chunk_num == 0) {
-      if (send(t->fd, ok_answer, ok_len, 0) != ok_len) {
-        goto error;
-      }
-    }
-
-    if (send(t->fd, t->chunk_buf, chunk_len, 0) != chunk_len) {
-      goto error;
-    }
-
-    t->chunk_len = 0;
-    t->chunk_num ++;
-    return chunk_len;
-
-error:
-    send(t->fd, error_answer, strlen(error_answer), 0);
-    shutdown(t->fd, SHUT_RDWR);
-    t->fd = -1;
-    return -1;
-}
-
-static inline ssize_t read_next(asyncODBC_t *t, char *buffer, size_t buflen) {
-
-    size_t rest_chunk = t->chunk_len - t->chunk_pos;
-    ssize_t readlen = 0, retlen = 0;
-    char *buf = buffer;
-
-    for (;;) {
-        if (buflen <= rest_chunk) {
-            memcpy(buf, &(t->chunk_buf[t->chunk_pos]), buflen);
-            t->chunk_pos += buflen;
-            retlen += buflen;
-            return retlen;
-        }
-
-        memcpy(buf, &(t->chunk_buf[t->chunk_pos]), rest_chunk);
-        retlen += rest_chunk;
-
-        readlen = read_next_chunk(t);
-        if (readlen == 0) {
-          return retlen;
-        }
-        if (readlen < 0) {
-          return -1;
-        }
-
-        buf = &(buf[rest_chunk]);
-        buflen -= rest_chunk;
-        rest_chunk = t->chunk_len;
-    }
-
-    return -1;
-}
-
-static size_t pipe_read(void *ptr, const size_t size, const size_t nitems,
-                        const Rconnection con) {
-
-    asyncODBC_t *t = *((asyncODBC_t**) con->private);
-    const ssize_t len = size * nitems;
-    const ssize_t rlen = read_next(t, ptr, len);
-    if (rlen > 0) {
-      return rlen / size;
-    }
-    return rlen;
-}
-
-static int file_fgetc_internal(const Rconnection con) {
-    asyncODBC_t *t = *((asyncODBC_t**) con->private);
-    if ((t->chunk_len - t->chunk_pos) < 1) {
-        if (read_next_chunk(t) < 1) {
-          return -1;
-        }
-    }
-    return (int) t->chunk_buf[t->chunk_pos++];
-}
-
-extern int dummy_vfprintf(Rconnection con, const char *format, va_list ap);
-
-static int pipe_vfprintf(const Rconnection con, const char *format, va_list ap) {
-    return dummy_vfprintf(con, format, ap);
-}
-
-static size_t pipe_write(const void *ptr, size_t size, size_t nitems,
-                         const Rconnection con) {
-
-    asyncODBC_t *t = *((asyncODBC_t**) con->private);
-    char *src = (char*) ptr;
-    size_t cur_rest = MAX_HTTP_CHUNK_SIZE - t->chunk_len;
-    size_t len = size * nitems;
-
-    //fprintf(stderr, "### pipe_write %d: %d/%d\n", len, t->chunk_len, t->chunk_num);
-    for (;;) {
-        if (cur_rest >= len) {
-            memcpy(&(t->chunk_buf[t->chunk_len]), src, len);
-            t->chunk_len += len;
-            return len;
-        }
-
-        if (cur_rest > 0) {
-            memcpy(&(t->chunk_buf[t->chunk_len]), src, cur_rest);
-            t->chunk_len += cur_rest;
-            src = &(src[cur_rest]);
-            len = len - cur_rest;
-        }
-
-        if (write_next_chunk(t) < 0)
-            return -1;
-
-        cur_rest = MAX_HTTP_CHUNK_SIZE - t->chunk_len;
-    }
-    return -1;
-}
-
-static int pipe_fflush(Rconnection con) {
-    asyncODBC_t *t = *((asyncODBC_t**) con->private);
-    if (t->chunk_len > 0) {
-        if (write_next_chunk(t) < 0)
-            return -1;
-        else return 0;
-    }
-    return 0;
-}
 
 static void *asyncRODBCQueryExecuter(void *arg) {
     int slot = *(int*) arg;
@@ -522,36 +311,7 @@ SEXP asyncRODBCQueryStart(SEXP slotA, SEXP chan, SEXP query, SEXP writerA) {
         }
     } while(1);
 
-    PROTECT(conn = R_new_custom_connection("exasol", writer ? "w" : "r", "textConnection", &t->conn));
-
-    t->chunk_len = 0;
-    t->chunk_pos = 0;
-    t->chunk_num = 0;
-    t->conn->isopen = TRUE;
-    t->conn->blocking = TRUE;
-    t->conn->canread = writer == 0 ? TRUE : FALSE;
-    t->conn->canwrite = writer == 0 ? FALSE : TRUE;
-    if (!writer) {
-        t->conn->canread = TRUE;
-        t->conn->canwrite = FALSE;
-        t->conn->read = &pipe_read;
-        t->conn->fgetc = &dummy_fgetc;
-        t->conn->fgetc_internal = &file_fgetc_internal;
-    } else {
-        t->conn->canread = FALSE;
-        t->conn->canwrite = TRUE;
-        t->conn->vfprintf = &pipe_vfprintf;
-        t->conn->write = &pipe_write;
-        t->conn->fflush = &pipe_fflush;
-    }
-    t->conn->save = -1000;
-    t->conn->private = (void*)malloc(sizeof(asyncODBC_t*));
-    *((asyncODBC_t**)t->conn->private) = t;
-    Rf_set_iconv(t->conn);
-
-    UNPROTECT(1);
-    return conn;
-
+    return writer ? createWriteConnection(t->fd) : createReadConnection(t->fd);
 error:
     return ScalarInteger(-1);
 }
@@ -579,6 +339,9 @@ SEXP asyncRODBCQueryFinish(SEXP slotA, SEXP closeA) {
         return ScalarInteger(-1);
     }
     t = &(asyncODBC[slot]);
+
+    destroyReadConnection(t->fd);
+    destroyWriteConnection(t->fd);
 
     if (t->fd >= 0) {
         shutdown(t->fd, SHUT_RDWR);
@@ -610,7 +373,6 @@ SEXP asyncRODBCQueryFinish(SEXP slotA, SEXP closeA) {
       (void)SQLFreeHandle(SQL_HANDLE_STMT, t->stmt);
     }
 
-    t->conn = NULL;
     t->stmt = NULL;
     t->asyncThread_started = 0;
 
@@ -651,9 +413,5 @@ void R_init_exasol(DllInfo *dll)
         asyncODBC[i].done = 0;
         asyncODBC[i].asyncThread_started = 0;
         asyncODBC[i].fd = -1;
-        asyncODBC[i].conn = NULL;
-        asyncODBC[i].chunk_len = 0;
-        asyncODBC[i].chunk_pos = 0;
-        asyncODBC[i].chunk_num = 0;
     }
 }
