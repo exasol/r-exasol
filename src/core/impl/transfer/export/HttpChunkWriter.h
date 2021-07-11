@@ -6,7 +6,7 @@
 #define R_EXASOL_HTTPCHUNKWRITER_H
 
 #include <impl/socket/Socket.h>
-#include <impl/transfer/chunk.h>
+#include <impl/transfer/Chunk.h>
 #include <impl/transfer/export/Writer.h>
 
 namespace exa {

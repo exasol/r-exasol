@@ -52,8 +52,6 @@ size_t im::HttpChunkReader::read_next_chunk() {
         goto error;
     }
 
-    std::cerr << "Buflen=" << buflen << std::endl;
-
     if (buflen == 0) {
         mSocket.send(ok_answer, strlen(ok_answer));
         mSocket.shutdownWr();
@@ -69,13 +67,11 @@ size_t im::HttpChunkReader::read_next_chunk() {
         std::cerr << "invalid buffer length" << std::endl;
         goto error;
     }
-    std::cerr << "Recv Buflen=" << buflen << std::endl;
 
     mChunk.chunk_len = buflen - 2;
     mChunk.chunk_pos = 0;
     mChunk.chunk_buf[buflen-2] = '\0';
     mChunk.chunk_num ++;
-    std::cerr << "Recv buf:" << static_cast<const char*>(mChunk.chunk_buf) << std::endl;
     return mChunk.chunk_len;
 
     error:

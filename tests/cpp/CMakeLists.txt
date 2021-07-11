@@ -27,7 +27,7 @@ add_executable(r_exasol
         ../../src/core/impl/rconnection/RReaderConnection.h
         ../../src/core/impl/rconnection/RWriterConnection.cpp
         ../../src/core/impl/rconnection/RWriterConnection.h
-        ../../src/core/impl/transfer/chunk.h
+        ../../src/core/impl/transfer/Chunk.h
         ../../src/core/impl/ConnectionContext.h
         ../../src/core/connection_gen.cpp
         ../../src/core/connection_gen.h
@@ -38,5 +38,5 @@ add_executable(r_exasol
         main.cpp)
 
 target_link_libraries(r_exasol PRIVATE Catch2::Catch2 R)
-set(TEST_EXEC "python3" "${CMAKE_SOURCE_DIR}/python_server.py")
+set(TEST_EXEC "python3" "${CMAKE_SOURCE_DIR}/python_server_tests.py")
 add_test(NAME r_exasol COMMAND ${TEST_EXEC})

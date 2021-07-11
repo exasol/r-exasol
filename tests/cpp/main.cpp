@@ -27,7 +27,7 @@ std::string createTestString() {
 tSocket openSocket() {
     const char *host = "localhost";
     ::sleep(1);
-    struct sockaddr_in serv_addr;
+    struct sockaddr_in serv_addr{};
     struct hostent *server;
 
     tSocket  s = socket(AF_INET, SOCK_STREAM, 0);
@@ -47,8 +47,8 @@ tSocket openSocket() {
 
 
 TEST_CASE( "Import", "[import]" ) {
-
-    std::unique_ptr<exa::Socket> socket = std::make_unique<exa::SocketImpl>(openSocket());
+    const int socketFd = openSocket();
+    std::unique_ptr<exa::Socket> socket = std::make_unique<exa::SocketImpl>(socketFd);
     exa::Chunk chunk{};
     std::unique_ptr<exa::import::HttpChunkReader> reader = std::make_unique<exa::import::HttpChunkReader>(*socket, chunk);
     std::vector<char> buffer(100);
@@ -71,9 +71,25 @@ TEST_CASE( "Import", "[import]" ) {
 
     sizeReceived = reader->pipe_read(buffer.data(), 1, buffer.size());
     REQUIRE(sizeReceived == 0);
+    socket->shutdownRdWr();
+    close(socketFd);
 
 }
 
-
 TEST_CASE( "Export", "[export]" ) {
+    const int socketFd = openSocket();
+    std::unique_ptr<exa::Socket> socket = std::make_unique<exa::SocketImpl>(socketFd);
+    exa::Chunk chunk{};
+    std::unique_ptr<exa::writer::HttpChunkWriter> writer = std::make_unique<exa::writer::HttpChunkWriter>(*socket, chunk);
+    std::string testString = createTestString();
+    const int bufferSize = 100;
+    size_t sizeWritten = writer->pipe_write(&(testString[0]), 1, bufferSize);
+    REQUIRE(sizeWritten == bufferSize);
+    sizeWritten = writer->pipe_write(&(testString[bufferSize]), 1, bufferSize);
+    REQUIRE(sizeWritten == bufferSize);
+    sizeWritten = writer->pipe_write(&(testString[2*bufferSize]), 1, 20);
+    REQUIRE(sizeWritten == 20);
+    writer->pipe_fflush();
+    socket->shutdownRdWr();
+    close(socketFd);
 }

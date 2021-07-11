@@ -6,7 +6,7 @@
 #define R_EXASOL_HTTPCHUNKREADER_H
 
 #include <impl/socket/Socket.h>
-#include <impl/transfer/chunk.h>
+#include <impl/transfer/Chunk.h>
 #include <impl/transfer/import/Reader.h>
 
 namespace exa {

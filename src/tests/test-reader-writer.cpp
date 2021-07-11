@@ -14,6 +14,7 @@
 
 #include <impl/socket/Socket.h>
 #include <impl/transfer/import/HttpChunkReader.h>
+#include <impl/transfer/export/HttpChunkWriter.h>
 #include <cstring>
 #include <iterator>
 #include <iostream>
@@ -39,13 +40,13 @@ public:
     }
 
     ssize_t send(const std::string &buffer) {
-        send(buffer.data(), buffer.size());
+        return send(buffer.data(), buffer.size());
     }
 
     virtual ssize_t send(const void *buf, size_t len) {
         buffer.reserve(buffer.size() + len);
         buffer.insert(buffer.end(), static_cast<const char*>(buf), static_cast<const char*>(buf) + len);
-
+        return len;
     }
 
     virtual void shutdownWr() {}
@@ -67,10 +68,6 @@ std::string createTestString() {
 // associated context should be wrapped in braced.
 context("Transfer unit tests") {
 
-  // The format for specifying tests is similar to that of
-  // testthat's R functions. Use 'test_that()' to define a
-  // unit test, and use 'expect_true()' and 'expect_false()'
-  // to test the desired conditions.
   test_that("test_reader") {
     TestSocket testSocket;
     exa::Chunk chunk{};
@@ -103,6 +100,34 @@ context("Transfer unit tests") {
 
     sizeReceived = reader->pipe_read(buffer.data(), 1, buffer.size());
     expect_true(sizeReceived == 0);
+  }
+
+  test_that("test_writer") {
+    TestSocket testSocket;
+    exa::Chunk chunk{};
+
+    std::unique_ptr<exa::writer::HttpChunkWriter> writer = std::make_unique<exa::writer::HttpChunkWriter>(testSocket, chunk);
+    std::string testString = createTestString();
+    const size_t bufferSize = 100;
+    size_t sizeWritten = writer->pipe_write(&(testString[0]), 1, bufferSize);
+    expect_true(sizeWritten == bufferSize);
+    sizeWritten = writer->pipe_write(&(testString[bufferSize]), 1, bufferSize);
+    expect_true(sizeWritten == bufferSize);
+    sizeWritten = writer->pipe_write(&(testString[2*bufferSize]), 1, 20);
+    expect_true(sizeWritten == 20);
+    writer->pipe_fflush();
+
+    const std::string header = "HTTP/1.1 200 OK\r\nServer: EXASolution R Package\r\nContent-type: application/octet-stream\r\nContent-disposition: attachment; filename=data.csv\r\nConnection: close\r\n\r\n";
+    std::vector<char> buffer(header.size());
+    const size_t recvHeaderSize = testSocket.recv(buffer.data(), header.size());
+    expect_true(recvHeaderSize == header.size());
+    expect_true(::memcmp(buffer.data(), header.data(), header.size()) == 0);
+
+    buffer.resize(testString.size());
+    const size_t recvDataSize = testSocket.recv(buffer.data(), testString.size());
+
+    expect_true(recvDataSize == testString.size());
+    expect_true(::memcmp(buffer.data(), testString.data(), testString.size()) == 0);
   }
 
 }
