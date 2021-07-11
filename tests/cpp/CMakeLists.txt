@@ -19,10 +19,10 @@ FetchContent_Declare(
 FetchContent_MakeAvailable(catch)
 
 add_executable(r_exasol
-        ../../src/core/impl/transfer/import/HttpChunkReader.cpp
-        ../../src/core/impl/transfer/import/HttpChunkReader.h
-        ../../src/core/impl/transfer/export/HttpChunkWriter.cpp
-        ../../src/core/impl/transfer/export/HttpChunkWriter.h
+        ../../src/core/impl/transfer/reader/HttpChunkReader.cpp
+        ../../src/core/impl/transfer/reader/HttpChunkReader.h
+        ../../src/core/impl/transfer/writer/HttpChunkWriter.cpp
+        ../../src/core/impl/transfer/writer/HttpChunkWriter.h
         ../../src/core/impl/rconnection/RReaderConnection.cpp
         ../../src/core/impl/rconnection/RReaderConnection.h
         ../../src/core/impl/rconnection/RWriterConnection.cpp

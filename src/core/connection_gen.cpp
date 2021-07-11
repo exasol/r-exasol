@@ -8,8 +8,8 @@
 #include <impl/socket/SocketImpl.h>
 #include <impl/rconnection/RReaderConnection.h>
 #include <impl/rconnection/RWriterConnection.h>
-#include <impl/transfer/export/HttpChunkWriter.h>
-#include <impl/transfer/import/HttpChunkReader.h>
+#include <impl/transfer/writer/HttpChunkWriter.h>
+#include <impl/transfer/reader/HttpChunkReader.h>
 
 using namespace exa;
 
@@ -23,7 +23,7 @@ extern "C" {
 
     SEXP createReadConnection(tSocket socketFd) {
         Socket * socket = new SocketImpl(socketFd);
-        import::Reader * reader = new import::HttpChunkReader(*socket, gChunk);
+        reader::Reader * reader = new reader::HttpChunkReader(*socket, gChunk);
         auto * rConnection = new rconnection::RReaderConnection(reader);
         auto importConnectionContext = std::make_unique<ImportConnectionContext>(rConnection,reader, socket);
         SEXP retVal = importConnectionContext->mConnection->create();

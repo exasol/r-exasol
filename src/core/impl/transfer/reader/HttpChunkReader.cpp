@@ -2,19 +2,19 @@
 // Created by thomas on 08/07/2021.
 //
 
-#include <impl/transfer/import/HttpChunkReader.h>
+#include <impl/transfer/reader/HttpChunkReader.h>
 #include <cstring>
 #include <iostream>
 
-namespace im = exa::import;
+namespace re = exa::reader;
 
-im::HttpChunkReader::HttpChunkReader(Socket &socket, Chunk & chunk)
+re::HttpChunkReader::HttpChunkReader(Socket &socket, Chunk & chunk)
 : mSocket(socket)
 , mChunk(chunk) {
     mChunk.reset();
 }
 
-size_t im::HttpChunkReader::read_next_chunk() {
+size_t re::HttpChunkReader::read_next_chunk() {
     size_t pos = 0;
     int buflen, rc;
     const char *ok_answer =
@@ -80,7 +80,7 @@ size_t im::HttpChunkReader::read_next_chunk() {
     return -1;
 }
 
-size_t im::HttpChunkReader::read_next(char *buffer, size_t buflen) {
+size_t re::HttpChunkReader::read_next(char *buffer, size_t buflen) {
 
     size_t rest_chunk = mChunk.chunk_len - mChunk.chunk_pos;
     ssize_t readlen = 0, retlen = 0;
@@ -113,7 +113,7 @@ size_t im::HttpChunkReader::read_next(char *buffer, size_t buflen) {
     return -1;
 }
 
-size_t im::HttpChunkReader::pipe_read(void *ptr, const size_t size, const size_t nitems) {
+size_t re::HttpChunkReader::pipe_read(void *ptr, const size_t size, const size_t nitems) {
 
     const ssize_t len = size * nitems;
     const ssize_t rlen = read_next(static_cast<char *>(ptr), len);
@@ -123,7 +123,7 @@ size_t im::HttpChunkReader::pipe_read(void *ptr, const size_t size, const size_t
     return rlen;
 }
 
-int im::HttpChunkReader::fgetc() {
+int re::HttpChunkReader::fgetc() {
     if ((mChunk.chunk_len - mChunk.chunk_pos) < 1) {
         if (read_next_chunk() < 1) {
             return -1;

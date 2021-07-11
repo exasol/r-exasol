@@ -1,1 +1,1 @@
-core/impl/rconnection/RReaderConnection.cpp core/impl/rconnection/RWriterConnection.cpp core/impl/socket/SocketImpl.cpp core/impl/transfer/export/HttpChunkWriter.cpp core/impl/transfer/import/HttpChunkReader.cpp core/connection_gen.cpp
+core/impl/rconnection/RReaderConnection.cpp core/impl/rconnection/RWriterConnection.cpp core/impl/socket/SocketImpl.cpp core/impl/transfer/writer/HttpChunkWriter.cpp core/impl/transfer/reader/HttpChunkReader.cpp core/connection_gen.cpp

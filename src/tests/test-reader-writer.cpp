@@ -13,8 +13,8 @@
 #include <testthat.h>
 
 #include <impl/socket/Socket.h>
-#include <impl/transfer/import/HttpChunkReader.h>
-#include <impl/transfer/export/HttpChunkWriter.h>
+#include <impl/transfer/reader/HttpChunkReader.h>
+#include <impl/transfer/writer/HttpChunkWriter.h>
 #include <cstring>
 #include <iterator>
 #include <iostream>
@@ -71,7 +71,7 @@ context("Transfer unit tests") {
   test_that("test_reader") {
     TestSocket testSocket;
     exa::Chunk chunk{};
-    std::unique_ptr<exa::import::HttpChunkReader> reader = std::make_unique<exa::import::HttpChunkReader>(testSocket, chunk);
+    std::unique_ptr<exa::reader::HttpChunkReader> reader = std::make_unique<exa::reader::HttpChunkReader>(testSocket, chunk);
     std::vector<char> buffer(100);
     std::string testString = createTestString();
     std::stringstream os;

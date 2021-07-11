@@ -5,15 +5,14 @@
 #define CATCH_CONFIG_MAIN  // This tells Catch to provide a main() - only do this in one cpp file
 #include "catch2/catch.hpp"
 
-#include <impl/transfer/import/HttpChunkReader.h>
-#include <impl/transfer/export//HttpChunkWriter.h>
+#include <impl/transfer/reader/HttpChunkReader.h>
+#include <impl/transfer/writer//HttpChunkWriter.h>
 #include <impl/socket/SocketImpl.h>
 
 #include <netdb.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <dlfcn.h>
-#include <arpa/inet.h>
 
 
 const int PORT = 5000;
@@ -46,11 +45,11 @@ tSocket openSocket() {
 }
 
 
-TEST_CASE( "Import", "[import]" ) {
+TEST_CASE( "Import", "[reader]" ) {
     const int socketFd = openSocket();
     std::unique_ptr<exa::Socket> socket = std::make_unique<exa::SocketImpl>(socketFd);
     exa::Chunk chunk{};
-    std::unique_ptr<exa::import::HttpChunkReader> reader = std::make_unique<exa::import::HttpChunkReader>(*socket, chunk);
+    std::unique_ptr<exa::reader::HttpChunkReader> reader = std::make_unique<exa::reader::HttpChunkReader>(*socket, chunk);
     std::vector<char> buffer(100);
     std::string testString = createTestString();
     size_t sizeReceived = reader->pipe_read(buffer.data(), 1, buffer.size());
@@ -76,7 +75,7 @@ TEST_CASE( "Import", "[import]" ) {
 
 }
 
-TEST_CASE( "Export", "[export]" ) {
+TEST_CASE( "Export", "[writer]" ) {
     const int socketFd = openSocket();
     std::unique_ptr<exa::Socket> socket = std::make_unique<exa::SocketImpl>(socketFd);
     exa::Chunk chunk{};

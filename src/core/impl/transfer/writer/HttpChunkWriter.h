@@ -7,7 +7,7 @@
 
 #include <impl/socket/Socket.h>
 #include <impl/transfer/Chunk.h>
-#include <impl/transfer/export/Writer.h>
+#include <impl/transfer/writer/Writer.h>
 
 namespace exa {
 
@@ -15,7 +15,7 @@ namespace exa {
 
         class HttpChunkWriter : public Writer {
         public:
-            virtual ~HttpChunkWriter() {};
+            ~HttpChunkWriter() override = default;
             explicit HttpChunkWriter(Socket &socket, Chunk & chunk);
             size_t pipe_write(const void *ptr, size_t size, size_t nitems) override;
             int pipe_fflush() override;

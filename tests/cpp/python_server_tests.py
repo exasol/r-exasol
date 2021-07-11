@@ -8,7 +8,7 @@ def reading_test():
     # become a server socket
     serversocket.listen(5)
 
-    p_unit_test = subprocess.Popen(["./r_exasol", "import"])
+    p_unit_test = subprocess.Popen(["./r_exasol", "Import"])
 
     (clientsocket, address) = serversocket.accept()
 
@@ -38,7 +38,7 @@ def writing_test():
     # become a server socket
     serversocket.listen(5)
 
-    p_unit_test = subprocess.Popen(["./r_exasol", "export"])
+    p_unit_test = subprocess.Popen(["./r_exasol", "Export"])
 
     (clientsocket, address) = serversocket.accept()
 

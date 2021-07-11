@@ -7,7 +7,7 @@
 
 #include "RconnFwd.h"
 #include <Rdefines.h>
-#include <impl/transfer/export/Writer.h>
+#include <impl/transfer/writer//Writer.h>
 
 namespace exa {
     namespace rconnection {

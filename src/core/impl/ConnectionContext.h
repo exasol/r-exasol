@@ -9,8 +9,8 @@
 #include <memory>
 #include <impl/rconnection/RReaderConnection.h>
 #include <impl/rconnection/RWriterConnection.h>
-#include <impl/transfer/export/Writer.h>
-#include <impl/transfer/import/Reader.h>
+#include <impl/transfer/writer/Writer.h>
+#include <impl/transfer/reader/Reader.h>
 
 namespace exa {
 
@@ -25,7 +25,7 @@ namespace exa {
         std::unique_ptr<Socket> mSocket;
     };
 
-    typedef ConnectionContext<rconnection::RReaderConnection, import::Reader> ImportConnectionContext;
+    typedef ConnectionContext<rconnection::RReaderConnection, reader::Reader> ImportConnectionContext;
     typedef ConnectionContext<rconnection::RWriterConnection, writer::Writer> ExportConnectionContext;
 
 }

@@ -2,18 +2,18 @@
 // Created by thomas on 08/07/2021.
 //
 
-#include <impl/transfer/export/HttpChunkWriter.h>
+#include <impl/transfer/writer/HttpChunkWriter.h>
 #include <cstring>
 
-namespace ex = exa::writer;
+namespace wri = exa::writer;
 
-ex::HttpChunkWriter::HttpChunkWriter(Socket &socket, Chunk & chunk)
+wri::HttpChunkWriter::HttpChunkWriter(Socket &socket, Chunk & chunk)
 : mSocket(socket)
 , mChunk(chunk) {
     mChunk.reset();
 }
 
-size_t ex::HttpChunkWriter::write_next_chunk() {
+size_t wri::HttpChunkWriter::write_next_chunk() {
     const char *ok_answer =
             "HTTP/1.1 200 OK\r\n"
             "Server: EXASolution R Package\r\n"
@@ -52,7 +52,7 @@ size_t ex::HttpChunkWriter::write_next_chunk() {
     return -1;
 }
 
-size_t ex::HttpChunkWriter::pipe_write(const void *ptr, size_t size, size_t nitems) {
+size_t wri::HttpChunkWriter::pipe_write(const void *ptr, size_t size, size_t nitems) {
 
     char *src = (char*) ptr;
     size_t cur_rest = MAX_HTTP_CHUNK_SIZE - mChunk.chunk_len;
@@ -80,7 +80,7 @@ size_t ex::HttpChunkWriter::pipe_write(const void *ptr, size_t size, size_t nite
     return -1;
 }
 
-int ex::HttpChunkWriter::pipe_fflush() {
+int wri::HttpChunkWriter::pipe_fflush() {
     if (mChunk.chunk_len > 0) {
         if (write_next_chunk() < 0)
             return -1;

@@ -7,14 +7,14 @@
 
 #include <impl/socket/Socket.h>
 #include <impl/transfer/Chunk.h>
-#include <impl/transfer/import/Reader.h>
+#include <impl/transfer/reader/Reader.h>
 
 namespace exa {
-    namespace import {
+    namespace reader {
 
         class HttpChunkReader : public Reader {
         public:
-            ~HttpChunkReader() override {};
+            ~HttpChunkReader() override = default;
             explicit HttpChunkReader(Socket &socket, Chunk & chunk);
 
             int fgetc() override;

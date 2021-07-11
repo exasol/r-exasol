@@ -7,7 +7,7 @@
 
 #include "RconnFwd.h"
 #include <Rdefines.h>
-#include <impl/transfer/import/Reader.h>
+#include <impl/transfer/reader/Reader.h>
 
 namespace exa {
 
@@ -15,12 +15,12 @@ namespace exa {
 
         class RReaderConnection {
         public:
-            explicit RReaderConnection(import::Reader * reader);
+            explicit RReaderConnection(reader::Reader * reader);
 
             SEXP create();
 
         private:
-            import::Reader * mReader;
+            reader::Reader * mReader;
             Rconnection mConn;
         };
     }

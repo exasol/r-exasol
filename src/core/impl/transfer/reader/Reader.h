@@ -8,10 +8,10 @@
 #include <cstdio>
 
 namespace exa {
-    namespace import {
+    namespace reader {
         class Reader {
         public:
-            virtual ~Reader() {};
+            virtual ~Reader() = default;
             virtual int fgetc() = 0;
             virtual size_t pipe_read(void *ptr, const size_t size, const size_t nitems) = 0;
         };
