@@ -19,7 +19,6 @@ jobs:
 
   integration_tests:
     needs: prep-testbed
-    if: github.ref != 'refs/heads/main'
     environment: publish
     strategy:
       fail-fast: false
@@ -46,7 +45,7 @@ jobs:
           ./tests/scripts/execute_docker_test_env.sh ${{ matrix.r-version }}
 
   publish-main:
-    needs: prep-testbed
+    needs: [prep-testbed,integration_tests]
     if: github.ref == 'refs/heads/main'
     strategy:
       fail-fast: false

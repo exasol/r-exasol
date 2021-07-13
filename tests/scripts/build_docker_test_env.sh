@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -e
+set -euo pipefail
 
 if [ $# -lt 1 ]; then
     echo "You must provide combined r-version/cran repo as arguments"
