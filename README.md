@@ -66,7 +66,7 @@ Code coverage of tests:
 3. The R package **devtools** must be available as it contains the `install_github()` method
    and the things needed to build the package.
 
-4. Install the necessary dependencies, such as RODBC or the DBI packages. For the versions of these package, checkout the section [Status](#status). Have a look into the [Github Actions Docker](https://github.com/exasol/r-exasol/blob/main/tests/Dockerfile), if you look for an example, how to install the necessary dependencies.
+4. Install the necessary dependencies, such as RODBC or the DBI packages. For the versions of these package, checkout the section [Status](#status). Have a look into the [Github Actions Dockerfile](https://github.com/exasol/r-exasol/blob/main/tests/Dockerfile), if you look for an example, how to install the necessary dependencies.
 
    
 ### Installation
