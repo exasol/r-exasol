@@ -1,0 +1,67 @@
+name: CI
+
+on: [push, pull_request]
+
+jobs:
+  prep-testbed:
+    runs-on: ubuntu-18.04
+    steps:
+      - uses: actions/checkout@v2
+      - id: set-matrix
+        run: |
+          sudo apt-get install jq
+          sudo bash ./tests/scripts/cran/install_cran_repos.sh
+          echo "Result:"
+          echo $(sudo bash ./tests/scripts/cran/get_R_releases.sh)
+          echo "::set-output name=matrix::$(sudo bash ./tests/scripts/cran/get_R_releases.sh)"
+    outputs:
+      matrix: ${{ steps.set-matrix.outputs.matrix }}
+
+  integration_tests:
+    needs: prep-testbed
+    environment: publish
+    strategy:
+      fail-fast: false
+      matrix:
+        r-version: ${{fromJson(needs.prep-testbed.outputs.matrix)}}
+    runs-on: ubuntu-18.04
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Checkout test environment
+        run: git clone https://github.com/exasol/integration-test-docker-environment.git
+        working-directory: ..
+      - name: Spawn EXASOL environemnt
+        run: ./start-test-env spawn-test-environment --environment-name test --database-port-forward 8888 --bucketfs-port-forward 6666 --db-mem-size 4GB
+        working-directory: ../integration-test-docker-environment
+      - name: Docker login
+        run: echo "$SECRET_DOCKER_TOKEN" | docker login --username "$SECRET_DOCKER_USER_NAME" --password-stdin
+        env: # Set the secret as an input
+          SECRET_DOCKER_USER_NAME: ${{ secrets.DOCKER_USER_NAME }}
+          SECRET_DOCKER_TOKEN: ${{ secrets.DOCKER_TOKEN }}
+      - name: Run all tests
+        run: |
+          ./tests/scripts/pull_docker_image.sh ${{ matrix.r-version }}
+          ./tests/scripts/execute_docker_test_env.sh ${{ matrix.r-version }}
+
+  publish-main:
+    needs: [prep-testbed,integration_tests]
+    if: github.ref == 'refs/heads/main'
+    strategy:
+      fail-fast: false
+      matrix:
+        r-version: ${{fromJson(needs.prep-testbed.outputs.matrix)}}
+    runs-on: ubuntu-18.04
+
+    environment: publish
+    steps:
+      - uses: actions/checkout@v2
+      - name: Build new Docker image
+        run: "bash tests/scripts/build_docker_test_env.sh ${{ matrix.r-version }}"
+      - name: Docker login
+        run: echo "$SECRET_DOCKER_TOKEN" | docker login --username "$SECRET_DOCKER_USER_NAME" --password-stdin
+        env: # Set the secret as an input
+          SECRET_DOCKER_USER_NAME: ${{ secrets.DOCKER_USER_NAME }}
+          SECRET_DOCKER_TOKEN: ${{ secrets.DOCKER_TOKEN }}
+      - name: Push new Docker images
+        run: "bash tests/scripts/push_docker_image.sh ${{ matrix.r-version }}"
