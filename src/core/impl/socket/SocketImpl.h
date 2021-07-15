@@ -5,8 +5,8 @@
 #ifndef R_EXASOL_SOCKETIMPL_H
 #define R_EXASOL_SOCKETIMPL_H
 
-#include <impl/socket/Socket.h>
-#include <ExaTypes.h>
+#include <if/Socket.h>
+#include <if/ExaTypes.h>
 #include <cstdio>
 
 namespace exa {

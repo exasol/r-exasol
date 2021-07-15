@@ -5,9 +5,9 @@
 #ifndef R_EXASOL_HTTPCHUNKWRITER_H
 #define R_EXASOL_HTTPCHUNKWRITER_H
 
-#include <impl/socket/Socket.h>
-#include <impl/transfer/Chunk.h>
-#include <impl/transfer/writer/Writer.h>
+#include <if/Socket.h>
+#include <impl/protocol/http/Chunk.h>
+#include <if/Writer.h>
 
 namespace exa {
 
@@ -17,6 +17,7 @@ namespace exa {
         public:
             ~HttpChunkWriter() override = default;
             explicit HttpChunkWriter(Socket &socket, Chunk & chunk);
+            void start() override;
             size_t pipe_write(const void *ptr, size_t size, size_t nitems) override;
             int pipe_fflush() override;
 

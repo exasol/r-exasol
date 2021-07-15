@@ -13,8 +13,8 @@
 #include <testthat.h>
 
 #include <impl/socket/Socket.h>
-#include <impl/transfer/reader/HttpChunkReader.h>
-#include <impl/transfer/writer/HttpChunkWriter.h>
+#include <impl/protocol/reader/HttpChunkReader.h>
+#include <impl/protocol/writer/HttpChunkWriter.h>
 #include <cstring>
 #include <iterator>
 #include <iostream>

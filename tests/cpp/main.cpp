@@ -5,8 +5,8 @@
 #define CATCH_CONFIG_MAIN  // This tells Catch to provide a main() - only do this in one cpp file
 #include "catch2/catch.hpp"
 
-#include <impl/transfer/reader/HttpChunkReader.h>
-#include <impl/transfer/writer//HttpChunkWriter.h>
+#include <impl/protocol/http/reader/HttpChunkReader.h>
+#include <impl/protocol/http/writer//HttpChunkWriter.h>
 #include <impl/socket/SocketImpl.h>
 
 #include <netdb.h>
@@ -40,10 +40,8 @@ tSocket openSocket() {
     ::memcpy((char *)&serv_addr.sin_addr.s_addr, (char *) server->h_addr, server->h_length);
 
     REQUIRE (::connect(s, (struct sockaddr *)&serv_addr, sizeof(serv_addr)) == 0);
-
     return s;
 }
-
 
 TEST_CASE( "Import", "[reader]" ) {
     const int socketFd = openSocket();
@@ -56,15 +54,12 @@ TEST_CASE( "Import", "[reader]" ) {
     REQUIRE(sizeReceived == buffer.size());
     std::string strRep(buffer.data());
     REQUIRE(testString.substr(0, 100) == strRep);
-    std::cerr << "First buffer" << std::endl;
     sizeReceived = reader->pipe_read(buffer.data(), 1, buffer.size());
     REQUIRE(sizeReceived == buffer.size());
     strRep = std::string(buffer.data(), buffer.size());
     REQUIRE(testString.substr(100, 100) == strRep);
-    std::cerr << "Second buffer" << std::endl;
     sizeReceived = reader->pipe_read(buffer.data(), 1, 20);
     REQUIRE(sizeReceived == 20);
-    std::cerr << "Last buffer" << std::endl;
     strRep = std::string(buffer.data(), 20);
     REQUIRE(testString.substr(200, 20) == strRep);
 
@@ -72,8 +67,36 @@ TEST_CASE( "Import", "[reader]" ) {
     REQUIRE(sizeReceived == 0);
     socket->shutdownRdWr();
     close(socketFd);
+}
+
+
+TEST_CASE( "ImportHttp", "[reader]" ) {
+    const int socketFd = openSocket();
+    std::unique_ptr<exa::Socket> socket = std::make_unique<exa::SocketImpl>(socketFd);
+    exa::Chunk chunk{};
+    std::unique_ptr<exa::reader::HttpChunkReader> reader = std::make_unique<exa::reader::HttpChunkReader>(*socket, chunk);
+    reader->start();
+    std::vector<char> buffer(100);
+    std::string testString = createTestString();
+    size_t sizeReceived = reader->pipe_read(buffer.data(), 1, buffer.size());
+    REQUIRE(sizeReceived == buffer.size());
+    std::string strRep(buffer.data());
+    REQUIRE(testString.substr(0, 100) == strRep);
+    sizeReceived = reader->pipe_read(buffer.data(), 1, buffer.size());
+    REQUIRE(sizeReceived == buffer.size());
+    strRep = std::string(buffer.data(), buffer.size());
+    REQUIRE(testString.substr(100, 100) == strRep);
+    sizeReceived = reader->pipe_read(buffer.data(), 1, 20);
+    REQUIRE(sizeReceived == 20);
+    strRep = std::string(buffer.data(), 20);
+    REQUIRE(testString.substr(200, 20) == strRep);
+    sizeReceived = reader->pipe_read(buffer.data(), 1, buffer.size());
+    REQUIRE(sizeReceived == 0);
+    socket->shutdownRdWr();
+    close(socketFd);
 
 }
+
 
 TEST_CASE( "Export", "[writer]" ) {
     const int socketFd = openSocket();

@@ -288,29 +288,6 @@ SEXP asyncRODBCQueryStart(SEXP slotA, SEXP chan, SEXP query, SEXP writerA) {
     }
     t->asyncThread_started = 1;
 
-    line[0] = '\0';
-    do {
-        if (pos > 4094) {
-            error("Could not read header, line too long.");
-            goto error;
-        }
-        len = recv(t->fd, &data, 1, MSG_WAITALL);
-        if (len != 1) {
-            error("Could not read header. errno=%d", errno);
-            goto error;
-        }
-        line[pos++] = data;
-        line[pos] = '\0';
-        if (data == '\n' && pos > 1 && line[pos-2] == '\r') {
-	    // fprintf(stderr, "### got line: %s", line);
-            if (pos == 2) {
-              break; /* header finished */
-            }
-            pos = 0;
-            line[0] = '\0';
-        }
-    } while(1);
-
     return writer ? createWriteConnection(t->fd) : createReadConnection(t->fd);
 error:
     return ScalarInteger(-1);

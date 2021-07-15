@@ -39,7 +39,7 @@ AC_REQUIRE_CPP
 AC_PROG_CXX
 
 # substitute externalized source list
-PKG_SOURCES=$(cat src/core/sources.list)
+PKG_SOURCES=$(cat src/sources.list)
 AC_SUBST(PKG_SOURCES)
 
 # substitute unit test source list

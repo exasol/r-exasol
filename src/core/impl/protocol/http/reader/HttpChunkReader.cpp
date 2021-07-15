@@ -2,9 +2,10 @@
 // Created by thomas on 08/07/2021.
 //
 
-#include <impl/transfer/reader/HttpChunkReader.h>
+#include <impl/protocol/http/reader/HttpChunkReader.h>
 #include <cstring>
 #include <iostream>
+#include <impl/protocol/http/common.h>
 
 namespace re = exa::reader;
 
@@ -33,7 +34,6 @@ size_t re::HttpChunkReader::read_next_chunk() {
             // fprintf(stderr, "### error (%d)\n", rc);
             goto error;
         }
-        std::cerr << "Got:" << mChunk.chunk_buf[pos] << std::endl;
         if (mChunk.chunk_buf[pos] == '\n') {
             break;
         }
@@ -130,5 +130,9 @@ int re::HttpChunkReader::fgetc() {
         }
     }
     return (int) mChunk.chunk_buf[mChunk.chunk_pos++];
+}
+
+void exa::reader::HttpChunkReader::start() {
+    exa::readHttpHeader(mSocket);
 }
 

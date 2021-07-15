@@ -6,19 +6,21 @@
 #define R_EXASOL_RWRITERCONNECTION_H
 
 #include "RconnFwd.h"
+#include "RConnection.h"
 #include <Rdefines.h>
-#include <impl/transfer/writer//Writer.h>
+#include <if/Writer.h>
 
 namespace exa {
     namespace rconnection {
-        class RWriterConnection {
+        class RWriterConnection : public RConnection {
         public:
-            explicit RWriterConnection(writer::Writer * writer);
+            explicit RWriterConnection(writer::Writer & writer);
 
             SEXP create();
+            void release() override;
 
         private:
-            writer::Writer * mWriter;
+            writer::Writer & mWriter;
             Rconnection mConn;
         };
     }

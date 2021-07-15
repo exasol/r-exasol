@@ -5,9 +5,9 @@
 #ifndef R_EXASOL_HTTPCHUNKREADER_H
 #define R_EXASOL_HTTPCHUNKREADER_H
 
-#include <impl/socket/Socket.h>
-#include <impl/transfer/Chunk.h>
-#include <impl/transfer/reader/Reader.h>
+#include <if/Socket.h>
+#include <impl/protocol/http/Chunk.h>
+#include <if/Reader.h>
 
 namespace exa {
     namespace reader {
@@ -16,7 +16,7 @@ namespace exa {
         public:
             ~HttpChunkReader() override = default;
             explicit HttpChunkReader(Socket &socket, Chunk & chunk);
-
+            void start() override;
             int fgetc() override;
             size_t pipe_read(void *ptr, const size_t size, const size_t nitems) override;
 

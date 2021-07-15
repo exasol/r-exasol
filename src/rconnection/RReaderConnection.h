@@ -6,21 +6,24 @@
 #define R_EXASOL_RREADERCONNECTION_H
 
 #include "RconnFwd.h"
+#include "RConnection.h"
 #include <Rdefines.h>
-#include <impl/transfer/reader/Reader.h>
+#include <if/Reader.h>
 
 namespace exa {
 
     namespace rconnection {
 
-        class RReaderConnection {
+        class RReaderConnection : public RConnection {
         public:
-            explicit RReaderConnection(reader::Reader * reader);
+            explicit RReaderConnection(reader::Reader & reader);
 
             SEXP create();
+            void release() override;
+
 
         private:
-            reader::Reader * mReader;
+            reader::Reader & mReader;
             Rconnection mConn;
         };
     }

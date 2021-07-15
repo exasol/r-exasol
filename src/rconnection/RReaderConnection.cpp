@@ -3,7 +3,7 @@
 //
 
 #include "RReaderConnection.h"
-#include <impl/transfer/reader/Reader.h>
+#include <if/Reader.h>
 #include <cstdlib>
 
 
@@ -21,20 +21,28 @@ extern void Rf_set_iconv(Rconnection con);
 
 static size_t pipe_read(void *ptr, const size_t size, const size_t nitems,
                         const Rconnection con) {
+    size_t retVal = 0;
     exa::reader::Reader * reader = *((exa::reader::Reader **) con->priv);
-    return reader->pipe_read(ptr, size, nitems);
+    if(reader) {
+        retVal = reader->pipe_read(ptr, size, nitems);
+    }
+    return retVal;
 }
 
 static int file_fgetc_internal(const Rconnection con) {
     exa::reader::Reader * reader = *((exa::reader::Reader **) con->priv);
-    return reader->fgetc();
+    int retVal = 0;
+    if(reader) {
+        retVal = reader->fgetc();
+    }
+    return  retVal;
 }
 
 }
 
 namespace rcon = exa::rconnection;
 
-rcon::RReaderConnection::RReaderConnection(reader::Reader * reader)
+rcon::RReaderConnection::RReaderConnection(reader::Reader & reader)
 : mReader(reader)
 , mConn(nullptr){}
 
@@ -51,8 +59,12 @@ SEXP rcon::RReaderConnection::create() {
     mConn->fgetc_internal = &file_fgetc_internal;
     mConn->save = -1000;
     mConn->priv = (void*)::malloc(sizeof(reader::Reader*));
-    *(static_cast<reader::Reader**>(mConn->priv)) = mReader;
+    *(static_cast<reader::Reader**>(mConn->priv)) = &mReader;
     Rf_set_iconv(mConn);
     UNPROTECT(1);
     return r_custom_connection;
+}
+
+void exa::rconnection::RReaderConnection::release() {
+    *(static_cast<reader::Reader**>(mConn->priv)) = nullptr;
 }

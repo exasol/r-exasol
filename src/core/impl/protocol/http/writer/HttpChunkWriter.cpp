@@ -2,7 +2,8 @@
 // Created by thomas on 08/07/2021.
 //
 
-#include <impl/transfer/writer/HttpChunkWriter.h>
+#include <impl/protocol/http/writer/HttpChunkWriter.h>
+#include <impl/protocol/http/common.h>
 #include <cstring>
 
 namespace wri = exa::writer;
@@ -87,4 +88,8 @@ int wri::HttpChunkWriter::pipe_fflush() {
         else return 0;
     }
     return 0;
+}
+
+void exa::writer::HttpChunkWriter::start() {
+    exa::readHttpHeader(mSocket);
 }

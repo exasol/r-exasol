@@ -2,10 +2,7 @@ cmake_minimum_required(VERSION 3.19)
 project(r_exasol)
 
 set(CMAKE_CXX_STANDARD 14)
-
-include_directories(../../src/core /usr/share/R/include)
-
-
+include_directories(../../src/core)
 
 include(FetchContent)
 include(CTest)
@@ -19,24 +16,22 @@ FetchContent_Declare(
 FetchContent_MakeAvailable(catch)
 
 add_executable(r_exasol
-        ../../src/core/impl/transfer/reader/HttpChunkReader.cpp
-        ../../src/core/impl/transfer/reader/HttpChunkReader.h
-        ../../src/core/impl/transfer/writer/HttpChunkWriter.cpp
-        ../../src/core/impl/transfer/writer/HttpChunkWriter.h
-        ../../src/core/impl/rconnection/RReaderConnection.cpp
-        ../../src/core/impl/rconnection/RReaderConnection.h
-        ../../src/core/impl/rconnection/RWriterConnection.cpp
-        ../../src/core/impl/rconnection/RWriterConnection.h
-        ../../src/core/impl/transfer/Chunk.h
-        ../../src/core/impl/ConnectionContext.h
-        ../../src/core/connection_gen.cpp
-        ../../src/core/connection_gen.h
-        ../../src/core/impl/socket/Socket.h
+        ../../src/core/impl/protocol/http/reader/HttpChunkReader.cpp
+        ../../src/core/impl/protocol/http/reader/HttpChunkReader.h
+        ../../src/core/impl/protocol/http/writer/HttpChunkWriter.cpp
+        ../../src/core/impl/protocol/http/writer/HttpChunkWriter.h
+        ../../src/core/impl/protocol/http/common.h
+        ../../src/core/impl/protocol/http/common.cpp
+        ../../src/core/impl/protocol/http/Chunk.h
+        ../../src/core/impl/ConnectionController.cpp
+        ../../src/core/if/ConnectionController.h
+        ../../src/core/if/Socket.h
+        ../../src/core/if/ConnectionFactory.h
         ../../src/core/impl/socket/SocketImpl.h
         ../../src/core/impl/socket/SocketImpl.cpp
 #        ../../src/exasol.c
         main.cpp)
 
-target_link_libraries(r_exasol PRIVATE Catch2::Catch2 R)
+target_link_libraries(r_exasol PRIVATE Catch2::Catch2)
 set(TEST_EXEC "python3" "${CMAKE_SOURCE_DIR}/python_server_tests.py")
 add_test(NAME r_exasol COMMAND ${TEST_EXEC})

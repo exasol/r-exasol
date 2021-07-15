@@ -2,7 +2,7 @@
 // Created by thomas on 08/07/2021.
 //
 
-#include <impl/rconnection/RWriterConnection.h>
+#include "RWriterConnection.h"
 
 #include <cstdarg>
 #include <cstdio>
@@ -28,20 +28,28 @@ static int pipe_vfprintf(const Rconnection con, const char *format, va_list ap) 
 
 static size_t pipe_write(const void *ptr, size_t size, size_t nitems,
                          const Rconnection con) {
+    size_t  retVal = 0;
     exa::writer::Writer * writer = *((exa::writer::Writer **) con->priv);
-    return writer->pipe_write(ptr, size, nitems);
+    if(writer) {
+        retVal = writer->pipe_write(ptr, size, nitems);
+    }
+    return retVal;
 }
 
 static int pipe_fflush(Rconnection con) {
+    int retVal = 0;
     exa::writer::Writer * writer = *((exa::writer::Writer **) con->priv);
-    return writer->pipe_fflush();
+    if(writer) {
+        retVal = writer->pipe_fflush();
+    }
+    return retVal;
 }
 
 }
 
 namespace rcon = exa::rconnection;
 
-rcon::RWriterConnection::RWriterConnection(exa::writer::Writer * writer)
+rcon::RWriterConnection::RWriterConnection(exa::writer::Writer & writer)
 : mWriter(writer)
 , mConn(nullptr) {}
 
@@ -58,8 +66,13 @@ SEXP rcon::RWriterConnection::create() {
     mConn->fflush = &pipe_fflush;
     mConn->save = -1000;
     mConn->priv = (void*)::malloc(sizeof(RWriterConnection*));
-    *(static_cast<writer::Writer**>(mConn->priv)) = mWriter;
+    *(static_cast<writer::Writer**>(mConn->priv)) = &mWriter;
     Rf_set_iconv(mConn);
     UNPROTECT(1);
     return r_custom_connection;
 }
+
+void exa::rconnection::RWriterConnection::release() {
+    *(static_cast<writer::Writer**>(mConn->priv)) = nullptr;
+}
+
