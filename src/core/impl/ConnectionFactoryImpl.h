@@ -12,7 +12,7 @@ namespace exa {
     class Chunk;
 
     class ConnectionFactoryImpl : public ConnectionFactory {
-        std::unique_ptr<Socket> createSocket(tSocket) override;
+        std::unique_ptr<Socket> createSocket() override;
         std::unique_ptr<reader::Reader> createHttpReader(Socket&) override;
         std::unique_ptr<writer::Writer> createHttpWriter(Socket&) override;
 

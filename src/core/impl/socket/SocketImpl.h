@@ -8,19 +8,25 @@
 #include <if/Socket.h>
 #include <if/ExaTypes.h>
 #include <cstdio>
+#include <cstdint>
+#include <utility>
+#include <string>
 
 namespace exa {
     class SocketImpl : public Socket {
     public:
-        explicit SocketImpl(tSocket socket);
+        explicit SocketImpl();
 
+        void connect(const char* host, uint16_t port) override;
         size_t recv(void *buf, size_t len) override;
         ssize_t send(const void *buf, size_t len) override;
         void shutdownWr() override;
         void shutdownRdWr() override;
 
+        std::pair<std::string, uint16_t> getConnectionInfo() const override { return mConnectionInfo; }
     private:
         tSocket mSocket;
+        std::pair<std::string, uint16_t> mConnectionInfo;
     };
 }
 

@@ -16,7 +16,7 @@ namespace exa {
     class ConnectionFactory {
     public:
         virtual ~ConnectionFactory() = default;
-        virtual std::unique_ptr<Socket> createSocket(tSocket) = 0;
+        virtual std::unique_ptr<Socket> createSocket() = 0;
         virtual std::unique_ptr<reader::Reader> createHttpReader(Socket&) = 0;
         virtual std::unique_ptr<writer::Writer> createHttpWriter(Socket&) = 0;
     };

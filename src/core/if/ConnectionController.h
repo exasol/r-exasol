@@ -6,6 +6,10 @@
 #define R_EXASOL_CONNECTION_CONTROLLER_H
 
 #include <if/ConnectionFactory.h>
+#include <if/OdbcAsyncExecutor.h>
+#include <if/OdbcSessionInfo.h>
+#include <if/ErrorHandler.h>
+#include <memory>
 
 namespace exa {
     enum ProtocolType {
@@ -14,18 +18,28 @@ namespace exa {
 
     class ConnectionController {
     public:
-        explicit ConnectionController(ConnectionFactory & connectionFactory);
+        explicit ConnectionController(ConnectionFactory & connectionFactory, const tErrorFunction & errorHandler);
 
-        reader::Reader* startReading(tSocket, ProtocolType);
-        writer::Writer* startWriting(tSocket, ProtocolType);
+        int connect(const char* host, uint16_t port);
 
-        void shutDown();
+        reader::Reader* startReading(const OdbcSessionInfo&, ProtocolType);
+        writer::Writer* startWriting(const OdbcSessionInfo&,ProtocolType);
+
+        void onOdbcError(const std::string&);
+        /// Shuts connection controller down.
+        /// \return Returns true if transfer was finished. false otherwise.
+        bool shutDown();
+
+        std::pair<std::string, uint16_t > getHostInfo() const { return mHostInfo; }
 
     private:
         ConnectionFactory & mConnectionFactory;
         std::unique_ptr<reader::Reader> mReader;
         std::unique_ptr<writer::Writer> mWriter;
+        std::unique_ptr<OdbcAsyncExecutor> mOdbcAsyncExecutor;
         std::unique_ptr<Socket> mSocket;
+        std::pair<std::string, uint16_t > mHostInfo;
+        const tErrorFunction & mErrorHandler;
     };
 }
 

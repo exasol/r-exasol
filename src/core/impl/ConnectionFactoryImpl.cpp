@@ -7,8 +7,8 @@
 #include <impl/protocol/http/reader/HttpChunkReader.h>
 #include <impl/protocol/http/writer/HttpChunkWriter.h>
 
-std::unique_ptr<exa::Socket> exa::ConnectionFactoryImpl::createSocket(tSocket socket) {
-    return std::make_unique<exa::SocketImpl>(socket);
+std::unique_ptr<exa::Socket> exa::ConnectionFactoryImpl::createSocket() {
+    return std::make_unique<exa::SocketImpl>();
 }
 
 std::unique_ptr<exa::reader::Reader> exa::ConnectionFactoryImpl::createHttpReader(Socket& socket) {

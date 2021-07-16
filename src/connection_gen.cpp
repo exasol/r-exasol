@@ -8,6 +8,7 @@
 #include <if/ConnectionController.h>
 #include "rconnection/RReaderConnection.h"
 #include "rconnection/RWriterConnection.h"
+#include "odbc/OdbcSessionInfoImpl.h"
 
 namespace exa {
     struct ConnectionContext {
@@ -17,33 +18,47 @@ namespace exa {
 
     ConnectionFactoryImpl gConnectionFactory;
     ConnectionContext *gpConnectionContext = nullptr;
+
+    void onError(std::string e) {
+        ::error(e.c_str());
+    }
 }
+
 
 extern "C" {
 
 
-void initImportConnection() {
+int initConnection(const char* host, int port) {
     if (exa::gpConnectionContext != nullptr) {
-        destroyConnection();
+        destroyConnection(0);
     }
     exa::gpConnectionContext = new exa::ConnectionContext();
-    exa::gpConnectionContext->mConnectionController = std::make_unique<exa::ConnectionController>(exa::gConnectionFactory);
+    exa::gpConnectionContext->mConnectionController =
+            std::make_unique<exa::ConnectionController>(exa::gConnectionFactory, &exa::onError);
+    return exa::gpConnectionContext->mConnectionController->connect(host, static_cast<uint16_t>(port));
 }
 
-void destroyConnection() {
+int destroyConnection(int closeFd) {
+    bool wasDone(false);
     if (exa::gpConnectionContext != nullptr) {
         exa::gpConnectionContext->mConnection->release();
-        exa::gpConnectionContext->mConnectionController->shutDown();
+        wasDone = exa::gpConnectionContext->mConnectionController->shutDown();
         delete exa::gpConnectionContext;
         exa::gpConnectionContext = nullptr;
+        if(!closeFd && !wasDone) {
+            ::warning("Transfer was not done jet.");
+        }
     }
+    return wasDone ? 0 : -1;
 }
 
-SEXP createReadConnection(tSocket socket) {
+SEXP createReadConnection(pRODBCHandle handle, SQLCHAR *query) {
     SEXP retVal = nullptr;
     auto connectionContext = exa::gpConnectionContext;
     if (connectionContext != nullptr && connectionContext->mConnectionController) {
-        exa::reader::Reader *reader = connectionContext->mConnectionController->startReading(socket, exa::ProtocolType::http);
+        exa::reader::Reader *reader =
+                connectionContext->mConnectionController->startReading(exa::OdbcSessionInfoImpl(handle, query),
+                                                                       exa::ProtocolType::http);
         if (reader != nullptr) {
             auto readerConnection = std::make_unique<exa::rconnection::RReaderConnection>(*reader);
             retVal = readerConnection->create();
@@ -53,11 +68,13 @@ SEXP createReadConnection(tSocket socket) {
     return retVal;
 }
 
-SEXP createWriteConnection(tSocket socket) {
+SEXP createWriteConnection(pRODBCHandle handle, SQLCHAR *query) {
     SEXP retVal = nullptr;
     auto connectionContext = exa::gpConnectionContext;
     if (connectionContext != nullptr && connectionContext->mConnectionController) {
-        exa::writer::Writer *writer = connectionContext->mConnectionController->startWriting(socket, exa::ProtocolType::http);
+        exa::writer::Writer *writer =
+                connectionContext->mConnectionController->startWriting(exa::OdbcSessionInfoImpl(handle, query),
+                                                                       exa::ProtocolType::http);
         if (writer != nullptr) {
             auto writeConnection = std::make_unique<exa::rconnection::RWriterConnection>(*writer);
             retVal = writeConnection->create();
@@ -65,6 +82,27 @@ SEXP createWriteConnection(tSocket socket) {
         }
     }
     return retVal;
+}
+
+extern SEXP copyHostName() {
+    SEXP host = nullptr;
+    auto connectionContext = exa::gpConnectionContext;
+    if (connectionContext != nullptr && connectionContext->mConnectionController) {
+        PROTECT(host = allocVector(STRSXP, 1));
+        const std::string hostName = connectionContext->mConnectionController->getHostInfo().first;
+        SET_STRING_ELT(host, 0, mkChar(hostName.c_str()));
+        UNPROTECT(1);
+    }
+    return host;
+}
+
+extern SEXP copyHostPort() {
+    uint16_t hostPort = -1;
+    auto connectionContext = exa::gpConnectionContext;
+    if (connectionContext != nullptr && connectionContext->mConnectionController) {
+        hostPort = connectionContext->mConnectionController->getHostInfo().second;
+    }
+    return ScalarInteger(hostPort);
 }
 
 }

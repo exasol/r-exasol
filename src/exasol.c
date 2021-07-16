@@ -52,7 +52,7 @@
 # define OFF_T long
 #endif
 
-#include <connection_gen.h>
+#include "connection_gen.h"
 
 extern SEXP run_testthat_tests(SEXP);
 
@@ -250,9 +250,6 @@ SEXP asyncRODBCQueryStart(SEXP slotA, SEXP chan, SEXP query, SEXP writerA) {
     const int slot = asInteger(slotA);
     const int writer = asInteger(writerA);
     asyncODBC_t *t = NULL;
-    char line[4096], data = '\0';;
-    ssize_t len = -1;
-    int pos = 0;
     pRODBCHandle rodbc = R_ExternalPtrAddr(chan);
     SEXP conn;
 
@@ -306,61 +303,8 @@ SEXP asyncRODBCQueryFinish(SEXP slotA, SEXP closeA) {
     int err = 0, ret = -1, reterr = 0;
     const int slot = asInteger(slotA);
     const int closefd = asInteger(closeA);
-    SQLCHAR sqlstate[6], msg[SQL_MAX_MESSAGE_LENGTH];
-    SQLINTEGER NativeError;
-    SQLSMALLINT MsgLen;
-    asyncODBC_t *t = NULL;
-
-    if (slot < 0 || slot >= MAX_RODBC_THREADS) {
-        error("Slot need to be from 0 to %d.", MAX_RODBC_THREADS);
-        return ScalarInteger(-1);
-    }
-    t = &(asyncODBC[slot]);
-
-    destroyReadConnection(t->fd);
-    destroyWriteConnection(t->fd);
-
-    if (t->fd >= 0) {
-        shutdown(t->fd, SHUT_RDWR);
-        t->fd = -1;
-    }
-
-    if (t->asyncThread_started && pthread_join(t->asyncThread, NULL)) {
-      ++err;
-    }
-
-    if (t->done) {
-      ret = 0;
-    }
-    t->done = 0;
-
-    if (t->res != SQL_SUCCESS && t->res != SQL_SUCCESS_WITH_INFO) {
-        t->res =  SQLGetDiagRec(SQL_HANDLE_STMT,
-                                t->stmt, 1,
-                                sqlstate, &NativeError, msg, sizeof(msg),
-                                &MsgLen);
-        if (t->res != SQL_SUCCESS && t->res != SQL_SUCCESS_WITH_INFO) {
-            error("Unknown ODBC error");
-        } else {
-          reterr = 1;
-        }
-    }
-
-    if (t->stmt != NULL) {
-      (void)SQLFreeHandle(SQL_HANDLE_STMT, t->stmt);
-    }
-
-    t->stmt = NULL;
-    t->asyncThread_started = 0;
-
-    if (reterr) {
-      error("%s %d %s", sqlstate, (int)NativeError, msg);
-    } else if (!closefd) {
-        if (err > 1) error("Could not finish threads.");
-        if (err > 0) error("Could not finish thread.");
-        if (ret) warning("Slot %d was not done jet.", slot);
-    }
-    return ScalarInteger(ret);
+    const int retVal = destroyConnection(closefd);
+    return ScalarInteger(retVal);
 }
 
 #include <R_ext/Rdynload.h>

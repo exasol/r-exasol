@@ -7,15 +7,19 @@
 
 #include <Rdefines.h>
 #include <if/ExaTypes.h>
+#include <sql.h>
+#include "odbc/RODBC.h"
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-    extern void initConnection();
-    extern void destroyConnection();
-    extern SEXP createReadConnection(tSocket socket);
-    extern SEXP createWriteConnection(tSocket socket);
+    extern int initConnection(const char* host, int port);
+    extern SEXP copyHostName();
+    extern SEXP copyHostPort();
+    extern int destroyConnection(int closeFd);
+    extern SEXP createReadConnection(pRODBCHandle handle, SQLCHAR *query);
+    extern SEXP createWriteConnection(pRODBCHandle handle, SQLCHAR *query);
 
 #ifdef __cplusplus
 }
