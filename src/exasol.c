@@ -5,10 +5,9 @@
 #ifdef ERROR
 #undef ERROR
 #endif
-#include <R.h>
 #include <Rdefines.h>
 
-#include <connection_gen.h>
+#include <connection.h>
 
 extern SEXP run_testthat_tests(SEXP);
 

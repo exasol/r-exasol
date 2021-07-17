@@ -2,7 +2,7 @@
 // Created by thomas on 08/07/2021.
 //
 
-#include <connection_gen.h>
+#include <connection.h>
 
 #include <connection/ConnectionFactoryImpl.h>
 #include <if/ConnectionController.h>

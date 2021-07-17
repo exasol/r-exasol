@@ -25,8 +25,6 @@ add_executable(r_exasol
         ../../src/connection/protocol/http/Chunk.h
         ../../src/connection/protocol/metaInfoReader.h
         ../../src/connection/protocol/metaInfoReader.cpp
-        ../../src/odbc/OdbcAsyncExecutorImpl.h
-        ../../src/odbc/OdbcAsyncExecutorImpl.cpp
         ../../src/connection/ConnectionController.cpp
         ../../src/if/ConnectionController.h
         ../../src/if/Socket.h
@@ -39,7 +37,7 @@ add_executable(r_exasol
         ../../src/if/ConnectionFactory.h
         ../../src/socket/SocketImpl.h
         ../../src/socket/SocketImpl.cpp
-        ../../src/exasol.c
+        #../../src/exasol.c
         main.cpp)
 
 target_link_libraries(r_exasol PRIVATE Catch2::Catch2)

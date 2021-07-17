@@ -5,9 +5,9 @@
 #define CATCH_CONFIG_MAIN  // This tells Catch to provide a main() - only do this in one cpp file
 #include "catch2/catch.hpp"
 
-#include <impl/protocol/http/reader/HttpChunkReader.h>
-#include <impl/protocol/http/writer//HttpChunkWriter.h>
-#include <impl/socket/SocketImpl.h>
+#include <connection//protocol/http/reader/HttpChunkReader.h>
+#include <connection/protocol/http/writer//HttpChunkWriter.h>
+#include <socket/SocketImpl.h>
 
 #include <netdb.h>
 #include <sys/socket.h>
@@ -23,29 +23,9 @@ std::string createTestString() {
     return os.str();
 }
 
-tSocket openSocket() {
-    const char *host = "localhost";
-    ::sleep(1);
-    struct sockaddr_in serv_addr{};
-    struct hostent *server;
-
-    tSocket  s = socket(AF_INET, SOCK_STREAM, 0);
-    REQUIRE (s > 0);
-
-    ::memset((char *) &serv_addr, 0, sizeof(serv_addr));
-    serv_addr.sin_family = AF_INET;
-    serv_addr.sin_port = htons(PORT);
-    server = gethostbyname(host);
-    REQUIRE (server != NULL);
-    ::memcpy((char *)&serv_addr.sin_addr.s_addr, (char *) server->h_addr, server->h_length);
-
-    REQUIRE (::connect(s, (struct sockaddr *)&serv_addr, sizeof(serv_addr)) == 0);
-    return s;
-}
-
 TEST_CASE( "Import", "[reader]" ) {
-    const int socketFd = openSocket();
-    std::unique_ptr<exa::Socket> socket = std::make_unique<exa::SocketImpl>(socketFd);
+    std::unique_ptr<exa::Socket> socket = std::make_unique<exa::SocketImpl>();
+    socket->connect("localhost", 5000);
     exa::Chunk chunk{};
     std::unique_ptr<exa::reader::HttpChunkReader> reader = std::make_unique<exa::reader::HttpChunkReader>(*socket, chunk);
     std::vector<char> buffer(100);
@@ -66,13 +46,12 @@ TEST_CASE( "Import", "[reader]" ) {
     sizeReceived = reader->pipe_read(buffer.data(), 1, buffer.size());
     REQUIRE(sizeReceived == 0);
     socket->shutdownRdWr();
-    close(socketFd);
 }
 
 
 TEST_CASE( "ImportHttp", "[reader]" ) {
-    const int socketFd = openSocket();
-    std::unique_ptr<exa::Socket> socket = std::make_unique<exa::SocketImpl>(socketFd);
+    std::unique_ptr<exa::Socket> socket = std::make_unique<exa::SocketImpl>();
+    socket->connect("localhost", 5000);
     exa::Chunk chunk{};
     std::unique_ptr<exa::reader::HttpChunkReader> reader = std::make_unique<exa::reader::HttpChunkReader>(*socket, chunk);
     reader->start();
@@ -93,14 +72,12 @@ TEST_CASE( "ImportHttp", "[reader]" ) {
     sizeReceived = reader->pipe_read(buffer.data(), 1, buffer.size());
     REQUIRE(sizeReceived == 0);
     socket->shutdownRdWr();
-    close(socketFd);
-
 }
 
 
 TEST_CASE( "Export", "[writer]" ) {
-    const int socketFd = openSocket();
-    std::unique_ptr<exa::Socket> socket = std::make_unique<exa::SocketImpl>(socketFd);
+    std::unique_ptr<exa::Socket> socket = std::make_unique<exa::SocketImpl>();
+    socket->connect("localhost", 5000);
     exa::Chunk chunk{};
     std::unique_ptr<exa::writer::HttpChunkWriter> writer = std::make_unique<exa::writer::HttpChunkWriter>(*socket, chunk);
     std::string testString = createTestString();
@@ -113,5 +90,4 @@ TEST_CASE( "Export", "[writer]" ) {
     REQUIRE(sizeWritten == 20);
     writer->pipe_fflush();
     socket->shutdownRdWr();
-    close(socketFd);
 }

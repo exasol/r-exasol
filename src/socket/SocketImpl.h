@@ -16,7 +16,7 @@ namespace exa {
     class SocketImpl : public Socket {
     public:
         explicit SocketImpl();
-
+        ~SocketImpl() override;
         void connect(const char* host, uint16_t port) override;
         size_t recv(void *buf, size_t len) override;
         ssize_t send(const void *buf, size_t len) override;

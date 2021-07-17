@@ -82,3 +82,9 @@ void exa::SocketImpl::connect(const char *host, uint16_t port) {
         throw ConnectionException(stringStream.str());
     }
 }
+
+exa::SocketImpl::~SocketImpl() {
+    if(mSocket >= 0) {
+        ::shutdown(mSocket, SHUT_RDWR);
+    }
+}
