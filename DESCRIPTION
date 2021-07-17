@@ -34,10 +34,10 @@ SystemRequirements: EXASOL DB v5 onwards
 BugReports: https://github.com/EXASOL/r-exasol/issues
 RoxygenNote: 7.1.1
 Collate:
-    'catch-routine-registration.R'
     'EXADBI-internal.R'
     'exa.createScript.R'
     'exa.writeData.R'
     'exa.readData.R'
     'EXADBI.R'
+    'catch-routine-registration.R'
     'exasol.R'

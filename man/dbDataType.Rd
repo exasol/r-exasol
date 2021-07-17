@@ -4,7 +4,7 @@
 \alias{dbDataType}
 \title{Determine the EXASOL data type of an object.}
 \usage{
-\S4method{dbDataType}{EXAObject}(dbObj, obj, ...)
+\S4method{dbDataType}{EXAObject,ANY}(dbObj, obj, ...)
 }
 \description{
 Determine the EXASOL data type of an object.

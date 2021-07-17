@@ -4,7 +4,7 @@
 \alias{dbRemoveTable}
 \title{Removes a table.}
 \usage{
-\S4method{dbRemoveTable}{EXAConnection,ANY}(conn, name, schema = "", cascade = FALSE)
+\S4method{dbRemoveTable}{EXAConnection}(conn, name, schema = "", cascade = FALSE)
 }
 \arguments{
 \item{conn}{An EXAConnection object.}

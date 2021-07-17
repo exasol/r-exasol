@@ -12,9 +12,9 @@
 // header file.
 #include <testthat.h>
 
-#include <socket/Socket.h>
-#include <core/protocol/reader/HttpChunkReader.h>
-#include <core/protocol/writer/HttpChunkWriter.h>
+#include <r-exasol/if/Socket.h>
+#include <r-exasol/impl/connection/protocol/http/reader/HttpChunkReader.h>
+#include <r-exasol/impl/connection/protocol/http/writer/HttpChunkWriter.h>
 #include <cstring>
 #include <iterator>
 #include <iostream>
@@ -23,6 +23,8 @@
 
 class TestSocket : public exa::Socket {
 public:
+    virtual void connect(const char * host, uint16_t port) {}
+
     virtual size_t recv(void *buf, size_t len) {
         size_t retVal = len;
         if (len <= buffer.size()) {
@@ -51,6 +53,9 @@ public:
 
     virtual void shutdownWr() {}
     virtual void shutdownRdWr() {}
+    virtual std::pair<std::string, uint16_t > getConnectionInfo() const {
+      return std::make_pair("", 0);
+    }
 private:
     std::vector<char> buffer;
 };
