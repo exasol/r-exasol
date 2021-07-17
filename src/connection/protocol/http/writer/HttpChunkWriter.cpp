@@ -2,8 +2,8 @@
 // Created by thomas on 08/07/2021.
 //
 
-#include <impl/protocol/http/writer/HttpChunkWriter.h>
-#include <impl/protocol/http/common.h>
+#include <connection/protocol/http/writer/HttpChunkWriter.h>
+#include <connection/protocol/http/common.h>
 #include <cstring>
 
 namespace wri = exa::writer;

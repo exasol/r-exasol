@@ -7,7 +7,7 @@
 
 #include <if/OdbcSessionInfo.h>
 #include <sql.h>
-#include "RODBC.h"
+#include <odbc/RODBC.h>
 
 
 namespace exa {

@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.19)
 project(r_exasol)
 
 set(CMAKE_CXX_STANDARD 14)
-include_directories(../../src/core /usr/share/R/include/)
+include_directories(../../src /usr/share/R/include/)
 
 include(FetchContent)
 include(CTest)
@@ -16,29 +16,29 @@ FetchContent_Declare(
 FetchContent_MakeAvailable(catch)
 
 add_executable(r_exasol
-        ../../src/core/impl/protocol/http/reader/HttpChunkReader.cpp
-        ../../src/core/impl/protocol/http/reader/HttpChunkReader.h
-        ../../src/core/impl/protocol/http/writer/HttpChunkWriter.cpp
-        ../../src/core/impl/protocol/http/writer/HttpChunkWriter.h
-        ../../src/core/impl/protocol/http/common.h
-        ../../src/core/impl/protocol/http/common.cpp
-        ../../src/core/impl/protocol/http/Chunk.h
-        ../../src/core/impl/protocol/metaInfoReader.h
-        ../../src/core/impl/protocol/metaInfoReader.cpp
+        ../../src/connection/protocol/http/reader/HttpChunkReader.cpp
+        ../../src/connection/protocol/http/reader/HttpChunkReader.h
+        ../../src/connection/protocol/http/writer/HttpChunkWriter.cpp
+        ../../src/connection/protocol/http/writer/HttpChunkWriter.h
+        ../../src/connection/protocol/http/common.h
+        ../../src/connection/protocol/http/common.cpp
+        ../../src/connection/protocol/http/Chunk.h
+        ../../src/connection/protocol/metaInfoReader.h
+        ../../src/connection/protocol/metaInfoReader.cpp
         ../../src/odbc/OdbcAsyncExecutorImpl.h
         ../../src/odbc/OdbcAsyncExecutorImpl.cpp
-        ../../src/core/impl/ConnectionController.cpp
-        ../../src/core/if/ConnectionController.h
-        ../../src/core/if/Socket.h
-        ../../src/core/if/ErrorHandler.h
-        ../../src/core/if/ExaTypes.h
-        ../../src/core/if/OdbcAsyncExecutor.h
-        ../../src/core/if/OdbcSessionInfo.h
-        ../../src/core/if/Reader.h
-        ../../src/core/if/Writer.h
-        ../../src/core/if/ConnectionFactory.h
-        ../../src/core/impl/socket/SocketImpl.h
-        ../../src/core/impl/socket/SocketImpl.cpp
+        ../../src/connection/ConnectionController.cpp
+        ../../src/if/ConnectionController.h
+        ../../src/if/Socket.h
+        ../../src/if/ErrorHandler.h
+        ../../src/if/ExaTypes.h
+        ../../src/if/OdbcAsyncExecutor.h
+        ../../src/if/OdbcSessionInfo.h
+        ../../src/if/Reader.h
+        ../../src/if/Writer.h
+        ../../src/if/ConnectionFactory.h
+        ../../src/socket/SocketImpl.h
+        ../../src/socket/SocketImpl.cpp
         ../../src/exasol.c
         main.cpp)
 

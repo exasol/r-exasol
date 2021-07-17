@@ -3,7 +3,7 @@
 //
 
 #include <string>
-#include "metaInfoReader.h"
+#include <connection/protocol/metaInfoReader.h>
 #include <if/ConnectionException.h>
 #include <sstream>
 

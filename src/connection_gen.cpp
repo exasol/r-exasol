@@ -2,13 +2,13 @@
 // Created by thomas on 08/07/2021.
 //
 
-#include "connection_gen.h"
+#include <connection_gen.h>
 
-#include <impl/ConnectionFactoryImpl.h>
+#include <connection/ConnectionFactoryImpl.h>
 #include <if/ConnectionController.h>
-#include "rconnection/RReaderConnection.h"
-#include "rconnection/RWriterConnection.h"
-#include "odbc/OdbcSessionInfoImpl.h"
+#include <rconnection/RReaderConnection.h>
+#include <rconnection/RWriterConnection.h>
+#include <odbc/OdbcSessionInfoImpl.h>
 
 namespace exa {
     struct ConnectionContext {

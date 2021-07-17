@@ -5,8 +5,8 @@
 #ifndef R_EXASOL_RREADERCONNECTION_H
 #define R_EXASOL_RREADERCONNECTION_H
 
-#include "RconnFwd.h"
-#include "RConnection.h"
+#include <rconnection/RconnFwd.h>
+#include <rconnection/RConnection.h>
 #include <Rdefines.h>
 #include <if/Reader.h>
 

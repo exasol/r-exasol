@@ -6,9 +6,9 @@
 #define R_EXASOL_ODBCASYNCEXECUTORIMPL_H
 
 #include <sql.h>
-#include "RODBC.h"
+#include <odbc/RODBC.h>
 #include <if/OdbcAsyncExecutor.h>
-#include "OdbcSessionInfoImpl.h"
+#include <odbc/OdbcSessionInfoImpl.h>
 #include <thread>
 #include <atomic>
 

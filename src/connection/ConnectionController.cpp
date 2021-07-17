@@ -4,7 +4,7 @@
 
 #include <if/ConnectionController.h>
 #include <if/ConnectionException.h>
-#include <impl/protocol/metaInfoReader.h>
+#include <connection//protocol/metaInfoReader.h>
 
 exa::ConnectionController::ConnectionController(ConnectionFactory &connectionFactory, const tErrorFunction & errorHandler)
 : mConnectionFactory(connectionFactory)

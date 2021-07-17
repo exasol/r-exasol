@@ -2,10 +2,10 @@
 // Created by thomas on 08/07/2021.
 //
 
-#include <impl/protocol/http/reader/HttpChunkReader.h>
+#include <connection/protocol/http/reader/HttpChunkReader.h>
 #include <cstring>
 #include <iostream>
-#include <impl/protocol/http/common.h>
+#include <connection/protocol/http/common.h>
 
 namespace re = exa::reader;
 

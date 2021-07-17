@@ -2,7 +2,7 @@
 // Created by thomas on 08/07/2021.
 //
 
-#include "RReaderConnection.h"
+#include <rconnection/RReaderConnection.h>
 #include <if/Reader.h>
 #include <cstdlib>
 

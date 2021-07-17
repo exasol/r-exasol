@@ -12,9 +12,9 @@
 // header file.
 #include <testthat.h>
 
-#include <impl/socket/Socket.h>
-#include <impl/protocol/reader/HttpChunkReader.h>
-#include <impl/protocol/writer/HttpChunkWriter.h>
+#include <socket/Socket.h>
+#include <core/protocol/reader/HttpChunkReader.h>
+#include <core/protocol/writer/HttpChunkWriter.h>
 #include <cstring>
 #include <iterator>
 #include <iostream>

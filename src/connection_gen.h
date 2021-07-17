@@ -8,7 +8,7 @@
 #include <Rdefines.h>
 #include <if/ExaTypes.h>
 #include <sql.h>
-#include "odbc/RODBC.h"
+#include <odbc/RODBC.h>
 
 #ifdef __cplusplus
 extern "C" {

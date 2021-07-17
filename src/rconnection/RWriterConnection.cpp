@@ -2,7 +2,7 @@
 // Created by thomas on 08/07/2021.
 //
 
-#include "RWriterConnection.h"
+#include <rconnection/RWriterConnection.h>
 
 #include <cstdarg>
 #include <cstdio>

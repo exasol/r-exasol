@@ -2,10 +2,10 @@
 // Created by thomas on 14/07/2021.
 //
 
-#include "ConnectionFactoryImpl.h"
-#include <impl/socket/SocketImpl.h>
-#include <impl/protocol/http/reader/HttpChunkReader.h>
-#include <impl/protocol/http/writer/HttpChunkWriter.h>
+#include <connection/ConnectionFactoryImpl.h>
+#include <socket/SocketImpl.h>
+#include <connection/protocol/http/reader/HttpChunkReader.h>
+#include <connection/protocol/http/writer/HttpChunkWriter.h>
 
 std::unique_ptr<exa::Socket> exa::ConnectionFactoryImpl::createSocket() {
     return std::make_unique<exa::SocketImpl>();
