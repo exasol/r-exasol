@@ -5,16 +5,13 @@
 #define CATCH_CONFIG_MAIN  // This tells Catch to provide a main() - only do this in one cpp file
 #include "catch2/catch.hpp"
 
-#include <connection//protocol/http/reader/HttpChunkReader.h>
-#include <connection/protocol/http/writer//HttpChunkWriter.h>
-#include <socket/SocketImpl.h>
+#include <r-exasol/impl/connection//protocol/http/reader/HttpChunkReader.h>
+#include <r-exasol/impl/connection/protocol/http/writer//HttpChunkWriter.h>
+#include <r-exasol/impl/connection/socket/SocketImpl.h>
 
-#include <netdb.h>
-#include <sys/socket.h>
-#include <netinet/in.h>
 #include <dlfcn.h>
 
-
+static const char host[] = "localhost";
 const int PORT = 5000;
 
 std::string createTestString() {
@@ -25,7 +22,7 @@ std::string createTestString() {
 
 TEST_CASE( "Import", "[reader]" ) {
     std::unique_ptr<exa::Socket> socket = std::make_unique<exa::SocketImpl>();
-    socket->connect("localhost", 5000);
+    socket->connect(host, PORT);
     exa::Chunk chunk{};
     std::unique_ptr<exa::reader::HttpChunkReader> reader = std::make_unique<exa::reader::HttpChunkReader>(*socket, chunk);
     std::vector<char> buffer(100);
@@ -51,7 +48,7 @@ TEST_CASE( "Import", "[reader]" ) {
 
 TEST_CASE( "ImportHttp", "[reader]" ) {
     std::unique_ptr<exa::Socket> socket = std::make_unique<exa::SocketImpl>();
-    socket->connect("localhost", 5000);
+    socket->connect(host, PORT);
     exa::Chunk chunk{};
     std::unique_ptr<exa::reader::HttpChunkReader> reader = std::make_unique<exa::reader::HttpChunkReader>(*socket, chunk);
     reader->start();
@@ -77,7 +74,7 @@ TEST_CASE( "ImportHttp", "[reader]" ) {
 
 TEST_CASE( "Export", "[writer]" ) {
     std::unique_ptr<exa::Socket> socket = std::make_unique<exa::SocketImpl>();
-    socket->connect("localhost", 5000);
+    socket->connect(host, PORT);
     exa::Chunk chunk{};
     std::unique_ptr<exa::writer::HttpChunkWriter> writer = std::make_unique<exa::writer::HttpChunkWriter>(*socket, chunk);
     std::string testString = createTestString();

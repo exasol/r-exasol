@@ -32,6 +32,7 @@ def reading_test():
     p_unit_test.wait()
     clientsocket.close()
     serversocket.close()
+    assert p_unit_test.returncode == 0
 
 
 def writing_test():
@@ -56,6 +57,8 @@ def writing_test():
     p_unit_test.wait()
     clientsocket.close()
     serversocket.close()
+    assert p_unit_test.returncode == 0
+
 
 def reading_http_test():
 
@@ -88,6 +91,7 @@ def reading_http_test():
     p_unit_test = subprocess.Popen(["./r_exasol", "ImportHttp"])
     httpd.handle_request()
     p_unit_test.wait()
+    assert p_unit_test.returncode == 0
 
 
 if __name__ == "__main__":

@@ -4,11 +4,11 @@
 
 #include <connection.h>
 
-#include <connection/ConnectionFactoryImpl.h>
-#include <if/ConnectionController.h>
-#include <rconnection/RReaderConnection.h>
-#include <rconnection/RWriterConnection.h>
-#include <odbc/OdbcSessionInfoImpl.h>
+#include <r-exasol/impl/connection/ConnectionFactoryImpl.h>
+#include <r-exasol/if/ConnectionController.h>
+#include <r-exasol/impl/rconnection/RReaderConnection.h>
+#include <r-exasol/impl/rconnection/RWriterConnection.h>
+#include <r-exasol/impl/odbc/OdbcSessionInfoImpl.h>
 
 namespace exa {
     struct ConnectionContext {
