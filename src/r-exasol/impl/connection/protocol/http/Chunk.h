@@ -5,6 +5,8 @@
 #ifndef R_EXASOL_CHUNK_H
 #define R_EXASOL_CHUNK_H
 
+#include <cstring>
+
 #define  MAX_HTTP_CHUNK_SIZE 524288
 
 namespace exa {
@@ -20,6 +22,7 @@ namespace exa {
             chunk_len = 0;
             chunk_pos = 0;
             chunk_num = 0;
+            ::memset(chunk_buf, 0, MAX_HTTP_CHUNK_SIZE);
         }
     };
 }

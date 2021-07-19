@@ -26,6 +26,8 @@ add_executable(r_exasol
         ../../src/r-exasol/impl/connection/protocol/metaInfoReader.h
         ../../src/r-exasol/impl/connection/protocol/metaInfoReader.cpp
         ../../src/r-exasol/impl/connection/ConnectionController.cpp
+        ../../src/r-exasol/impl/connection/ConnectionFactoryImpl.h
+        ../../src/r-exasol/impl/connection/ConnectionFactoryImpl.cpp
         ../../src/r-exasol/if/ConnectionController.h
         ../../src/r-exasol/if/Socket.h
         ../../src/r-exasol/if/ErrorHandler.h
@@ -39,6 +41,9 @@ add_executable(r_exasol
         ../../src/r-exasol/impl/connection/socket/SocketImpl.cpp
         #../../src/exasol.c
         main.cpp)
+
+set (CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -fno-omit-frame-pointer -fsanitize=address")
+set (CMAKE_LINKER_FLAGS_DEBUG "${CMAKE_LINKER_FLAGS_DEBUG} -fno-omit-frame-pointer -fsanitize=address")
 
 target_link_libraries(r_exasol PRIVATE Catch2::Catch2)
 set(TEST_EXEC "python3" "${CMAKE_SOURCE_DIR}/python_server_tests.py")

@@ -14,7 +14,7 @@ exa::reader::Reader* exa::ConnectionController::startReading(const OdbcSessionIn
     exa::reader::Reader* retVal = nullptr;
     if (mSocket && protocolType == ProtocolType::http) {
         mOdbcAsyncExecutor = odbcSessionInfo.createOdbcAsyncExecutor();
-        mOdbcAsyncExecutor->execute([this](auto && error) { onOdbcError(std::forward<decltype(error)>(error)); });
+        mOdbcAsyncExecutor->execute([this](const std::string & error) { onOdbcError(error); });
         mReader = mConnectionFactory.createHttpReader(*mSocket);
         try {
             mReader->start();
