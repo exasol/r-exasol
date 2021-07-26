@@ -4,7 +4,7 @@ Title: R Interface & SDK for the EXASOL Database
 Version: 5.3.0
 Date: 2016-01-01
 Author: EXASOL AG & Community
-Maintainer: Marcel Boldt <marcel.boldt@exasol.com>
+Maintainer: Exasol <opensource@exasol.com>
 Depends:
     R (>= 3.3.0),
     DBI (>= 0.3.1)
