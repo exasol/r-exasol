@@ -4,7 +4,7 @@
 
 #include <r-exasol/impl/connection/socket/SocketImpl.h>
 
-#include <r-exasol/if/ConnectionException.h>
+#include <r-exasol/impl/connection/ConnectionException.h>
 
 #ifndef _WIN32
 #include <sys/socket.h>

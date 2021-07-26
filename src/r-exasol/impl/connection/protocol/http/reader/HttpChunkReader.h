@@ -5,7 +5,7 @@
 #ifndef R_EXASOL_HTTPCHUNKREADER_H
 #define R_EXASOL_HTTPCHUNKREADER_H
 
-#include <r-exasol/if/Socket.h>
+#include <r-exasol/impl/connection/socket/Socket.h>
 #include <r-exasol/impl/connection/protocol/http/Chunk.h>
 #include <r-exasol/if/Reader.h>
 

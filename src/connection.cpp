@@ -5,7 +5,7 @@
 #include <connection.h>
 
 #include <r-exasol/impl/connection/ConnectionFactoryImpl.h>
-#include <r-exasol/if/ConnectionController.h>
+#include <r-exasol/impl/connection/ConnectionController.h>
 #include <r-exasol/impl/rconnection/RReaderConnection.h>
 #include <r-exasol/impl/rconnection/RWriterConnection.h>
 #include <r-exasol/impl/odbc/OdbcSessionInfoImpl.h>

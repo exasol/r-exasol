@@ -5,7 +5,7 @@
 #ifndef R_EXASOL_SOCKETIMPL_H
 #define R_EXASOL_SOCKETIMPL_H
 
-#include <r-exasol/if/Socket.h>
+#include <r-exasol/impl/connection/socket/Socket.h>
 #include <r-exasol/if/ExaTypes.h>
 #include <cstdio>
 #include <cstdint>

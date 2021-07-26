@@ -5,7 +5,7 @@
 #ifndef R_EXASOL_METAINFOREADER_H
 #define R_EXASOL_METAINFOREADER_H
 
-#include <r-exasol/if/Socket.h>
+#include <r-exasol/impl/connection/socket/Socket.h>
 #include <utility>
 #include <cstdint>
 #include <string>

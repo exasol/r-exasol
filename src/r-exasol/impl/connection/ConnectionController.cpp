@@ -2,9 +2,10 @@
 // Created by thomas on 14/07/2021.
 //
 
-#include <r-exasol/if/ConnectionController.h>
-#include <r-exasol/if/ConnectionException.h>
+#include <r-exasol/impl/connection/ConnectionController.h>
+#include <r-exasol/impl/connection/ConnectionException.h>
 #include <r-exasol/impl/connection/protocol/metaInfoReader.h>
+#include <iostream>
 
 exa::ConnectionController::ConnectionController(ConnectionFactory &connectionFactory, const tErrorFunction & errorHandler)
 : mConnectionFactory(connectionFactory)

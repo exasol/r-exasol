@@ -5,8 +5,7 @@
 #ifndef R_EXASOL_HTTP_COMMON_H
 #define R_EXASOL_HTTP_COMMON_H
 
-#include <r-exasol/if/Socket.h>
-#include <r-exasol/if/ConnectionException.h>
+#include <r-exasol/impl/connection/socket/Socket.h>
 
 namespace exa {
     void readHttpHeader(Socket&);

@@ -5,7 +5,7 @@
 #ifndef R_EXASOL_CONNECTION_CONTROLLER_H
 #define R_EXASOL_CONNECTION_CONTROLLER_H
 
-#include <r-exasol/if/ConnectionFactory.h>
+#include <r-exasol/impl/connection/ConnectionFactory.h>
 #include <r-exasol/if/OdbcAsyncExecutor.h>
 #include <r-exasol/if/OdbcSessionInfo.h>
 #include <r-exasol/if/ErrorHandler.h>

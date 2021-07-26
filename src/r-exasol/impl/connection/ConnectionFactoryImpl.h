@@ -5,7 +5,7 @@
 #ifndef R_EXASOL_CONNECTIONFACTORYIMPL_H
 #define R_EXASOL_CONNECTIONFACTORYIMPL_H
 
-#include <r-exasol/if/ConnectionFactory.h>
+#include <r-exasol/impl/connection/ConnectionFactory.h>
 
 namespace exa {
 

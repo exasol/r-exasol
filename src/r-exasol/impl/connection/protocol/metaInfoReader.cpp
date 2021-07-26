@@ -4,7 +4,7 @@
 
 #include <string>
 #include <r-exasol/impl/connection/protocol/metaInfoReader.h>
-#include <r-exasol/if/ConnectionException.h>
+#include <r-exasol/impl/connection/ConnectionException.h>
 #include <sstream>
 
 #ifdef _WIN32

@@ -28,15 +28,15 @@ add_executable(r_exasol
         ../../src/r-exasol/impl/connection/ConnectionController.cpp
         ../../src/r-exasol/impl/connection/ConnectionFactoryImpl.h
         ../../src/r-exasol/impl/connection/ConnectionFactoryImpl.cpp
-        ../../src/r-exasol/if/ConnectionController.h
-        ../../src/r-exasol/if/Socket.h
+        ../../src/r-exasol/impl/connection/ConnectionController.h
+        ../../src/r-exasol/impl/connection/socket/Socket.h
         ../../src/r-exasol/if/ErrorHandler.h
         ../../src/r-exasol/if/ExaTypes.h
         ../../src/r-exasol/if/OdbcAsyncExecutor.h
         ../../src/r-exasol/if/OdbcSessionInfo.h
         ../../src/r-exasol/if/Reader.h
         ../../src/r-exasol/if/Writer.h
-        ../../src/r-exasol/if/ConnectionFactory.h
+        ../../src/r-exasol/impl/connection/ConnectionFactory.h
         ../../src/r-exasol/impl/connection/socket/SocketImpl.h
         ../../src/r-exasol/impl/connection/socket/SocketImpl.cpp
         #../../src/exasol.c

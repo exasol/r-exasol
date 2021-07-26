@@ -11,7 +11,7 @@
 
 #include <dlfcn.h>
 #include <r-exasol/impl/connection/ConnectionFactoryImpl.h>
-#include <r-exasol/if/ConnectionController.h>
+#include <r-exasol/impl/connection/ConnectionController.h>
 
 static const char host[] = "localhost";
 const int PORT = 5000;
