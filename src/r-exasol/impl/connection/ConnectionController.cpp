@@ -5,7 +5,8 @@
 #include <r-exasol/impl/connection/ConnectionController.h>
 #include <r-exasol/impl/connection/ConnectionException.h>
 #include <r-exasol/impl/connection/protocol/metaInfoReader.h>
-#include <iostream>
+#include <r-exasol/if/OdbcException.h>
+
 
 exa::ConnectionController::ConnectionController(ConnectionFactory &connectionFactory, const tErrorFunction & errorHandler)
 : mConnectionFactory(connectionFactory)
@@ -15,11 +16,14 @@ exa::reader::Reader* exa::ConnectionController::startReading(const OdbcSessionIn
     exa::reader::Reader* retVal = nullptr;
     if (mSocket && protocolType == ProtocolType::http) {
         mOdbcAsyncExecutor = odbcSessionInfo.createOdbcAsyncExecutor();
-        mOdbcAsyncExecutor->execute([this](const std::string & error) { onOdbcError(error); });
-        mReader = mConnectionFactory.createHttpReader(*mSocket);
+
         try {
+            mOdbcAsyncExecutor->execute([this]() { onOdbcError(); });
+            mReader = mConnectionFactory.createHttpReader(*mSocket);
             mReader->start();
             retVal = mReader.get();
+        } catch (const OdbcException & ex) {
+            mErrorHandler(ex.what());
         } catch(const ConnectionException & ex) {
             mErrorHandler(ex.what());
         }
@@ -36,11 +40,13 @@ exa::writer::Writer* exa::ConnectionController::startWriting(const OdbcSessionIn
 
     if (mSocket && protocolType == ProtocolType::http) {
         mOdbcAsyncExecutor = odbcSessionInfo.createOdbcAsyncExecutor();
-        mOdbcAsyncExecutor->execute([this](auto && error) { onOdbcError(std::forward<decltype(error)>(error)); });
-        mWriter = mConnectionFactory.createHttpWriter(*mSocket);
         try {
+            mOdbcAsyncExecutor->execute([this]() { onOdbcError(); });
+            mWriter = mConnectionFactory.createHttpWriter(*mSocket);
             mWriter->start();
             retVal = mWriter.get();
+        } catch (const OdbcException & ex) {
+            mErrorHandler(ex.what());
         } catch(const ConnectionException & ex) {
             mErrorHandler(ex.what());
         }
@@ -54,22 +60,25 @@ exa::writer::Writer* exa::ConnectionController::startWriting(const OdbcSessionIn
 
 bool exa::ConnectionController::shutDown() {
     bool retVal = true;
+    std::string errorMsg;
     if (mOdbcAsyncExecutor) {
-        mOdbcAsyncExecutor->join();
+        errorMsg = mOdbcAsyncExecutor->joinAndCheckResult();
         retVal = mOdbcAsyncExecutor->isDone();
         mOdbcAsyncExecutor.reset();
     }
     mReader.reset();
     mWriter.reset();
     mSocket.reset();
+    if (!errorMsg.empty()) {
+        mErrorHandler(errorMsg);
+    }
     return retVal;
 }
 
-void exa::ConnectionController::onOdbcError(const std::string& error) {
+void exa::ConnectionController::onOdbcError() {
     if(mSocket) {
         mSocket->shutdownRdWr();
     }
-    mErrorHandler(error);
 }
 
 int exa::ConnectionController::connect(const char *host, uint16_t port) {

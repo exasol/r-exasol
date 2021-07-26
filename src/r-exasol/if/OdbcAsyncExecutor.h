@@ -11,9 +11,9 @@ namespace exa {
     class OdbcAsyncExecutor {
     public:
         virtual ~OdbcAsyncExecutor() = default;
-        virtual bool execute(const tErrorFunction& errorHandler) = 0;
+        virtual bool execute(const tBackgroundOdbcErrorFunction& errorHandler) = 0;
         virtual bool isDone() = 0;
-        virtual void join() = 0;
+        virtual std::string joinAndCheckResult() = 0;
     };
 }
 #endif //R_EXASOL_ODBCASYNCEXECUTOR_H

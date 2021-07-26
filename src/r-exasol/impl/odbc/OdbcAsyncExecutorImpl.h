@@ -18,17 +18,18 @@ namespace exa {
         explicit OdbcAsyncExecutorImpl(OdbcSessionInfoImpl );
         ~OdbcAsyncExecutorImpl() override;
 
-        bool execute(const tErrorFunction& errorHandler) override;
+        bool execute(const tBackgroundOdbcErrorFunction& errorHandler) override;
         bool isDone() override;
-        void join() override;
+        std::string joinAndCheckResult() override;
     private:
-        void asyncRODBCQueryExecuter(const tErrorFunction& errorHandler);
+        void asyncRODBCQueryExecuter(const tBackgroundOdbcErrorFunction& errorHandler);
 
     private:
         const OdbcSessionInfoImpl mOdbcSessionInfo;
         SQLHSTMT mStmt;
         std::atomic_bool mDone{};
         std::thread mThread;
+        SQLRETURN mRes;
     };
 }
 

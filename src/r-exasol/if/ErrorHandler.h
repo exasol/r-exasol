@@ -10,5 +10,6 @@
 
 namespace exa {
     typedef std::function<void(std::string)> tErrorFunction;
+    typedef std::function<void()> tBackgroundOdbcErrorFunction;
 }
 #endif //R_EXASOL_ERRORHANDLER_H

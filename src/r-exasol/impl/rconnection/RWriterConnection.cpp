@@ -65,6 +65,10 @@ SEXP rcon::RWriterConnection::create() {
     mConn->write = &pipe_write;
     mConn->fflush = &pipe_fflush;
     mConn->save = -1000;
+    //mConn->priv allows us to store a private pointer to anything.
+    //However, RExt Connections will free this memory if it is not null when cleaning up connection
+    //As we want to keep control about when to delete Writer, we allocate memory for one pointer;
+    //and store the pointer to the pointer of the Writer here
     mConn->priv = (void*)::malloc(sizeof(RWriterConnection*));
     *(static_cast<writer::Writer**>(mConn->priv)) = &mWriter;
     Rf_set_iconv(mConn);

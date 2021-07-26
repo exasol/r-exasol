@@ -8,7 +8,9 @@
 #define R_EXASOL_CONNECTIONEXCEPTION_H
 
 namespace exa {
-    typedef std::runtime_error ConnectionException;
+    class ConnectionException : public std::runtime_error {
+        using std::runtime_error::runtime_error;
+    };
 }
 
 #endif //R_EXASOL_CONNECTIONEXCEPTION_H

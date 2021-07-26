@@ -3,6 +3,7 @@
 //
 
 #include <r-exasol/impl/odbc/OdbcAsyncExecutorImpl.h>
+#include <r-exasol/if/OdbcException.h>
 
 #include <sql.h>
 #include <sstream>
@@ -18,35 +19,22 @@ exa::OdbcAsyncExecutorImpl::~OdbcAsyncExecutorImpl() {
     }
 }
 
-void exa::OdbcAsyncExecutorImpl::asyncRODBCQueryExecuter(const tErrorFunction& errorHandler) {
+void exa::OdbcAsyncExecutorImpl::asyncRODBCQueryExecuter(const tBackgroundOdbcErrorFunction& errorHandler) {
 
-    SQLRETURN res = SQLExecDirect(mStmt, mOdbcSessionInfo.mQuery, SQL_NTS);
+    mRes = SQLExecDirect(mStmt, mOdbcSessionInfo.mQuery, SQL_NTS);
     mDone = true;
-    if (res != SQL_SUCCESS && res != SQL_SUCCESS_WITH_INFO) {
-        SQLCHAR sqlstate[6], msg[SQL_MAX_MESSAGE_LENGTH];
-        SQLINTEGER NativeError;
-        SQLSMALLINT MsgLen;
-        res =  SQLGetDiagRec(SQL_HANDLE_STMT,
-                                mStmt, 1,
-                                sqlstate, &NativeError, msg, sizeof(msg),
-                                &MsgLen);
-        if (res != SQL_SUCCESS && res != SQL_SUCCESS_WITH_INFO) {
-            errorHandler("Unknown ODBC error");
-        } else {
-            std::stringstream sError;
-            sError << "Could not execute SQL: '" << sqlstate << "' " << (int)NativeError << "' " << msg << "'";
-            errorHandler(sError.str());
-        }
+    if (mRes != SQL_SUCCESS && mRes != SQL_SUCCESS_WITH_INFO) {
+        errorHandler();
     }
 }
 
-bool exa::OdbcAsyncExecutorImpl::execute(const tErrorFunction& errorHandler) {
+bool exa::OdbcAsyncExecutorImpl::execute(const tBackgroundOdbcErrorFunction& errorHandler) {
     SQLRETURN res = SQLAllocHandle(SQL_HANDLE_STMT, mOdbcSessionInfo.mHandle->hDbc, &mStmt);
+
     if (res != SQL_SUCCESS && res != SQL_SUCCESS_WITH_INFO) {
         std::stringstream sError;
         sError << "Could not allocate SQLAllocHandle (" << res << ")";
-        errorHandler(sError.str());
-        return false;
+        throw OdbcException(sError.str());
     }
     mDone = false;
     mThread = std::thread(&OdbcAsyncExecutorImpl::asyncRODBCQueryExecuter, this, errorHandler);
@@ -57,10 +45,28 @@ bool exa::OdbcAsyncExecutorImpl::isDone() {
     return mDone;
 }
 
-void exa::OdbcAsyncExecutorImpl::join() {
+std::string exa::OdbcAsyncExecutorImpl::joinAndCheckResult() {
     if (mThread.joinable()) {
         mThread.join();
     }
+    std::string errorMsg;
+    if (mRes != SQL_SUCCESS && mRes != SQL_SUCCESS_WITH_INFO) {
+        SQLCHAR sqlstate[6], msg[SQL_MAX_MESSAGE_LENGTH];
+        SQLINTEGER NativeError;
+        SQLSMALLINT MsgLen;
+        SQLRETURN res = SQLGetDiagRec(SQL_HANDLE_STMT,
+                            mStmt, 1,
+                            sqlstate, &NativeError, msg, sizeof(msg),
+                            &MsgLen);
+        if (res != SQL_SUCCESS && res != SQL_SUCCESS_WITH_INFO) {
+            errorMsg = "Unknown ODBC error";
+        } else {
+            std::stringstream sError;
+            sError << "Could not execute SQL: '" << sqlstate << "' " << (int)NativeError << "' " << msg << "'";
+            errorMsg = sError.str();
+        }
+    }
+    return errorMsg;
 }
 
 

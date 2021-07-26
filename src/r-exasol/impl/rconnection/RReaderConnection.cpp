@@ -58,6 +58,10 @@ SEXP rcon::RReaderConnection::create() {
     mConn->fgetc = &dummy_fgetc;
     mConn->fgetc_internal = &file_fgetc_internal;
     mConn->save = -1000;
+    //mConn->priv allows us to store a private pointer to anything.
+    //However, RExt Connections will free this memory if it is not null when cleaning up connection
+    //As we want to keep control about when to delete Reader, we allocate memory for one pointer;
+    //and store the pointer to the pointer of the Reader here
     mConn->priv = (void*)::malloc(sizeof(reader::Reader*));
     *(static_cast<reader::Reader**>(mConn->priv)) = &mReader;
     Rf_set_iconv(mConn);

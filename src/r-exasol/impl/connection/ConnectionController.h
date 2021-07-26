@@ -25,7 +25,7 @@ namespace exa {
         reader::Reader* startReading(const OdbcSessionInfo&, ProtocolType);
         writer::Writer* startWriting(const OdbcSessionInfo&,ProtocolType);
 
-        void onOdbcError(const std::string&);
+        void onOdbcError();
         /// Shuts connection controller down.
         /// \return Returns true if transfer was finished. false otherwise.
         bool shutDown();
@@ -39,7 +39,7 @@ namespace exa {
         std::unique_ptr<OdbcAsyncExecutor> mOdbcAsyncExecutor;
         std::unique_ptr<Socket> mSocket;
         std::pair<std::string, uint16_t > mHostInfo;
-        const tErrorFunction & mErrorHandler;
+        tErrorFunction mErrorHandler;
     };
 }
 

@@ -24,7 +24,6 @@ namespace exa {
     }
 }
 
-
 extern "C" {
 
 
@@ -34,15 +33,19 @@ int initConnection(const char* host, int port) {
     }
     exa::gpConnectionContext = new exa::ConnectionContext();
     exa::gpConnectionContext->mConnectionController =
-            std::make_unique<exa::ConnectionController>(exa::gConnectionFactory, &exa::onError);
+            std::make_unique<exa::ConnectionController>(exa::gConnectionFactory, exa::onError);
     return exa::gpConnectionContext->mConnectionController->connect(host, static_cast<uint16_t>(port));
 }
 
 int destroyConnection(int closeFd) {
     bool wasDone(false);
     if (exa::gpConnectionContext != nullptr) {
-        exa::gpConnectionContext->mConnection->release();
-        wasDone = exa::gpConnectionContext->mConnectionController->shutDown();
+        if (exa::gpConnectionContext->mConnection) {
+            exa::gpConnectionContext->mConnection->release();
+        }
+        if (exa::gpConnectionContext->mConnectionController) {
+            wasDone = exa::gpConnectionContext->mConnectionController->shutDown();
+        }
         delete exa::gpConnectionContext;
         exa::gpConnectionContext = nullptr;
         if(!closeFd && !wasDone) {
