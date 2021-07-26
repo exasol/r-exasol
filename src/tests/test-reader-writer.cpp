@@ -88,7 +88,7 @@ context("Transfer unit tests") {
     testSocket.send(os.str());
     size_t sizeReceived = reader->pipe_read(buffer.data(), 1, buffer.size());
     expect_true(sizeReceived == buffer.size());
-    std::string strRep(buffer.data());
+    std::string strRep(buffer.data(), buffer.size());
     expect_true(testString.substr(0, 100) == strRep);
     sizeReceived = reader->pipe_read(buffer.data(), 1, buffer.size());
     expect_true(sizeReceived == buffer.size());
