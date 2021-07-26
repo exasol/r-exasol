@@ -12,12 +12,13 @@
 
 namespace exa {
     struct ConnectionContext {
+        ConnectionContext() = default;
         std::unique_ptr <exa::rconnection::RConnection> mConnection;
         std::unique_ptr <ConnectionController> mConnectionController;
     };
 
     ConnectionFactoryImpl gConnectionFactory;
-    ConnectionContext *gpConnectionContext = nullptr;
+    std::unique_ptr<ConnectionContext> gpConnectionContext;
 
     void onError(std::string e) {
         ::error(e.c_str());
@@ -28,10 +29,10 @@ extern "C" {
 
 
 int initConnection(const char* host, int port) {
-    if (exa::gpConnectionContext != nullptr) {
+    if (exa::gpConnectionContext) {
         destroyConnection(0);
     }
-    exa::gpConnectionContext = new exa::ConnectionContext();
+    exa::gpConnectionContext = std::make_unique<exa::ConnectionContext>();
     exa::gpConnectionContext->mConnectionController =
             std::make_unique<exa::ConnectionController>(exa::gConnectionFactory, exa::onError);
     return exa::gpConnectionContext->mConnectionController->connect(host, static_cast<uint16_t>(port));
@@ -39,15 +40,14 @@ int initConnection(const char* host, int port) {
 
 int destroyConnection(int closeFd) {
     bool wasDone(false);
-    if (exa::gpConnectionContext != nullptr) {
+    if (exa::gpConnectionContext) {
         if (exa::gpConnectionContext->mConnection) {
             exa::gpConnectionContext->mConnection->release();
         }
         if (exa::gpConnectionContext->mConnectionController) {
             wasDone = exa::gpConnectionContext->mConnectionController->shutDown();
         }
-        delete exa::gpConnectionContext;
-        exa::gpConnectionContext = nullptr;
+        exa::gpConnectionContext.reset();
         if(!closeFd && !wasDone) {
             ::warning("Transfer was not done jet.");
         }
@@ -57,15 +57,14 @@ int destroyConnection(int closeFd) {
 
 SEXP createReadConnection(pRODBCHandle handle, SQLCHAR *query) {
     SEXP retVal = nullptr;
-    auto connectionContext = exa::gpConnectionContext;
-    if (connectionContext != nullptr && connectionContext->mConnectionController) {
+    if (exa::gpConnectionContext && exa::gpConnectionContext->mConnectionController) {
         exa::reader::Reader *reader =
-                connectionContext->mConnectionController->startReading(exa::OdbcSessionInfoImpl(handle, query),
-                                                                       exa::ProtocolType::http);
+                exa::gpConnectionContext->mConnectionController->startReading(exa::OdbcSessionInfoImpl(handle, query),
+                                                                                exa::ProtocolType::http);
         if (reader != nullptr) {
             auto readerConnection = std::make_unique<exa::rconnection::RReaderConnection>(*reader);
             retVal = readerConnection->create();
-            connectionContext->mConnection = std::move(readerConnection);
+            exa::gpConnectionContext->mConnection = std::move(readerConnection);
         }
     }
     return retVal;
@@ -73,15 +72,14 @@ SEXP createReadConnection(pRODBCHandle handle, SQLCHAR *query) {
 
 SEXP createWriteConnection(pRODBCHandle handle, SQLCHAR *query) {
     SEXP retVal = nullptr;
-    auto connectionContext = exa::gpConnectionContext;
-    if (connectionContext != nullptr && connectionContext->mConnectionController) {
+    if (exa::gpConnectionContext && exa::gpConnectionContext->mConnectionController) {
         exa::writer::Writer *writer =
-                connectionContext->mConnectionController->startWriting(exa::OdbcSessionInfoImpl(handle, query),
-                                                                       exa::ProtocolType::http);
+                exa::gpConnectionContext->mConnectionController->startWriting(exa::OdbcSessionInfoImpl(handle, query),
+                                                                               exa::ProtocolType::http);
         if (writer != nullptr) {
             auto writeConnection = std::make_unique<exa::rconnection::RWriterConnection>(*writer);
             retVal = writeConnection->create();
-            connectionContext->mConnection = std::move(writeConnection);
+            exa::gpConnectionContext->mConnection = std::move(writeConnection);
         }
     }
     return retVal;
@@ -89,10 +87,9 @@ SEXP createWriteConnection(pRODBCHandle handle, SQLCHAR *query) {
 
 extern SEXP copyHostName() {
     SEXP host = nullptr;
-    auto connectionContext = exa::gpConnectionContext;
-    if (connectionContext != nullptr && connectionContext->mConnectionController) {
+    if (exa::gpConnectionContext && exa::gpConnectionContext->mConnectionController) {
         PROTECT(host = allocVector(STRSXP, 1));
-        const std::string hostName = connectionContext->mConnectionController->getHostInfo().first;
+        const std::string hostName = exa::gpConnectionContext->mConnectionController->getHostInfo().first;
         SET_STRING_ELT(host, 0, mkChar(hostName.c_str()));
         UNPROTECT(1);
     }
@@ -101,9 +98,8 @@ extern SEXP copyHostName() {
 
 extern SEXP copyHostPort() {
     uint16_t hostPort = -1;
-    auto connectionContext = exa::gpConnectionContext;
-    if (connectionContext != nullptr && connectionContext->mConnectionController) {
-        hostPort = connectionContext->mConnectionController->getHostInfo().second;
+    if (exa::gpConnectionContext && exa::gpConnectionContext->mConnectionController) {
+        hostPort = exa::gpConnectionContext->mConnectionController->getHostInfo().second;
     }
     return ScalarInteger(hostPort);
 }
