@@ -1,7 +1,7 @@
 AC_PREREQ(2.61)
 
 
-AC_INIT(r-exasol, m4_esyscmd_s([awk -e '/^Version:/ {print $2}' DESCRIPTION])) dnl package name, version
+AC_INIT(exasol, m4_esyscmd_s([awk '/^Version:/ {print $2}' DESCRIPTION]))
 AC_COPYRIGHT(Copyright (C) 2021 Exasol)
 
 
@@ -10,6 +10,7 @@ AC_COPYRIGHT(Copyright (C) 2021 Exasol)
 if test -z "${R_HOME}"; then
     AC_MSG_ERROR([Could not determine R_HOME.])
 fi
+
 
 dnl Select if unit tests are enabled or not, from a configure option
 dnl or from an environment variable.
@@ -24,9 +25,15 @@ fi
 
 ## Setup RBin
 RBIN="${R_HOME}/bin/R"
-CXX=`"${RBIN}" CMD config CXX`
+
+CXX14=`"${RBIN}" CMD config CXX14`
+if test -z "$CXX14"; then
+  AC_MSG_ERROR([No C++14 compiler is available])
+fi
+CXX14STD=`"${RBIN}" CMD config CXX14STD`
 CPPFLAGS=`"${RBIN}" CMD config CPPFLAGS`
-CXXFLAGS=`"${RBIN}" CMD config CXXFLAGS`
+CXXFLAGS=`"${RBIN}" CMD config CXX14FLAGS`
+CXX="${CXX14} ${CXX14STD}"
 echo "CPPFLAGS:${CPPFLAGS}"
 CPPFLAGS="${CPPFLAGS} -I. ${UNIT_TESTFLAGS_CPPFLAGS}"
 echo "CPPFLAGS:${CPPFLAGS}"
