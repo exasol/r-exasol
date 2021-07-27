@@ -22,7 +22,7 @@ namespace exa {
             int pipe_fflush() override;
 
         private:
-            size_t write_next_chunk();
+            ssize_t write_next_chunk();
 
         private:
             Socket &mSocket;

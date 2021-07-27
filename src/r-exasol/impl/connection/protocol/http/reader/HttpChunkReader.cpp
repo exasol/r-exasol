@@ -4,8 +4,8 @@
 
 #include <r-exasol/impl/connection/protocol/http/reader/HttpChunkReader.h>
 #include <cstring>
-#include <iostream>
 #include <r-exasol/impl/connection/protocol/http/common.h>
+#include <iostream>
 
 namespace re = exa::reader;
 
@@ -15,7 +15,7 @@ re::HttpChunkReader::HttpChunkReader(Socket &socket, Chunk & chunk)
     mChunk.reset();
 }
 
-size_t re::HttpChunkReader::read_next_chunk() {
+ssize_t re::HttpChunkReader::read_next_chunk() {
     size_t pos = 0;
     int buflen, rc;
     const char *ok_answer =
@@ -30,7 +30,6 @@ size_t re::HttpChunkReader::read_next_chunk() {
     for (pos = 0; pos < 20; pos++) {
         mChunk.chunk_buf[pos] = mChunk.chunk_buf[pos + 1] = '\0';
         if ((rc = mSocket.recv(&(mChunk.chunk_buf[pos]), 1)) < 1) {
-            std::cerr << "error reading from socket" << std::endl;
             // fprintf(stderr, "### error (%d)\n", rc);
             goto error;
         }
@@ -74,13 +73,13 @@ size_t re::HttpChunkReader::read_next_chunk() {
     mChunk.chunk_num ++;
     return mChunk.chunk_len;
 
-    error:
+error:
     mSocket.send(error_answer, strlen(error_answer));
     mSocket.shutdownWr();
     return -1;
 }
 
-size_t re::HttpChunkReader::read_next(char *buffer, size_t buflen) {
+ssize_t re::HttpChunkReader::read_next(char *buffer, size_t buflen) {
 
     size_t rest_chunk = mChunk.chunk_len - mChunk.chunk_pos;
     ssize_t readlen = 0, retlen = 0;

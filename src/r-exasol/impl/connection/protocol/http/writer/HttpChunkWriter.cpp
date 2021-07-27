@@ -14,7 +14,7 @@ wri::HttpChunkWriter::HttpChunkWriter(Socket &socket, Chunk & chunk)
     mChunk.reset();
 }
 
-size_t wri::HttpChunkWriter::write_next_chunk() {
+ssize_t wri::HttpChunkWriter::write_next_chunk() {
     const char *ok_answer =
             "HTTP/1.1 200 OK\r\n"
             "Server: EXASolution R Package\r\n"

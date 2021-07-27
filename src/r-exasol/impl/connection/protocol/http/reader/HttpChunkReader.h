@@ -21,8 +21,8 @@ namespace exa {
             size_t pipe_read(void *ptr, const size_t size, const size_t nitems) override;
 
         private:
-            size_t read_next_chunk();
-            size_t read_next(char *buffer, size_t buflen);
+            ssize_t read_next_chunk();
+            ssize_t read_next(char *buffer, size_t buflen);
         private:
             Socket & mSocket;
             Chunk & mChunk;
