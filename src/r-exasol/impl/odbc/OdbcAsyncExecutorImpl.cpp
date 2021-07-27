@@ -19,7 +19,7 @@ exa::OdbcAsyncExecutorImpl::~OdbcAsyncExecutorImpl() {
     }
 }
 
-void exa::OdbcAsyncExecutorImpl::asyncRODBCQueryExecuter(const tBackgroundOdbcErrorFunction& errorHandler) {
+void exa::OdbcAsyncExecutorImpl::asyncRODBCQueryExecuter(tBackgroundOdbcErrorFunction errorHandler) {
 
     mRes = SQLExecDirect(mStmt, mOdbcSessionInfo.mQuery, SQL_NTS);
     mDone = true;
@@ -28,7 +28,7 @@ void exa::OdbcAsyncExecutorImpl::asyncRODBCQueryExecuter(const tBackgroundOdbcEr
     }
 }
 
-bool exa::OdbcAsyncExecutorImpl::execute(const tBackgroundOdbcErrorFunction& errorHandler) {
+bool exa::OdbcAsyncExecutorImpl::execute(tBackgroundOdbcErrorFunction errorHandler) {
     SQLRETURN res = SQLAllocHandle(SQL_HANDLE_STMT, mOdbcSessionInfo.mHandle->hDbc, &mStmt);
 
     if (res != SQL_SUCCESS && res != SQL_SUCCESS_WITH_INFO) {
