@@ -52,7 +52,7 @@ size_t re::HttpChunkReader::read_next_chunk() {
         goto error;
     }
 
-    if (buflen == 0) {
+    if (0 == buflen) {
         mSocket.send(ok_answer, strlen(ok_answer));
         mSocket.shutdownWr();
         return 0;

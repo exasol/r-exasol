@@ -4,6 +4,7 @@ import subprocess
 import http.server
 
 
+
 def reading_test():
     serversocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     serversocket.bind(("localhost", 5000))
@@ -30,8 +31,8 @@ def reading_test():
 
     assert recvmsg == b'HTTP/1.1 200 OK\r\nServer: EXASolution R Package\r\nConnection: close\r\n\r\n'
     p_unit_test.wait()
-    clientsocket.close()
-    serversocket.close()
+    clientsocket.shutdown(socket.SHUT_RDWR)
+    serversocket.shutdown(socket.SHUT_RDWR)
     assert p_unit_test.returncode == 0
 
 
@@ -55,8 +56,8 @@ def writing_test():
     assert data.encode('UTF-8') == recvmsg
 
     p_unit_test.wait()
-    clientsocket.close()
-    serversocket.close()
+    clientsocket.shutdown(socket.SHUT_RDWR)
+    serversocket.shutdown(socket.SHUT_RDWR)
     assert p_unit_test.returncode == 0
 
 
@@ -126,11 +127,12 @@ def con_controller_read_test():
 
     assert recvmsg == b'HTTP/1.1 200 OK\r\nServer: EXASolution R Package\r\nConnection: close\r\n\r\n'
     p_unit_test.wait()
-    clientsocket.close()
-    serversocket.close()
+    clientsocket.shutdown(socket.SHUT_RDWR)
+    serversocket.shutdown(socket.SHUT_RDWR)
     assert p_unit_test.returncode == 0
 
 def con_controller_read_test_with_error():
+
 
     serversocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     serversocket.bind(("localhost", 5000))
@@ -142,14 +144,16 @@ def con_controller_read_test_with_error():
     (clientsocket, address) = serversocket.accept()
 
     recvMetaInfoRequest = clientsocket.recv(12)
-    b = bytearray(b'\x00\x00\x00\x00\4\0\0\0Test\0\0\0\0\0\0\0\0\0\0\0') #send one btye less
 
-    clientsocket.send(b)
+    #Simulate connection abort by close socket
+    clientsocket.shutdown(socket.SHUT_RDWR)
+
+    #Next attempt
     (newClientsocket, address) = serversocket.accept()
 
-    recvMetaInfoRequest = clientsocket.recv(12)
+    recvMetaInfoRequest = newClientsocket.recv(12)
     b = bytearray(b'\x00\x00\x00\x00\4\0\0\0Test\0\0\0\0\0\0\0\0\0\0\0\0')
-
+    newClientsocket.send(b)
     b = bytearray(b"\r\n") #empty header
     newClientsocket.send(b)
     data = 'CHUNK DATA;' * 20
@@ -168,8 +172,59 @@ def con_controller_read_test_with_error():
 
     assert recvmsg == b'HTTP/1.1 200 OK\r\nServer: EXASolution R Package\r\nConnection: close\r\n\r\n'
     p_unit_test.wait()
-    newClientsocket.close()
+    newClientsocket.shutdown(socket.SHUT_RDWR)
+    serversocket.shutdown(socket.SHUT_RDWR)
+    assert p_unit_test.returncode == 0
+
+
+def con_controller_echo_test():
+
+    serversocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    serversocket.bind(("localhost", 5000))
+    # become a server socket
+    serversocket.listen(5)
+
+    p_unit_test = subprocess.Popen(["./r_exasol", "ConnectionControllerEcho"])
+
+    (clientsocket, address) = serversocket.accept()
+
+    recvMetaInfoRequest = clientsocket.recv(12)
+    b = bytearray(b'\x00\x00\x00\x00\4\0\0\0Test\0\0\0\0\0\0\0\0\0\0\0\0')
+    clientsocket.send(b)
+    b = bytearray(b"\r\n") #empty header
+    clientsocket.send(b)
+    ok_answer = "HTTP/1.1 200 OK\r\n" \
+                "Server: EXASolution R Package\r\n"\
+                "Content-type: application/octet-stream\r\n"\
+                "Content-disposition: attachment; filename=data.csv\r\n"\
+                "Connection: close\r\n\r\n"
+    header_from_client = clientsocket.recv(len(ok_answer))
+    assert header_from_client == ok_answer.encode("UTF-8")
+    data = clientsocket.recv(8)
+
+
+    (newclientsocket, address) = serversocket.accept()
+    recvMetaInfoRequest = newclientsocket.recv(100)
+    b = bytearray(b'\x00\x00\x00\x00\4\0\0\0Test\0\0\0\0\0\0\0\0\0\0\0\0')
+    newclientsocket.send(b)
+    b = bytearray(b"\r\n") #empty header
+    newclientsocket.send(b)
+    b = bytearray(f'{hex(len(data))}\n', 'UTF-8')
+    newclientsocket.send(b)
+    d = bytearray(data)
+    d.append(0)
+    d.append(0)
+    newclientsocket.send(d)
+
+    # Send zer termination
+    b = bytearray(f'{0}\n', 'UTF-8')
+    newclientsocket.send(b)
+
+    recvmsg = newclientsocket.recv(100)
+    assert recvmsg == b'HTTP/1.1 200 OK\r\nServer: EXASolution R Package\r\nConnection: close\r\n\r\n'
+    p_unit_test.wait()
     clientsocket.close()
+    newclientsocket.close()
     serversocket.close()
     assert p_unit_test.returncode == 0
 
@@ -179,4 +234,6 @@ if __name__ == "__main__":
     writing_test()
     reading_http_test()
     con_controller_read_test()
+    con_controller_echo_test()
     con_controller_read_test_with_error()
+
