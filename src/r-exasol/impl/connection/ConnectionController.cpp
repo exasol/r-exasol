@@ -60,6 +60,10 @@ exa::writer::Writer* exa::ConnectionController::startWriting(const OdbcSessionIn
 
 bool exa::ConnectionController::shutDown() {
     bool retVal = true;
+    if (mSocket) {
+        mSocket->shutdownRdWr();
+    }
+    mSocket.reset();
     std::string errorMsg;
     if (mOdbcAsyncExecutor) {
         errorMsg = mOdbcAsyncExecutor->joinAndCheckResult();
@@ -68,7 +72,7 @@ bool exa::ConnectionController::shutDown() {
     }
     mReader.reset();
     mWriter.reset();
-    mSocket.reset();
+
     if (!errorMsg.empty()) {
         mErrorHandler(errorMsg);
     }
