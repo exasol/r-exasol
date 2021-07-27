@@ -157,11 +157,19 @@ TEST_CASE( "ConnectionControllerEcho", "[reader/writer]" ) {
         REQUIRE(connectionController.getHostInfo().second == 4);
         OdbcSessionImpl odbcSessionImpl;
         exa::writer::Writer *writer = connectionController.startWriting(odbcSessionImpl, exa::ProtocolType::http);
-        std::string data = "Name\na\nb";
+        std::string data = "\"a\"";
         size_t sizeWritten = writer->pipe_write(&(data[0]), 1, data.size());
         REQUIRE(sizeWritten == data.size());
+        data = "\n";
+        sizeWritten = writer->pipe_write(&(data[0]), 1, data.size());
+        REQUIRE(sizeWritten == data.size());
+        data = "\"b\"";
+        sizeWritten = writer->pipe_write(&(data[0]), 1, data.size());
+        REQUIRE(sizeWritten == data.size());
+        data = "\n";
+        sizeWritten = writer->pipe_write(&(data[0]), 1, data.size());
+        REQUIRE(sizeWritten == data.size());
         writer->pipe_fflush();
-        std::cerr << "Flushed!" << std::endl;
         connectionController.shutDown();
     }
     SECTION( "now testing reading from server" )

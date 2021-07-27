@@ -200,8 +200,14 @@ def con_controller_echo_test():
                 "Connection: close\r\n\r\n"
     header_from_client = clientsocket.recv(len(ok_answer))
     assert header_from_client == ok_answer.encode("UTF-8")
-    data = clientsocket.recv(8)
-
+    data = clientsocket.recv(3)
+    assert data == "\"a\"".encode("UTF-8")
+    data = clientsocket.recv(1)
+    assert data == "\n".encode("UTF-8")
+    data = clientsocket.recv(3)
+    assert data == "\"b\"".encode("UTF-8")
+    data = clientsocket.recv(1)
+    assert data == "\n".encode("UTF-8")
 
     (newclientsocket, address) = serversocket.accept()
     recvMetaInfoRequest = newclientsocket.recv(100)
@@ -209,9 +215,10 @@ def con_controller_echo_test():
     newclientsocket.send(b)
     b = bytearray(b"\r\n") #empty header
     newclientsocket.send(b)
+    data = "Name\na\nb"
     b = bytearray(f'{hex(len(data))}\n', 'UTF-8')
     newclientsocket.send(b)
-    d = bytearray(data)
+    d = bytearray(data, 'UTF-8')
     d.append(0)
     d.append(0)
     newclientsocket.send(d)
@@ -230,10 +237,10 @@ def con_controller_echo_test():
 
 
 if __name__ == "__main__":
-    reading_test()
-    writing_test()
-    reading_http_test()
-    con_controller_read_test()
+#    reading_test()
+#    writing_test()
+#    reading_http_test()
+#    con_controller_read_test()
     con_controller_echo_test()
-    con_controller_read_test_with_error()
+#    con_controller_read_test_with_error()
 
