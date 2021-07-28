@@ -24,6 +24,7 @@ namespace exa {
         private:
             ssize_t read_next_chunk();
             ssize_t read_next(char *buffer, size_t buflen);
+            void closeSocketWithError();
         private:
             std::weak_ptr<Socket> mSocket;
             Chunk & mChunk;

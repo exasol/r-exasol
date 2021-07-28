@@ -11,6 +11,13 @@
 
 namespace re = exa::reader;
 
+namespace exa {
+    namespace reader {
+    class ConnectionFinished : public std::exception {};
+    }
+}
+
+
 re::HttpChunkReader::HttpChunkReader(std::weak_ptr<Socket> socket, Chunk &chunk)
         : mSocket(socket), mChunk(chunk) {
     mChunk.reset();
@@ -23,10 +30,6 @@ ssize_t re::HttpChunkReader::read_next_chunk() {
             "HTTP/1.1 200 OK\r\n"
             "Server: EXASolution R Package\r\n"
             "Connection: close\r\n\r\n";
-    static const char *error_answer =
-            "HTTP/1.1 404 ERROR\r\n"
-            "Server: EXASolution R Package\r\n"
-            "Connection: close\r\n\r\n";
     ssize_t retVal = -1;
     try {
         auto socket = mSocket.lock();
@@ -37,10 +40,9 @@ ssize_t re::HttpChunkReader::read_next_chunk() {
         for (pos = 0; pos < 20; pos++) {
             mChunk.chunk_buf[pos] = mChunk.chunk_buf[pos + 1] = '\0';
             if ((rc = socket->recv(&(mChunk.chunk_buf[pos]), 1)) < 1) {
-                // fprintf(stderr, "### error (%d)\n", rc);
-                std::stringstream errMsg;
-                errMsg << "cannot read data from header. errno=" << errno;
-                throw exa::ConnectionException(errMsg.str());
+                //Chunk reader might try to read from socket after stream has fnished.
+                //We should not treat as error, but jump to end and return -1.
+                throw ConnectionFinished();
             }
             if (mChunk.chunk_buf[pos] == '\n') {
                 break;
@@ -78,13 +80,11 @@ ssize_t re::HttpChunkReader::read_next_chunk() {
             mChunk.chunk_num++;
             retVal = mChunk.chunk_len;
         }
+    } catch (const ConnectionFinished & ex) {
+        closeSocketWithError();
     } catch (const exa::ConnectionException &ex) {
-        std::cerr << "Error occured in HttpChunkReader:" << ex.what() << std::endl;
-        auto socket = mSocket.lock();
-        if (socket) {
-            socket->send(error_answer, strlen(error_answer));
-            socket->shutdownWr();
-        }
+        std::cerr << "Error occurred in HttpChunkReader:" << ex.what() << std::endl;
+        closeSocketWithError();
     }
     return retVal;
 }
@@ -147,6 +147,18 @@ void exa::reader::HttpChunkReader::start() {
         exa::readHttpHeader(*socket);
     } else {
         throw exa::ConnectionException("socket invalid");
+    }
+}
+
+void exa::reader::HttpChunkReader::closeSocketWithError() {
+    static const char *error_answer =
+            "HTTP/1.1 404 ERROR\r\n"
+            "Server: EXASolution R Package\r\n"
+            "Connection: close\r\n\r\n";
+    auto socket = mSocket.lock();
+    if (socket) {
+        socket->send(error_answer, strlen(error_answer));
+        socket->shutdownWr();
     }
 }
 
