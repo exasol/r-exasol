@@ -505,7 +505,7 @@ SEXP asyncRODBCQueryStart(SEXP slotA, SEXP chan, SEXP query, SEXP writerA) {
         }
         len = recv(t->fd, &data, 1, MSG_WAITALL);
         if (len != 1) {
-            error("Could not read header.");
+            error("Could not read header. errno=%d", errno);
             goto error;
         }
         line[pos++] = data;
