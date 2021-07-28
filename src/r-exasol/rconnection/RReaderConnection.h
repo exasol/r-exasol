@@ -22,7 +22,6 @@ namespace exa {
             SEXP create();
             void release() override;
 
-
         private:
             std::weak_ptr<reader::Reader> mReader;
             Rconnection mConn;

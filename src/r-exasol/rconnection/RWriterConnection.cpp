@@ -16,6 +16,10 @@
 #undef class
 #undef private
 
+#include "ConnectionHook.h"
+
+namespace rcon = exa::rconnection;
+
 extern "C" {
 
 
@@ -31,7 +35,7 @@ static size_t pipe_write(const void *ptr, size_t size, size_t nitems,
                          const Rconnection con) {
     size_t  retVal = 0;
     std::weak_ptr<exa::writer::Writer>* writer =
-            *((std::weak_ptr<exa::writer::Writer> **) con->priv);
+            rcon::getConnectionHook<exa::writer::Writer>(con);
     if(writer) {
         auto writerLocked = writer->lock();
         if (writerLocked) {
@@ -44,7 +48,7 @@ static size_t pipe_write(const void *ptr, size_t size, size_t nitems,
 static int pipe_fflush(Rconnection con) {
     int retVal = 0;
     std::weak_ptr<exa::writer::Writer>* writer =
-            *((std::weak_ptr<exa::writer::Writer> **) con->priv);
+            rcon::getConnectionHook<exa::writer::Writer>(con);
     if(writer) {
         auto writerLocked = writer->lock();
         if (writerLocked) {
@@ -55,8 +59,6 @@ static int pipe_fflush(Rconnection con) {
 }
 
 }
-
-namespace rcon = exa::rconnection;
 
 rcon::RWriterConnection::RWriterConnection(std::weak_ptr<writer::Writer> writer)
 : mWriter(std::move(writer))
@@ -74,18 +76,17 @@ SEXP rcon::RWriterConnection::create() {
     mConn->write = &pipe_write;
     mConn->fflush = &pipe_fflush;
     mConn->save = -1000;
-    //mConn->priv allows us to store a private pointer to anything.
-    //However, RExt Connections will free this memory if it is not null when cleaning up connection
-    //As we want to keep control about when to delete Writer, we allocate memory for one pointer;
-    //and store the pointer to the pointer of the Writer here
-    mConn->priv = (void*)::malloc(sizeof(std::weak_ptr<exa::writer::Writer>*));
-    *(static_cast<std::weak_ptr<exa::writer::Writer>**>(mConn->priv)) = &mWriter;
+    //Reserve memory on the heap for storing the connection hook.
+    //R_ext will delete this memory later (see https://github.com/wch/r-source/blob/68251d4dd24b6bd970e5a6a92d5d07a3cf8a383d/src/main/connections.c#L405)
+    mConn->priv = allocConnectionHook<exa::writer::Writer>();
+    storeConnectionHook(mConn, &mWriter);
     Rf_set_iconv(mConn);
     UNPROTECT(1);
     return r_custom_connection;
 }
 
 void exa::rconnection::RWriterConnection::release() {
-    *(static_cast<std::weak_ptr<exa::writer::Writer>**>(mConn->priv)) = nullptr;
+    storeConnectionHook<exa::writer::Writer>(mConn, nullptr);
 }
+
 

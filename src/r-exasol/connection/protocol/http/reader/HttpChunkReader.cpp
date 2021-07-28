@@ -7,7 +7,7 @@
 #include <r-exasol/connection/protocol/http/common.h>
 #include <iostream>
 #include <r-exasol/connection/ConnectionException.h>
-#include <sstream>
+#include <utility>
 
 namespace re = exa::reader;
 
@@ -17,9 +17,8 @@ namespace exa {
     }
 }
 
-
 re::HttpChunkReader::HttpChunkReader(std::weak_ptr<Socket> socket, Chunk &chunk)
-        : mSocket(socket), mChunk(chunk) {
+        : mSocket(std::move(socket)), mChunk(chunk) {
     mChunk.reset();
 }
 

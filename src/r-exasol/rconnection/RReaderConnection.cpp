@@ -7,14 +7,17 @@
 #include <cstdlib>
 #include <utility>
 
-
-extern "C" {
-
 #define class clss //need to hide class as it is reserved in C++, but used as variable name in Connections.h
 #define private priv //need to hide private as it is reserved in C++, but used as variable name in Connections.h
 #include <R_ext/Connections.h>
 #undef class
 #undef private
+
+#include "ConnectionHook.h"
+
+namespace rcon = exa::rconnection;
+
+extern "C" {
 
 extern int dummy_fgetc(Rconnection con);
 extern void Rf_set_iconv(Rconnection con);
@@ -24,7 +27,7 @@ static size_t pipe_read(void *ptr, const size_t size, const size_t nitems,
                         const Rconnection con) {
     size_t retVal = 0;
     std::weak_ptr<exa::reader::Reader>* reader =
-            *((std::weak_ptr<exa::reader::Reader> **) con->priv);
+            rcon::getConnectionHook<exa::reader::Reader>(con);
 
     if(reader) {
         auto readerLocked = reader->lock();
@@ -38,7 +41,7 @@ static size_t pipe_read(void *ptr, const size_t size, const size_t nitems,
 static int file_fgetc_internal(const Rconnection con) {
     int retVal = 0;
     std::weak_ptr<exa::reader::Reader>* reader =
-            *((std::weak_ptr<exa::reader::Reader> **) con->priv);
+            rcon::getConnectionHook<exa::reader::Reader>(con);
     if(reader) {
         auto readerLocked = reader->lock();
         if (readerLocked) {
@@ -49,8 +52,6 @@ static int file_fgetc_internal(const Rconnection con) {
 }
 
 }
-
-namespace rcon = exa::rconnection;
 
 rcon::RReaderConnection::RReaderConnection(std::weak_ptr<reader::Reader> reader)
 : mReader(std::move(reader))
@@ -67,18 +68,16 @@ SEXP rcon::RReaderConnection::create() {
     mConn->read = &pipe_read;
     mConn->fgetc = &dummy_fgetc;
     mConn->fgetc_internal = &file_fgetc_internal;
+    //Reserve memory on the heap for storing the connection hook.
+    //R_ext will delete this memory later (see https://github.com/wch/r-source/blob/68251d4dd24b6bd970e5a6a92d5d07a3cf8a383d/src/main/connections.c#L405)
+    mConn->priv = allocConnectionHook<exa::reader::Reader>();
+    storeConnectionHook(mConn, &mReader);
     mConn->save = -1000;
-    //mConn->priv allows us to store a private pointer to anything.
-    //However, RExt Connections will free this memory if it is not null when cleaning up connection
-    //As we want to keep control about when to delete Reader, we allocate memory for one pointer;
-    //and store the pointer to the pointer of the Reader here
-    mConn->priv = (void*)::malloc(sizeof(std::weak_ptr<exa::reader::Reader>*));
-    *(static_cast<std::weak_ptr<exa::reader::Reader>**>(mConn->priv)) = &mReader;
     Rf_set_iconv(mConn);
     UNPROTECT(1);
     return r_custom_connection;
 }
 
 void exa::rconnection::RReaderConnection::release() {
-    *(static_cast<std::weak_ptr<exa::reader::Reader>**>(mConn->priv)) = nullptr;
+    storeConnectionHook<exa::reader::Reader>(mConn, nullptr);
 }
