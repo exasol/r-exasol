@@ -62,10 +62,10 @@ int exa::ConnectionContext::destroyConnection(int closeFd) {
 SEXP exa::ConnectionContext::createReadConnection(pRODBCHandle handle, SQLCHAR *query) {
     SEXP retVal = nullptr;
     if (mConnectionController) {
-        exa::reader::Reader *reader = mConnectionController->startReading(exa::OdbcSessionInfoImpl(handle, query),
+        std::weak_ptr<exa::reader::Reader> reader = mConnectionController->startReading(exa::OdbcSessionInfoImpl(handle, query),
                                                                             exa::ProtocolType::http);
-        if (reader != nullptr) {
-            auto readerConnection = std::make_unique<exa::rconnection::RReaderConnection>(*reader);
+        if (!reader.expired()) {
+            auto readerConnection = std::make_unique<exa::rconnection::RReaderConnection>(reader);
             retVal = readerConnection->create();
             mConnection = std::move(readerConnection);
         }
@@ -76,10 +76,10 @@ SEXP exa::ConnectionContext::createReadConnection(pRODBCHandle handle, SQLCHAR *
 SEXP exa::ConnectionContext::createWriteConnection(pRODBCHandle handle, SQLCHAR *query) {
     SEXP retVal = nullptr;
     if (mConnectionController) {
-        exa::writer::Writer *writer = mConnectionController->startWriting(exa::OdbcSessionInfoImpl(handle, query),
+        std::weak_ptr<exa::writer::Writer> writer = mConnectionController->startWriting(exa::OdbcSessionInfoImpl(handle, query),
                                                                               exa::ProtocolType::http);
-        if (writer != nullptr) {
-            auto writeConnection = std::make_unique<exa::rconnection::RWriterConnection>(*writer);
+        if (!writer.expired()) {
+            auto writeConnection = std::make_unique<exa::rconnection::RWriterConnection>(writer);
             retVal = writeConnection->create();
             mConnection = std::move(writeConnection);
         }

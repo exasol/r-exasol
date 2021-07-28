@@ -20,6 +20,7 @@
 #include <iostream>
 #include <iomanip>
 #include <sstream>
+#include <memory>
 
 class TestSocket : public exa::Socket {
 public:
@@ -74,18 +75,18 @@ std::string createTestString() {
 context("Transfer unit tests") {
 
   test_that("test_reader") {
-    TestSocket testSocket;
+    auto testSocket = std::make_shared<TestSocket>();
     exa::Chunk chunk{};
     std::unique_ptr<exa::reader::HttpChunkReader> reader = std::make_unique<exa::reader::HttpChunkReader>(testSocket, chunk);
     std::vector<char> buffer(100);
     std::string testString = createTestString();
     std::stringstream os;
     os << std::hex << testString.size() << std::endl;
-    testSocket.send(os.str());
+    testSocket->send(os.str());
     os = std::stringstream();
     os << testString << '\0' << '\0';
 
-    testSocket.send(os.str());
+    testSocket->send(os.str());
     size_t sizeReceived = reader->pipe_read(buffer.data(), 1, buffer.size());
     expect_true(sizeReceived == buffer.size());
     std::string strRep(buffer.data(), buffer.size());
@@ -101,14 +102,14 @@ context("Transfer unit tests") {
 
     os = std::stringstream();
     os << std::hex << 0 << std::endl;
-    testSocket.send(os.str());
+    testSocket->send(os.str());
 
     sizeReceived = reader->pipe_read(buffer.data(), 1, buffer.size());
     expect_true(sizeReceived == 0);
   }
 
   test_that("test_writer") {
-    TestSocket testSocket;
+    auto testSocket = std::make_shared<TestSocket>();
     exa::Chunk chunk{};
 
     std::unique_ptr<exa::writer::HttpChunkWriter> writer = std::make_unique<exa::writer::HttpChunkWriter>(testSocket, chunk);
@@ -124,12 +125,12 @@ context("Transfer unit tests") {
 
     const std::string header = "HTTP/1.1 200 OK\r\nServer: EXASolution R Package\r\nContent-type: application/octet-stream\r\nContent-disposition: attachment; filename=data.csv\r\nConnection: close\r\n\r\n";
     std::vector<char> buffer(header.size());
-    const size_t recvHeaderSize = testSocket.recv(buffer.data(), header.size());
+    const size_t recvHeaderSize = testSocket->recv(buffer.data(), header.size());
     expect_true(recvHeaderSize == header.size());
     expect_true(::memcmp(buffer.data(), header.data(), header.size()) == 0);
 
     buffer.resize(testString.size());
-    const size_t recvDataSize = testSocket.recv(buffer.data(), testString.size());
+    const size_t recvDataSize = testSocket->recv(buffer.data(), testString.size());
 
     expect_true(recvDataSize == testString.size());
     expect_true(::memcmp(buffer.data(), testString.data(), testString.size()) == 0);

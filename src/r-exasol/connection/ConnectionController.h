@@ -22,8 +22,8 @@ namespace exa {
 
         int connect(const char* host, uint16_t port);
 
-        reader::Reader* startReading(const OdbcSessionInfo&, ProtocolType);
-        writer::Writer* startWriting(const OdbcSessionInfo&,ProtocolType);
+        std::weak_ptr<reader::Reader> startReading(const OdbcSessionInfo&, ProtocolType);
+        std::weak_ptr<writer::Writer> startWriting(const OdbcSessionInfo&,ProtocolType);
 
         void onOdbcError();
         /// Shuts connection controller down.
@@ -34,10 +34,10 @@ namespace exa {
 
     private:
         ConnectionFactory & mConnectionFactory;
-        std::unique_ptr<reader::Reader> mReader;
-        std::unique_ptr<writer::Writer> mWriter;
-        std::unique_ptr<OdbcAsyncExecutor> mOdbcAsyncExecutor;
-        std::unique_ptr<Socket> mSocket;
+        std::shared_ptr<reader::Reader> mReader;
+        std::shared_ptr<writer::Writer> mWriter;
+        std::shared_ptr<OdbcAsyncExecutor> mOdbcAsyncExecutor;
+        std::shared_ptr<Socket> mSocket;
         std::pair<std::string, uint16_t > mHostInfo;
         tErrorFunction mErrorHandler;
     };

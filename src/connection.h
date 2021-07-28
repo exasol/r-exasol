@@ -6,7 +6,6 @@
 #define R_EXASOL_CONNECTION_H
 
 #include <Rdefines.h>
-#include <r-exasol/connection/ExaTypes.h>
 #include <sql.h>
 #include <r-exasol/odbc/RODBC.h>
 

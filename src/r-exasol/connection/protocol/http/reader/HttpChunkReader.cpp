@@ -6,77 +6,87 @@
 #include <cstring>
 #include <r-exasol/connection/protocol/http/common.h>
 #include <iostream>
+#include <r-exasol/connection/ConnectionException.h>
+#include <sstream>
 
 namespace re = exa::reader;
 
-re::HttpChunkReader::HttpChunkReader(Socket &socket, Chunk & chunk)
-: mSocket(socket)
-, mChunk(chunk) {
+re::HttpChunkReader::HttpChunkReader(std::weak_ptr<Socket> socket, Chunk &chunk)
+        : mSocket(socket), mChunk(chunk) {
     mChunk.reset();
 }
 
 ssize_t re::HttpChunkReader::read_next_chunk() {
     size_t pos = 0;
     int buflen, rc;
-    const char *ok_answer =
+    static const char *ok_answer =
             "HTTP/1.1 200 OK\r\n"
             "Server: EXASolution R Package\r\n"
             "Connection: close\r\n\r\n";
-    const char *error_answer =
+    static const char *error_answer =
             "HTTP/1.1 404 ERROR\r\n"
             "Server: EXASolution R Package\r\n"
             "Connection: close\r\n\r\n";
-
-    for (pos = 0; pos < 20; pos++) {
-        mChunk.chunk_buf[pos] = mChunk.chunk_buf[pos + 1] = '\0';
-        if ((rc = mSocket.recv(&(mChunk.chunk_buf[pos]), 1)) < 1) {
-            // fprintf(stderr, "### error (%d)\n", rc);
-            goto error;
+    ssize_t retVal = -1;
+    try {
+        auto socket = mSocket.lock();
+        if (!socket) {
+            throw ConnectionException("socket invalid");
         }
-        if (mChunk.chunk_buf[pos] == '\n') {
-            break;
+
+        for (pos = 0; pos < 20; pos++) {
+            mChunk.chunk_buf[pos] = mChunk.chunk_buf[pos + 1] = '\0';
+            if ((rc = socket->recv(&(mChunk.chunk_buf[pos]), 1)) < 1) {
+                // fprintf(stderr, "### error (%d)\n", rc);
+                std::stringstream errMsg;
+                errMsg << "cannot read data from header. errno=" << errno;
+                throw exa::ConnectionException(errMsg.str());
+            }
+            if (mChunk.chunk_buf[pos] == '\n') {
+                break;
+            }
+        }
+
+        if (pos > 19) {
+            throw exa::ConnectionException("buffer length exceed size");
+        }
+
+        mChunk.chunk_buf[pos] = '\0';
+        buflen = -1;
+
+        if (::sscanf(mChunk.chunk_buf, "%x", &buflen) < 1) {
+            throw exa::ConnectionException("invalid buffer size provided");
+        }
+
+        if (0 == buflen) {
+            socket->send(ok_answer, strlen(ok_answer));
+            socket->shutdownWr();
+            retVal = 0;
+        } else {
+            if ((buflen + 2) > MAX_HTTP_CHUNK_SIZE) {
+                throw exa::ConnectionException("Buffer received larger than max chunk size.");
+            }
+
+            buflen = socket->recv(mChunk.chunk_buf, buflen + 2);
+            if (buflen < 3) {
+                throw exa::ConnectionException("invalid buffer length");
+            }
+
+            mChunk.chunk_len = buflen - 2;
+            mChunk.chunk_pos = 0;
+            mChunk.chunk_buf[buflen - 2] = '\0';
+            mChunk.chunk_num++;
+            retVal = mChunk.chunk_len;
+        }
+    } catch (const exa::ConnectionException &ex) {
+        std::cerr << "Error occured in HttpChunkReader:" << ex.what() << std::endl;
+        auto socket = mSocket.lock();
+        if (socket) {
+            socket->send(error_answer, strlen(error_answer));
+            socket->shutdownWr();
         }
     }
-
-    if (pos > 19) {
-        std::cerr << "buffer length exceed size" << std::endl;
-        goto error;
-    }
-
-    mChunk.chunk_buf[pos] = '\0';
-    buflen = -1;
-
-    if (::sscanf(mChunk.chunk_buf, "%x", &buflen) < 1) {
-        std::cerr << "invalid buffer size provided" << std::endl;
-        goto error;
-    }
-
-    if (0 == buflen) {
-        mSocket.send(ok_answer, strlen(ok_answer));
-        mSocket.shutdownWr();
-        return 0;
-    }
-
-    if ((buflen + 2) > MAX_HTTP_CHUNK_SIZE) {
-        goto error;
-    }
-
-    buflen = mSocket.recv(mChunk.chunk_buf, buflen + 2);
-    if (buflen < 3) {
-        std::cerr << "invalid buffer length" << std::endl;
-        goto error;
-    }
-
-    mChunk.chunk_len = buflen - 2;
-    mChunk.chunk_pos = 0;
-    mChunk.chunk_buf[buflen-2] = '\0';
-    mChunk.chunk_num ++;
-    return mChunk.chunk_len;
-
-error:
-    mSocket.send(error_answer, strlen(error_answer));
-    mSocket.shutdownWr();
-    return -1;
+    return retVal;
 }
 
 ssize_t re::HttpChunkReader::read_next(char *buffer, size_t buflen) {
@@ -132,6 +142,11 @@ int re::HttpChunkReader::fgetc() {
 }
 
 void exa::reader::HttpChunkReader::start() {
-    exa::readHttpHeader(mSocket);
+    auto socket = mSocket.lock();
+    if (socket) {
+        exa::readHttpHeader(*socket);
+    } else {
+        throw exa::ConnectionException("socket invalid");
+    }
 }
 

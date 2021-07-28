@@ -39,10 +39,10 @@ struct MyListener : Catch::TestEventListenerBase {
 CATCH_REGISTER_LISTENER( MyListener )
 
 TEST_CASE( "Import", "[reader]" ) {
-    std::unique_ptr<exa::Socket> socket = std::make_unique<exa::SocketImpl>();
+    std::shared_ptr<exa::Socket> socket = std::make_shared<exa::SocketImpl>();
     socket->connect(host, PORT);
     exa::Chunk chunk{};
-    std::unique_ptr<exa::reader::HttpChunkReader> reader = std::make_unique<exa::reader::HttpChunkReader>(*socket, chunk);
+    std::unique_ptr<exa::reader::HttpChunkReader> reader = std::make_unique<exa::reader::HttpChunkReader>(socket, chunk);
     std::vector<char> buffer(100);
     std::string testString = createTestString();
     size_t sizeReceived = reader->pipe_read(buffer.data(), 1, buffer.size());
@@ -65,10 +65,10 @@ TEST_CASE( "Import", "[reader]" ) {
 
 
 TEST_CASE( "ImportHttp", "[reader]" ) {
-    std::unique_ptr<exa::Socket> socket = std::make_unique<exa::SocketImpl>();
+    std::shared_ptr<exa::Socket> socket = std::make_shared<exa::SocketImpl>();
     socket->connect(host, PORT);
     exa::Chunk chunk{};
-    std::unique_ptr<exa::reader::HttpChunkReader> reader = std::make_unique<exa::reader::HttpChunkReader>(*socket, chunk);
+    std::unique_ptr<exa::reader::HttpChunkReader> reader = std::make_unique<exa::reader::HttpChunkReader>(socket, chunk);
     reader->start();
     std::vector<char> buffer(100);
     std::string testString = createTestString();
@@ -110,8 +110,10 @@ TEST_CASE( "ConnectionControllerImport", "[reader]" ) {
     REQUIRE(connectionController.getHostInfo().first == "Test");
     REQUIRE(connectionController.getHostInfo().second == 4);
     OdbcSessionImpl odbcSessionImpl;
-    exa::reader::Reader* reader = connectionController.startReading(odbcSessionImpl, exa::ProtocolType::http);
+    std::weak_ptr<exa::reader::Reader> readerWeak = connectionController.startReading(odbcSessionImpl, exa::ProtocolType::http);
 
+    REQUIRE(!readerWeak.expired());
+    auto reader = readerWeak.lock();
     std::vector<char> buffer(100);
     std::string testString = createTestString();
     size_t sizeReceived = reader->pipe_read(buffer.data(), 1, buffer.size());
@@ -156,7 +158,9 @@ TEST_CASE( "ConnectionControllerEcho", "[reader/writer]" ) {
         REQUIRE(connectionController.getHostInfo().first == "Test");
         REQUIRE(connectionController.getHostInfo().second == 4);
         OdbcSessionImpl odbcSessionImpl;
-        exa::writer::Writer *writer = connectionController.startWriting(odbcSessionImpl, exa::ProtocolType::http);
+        std::weak_ptr<exa::writer::Writer> writer_weak = connectionController.startWriting(odbcSessionImpl, exa::ProtocolType::http);
+        REQUIRE(!writer_weak.expired());
+        auto writer = writer_weak.lock();
         std::string data = "\"a\"";
         size_t sizeWritten = writer->pipe_write(&(data[0]), 1, data.size());
         REQUIRE(sizeWritten == data.size());
@@ -183,7 +187,10 @@ TEST_CASE( "ConnectionControllerEcho", "[reader/writer]" ) {
         REQUIRE(connectionController.getHostInfo().first == "Test");
         REQUIRE(connectionController.getHostInfo().second == 4);
         OdbcSessionImpl odbcSessionImpl;
-        exa::reader::Reader* reader = connectionController.startReading(odbcSessionImpl, exa::ProtocolType::http);
+        std::weak_ptr<exa::reader::Reader> readerWeak = 
+                connectionController.startReading(odbcSessionImpl, exa::ProtocolType::http);
+        REQUIRE(!readerWeak.expired());
+        auto reader = readerWeak.lock();
         std::stringstream data;
         do {
             const int c = reader->fgetc();
@@ -230,8 +237,11 @@ TEST_CASE( "ConnectionControllerImportWithError", "[reader]" ) {
         REQUIRE(newConnectionController.getHostInfo().first == "Test");
         REQUIRE(newConnectionController.getHostInfo().second == 4);
         OdbcSessionImpl odbcSessionImpl;
-        exa::reader::Reader *reader = newConnectionController.startReading(odbcSessionImpl, exa::ProtocolType::http);
+        std::weak_ptr<exa::reader::Reader> readerWeak = 
+                newConnectionController.startReading(odbcSessionImpl, exa::ProtocolType::http);
+        REQUIRE(!readerWeak.expired());
 
+        auto reader = readerWeak.lock();
         std::vector<char> buffer(100);
         std::string testString = createTestString();
         size_t sizeReceived = reader->pipe_read(buffer.data(), 1, buffer.size());
@@ -254,10 +264,10 @@ TEST_CASE( "ConnectionControllerImportWithError", "[reader]" ) {
 }
 
 TEST_CASE( "Export", "[writer]" ) {
-    std::unique_ptr<exa::Socket> socket = std::make_unique<exa::SocketImpl>();
+    std::shared_ptr<exa::Socket> socket = std::make_shared<exa::SocketImpl>();
     socket->connect(host, PORT);
     exa::Chunk chunk{};
-    std::unique_ptr<exa::writer::HttpChunkWriter> writer = std::make_unique<exa::writer::HttpChunkWriter>(*socket, chunk);
+    std::unique_ptr<exa::writer::HttpChunkWriter> writer = std::make_unique<exa::writer::HttpChunkWriter>(socket, chunk);
     std::string testString = createTestString();
     const int bufferSize = 100;
     size_t sizeWritten = writer->pipe_write(&(testString[0]), 1, bufferSize);

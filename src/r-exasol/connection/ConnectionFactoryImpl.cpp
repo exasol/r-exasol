@@ -7,16 +7,16 @@
 #include <r-exasol/connection/protocol/http/reader/HttpChunkReader.h>
 #include <r-exasol/connection/protocol/http/writer/HttpChunkWriter.h>
 
-std::unique_ptr<exa::Socket> exa::ConnectionFactoryImpl::createSocket() {
-    return std::make_unique<exa::SocketImpl>();
+std::shared_ptr<exa::Socket> exa::ConnectionFactoryImpl::createSocket() {
+    return std::make_shared<exa::SocketImpl>();
 }
 
-std::unique_ptr<exa::reader::Reader> exa::ConnectionFactoryImpl::createHttpReader(Socket& socket) {
-    return std::make_unique<exa::reader::HttpChunkReader>(socket, getChunk());
+std::shared_ptr<exa::reader::Reader> exa::ConnectionFactoryImpl::createHttpReader(std::weak_ptr<Socket> socket) {
+    return std::make_shared<exa::reader::HttpChunkReader>(socket, getChunk());
 }
 
-std::unique_ptr<exa::writer::Writer> exa::ConnectionFactoryImpl::createHttpWriter(Socket& socket) {
-    return std::make_unique<exa::writer::HttpChunkWriter>(socket, getChunk());
+std::shared_ptr<exa::writer::Writer> exa::ConnectionFactoryImpl::createHttpWriter(std::weak_ptr<Socket> socket) {
+    return std::make_shared<exa::writer::HttpChunkWriter>(socket, getChunk());
 }
 
 exa::Chunk & exa::ConnectionFactoryImpl::getChunk() {

@@ -6,11 +6,29 @@
 #define R_EXASOL_SOCKETIMPL_H
 
 #include <r-exasol/connection/socket/Socket.h>
-#include <r-exasol/connection/ExaTypes.h>
 #include <cstdio>
 #include <cstdint>
 #include <utility>
 #include <string>
+
+
+#ifdef _WIN32
+#include <winsock2.h>
+#endif
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+#ifndef _WIN32
+typedef int tSocket;
+#else
+typedef SOCKET tSocket;
+#endif
+
+#ifdef __cplusplus
+}
+#endif
 
 namespace exa {
     class SocketImpl : public Socket {

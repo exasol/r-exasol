@@ -4,18 +4,20 @@
 
 #include <r-exasol/connection/protocol/http/writer/HttpChunkWriter.h>
 #include <r-exasol/connection/protocol/http/common.h>
+#include <r-exasol/connection/ConnectionException.h>
 #include <cstring>
+#include <utility>
 
 namespace wri = exa::writer;
 
-wri::HttpChunkWriter::HttpChunkWriter(Socket &socket, Chunk & chunk)
-: mSocket(socket)
+wri::HttpChunkWriter::HttpChunkWriter(std::weak_ptr<Socket> socket, Chunk & chunk)
+: mSocket(std::move(socket))
 , mChunk(chunk) {
     mChunk.reset();
 }
 
 ssize_t wri::HttpChunkWriter::write_next_chunk() {
-    const char *ok_answer =
+    static const char *ok_answer =
             "HTTP/1.1 200 OK\r\n"
             "Server: EXASolution R Package\r\n"
             "Content-type: application/octet-stream\r\n"
@@ -24,33 +26,40 @@ ssize_t wri::HttpChunkWriter::write_next_chunk() {
 
     const size_t ok_len = strlen(ok_answer);
     const size_t chunk_len = mChunk.chunk_len;
-    const char *error_answer =
+    static const char *error_answer =
             "HTTP/1.1 404 ERROR\r\n"
             "Server: EXASolution R Package\r\n"
             "Connection: close\r\n\r\n";
+    ssize_t retVal = -1;
 
-    if (chunk_len == 0) {
-        goto error;
-    }
+    auto socket = mSocket.lock();
+    try {
+        if (chunk_len == 0) {
+            throw exa::ConnectionException("invalid chunklen");
+        }
 
-    if (mChunk.chunk_num == 0) {
-        if (mSocket.send(ok_answer, ok_len) != ok_len) {
-            goto error;
+        if (socket) {
+            if (mChunk.chunk_num == 0) {
+                if (socket->send(ok_answer, ok_len) != ok_len) {
+                    throw exa::ConnectionException("socket invalid");
+                }
+            }
+
+            if (socket->send(mChunk.chunk_buf, chunk_len) != chunk_len) {
+                throw exa::ConnectionException("socket invalid");
+            }
+
+            mChunk.chunk_len = 0;
+            mChunk.chunk_num++;
+            retVal = chunk_len;
+        }
+    } catch (const ConnectionException& ex) {
+        if (socket) {
+            socket->send(error_answer, strlen(error_answer));
+            socket->shutdownRdWr();
         }
     }
-
-    if (mSocket.send(mChunk.chunk_buf, chunk_len) != chunk_len) {
-        goto error;
-    }
-
-    mChunk.chunk_len = 0;
-    mChunk.chunk_num ++;
-    return chunk_len;
-
-    error:
-    mSocket.send(error_answer, strlen(error_answer));
-    mSocket.shutdownRdWr();
-    return -1;
+    return retVal;
 }
 
 size_t wri::HttpChunkWriter::pipe_write(const void *ptr, size_t size, size_t nitems) {
@@ -91,5 +100,10 @@ int wri::HttpChunkWriter::pipe_fflush() {
 }
 
 void exa::writer::HttpChunkWriter::start() {
-    exa::readHttpHeader(mSocket);
+    auto socket = mSocket.lock();
+    if (socket) {
+        exa::readHttpHeader(*socket);
+    } else {
+        throw ConnectionException("socket invalid");
+    }
 }

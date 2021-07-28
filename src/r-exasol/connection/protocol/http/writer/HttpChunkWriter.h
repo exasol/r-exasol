@@ -8,6 +8,7 @@
 #include <r-exasol/connection/socket/Socket.h>
 #include <r-exasol/connection/protocol/http/Chunk.h>
 #include <r-exasol/connection/Writer.h>
+#include <memory>
 
 namespace exa {
 
@@ -16,7 +17,7 @@ namespace exa {
         class HttpChunkWriter : public Writer {
         public:
             ~HttpChunkWriter() override = default;
-            explicit HttpChunkWriter(Socket &socket, Chunk & chunk);
+            explicit HttpChunkWriter(std::weak_ptr<Socket> socket, Chunk & chunk);
             void start() override;
             size_t pipe_write(const void *ptr, size_t size, size_t nitems) override;
             int pipe_fflush() override;
@@ -25,7 +26,7 @@ namespace exa {
             ssize_t write_next_chunk();
 
         private:
-            Socket &mSocket;
+            std::weak_ptr<Socket> mSocket;
             Chunk &mChunk;
         };
     }

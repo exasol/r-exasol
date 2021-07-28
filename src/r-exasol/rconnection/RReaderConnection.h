@@ -9,6 +9,7 @@
 #include <r-exasol/rconnection/RConnection.h>
 #include <Rdefines.h>
 #include <r-exasol/connection/Reader.h>
+#include <memory>
 
 namespace exa {
 
@@ -16,14 +17,14 @@ namespace exa {
 
         class RReaderConnection : public RConnection {
         public:
-            explicit RReaderConnection(reader::Reader & reader);
+            explicit RReaderConnection(std::weak_ptr<reader::Reader> reader);
 
             SEXP create();
             void release() override;
 
 
         private:
-            reader::Reader & mReader;
+            std::weak_ptr<reader::Reader> mReader;
             Rconnection mConn;
         };
     }

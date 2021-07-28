@@ -12,16 +12,16 @@ exa::ConnectionController::ConnectionController(ConnectionFactory &connectionFac
 : mConnectionFactory(connectionFactory)
 , mErrorHandler(errorHandler) {}
 
-exa::reader::Reader* exa::ConnectionController::startReading(const OdbcSessionInfo& odbcSessionInfo, ProtocolType protocolType) {
-    exa::reader::Reader* retVal = nullptr;
+std::weak_ptr<exa::reader::Reader> exa::ConnectionController::startReading(const OdbcSessionInfo& odbcSessionInfo, ProtocolType protocolType) {
+    std::weak_ptr<exa::reader::Reader> retVal;
     if (mSocket && protocolType == ProtocolType::http) {
         mOdbcAsyncExecutor = odbcSessionInfo.createOdbcAsyncExecutor();
 
         try {
             mOdbcAsyncExecutor->execute([this]() { onOdbcError(); });
-            mReader = mConnectionFactory.createHttpReader(*mSocket);
+            mReader = mConnectionFactory.createHttpReader(mSocket);
             mReader->start();
-            retVal = mReader.get();
+            retVal = mReader;
         } catch (const OdbcException & ex) {
             mErrorHandler(ex.what());
         } catch(const ConnectionException & ex) {
@@ -35,16 +35,16 @@ exa::reader::Reader* exa::ConnectionController::startReading(const OdbcSessionIn
     return retVal;
 }
 
-exa::writer::Writer* exa::ConnectionController::startWriting(const OdbcSessionInfo& odbcSessionInfo, exa::ProtocolType protocolType) {
-    exa::writer::Writer* retVal = nullptr;
+std::weak_ptr<exa::writer::Writer> exa::ConnectionController::startWriting(const OdbcSessionInfo& odbcSessionInfo, exa::ProtocolType protocolType) {
+    std::weak_ptr<exa::writer::Writer> retVal;
 
     if (mSocket && protocolType == ProtocolType::http) {
         mOdbcAsyncExecutor = odbcSessionInfo.createOdbcAsyncExecutor();
         try {
             mOdbcAsyncExecutor->execute([this]() { onOdbcError(); });
-            mWriter = mConnectionFactory.createHttpWriter(*mSocket);
+            mWriter = mConnectionFactory.createHttpWriter(mSocket);
             mWriter->start();
-            retVal = mWriter.get();
+            retVal = mWriter;
         } catch (const OdbcException & ex) {
             mErrorHandler(ex.what());
         } catch(const ConnectionException & ex) {

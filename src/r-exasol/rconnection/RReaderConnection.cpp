@@ -5,6 +5,7 @@
 #include <r-exasol/rconnection/RReaderConnection.h>
 #include <r-exasol/connection/Reader.h>
 #include <cstdlib>
+#include <utility>
 
 
 extern "C" {
@@ -22,18 +23,27 @@ extern void Rf_set_iconv(Rconnection con);
 static size_t pipe_read(void *ptr, const size_t size, const size_t nitems,
                         const Rconnection con) {
     size_t retVal = 0;
-    exa::reader::Reader * reader = *((exa::reader::Reader **) con->priv);
+    std::weak_ptr<exa::reader::Reader>* reader =
+            *((std::weak_ptr<exa::reader::Reader> **) con->priv);
+
     if(reader) {
-        retVal = reader->pipe_read(ptr, size, nitems);
+        auto readerLocked = reader->lock();
+        if (readerLocked) {
+            retVal = readerLocked->pipe_read(ptr, size, nitems);
+        }
     }
     return retVal;
 }
 
 static int file_fgetc_internal(const Rconnection con) {
-    exa::reader::Reader * reader = *((exa::reader::Reader **) con->priv);
     int retVal = 0;
+    std::weak_ptr<exa::reader::Reader>* reader =
+            *((std::weak_ptr<exa::reader::Reader> **) con->priv);
     if(reader) {
-        retVal = reader->fgetc();
+        auto readerLocked = reader->lock();
+        if (readerLocked) {
+            retVal = readerLocked->fgetc();
+        }
     }
     return  retVal;
 }
@@ -42,8 +52,8 @@ static int file_fgetc_internal(const Rconnection con) {
 
 namespace rcon = exa::rconnection;
 
-rcon::RReaderConnection::RReaderConnection(reader::Reader & reader)
-: mReader(reader)
+rcon::RReaderConnection::RReaderConnection(std::weak_ptr<reader::Reader> reader)
+: mReader(std::move(reader))
 , mConn(nullptr){}
 
 SEXP rcon::RReaderConnection::create() {
@@ -62,13 +72,13 @@ SEXP rcon::RReaderConnection::create() {
     //However, RExt Connections will free this memory if it is not null when cleaning up connection
     //As we want to keep control about when to delete Reader, we allocate memory for one pointer;
     //and store the pointer to the pointer of the Reader here
-    mConn->priv = (void*)::malloc(sizeof(reader::Reader*));
-    *(static_cast<reader::Reader**>(mConn->priv)) = &mReader;
+    mConn->priv = (void*)::malloc(sizeof(std::weak_ptr<exa::reader::Reader>*));
+    *(static_cast<std::weak_ptr<exa::reader::Reader>**>(mConn->priv)) = &mReader;
     Rf_set_iconv(mConn);
     UNPROTECT(1);
     return r_custom_connection;
 }
 
 void exa::rconnection::RReaderConnection::release() {
-    *(static_cast<reader::Reader**>(mConn->priv)) = nullptr;
+    *(static_cast<std::weak_ptr<exa::reader::Reader>**>(mConn->priv)) = nullptr;
 }

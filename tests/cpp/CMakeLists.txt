@@ -31,7 +31,6 @@ add_executable(r_exasol
         ../../src/r-exasol/connection/ConnectionController.h
         ../../src/r-exasol/connection/socket/Socket.h
         ../../src/r-exasol/connection/ErrorHandler.h
-        ../../src/r-exasol/connection/ExaTypes.h
         ../../src/r-exasol/connection/OdbcAsyncExecutor.h
         ../../src/r-exasol/connection/OdbcSessionInfo.h
         ../../src/r-exasol/connection/Reader.h
