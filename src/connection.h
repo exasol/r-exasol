@@ -6,9 +6,9 @@
 #define R_EXASOL_CONNECTION_H
 
 #include <Rdefines.h>
-#include <r-exasol/if/ExaTypes.h>
+#include <r-exasol/connection/ExaTypes.h>
 #include <sql.h>
-#include <r-exasol/impl/odbc/RODBC.h>
+#include <r-exasol/odbc/RODBC.h>
 
 #ifdef __cplusplus
 extern "C" {

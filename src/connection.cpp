@@ -3,7 +3,7 @@
 //
 
 #include <connection.h>
-#include <r-exasol/if/ConnectionContext.h>
+#include <r-exasol/ConnectionContext.h>
 
 namespace exa {
     /*

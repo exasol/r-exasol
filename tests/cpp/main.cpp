@@ -5,13 +5,13 @@
 #define CATCH_CONFIG_MAIN  // This tells Catch to provide a main() - only do this in one cpp file
 #include "catch2/catch.hpp"
 
-#include <r-exasol/impl/connection//protocol/http/reader/HttpChunkReader.h>
-#include <r-exasol/impl/connection/protocol/http/writer//HttpChunkWriter.h>
-#include <r-exasol/impl/connection/socket/SocketImpl.h>
+#include <r-exasol/connection//protocol/http/reader/HttpChunkReader.h>
+#include <r-exasol/connection/protocol/http/writer//HttpChunkWriter.h>
+#include <r-exasol/connection/socket/SocketImpl.h>
 
 #include <dlfcn.h>
-#include <r-exasol/impl/connection/ConnectionFactoryImpl.h>
-#include <r-exasol/impl/connection/ConnectionController.h>
+#include <r-exasol/connection/ConnectionFactoryImpl.h>
+#include <r-exasol/connection/ConnectionController.h>
 #include <sstream>
 
 static const char host[] = "localhost";

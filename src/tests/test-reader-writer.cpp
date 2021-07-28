@@ -12,9 +12,9 @@
 // header file.
 #include <testthat.h>
 
-#include <r-exasol/impl/connection/socket/Socket.h>
-#include <r-exasol/impl/connection/protocol/http/reader/HttpChunkReader.h>
-#include <r-exasol/impl/connection/protocol/http/writer/HttpChunkWriter.h>
+#include <r-exasol/connection/socket/Socket.h>
+#include <r-exasol/connection/protocol/http/reader/HttpChunkReader.h>
+#include <r-exasol/connection/protocol/http/writer/HttpChunkWriter.h>
 #include <cstring>
 #include <iterator>
 #include <iostream>

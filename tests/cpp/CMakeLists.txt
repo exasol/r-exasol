@@ -16,29 +16,29 @@ FetchContent_Declare(
 FetchContent_MakeAvailable(catch)
 
 add_executable(r_exasol
-        ../../src/r-exasol/impl/connection/protocol/http/reader/HttpChunkReader.cpp
-        ../../src/r-exasol/impl/connection/protocol/http/reader/HttpChunkReader.h
-        ../../src/r-exasol/impl/connection/protocol/http/writer/HttpChunkWriter.cpp
-        ../../src/r-exasol/impl/connection/protocol/http/writer/HttpChunkWriter.h
-        ../../src/r-exasol/impl/connection/protocol/http/common.h
-        ../../src/r-exasol/impl/connection/protocol/http/common.cpp
-        ../../src/r-exasol/impl/connection/protocol/http/Chunk.h
-        ../../src/r-exasol/impl/connection/protocol/metaInfoReader.h
-        ../../src/r-exasol/impl/connection/protocol/metaInfoReader.cpp
-        ../../src/r-exasol/impl/connection/ConnectionController.cpp
-        ../../src/r-exasol/impl/connection/ConnectionFactoryImpl.h
-        ../../src/r-exasol/impl/connection/ConnectionFactoryImpl.cpp
-        ../../src/r-exasol/impl/connection/ConnectionController.h
-        ../../src/r-exasol/impl/connection/socket/Socket.h
-        ../../src/r-exasol/if/ErrorHandler.h
-        ../../src/r-exasol/if/ExaTypes.h
-        ../../src/r-exasol/if/OdbcAsyncExecutor.h
-        ../../src/r-exasol/if/OdbcSessionInfo.h
-        ../../src/r-exasol/if/Reader.h
-        ../../src/r-exasol/if/Writer.h
-        ../../src/r-exasol/impl/connection/ConnectionFactory.h
-        ../../src/r-exasol/impl/connection/socket/SocketImpl.h
-        ../../src/r-exasol/impl/connection/socket/SocketImpl.cpp
+        ../../src/r-exasol/connection/protocol/http/reader/HttpChunkReader.cpp
+        ../../src/r-exasol/connection/protocol/http/reader/HttpChunkReader.h
+        ../../src/r-exasol/connection/protocol/http/writer/HttpChunkWriter.cpp
+        ../../src/r-exasol/connection/protocol/http/writer/HttpChunkWriter.h
+        ../../src/r-exasol/connection/protocol/http/common.h
+        ../../src/r-exasol/connection/protocol/http/common.cpp
+        ../../src/r-exasol/connection/protocol/http/Chunk.h
+        ../../src/r-exasol/connection/protocol/metaInfoReader.h
+        ../../src/r-exasol/connection/protocol/metaInfoReader.cpp
+        ../../src/r-exasol/connection/ConnectionController.cpp
+        ../../src/r-exasol/connection/ConnectionFactoryImpl.h
+        ../../src/r-exasol/connection/ConnectionFactoryImpl.cpp
+        ../../src/r-exasol/connection/ConnectionController.h
+        ../../src/r-exasol/connection/socket/Socket.h
+        ../../src/r-exasol/connection/ErrorHandler.h
+        ../../src/r-exasol/connection/ExaTypes.h
+        ../../src/r-exasol/connection/OdbcAsyncExecutor.h
+        ../../src/r-exasol/connection/OdbcSessionInfo.h
+        ../../src/r-exasol/connection/Reader.h
+        ../../src/r-exasol/connection/Writer.h
+        ../../src/r-exasol/connection/ConnectionFactory.h
+        ../../src/r-exasol/connection/socket/SocketImpl.h
+        ../../src/r-exasol/connection/socket/SocketImpl.cpp
         #../../src/exasol.c
         main.cpp)
 
