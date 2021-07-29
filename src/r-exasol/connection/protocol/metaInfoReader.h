@@ -1,7 +1,3 @@
-//
-// Created by thomas on 16/07/2021.
-//
-
 #ifndef R_EXASOL_METAINFOREADER_H
 #define R_EXASOL_METAINFOREADER_H
 

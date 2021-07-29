@@ -1,7 +1,3 @@
-//
-// Created by thomas on 08/07/2021.
-//
-
 #include <connection.h>
 #include <r-exasol/ConnectionContext.h>
 

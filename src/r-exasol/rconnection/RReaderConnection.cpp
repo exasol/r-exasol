@@ -1,10 +1,5 @@
-//
-// Created by thomas on 08/07/2021.
-//
-
 #include <r-exasol/rconnection/RReaderConnection.h>
 #include <r-exasol/connection/Reader.h>
-#include <cstdlib>
 #include <utility>
 
 #define class clss //need to hide class as it is reserved in C++, but used as variable name in Connections.h

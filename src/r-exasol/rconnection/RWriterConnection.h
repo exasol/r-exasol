@@ -1,7 +1,3 @@
-//
-// Created by thomas on 08/07/2021.
-//
-
 #ifndef R_EXASOL_RWRITERCONNECTION_H
 #define R_EXASOL_RWRITERCONNECTION_H
 
@@ -13,11 +9,22 @@
 
 namespace exa {
     namespace rconnection {
+        /**
+         * Implements r-writer connection. Serves as a bridge between the network writer(@class exa::writer::Writer) and the R client.
+         */
         class RWriterConnection : public RConnection {
         public:
             explicit RWriterConnection(std::weak_ptr<writer::Writer> writer);
 
+            /**
+             * Creates the R-connection object(Using R_new_custom_connection). The R- client can use this object
+             * to stream data from a R dataframe.
+             * @return R-connection object.
+             */
             SEXP create();
+            /**
+             * Reset's the connection hook.
+             */
             void release() override;
 
         private:

@@ -1,7 +1,3 @@
-//
-// Created by thomas on 08/07/2021.
-//
-
 #ifndef R_EXASOL_HTTPCHUNKWRITER_H
 #define R_EXASOL_HTTPCHUNKWRITER_H
 
@@ -14,6 +10,11 @@ namespace exa {
 
     namespace writer {
 
+        /**
+         * Writer implementation which provides writing access to an Http connection.
+         * This implementation expects a reference to a given memory buffer (@private mChunk) which can be used to
+         *  cache data between the network connection and client access.
+         */
         class HttpChunkWriter : public Writer {
         public:
             ~HttpChunkWriter() override = default;

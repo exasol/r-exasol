@@ -1,7 +1,3 @@
-//
-// Created by thomas on 16/07/2021.
-//
-
 #include <string>
 #include <r-exasol/connection/protocol/metaInfoReader.h>
 #include <r-exasol/connection/ConnectionException.h>

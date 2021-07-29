@@ -1,7 +1,3 @@
-//
-// Created by thomas on 08/07/2021.
-//
-
 #ifndef R_EXASOL_HTTPCHUNKREADER_H
 #define R_EXASOL_HTTPCHUNKREADER_H
 
@@ -13,6 +9,11 @@
 namespace exa {
     namespace reader {
 
+        /**
+         * Reader implementation which provides reading access from an Http connection.
+         * This implementation expects a reference to a given memory buffer (@private mChunk) which can be used to
+         *  cache data between the network connection and client access.
+         */
         class HttpChunkReader : public Reader {
         public:
             ~HttpChunkReader() override = default;

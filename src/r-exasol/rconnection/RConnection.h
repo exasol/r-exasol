@@ -1,7 +1,3 @@
-//
-// Created by thomas on 08/07/2021.
-//
-
 #ifndef R_EXASOL_RCONNECTION_H
 #define R_EXASOL_RCONNECTION_H
 
@@ -13,10 +9,16 @@ namespace exa {
 
     namespace rconnection {
 
+        /**
+         * Abstract interface for a r-connection.
+         */
         class RConnection {
         public:
             virtual ~RConnection() =default;
 
+            /**
+             * Releases resources of r-connection.
+             */
             virtual void release() = 0;
         };
     }

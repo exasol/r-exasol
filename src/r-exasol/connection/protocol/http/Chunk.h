@@ -1,7 +1,3 @@
-//
-// Created by thomas on 08/07/2021.
-//
-
 #ifndef R_EXASOL_CHUNK_H
 #define R_EXASOL_CHUNK_H
 
@@ -10,13 +6,18 @@
 #define  MAX_HTTP_CHUNK_SIZE 524288
 
 namespace exa {
+    /**
+     * Memory buffer which will be used to exchange data between network connection and client.
+     */
     struct Chunk {
         size_t chunk_len;
         size_t chunk_pos;
         char chunk_buf[MAX_HTTP_CHUNK_SIZE];
         size_t chunk_num;
 
-        Chunk() = default;
+        Chunk() {
+            reset();
+        }
 
         void reset() {
             chunk_len = 0;

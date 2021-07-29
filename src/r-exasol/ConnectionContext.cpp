@@ -1,7 +1,3 @@
-//
-// Created by thomas on 27/07/2021.
-//
-
 #include <r-exasol/ConnectionContext.h>
 
 
@@ -22,7 +18,7 @@ namespace exa {
 int exa::ConnectionContext::initConnection(const char *host, int port) {
     destroyConnection(1);
     mConnectionController = std::make_unique<exa::ConnectionController>(mConnectionFactory, exa::onError);
-    return mConnectionController->connect(host, static_cast<uint16_t>(port));
+    return mConnectionController->connect(host, static_cast<uint16_t>(port)) ? 0 : -1;
 }
 
 SEXP exa::ConnectionContext::copyHostName() {

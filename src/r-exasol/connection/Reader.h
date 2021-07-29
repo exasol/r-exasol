@@ -1,7 +1,3 @@
-//
-// Created by thomas on 08/07/2021.
-//
-
 #ifndef R_EXASOL_READER_H
 #define R_EXASOL_READER_H
 
@@ -9,6 +5,10 @@
 
 namespace exa {
     namespace reader {
+        /**
+         * Abstract reader class which declares a interface compatible with
+         * external streaming reader.
+         */
         class Reader {
         public:
             virtual ~Reader() = default;

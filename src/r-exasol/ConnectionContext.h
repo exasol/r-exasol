@@ -1,7 +1,3 @@
-//
-// Created by thomas on 27/07/2021.
-//
-
 #ifndef R_EXASOL_CONNECTIONCONTEXT_H
 #define R_EXASOL_CONNECTIONCONTEXT_H
 
@@ -15,6 +11,10 @@
 
 namespace exa {
 
+    /**
+     * This class provides the same interface as the interface C <-> R, on the C++ level.
+     * It instantiates the R-connection class, Connection Controller and the Factory for the Connection Controller.
+     */
     class ConnectionContext {
     public:
 

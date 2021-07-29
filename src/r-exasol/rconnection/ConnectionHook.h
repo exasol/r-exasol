@@ -1,7 +1,3 @@
-//
-// Created by thomas on 28/07/2021.
-//
-
 #ifndef R_EXASOL_CONNECTIONHOOK_H
 #define R_EXASOL_CONNECTIONHOOK_H
 

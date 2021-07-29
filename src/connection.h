@@ -1,6 +1,7 @@
-//
-// Created by thomas on 08/07/2021.
-//
+/**
+ * This module serves as bridge between the plain C code and C++ code.
+ * It simply forwards all requests to @class ConnectionContext.
+ */
 
 #ifndef R_EXASOL_CONNECTION_H
 #define R_EXASOL_CONNECTION_H
@@ -12,6 +13,7 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
+
 
     extern int initConnection(const char* host, int port);
     extern SEXP copyHostName();

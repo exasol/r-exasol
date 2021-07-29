@@ -1,7 +1,3 @@
-//
-// Created by thomas on 08/07/2021.
-//
-
 #include <r-exasol/connection/protocol/http/reader/HttpChunkReader.h>
 #include <cstring>
 #include <r-exasol/connection/protocol/http/common.h>

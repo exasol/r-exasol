@@ -1,7 +1,3 @@
-//
-// Created by thomas on 08/07/2021.
-//
-
 #include <r-exasol/connection/socket/SocketImpl.h>
 
 #include <r-exasol/connection/ConnectionException.h>

@@ -1,7 +1,3 @@
-//
-// Created by thomas on 08/07/2021.
-//
-
 #ifndef R_EXASOL_WRITER_H
 #define R_EXASOL_WRITER_H
 
@@ -9,6 +5,10 @@
 
 namespace exa {
     namespace writer {
+        /**
+         * Abstract writer class which declares a interface compatible with
+         * external streaming writer.
+         */
         class Writer {
         public:
             virtual ~Writer() = default;

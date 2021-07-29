@@ -1,6 +1,3 @@
-//
-// Created by thomas on 15/07/2021.
-//
 #include <r-exasol/connection/protocol/http/common.h>
 #include <r-exasol/connection/ConnectionException.h>
 

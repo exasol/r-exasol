@@ -1,7 +1,3 @@
-//
-// Created by thomas on 08/07/2021.
-//
-
 #ifndef R_EXASOL_SOCKETIMPL_H
 #define R_EXASOL_SOCKETIMPL_H
 
@@ -31,6 +27,9 @@ typedef SOCKET tSocket;
 #endif
 
 namespace exa {
+    /**
+     * Socket implementation to read/write from/to a TCP socket.
+     */
     class SocketImpl : public Socket {
     public:
         explicit SocketImpl();
@@ -41,6 +40,10 @@ namespace exa {
         void shutdownWr() override;
         void shutdownRdWr() override;
 
+        /**
+         * Returns connection info which was used to open the socket.
+         * @return Hostname/Port number.
+         */
         std::pair<std::string, uint16_t> getConnectionInfo() const override { return mConnectionInfo; }
     private:
         tSocket mSocket;

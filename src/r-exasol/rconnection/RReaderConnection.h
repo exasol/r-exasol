@@ -1,7 +1,3 @@
-//
-// Created by thomas on 08/07/2021.
-//
-
 #ifndef R_EXASOL_RREADERCONNECTION_H
 #define R_EXASOL_RREADERCONNECTION_H
 
@@ -15,11 +11,22 @@ namespace exa {
 
     namespace rconnection {
 
+        /**
+         * Implements r-reader connection. Serves as a bridge between the network reader(@class exa::reader::Reader) and the R client.
+         */
         class RReaderConnection : public RConnection {
         public:
             explicit RReaderConnection(std::weak_ptr<reader::Reader> reader);
 
+            /**
+             * Creates the R-connection object(Using R_new_custom_connection). The R- client can use this object
+             * to stream data into a R dataframe.
+             * @return R-connection object.
+             */
             SEXP create();
+            /**
+             * Reset's the connection hook.
+             */
             void release() override;
 
         private:

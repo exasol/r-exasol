@@ -1,7 +1,3 @@
-//
-// Created by thomas on 16/07/2021.
-//
-
 #include <r-exasol/odbc/OdbcSessionInfoImpl.h>
 #include <r-exasol/odbc/OdbcAsyncExecutorImpl.h>
 

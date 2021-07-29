@@ -1,7 +1,3 @@
-//
-// Created by thomas on 08/07/2021.
-//
-
 #ifndef R_EXASOL_SOCKET_H
 #define R_EXASOL_SOCKET_H
 
@@ -11,6 +7,9 @@
 #include <string>
 
 namespace exa {
+    /**
+     * Abstract interface for reading/writing to a tcp socket.
+     */
     class Socket {
     public:
         virtual ~Socket() = default;

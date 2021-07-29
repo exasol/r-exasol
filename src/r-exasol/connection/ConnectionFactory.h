@@ -1,7 +1,3 @@
-//
-// Created by thomas on 14/07/2021.
-//
-
 #ifndef R_EXASOL_CONNECTIONFACTORY_H
 #define R_EXASOL_CONNECTIONFACTORY_H
 
@@ -12,6 +8,9 @@
 
 namespace exa {
 
+    /**
+     * Abstract interface which provides instance creation of sockets, reader and writer.
+     */
     class ConnectionFactory {
     public:
         virtual ~ConnectionFactory() = default;

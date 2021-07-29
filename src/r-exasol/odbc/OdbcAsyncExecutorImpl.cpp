@@ -1,7 +1,3 @@
-//
-// Created by thomas on 15/07/2021.
-//
-
 #include <r-exasol/odbc/OdbcAsyncExecutorImpl.h>
 #include <r-exasol/connection/OdbcException.h>
 
@@ -28,7 +24,7 @@ void exa::OdbcAsyncExecutorImpl::asyncRODBCQueryExecuter(tBackgroundOdbcErrorFun
     }
 }
 
-bool exa::OdbcAsyncExecutorImpl::execute(tBackgroundOdbcErrorFunction errorHandler) {
+void exa::OdbcAsyncExecutorImpl::execute(tBackgroundOdbcErrorFunction errorHandler) {
     SQLRETURN res = SQLAllocHandle(SQL_HANDLE_STMT, mOdbcSessionInfo.mHandle->hDbc, &mStmt);
 
     if (res != SQL_SUCCESS && res != SQL_SUCCESS_WITH_INFO) {
@@ -38,7 +34,6 @@ bool exa::OdbcAsyncExecutorImpl::execute(tBackgroundOdbcErrorFunction errorHandl
     }
     mDone = false;
     mThread = std::thread(&OdbcAsyncExecutorImpl::asyncRODBCQueryExecuter, this, errorHandler);
-    return true;
 }
 
 bool exa::OdbcAsyncExecutorImpl::isDone() {

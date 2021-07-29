@@ -19,4 +19,4 @@ SCRIPT_DIR="$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")"
 docker container rm -f -v r_test || true
 IMAGE_NAME="$("$SCRIPT_DIR/construct_docker_image_complete_name.sh" "${COMBINED_R_VERSION}")"
 PROJ_DIR="$(realpath "$SCRIPT_DIR/../..")"
-docker run  --network host --name r_test -v "$PROJ_DIR":"$PROJ_DIR" -t "$IMAGE_NAME" "$PROJ_DIR" $VARIANT
+docker run  --network host --name r_test -v "$PROJ_DIR":"$PROJ_DIR" -t "$IMAGE_NAME" "$PROJ_DIR" "$VARIANT"

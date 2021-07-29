@@ -1,7 +1,3 @@
-//
-// Created by thomas on 14/07/2021.
-//
-
 #include <r-exasol/connection/ConnectionController.h>
 #include <r-exasol/connection/ConnectionException.h>
 #include <r-exasol/connection/protocol/metaInfoReader.h>
@@ -85,7 +81,7 @@ void exa::ConnectionController::onOdbcError() {
     }
 }
 
-int exa::ConnectionController::connect(const char *host, uint16_t port) {
+bool exa::ConnectionController::connect(const char *host, uint16_t port) {
     bool success = false;
     mSocket = mConnectionFactory.createSocket();
     try {
@@ -99,5 +95,5 @@ int exa::ConnectionController::connect(const char *host, uint16_t port) {
             mSocket.reset();
         }
     }
-    return success ? 0 : -1;
+    return success;
 }

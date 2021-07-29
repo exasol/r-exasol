@@ -1,7 +1,3 @@
-//
-// Created by thomas on 14/07/2021.
-//
-
 #ifndef R_EXASOL_CONNECTIONFACTORYIMPL_H
 #define R_EXASOL_CONNECTIONFACTORYIMPL_H
 
@@ -11,6 +7,10 @@ namespace exa {
 
     class Chunk;
 
+    /**
+     * Concrete implementation of the connection factory which provides instance creation of sockets, reader and writer.
+     * The factory manages the memory buffer used by the reader/writer to exchange data between the network connection and the client.
+     */
     class ConnectionFactoryImpl : public ConnectionFactory {
         std::shared_ptr<Socket> createSocket() override;
         std::shared_ptr<reader::Reader> createHttpReader(std::weak_ptr<Socket>) override;

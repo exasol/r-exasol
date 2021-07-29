@@ -1,7 +1,3 @@
-//
-// Created by thomas on 14/07/2021.
-//
-
 #include <r-exasol/connection/ConnectionFactoryImpl.h>
 #include <r-exasol/connection/socket/SocketImpl.h>
 #include <r-exasol/connection/protocol/http/reader/HttpChunkReader.h>
