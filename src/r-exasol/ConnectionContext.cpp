@@ -56,6 +56,8 @@ int exa::ConnectionContext::destroyConnection(int closeFd) {
     if(!closeFd && !wasDone) {
         ::warning("Transfer was not done jet.");
     }
+    mConnection.reset();
+    mConnectionController.reset();
     return wasDone ? 0 : -1;
 }
 
