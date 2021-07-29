@@ -1,12 +1,14 @@
 #ifndef R_EXASOL_ODBCASYNCEXECUTORIMPL_H
 #define R_EXASOL_ODBCASYNCEXECUTORIMPL_H
 
-#include <sql.h>
 #include <r-exasol/odbc/RODBC.h>
+
 #include <r-exasol/connection/OdbcAsyncExecutor.h>
 #include <r-exasol/odbc/OdbcSessionInfoImpl.h>
+#include <r-exasol/odbc/RODBCFwd.h>
 #include <thread>
 #include <atomic>
+
 
 namespace exa {
     /**

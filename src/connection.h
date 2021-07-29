@@ -7,8 +7,15 @@
 #define R_EXASOL_CONNECTION_H
 
 #include <Rdefines.h>
+#include <sys/types.h>
+
+#ifdef _WIN32
+#define WIN32_LEAN_AND_MEAN
+#include <windows.h>
+#endif
+
 #include <sql.h>
-#include <r-exasol/odbc/RODBC.h>
+#include <r-exasol/odbc/RODBCFwd.h>
 
 #ifdef __cplusplus
 extern "C" {

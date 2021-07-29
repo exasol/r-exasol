@@ -7,26 +7,40 @@
 #include <netinet/in.h>
 #include <cstring>
 #include <netdb.h>
-#include <sstream>
 
 #else
+
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
 #include <winsock2.h>
 #ifndef SHUT_RDWR
 #define SHUT_RDWR SD_BOTH
 #endif
+#ifndef SHUT_WR
+#define SHUT_WR SD_RECEIVE
 #endif
+
+#endif
+
+#include <sstream>
 
 exa::SocketImpl::SocketImpl()
 : mSocket(-1) {}
 
 size_t exa::SocketImpl::recv(void *buf, size_t len) {
+#ifdef _WIN32
+    return ::recv(mSocket, static_cast<char*>(buf), len, MSG_WAITALL);
+#else
     return ::recv(mSocket, buf, len, MSG_WAITALL);
+#endif
 }
 
 ssize_t exa::SocketImpl::send(const void *buf, size_t len) {
+#ifdef _WIN32
+    return ::send(mSocket, static_cast<const char*>(buf), len, 0);
+#else
     return ::send(mSocket, buf, len, 0);
+#endif
 }
 
 void exa::SocketImpl::shutdownWr() {
@@ -73,7 +87,7 @@ void exa::SocketImpl::connect(const char *host, uint16_t port) {
         stringStream << "Could not connect to " << host << ":" << port;
 
 #ifdef _WIN32
-        stringStream << " (" << WSAGetLastError() << ")"
+        stringStream << " (" << WSAGetLastError() << ")";
 #endif
         throw ConnectionException(stringStream.str());
     }

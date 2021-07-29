@@ -2,6 +2,12 @@
 #define R_EXASOL_CONNECTIONCONTEXT_H
 
 #include <Rdefines.h>
+
+#ifdef _WIN32
+#define WIN32_LEAN_AND_MEAN
+#include <windows.h>
+#endif
+
 #include <sql.h>
 #include <r-exasol/odbc/RODBC.h>
 #include <memory>
