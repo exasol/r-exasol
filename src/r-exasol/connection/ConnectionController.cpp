@@ -56,12 +56,15 @@ std::weak_ptr<exa::writer::Writer> exa::ConnectionController::startWriting(const
 
 bool exa::ConnectionController::shutDown() {
     bool retVal = true;
+    //Close socket before joining background thread.
+    //In case of writer this is important because the database server will finish the ODBC execution only after the socket has been closed.
     if (mSocket) {
         mSocket->shutdownRdWr();
     }
     mSocket.reset();
     std::string errorMsg;
     if (mOdbcAsyncExecutor) {
+        //Join background thread and get result
         errorMsg = mOdbcAsyncExecutor->joinAndCheckResult();
         retVal = mOdbcAsyncExecutor->isDone();
         mOdbcAsyncExecutor.reset();
