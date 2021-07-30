@@ -24,7 +24,6 @@ jobs:
       - name: Query dependencies
         run: |
           install.packages("testthat")
-          install.packages("devtools", dependencies = TRUE)
         shell: Rscript {0}
       -name: Build
         run: |
