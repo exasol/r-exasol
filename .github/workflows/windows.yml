@@ -22,10 +22,9 @@ jobs:
       - uses: r-lib/actions/setup-pandoc@v1
 
       - name: Query dependencies
-        run: |
-          install.packages("testthat")
+        run: install.packages("testthat")
         shell: Rscript {0}
-      -name: Build
+      - name: Build
         run: |
           devtools::install()
         shell: Rscript {0}
