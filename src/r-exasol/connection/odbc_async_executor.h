@@ -1,7 +1,7 @@
-#ifndef R_EXASOL_ODBCASYNCEXECUTOR_H
-#define R_EXASOL_ODBCASYNCEXECUTOR_H
+#ifndef R_EXASOL_ODBC_ASYNC_EXECUTOR_H
+#define R_EXASOL_ODBC_ASYNC_EXECUTOR_H
 
-#include <r-exasol/connection/ErrorHandler.h>
+#include <r-exasol/connection/error_handler.h>
 
 namespace exa {
     /**
@@ -28,4 +28,4 @@ namespace exa {
         virtual std::string joinAndCheckResult() = 0;
     };
 }
-#endif //R_EXASOL_ODBCASYNCEXECUTOR_H
+#endif //R_EXASOL_ODBC_ASYNC_EXECUTOR_H

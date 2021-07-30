@@ -1,5 +1,5 @@
-#ifndef R_EXASOL_RODBC_H
-#define R_EXASOL_RODBC_H
+#ifndef R_EXASOL_R_ODBC_H
+#define R_EXASOL_R_ODBC_H
 
 #ifdef _WIN32
 #define WIN32_LEAN_AND_MEAN
@@ -39,4 +39,4 @@ typedef struct rodbcHandle {
                        channel, so we can clear it */
 } RODBCHandle, *pRODBCHandle;
 
-#endif //R_EXASOL_RODBC_H
+#endif //R_EXASOL_R_ODBC_H

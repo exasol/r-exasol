@@ -1,13 +1,13 @@
-#include <r-exasol/ConnectionContext.h>
+#include <r-exasol/connection_context.h>
 
 
-#include <r-exasol/connection/ConnectionFactoryImpl.h>
-#include <r-exasol/rconnection/RConnection.h>
-#include <r-exasol/connection/ConnectionController.h>
+#include <r-exasol/connection/connection_factory_impl.h>
+#include <r-exasol/rconnection/r_connection.h>
+#include <r-exasol/connection/connection_controller.h>
 
-#include <r-exasol/rconnection/RReaderConnection.h>
-#include <r-exasol/rconnection/RWriterConnection.h>
-#include <r-exasol/odbc/OdbcSessionInfoImpl.h>
+#include <r-exasol/rconnection/r_reader_connection.h>
+#include <r-exasol/rconnection/r_writer_connection.h>
+#include <r-exasol/odbc/odbc_session_info_impl.h>
 
 namespace exa {
     void onError(std::string e) {

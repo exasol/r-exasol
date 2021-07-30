@@ -2,8 +2,8 @@
  * Definition of error callback functions.
  */
 
-#ifndef R_EXASOL_ERRORHANDLER_H
-#define R_EXASOL_ERRORHANDLER_H
+#ifndef R_EXASOL_ERROR_HANDLER_H
+#define R_EXASOL_ERROR_HANDLER_H
 
 #include <functional>
 #include <string>
@@ -18,4 +18,4 @@ namespace exa {
      */
     typedef std::function<void()> tBackgroundOdbcErrorFunction;
 }
-#endif //R_EXASOL_ERRORHANDLER_H
+#endif //R_EXASOL_ERROR_HANDLER_H

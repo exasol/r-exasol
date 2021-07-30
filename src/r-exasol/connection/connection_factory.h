@@ -1,9 +1,9 @@
-#ifndef R_EXASOL_CONNECTIONFACTORY_H
-#define R_EXASOL_CONNECTIONFACTORY_H
+#ifndef R_EXASOL_CONNECTION_FACTORY_H
+#define R_EXASOL_CONNECTION_FACTORY_H
 
-#include  <r-exasol/connection/Reader.h>
-#include  <r-exasol/connection/Writer.h>
-#include  <r-exasol/connection/socket/Socket.h>
+#include  <r-exasol/connection/reader.h>
+#include  <r-exasol/connection/writer.h>
+#include  <r-exasol/connection/socket/socket.h>
 #include <memory>
 
 namespace exa {
@@ -20,4 +20,4 @@ namespace exa {
     };
 }
 
-#endif //R_EXASOL_CONNECTIONFACTORY_H
+#endif //R_EXASOL_CONNECTION_FACTORY_H

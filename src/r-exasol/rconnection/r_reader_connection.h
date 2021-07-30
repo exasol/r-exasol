@@ -1,10 +1,10 @@
-#ifndef R_EXASOL_RREADERCONNECTION_H
-#define R_EXASOL_RREADERCONNECTION_H
+#ifndef R_EXASOL_R_READER_CONNECTION_H
+#define R_EXASOL_R_READER_CONNECTION_H
 
-#include <r-exasol/rconnection/RconnFwd.h>
-#include <r-exasol/rconnection/RConnection.h>
+#include <r-exasol/rconnection/r_conn_fwd.h>
+#include <r-exasol/rconnection/r_connection.h>
 #include <Rdefines.h>
-#include <r-exasol/connection/Reader.h>
+#include <r-exasol/connection/reader.h>
 #include <memory>
 
 namespace exa {
@@ -36,4 +36,4 @@ namespace exa {
     }
 }
 
-#endif //R_EXASOL_RREADERCONNECTION_H
+#endif //R_EXASOL_R_READER_CONNECTION_H

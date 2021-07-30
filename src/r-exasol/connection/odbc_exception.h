@@ -1,5 +1,5 @@
-#ifndef R_EXASOL_ODBCEXCEPTION_H
-#define R_EXASOL_ODBCEXCEPTION_H
+#ifndef R_EXASOL_ODBC_EXCEPTION_H
+#define R_EXASOL_ODBC_EXCEPTION_H
 
 #include <stdexcept>
 
@@ -13,4 +13,4 @@ namespace exa {
 }
 
 
-#endif //R_EXASOL_ODBCEXCEPTION_H
+#endif //R_EXASOL_ODBC_EXCEPTION_H

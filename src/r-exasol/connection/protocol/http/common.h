@@ -1,7 +1,7 @@
 #ifndef R_EXASOL_HTTP_COMMON_H
 #define R_EXASOL_HTTP_COMMON_H
 
-#include <r-exasol/connection/socket/Socket.h>
+#include <r-exasol/connection/socket/socket.h>
 
 namespace exa {
     /**

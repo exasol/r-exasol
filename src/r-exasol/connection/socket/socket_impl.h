@@ -1,7 +1,7 @@
-#ifndef R_EXASOL_SOCKETIMPL_H
-#define R_EXASOL_SOCKETIMPL_H
+#ifndef R_EXASOL_SOCKET_IMPL_H
+#define R_EXASOL_SOCKET_IMPL_H
 
-#include <r-exasol/connection/socket/Socket.h>
+#include <r-exasol/connection/socket/socket.h>
 #include <cstdio>
 #include <cstdint>
 #include <utility>
@@ -51,4 +51,4 @@ namespace exa {
     };
 }
 
-#endif //R_EXASOL_SOCKETIMPL_H
+#endif //R_EXASOL_SOCKET_IMPL_H

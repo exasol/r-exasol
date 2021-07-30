@@ -1,6 +1,6 @@
-#include <r-exasol/connection/socket/SocketImpl.h>
+#include <r-exasol/connection/socket/socket_impl.h>
 
-#include <r-exasol/connection/ConnectionException.h>
+#include <r-exasol/connection/connection_exception.h>
 
 #ifndef _WIN32
 #include <sys/socket.h>

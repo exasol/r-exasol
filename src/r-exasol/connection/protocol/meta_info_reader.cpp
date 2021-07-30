@@ -1,6 +1,6 @@
 #include <string>
-#include <r-exasol/connection/protocol/metaInfoReader.h>
-#include <r-exasol/connection/ConnectionException.h>
+#include <r-exasol/connection/protocol/meta_info_reader.h>
+#include <r-exasol/connection/connection_exception.h>
 #include <sstream>
 
 #ifdef _WIN32

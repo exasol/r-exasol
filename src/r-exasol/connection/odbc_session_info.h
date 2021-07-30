@@ -1,5 +1,5 @@
-#ifndef R_EXASOL_ODBCSESSIONINFO_H
-#define R_EXASOL_ODBCSESSIONINFO_H
+#ifndef R_EXASOL_ODBC_SESSION_INFO_H
+#define R_EXASOL_ODBC_SESSION_INFO_H
 
 #include <memory>
 
@@ -15,4 +15,4 @@ namespace exa {
         virtual std::unique_ptr<OdbcAsyncExecutor> createOdbcAsyncExecutor() const = 0;
     };
 }
-#endif //R_EXASOL_ODBCSESSIONINFO_H
+#endif //R_EXASOL_ODBC_SESSION_INFO_H

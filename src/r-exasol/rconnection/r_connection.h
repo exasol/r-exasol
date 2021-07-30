@@ -1,9 +1,9 @@
-#ifndef R_EXASOL_RCONNECTION_H
-#define R_EXASOL_RCONNECTION_H
+#ifndef R_EXASOL_R_CONNECTION_H
+#define R_EXASOL_R_CONNECTION_H
 
-#include <r-exasol/rconnection/RconnFwd.h>
+#include <r-exasol/rconnection/r_conn_fwd.h>
 #include <Rdefines.h>
-#include <r-exasol/connection/Reader.h>
+#include <r-exasol/connection/reader.h>
 
 namespace exa {
 
@@ -24,4 +24,4 @@ namespace exa {
     }
 }
 
-#endif //R_EXASOL_RCONNECTION_H
+#endif //R_EXASOL_R_CONNECTION_H

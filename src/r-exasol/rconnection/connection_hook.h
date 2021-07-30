@@ -1,5 +1,5 @@
-#ifndef R_EXASOL_CONNECTIONHOOK_H
-#define R_EXASOL_CONNECTIONHOOK_H
+#ifndef R_EXASOL_CONNECTION_HOOK_H
+#define R_EXASOL_CONNECTION_HOOK_H
 
 namespace exa {
     namespace rconnection {
@@ -37,4 +37,4 @@ namespace exa {
         }
     }
 }
-#endif //R_EXASOL_CONNECTIONHOOK_H
+#endif //R_EXASOL_CONNECTION_HOOK_H

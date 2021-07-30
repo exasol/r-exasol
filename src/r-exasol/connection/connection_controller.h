@@ -1,10 +1,10 @@
 #ifndef R_EXASOL_CONNECTION_CONTROLLER_H
 #define R_EXASOL_CONNECTION_CONTROLLER_H
 
-#include <r-exasol/connection/ConnectionFactory.h>
-#include <r-exasol/connection/OdbcAsyncExecutor.h>
-#include <r-exasol/connection/OdbcSessionInfo.h>
-#include <r-exasol/connection/ErrorHandler.h>
+#include <r-exasol/connection/connection_factory.h>
+#include <r-exasol/connection/odbc_async_executor.h>
+#include <r-exasol/connection/odbc_session_info.h>
+#include <r-exasol/connection/error_handler.h>
 #include <memory>
 
 namespace exa {

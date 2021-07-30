@@ -4,7 +4,7 @@ on: [push, pull_request]
 
 jobs:
   build:
-    runs-on: windows-latest
+    runs-on: ${{ matrix.config.os }}
     strategy:
       fail-fast: false
       matrix:
@@ -21,7 +21,6 @@ jobs:
 
       - name: Query dependencies
         run: |
-          install.packages("testthat")
           install.packages("testthat")
           install.packages("devtools", dependencies = TRUE)
           install.packages("remotes")

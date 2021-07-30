@@ -1,10 +1,10 @@
-#ifndef R_EXASOL_ODBCASYNCEXECUTORIMPL_H
-#define R_EXASOL_ODBCASYNCEXECUTORIMPL_H
+#ifndef R_EXASOL_ODBC_ASYNC_EXECUTOR_IMPL_H
+#define R_EXASOL_ODBC_ASYNC_EXECUTOR_IMPL_H
 
-#include <r-exasol/odbc/RODBC.h>
+#include <r-exasol/odbc/r_odbc.h>
 
-#include <r-exasol/connection/OdbcAsyncExecutor.h>
-#include <r-exasol/odbc/OdbcSessionInfoImpl.h>
+#include <r-exasol/connection/odbc_async_executor.h>
+#include <r-exasol/odbc/odbc_session_info_impl.h>
 #include <thread>
 #include <atomic>
 
@@ -59,4 +59,4 @@ namespace exa {
     };
 }
 
-#endif //R_EXASOL_ODBCASYNCEXECUTORIMPL_H
+#endif //R_EXASOL_ODBC_ASYNC_EXECUTOR_IMPL_H

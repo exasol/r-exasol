@@ -1,5 +1,5 @@
-#ifndef R_EXASOL_CONNECTIONCONTEXT_H
-#define R_EXASOL_CONNECTIONCONTEXT_H
+#ifndef R_EXASOL_CONNECTION_CONTEXT_H
+#define R_EXASOL_CONNECTION_CONTEXT_H
 
 #include <Rdefines.h>
 
@@ -9,11 +9,11 @@
 #endif
 
 #include <sql.h>
-#include <r-exasol/odbc/RODBC.h>
+#include <r-exasol/odbc/r_odbc.h>
 #include <memory>
-#include <r-exasol/rconnection/RConnection.h>
-#include <r-exasol/connection/ConnectionController.h>
-#include <r-exasol/connection/ConnectionFactoryImpl.h>
+#include <r-exasol/rconnection/r_connection.h>
+#include <r-exasol/connection/connection_controller.h>
+#include <r-exasol/connection/connection_factory_impl.h>
 
 namespace exa {
 
@@ -39,4 +39,4 @@ namespace exa {
 }
 
 
-#endif //R_EXASOL_CONNECTIONCONTEXT_H
+#endif //R_EXASOL_CONNECTION_CONTEXT_H

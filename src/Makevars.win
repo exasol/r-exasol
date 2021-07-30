@@ -1,6 +1,6 @@
 PKG_LIBS=-lodbc32 -lpthread -lws2_32
 PKG_CPPFLAGS =  -I.
-SOURCES = r-exasol/ConnectionContext.cpp r-exasol/rconnection/RReaderConnection.cpp r-exasol/rconnection/RWriterConnection.cpp r-exasol/connection/socket/SocketImpl.cpp r-exasol/connection/protocol/metaInfoReader.cpp r-exasol/connection/protocol/http/common.cpp r-exasol/connection/protocol/http/writer/HttpChunkWriter.cpp r-exasol/connection/protocol/http/reader/HttpChunkReader.cpp r-exasol/connection/ConnectionController.cpp r-exasol/connection/ConnectionFactoryImpl.cpp r-exasol/odbc/OdbcAsyncExecutorImpl.cpp r-exasol/odbc/OdbcSessionInfoImpl.cpp connection.cpp tests/test-runner.cpp
+SOURCES = r-exasol/connection_context.cpp r-exasol/rconnection/r_reader_connection.cpp r-exasol/rconnection/r_writer_connection.cpp r-exasol/connection/socket/socket_impl.cpp r-exasol/connection/protocol/meta_info_reader.cpp r-exasol/connection/protocol/http/common.cpp r-exasol/connection/protocol/http/writer/http_chunk_writer.cpp r-exasol/connection/protocol/http/reader/http_chunk_reader.cpp r-exasol/connection/connection_controller.cpp r-exasol/connection/connection_factory_impl.cpp r-exasol/odbc/odbc_async_executor_impl.cpp r-exasol/odbc/odbc_session_info_impl.cpp connection.cpp tests/test-runner.cpp
 CXX_STD = CXX14
 OBJECTS = $(SOURCES:.cpp=.o)
 OBJECTS += exasol.o

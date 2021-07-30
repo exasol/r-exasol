@@ -1,4 +1,4 @@
-#include <r-exasol/rconnection/RWriterConnection.h>
+#include <r-exasol/rconnection/r_writer_connection.h>
 
 #include <cstdarg>
 #include <cstdio>
@@ -12,7 +12,7 @@
 #undef class
 #undef private
 
-#include "ConnectionHook.h"
+#include "connection_hook.h"
 
 namespace rcon = exa::rconnection;
 

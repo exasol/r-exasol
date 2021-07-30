@@ -1,9 +1,9 @@
-#ifndef R_EXASOL_HTTPCHUNKWRITER_H
-#define R_EXASOL_HTTPCHUNKWRITER_H
+#ifndef R_EXASOL_HTTP_CHUNK_WRITER_H
+#define R_EXASOL_HTTP_CHUNK_WRITER_H
 
-#include <r-exasol/connection/socket/Socket.h>
-#include <r-exasol/connection/protocol/http/Chunk.h>
-#include <r-exasol/connection/Writer.h>
+#include <r-exasol/connection/socket/socket.h>
+#include <r-exasol/connection/protocol/http/chunk.h>
+#include <r-exasol/connection/writer.h>
 #include <memory>
 
 namespace exa {
@@ -34,4 +34,4 @@ namespace exa {
 }
 
 
-#endif //R_EXASOL_HTTPCHUNKWRITER_H
+#endif //R_EXASOL_HTTP_CHUNK_WRITER_H

@@ -1,7 +1,7 @@
-#include <r-exasol/connection/ConnectionFactoryImpl.h>
-#include <r-exasol/connection/socket/SocketImpl.h>
-#include <r-exasol/connection/protocol/http/reader/HttpChunkReader.h>
-#include <r-exasol/connection/protocol/http/writer/HttpChunkWriter.h>
+#include <r-exasol/connection/connection_factory_impl.h>
+#include <r-exasol/connection/socket/socket_impl.h>
+#include <r-exasol/connection/protocol/http/reader/http_chunk_reader.h>
+#include <r-exasol/connection/protocol/http/writer/http_chunk_writer.h>
 
 std::shared_ptr<exa::Socket> exa::ConnectionFactoryImpl::createSocket() {
     return std::make_shared<exa::SocketImpl>();

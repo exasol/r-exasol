@@ -1,9 +1,9 @@
-#ifndef R_EXASOL_HTTPCHUNKREADER_H
-#define R_EXASOL_HTTPCHUNKREADER_H
+#ifndef R_EXASOL_HTTP_CHUNK_READER_H
+#define R_EXASOL_HTTP_CHUNK_READER_H
 
-#include <r-exasol/connection/socket/Socket.h>
-#include <r-exasol/connection/protocol/http/Chunk.h>
-#include <r-exasol/connection/Reader.h>
+#include <r-exasol/connection/socket/socket.h>
+#include <r-exasol/connection/protocol/http/chunk.h>
+#include <r-exasol/connection/reader.h>
 #include <memory>
 
 namespace exa {
@@ -33,4 +33,4 @@ namespace exa {
     }
 }
 
-#endif //R_EXASOL_HTTPCHUNKREADER_H
+#endif //R_EXASOL_HTTP_CHUNK_READER_H

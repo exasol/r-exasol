@@ -1,7 +1,7 @@
-#ifndef R_EXASOL_METAINFOREADER_H
-#define R_EXASOL_METAINFOREADER_H
+#ifndef R_EXASOL_META_INFO_READER_H
+#define R_EXASOL_META_INFO_READER_H
 
-#include <r-exasol/connection/socket/Socket.h>
+#include <r-exasol/connection/socket/socket.h>
 #include <utility>
 #include <cstdint>
 #include <string>
@@ -13,4 +13,4 @@ namespace exa {
 }
 
 
-#endif //R_EXASOL_METAINFOREADER_H
+#endif //R_EXASOL_META_INFO_READER_H

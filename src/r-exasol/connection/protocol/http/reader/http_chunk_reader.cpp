@@ -1,8 +1,8 @@
-#include <r-exasol/connection/protocol/http/reader/HttpChunkReader.h>
+#include <r-exasol/connection/protocol/http/reader/http_chunk_reader.h>
 #include <cstring>
 #include <r-exasol/connection/protocol/http/common.h>
 #include <iostream>
-#include <r-exasol/connection/ConnectionException.h>
+#include <r-exasol/connection/connection_exception.h>
 #include <utility>
 
 namespace re = exa::reader;

@@ -1,8 +1,8 @@
-#ifndef R_EXASOL_ODBCSESSIONINFOIMPL_H
-#define R_EXASOL_ODBCSESSIONINFOIMPL_H
+#ifndef R_EXASOL_ODBC_SESSION_INFO_IMPL_H
+#define R_EXASOL_ODBC_SESSION_INFO_IMPL_H
 
-#include <r-exasol/connection/OdbcSessionInfo.h>
-#include <r-exasol/odbc/RODBCFwd.h>
+#include <r-exasol/connection/odbc_session_info.h>
+#include <r-exasol/odbc/r_odbc_fwd.h>
 
 #ifdef _WIN32
 #define WIN32_LEAN_AND_MEAN
@@ -33,4 +33,4 @@ namespace exa {
     };
 }
 
-#endif //R_EXASOL_ODBCSESSIONINFOIMPL_H
+#endif //R_EXASOL_ODBC_SESSION_INFO_IMPL_H

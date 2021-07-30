@@ -1,5 +1,5 @@
-#include <r-exasol/odbc/OdbcSessionInfoImpl.h>
-#include <r-exasol/odbc/OdbcAsyncExecutorImpl.h>
+#include <r-exasol/odbc/odbc_session_info_impl.h>
+#include <r-exasol/odbc/odbc_async_executor_impl.h>
 
 exa::OdbcSessionInfoImpl::OdbcSessionInfoImpl(::pRODBCHandle handle, ::SQLCHAR *query)
 : mHandle(handle)

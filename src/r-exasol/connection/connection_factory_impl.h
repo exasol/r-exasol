@@ -1,7 +1,7 @@
-#ifndef R_EXASOL_CONNECTIONFACTORYIMPL_H
-#define R_EXASOL_CONNECTIONFACTORYIMPL_H
+#ifndef R_EXASOL_CONNECTION_FACTORY_IMPL_H
+#define R_EXASOL_CONNECTION_FACTORY_IMPL_H
 
-#include <r-exasol/connection/ConnectionFactory.h>
+#include <r-exasol/connection/connection_factory.h>
 
 namespace exa {
 
@@ -22,4 +22,4 @@ namespace exa {
 }
 
 
-#endif //R_EXASOL_CONNECTIONFACTORYIMPL_H
+#endif //R_EXASOL_CONNECTION_FACTORY_IMPL_H

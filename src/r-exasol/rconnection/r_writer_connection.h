@@ -1,10 +1,10 @@
-#ifndef R_EXASOL_RWRITERCONNECTION_H
-#define R_EXASOL_RWRITERCONNECTION_H
+#ifndef R_EXASOL_R_WRITER_CONNECTION_H
+#define R_EXASOL_R_WRITER_CONNECTION_H
 
-#include <r-exasol/rconnection/RconnFwd.h>
-#include <r-exasol/rconnection/RConnection.h>
+#include <r-exasol/rconnection/r_conn_fwd.h>
+#include <r-exasol/rconnection/r_connection.h>
 #include <Rdefines.h>
-#include <r-exasol/connection/Writer.h>
+#include <r-exasol/connection/writer.h>
 #include <memory>
 
 namespace exa {
@@ -35,4 +35,4 @@ namespace exa {
 }
 
 
-#endif //R_EXASOL_RWRITERCONNECTION_H
+#endif //R_EXASOL_R_WRITER_CONNECTION_H
