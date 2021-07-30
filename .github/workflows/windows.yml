@@ -31,6 +31,8 @@ jobs:
           devtools::install_github("jimhester/lintr")
           devtools::install_github("marcelboldt/DBI")
           devtools::install_github("marcelboldt/DBItest")
+        shell: Rscript {0}
       -name: Build
         run: |
           devtools::install()
+        shell: Rscript {0}
