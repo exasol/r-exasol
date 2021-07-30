@@ -6,4 +6,5 @@ OBJECTS = $(SOURCES:.cpp=.o)
 OBJECTS += exasol.o
 
 all: $(OBJECTS)
-clean: rm -f $(OBJECTS)
+clean:
+	rm -f $(OBJECTS)
