@@ -5,7 +5,6 @@
 #include <r_exasol/connection/protocol/http/writer//http_chunk_writer.h>
 #include <r_exasol/connection/socket/socket_impl.h>
 
-#include <dlfcn.h>
 #include <r_exasol/connection/connection_factory_impl.h>
 #include <r_exasol/connection/connection_controller.h>
 #include <sstream>

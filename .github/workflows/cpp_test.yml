@@ -1,4 +1,4 @@
-name: CI-BuildOnly
+name: CI-cpp
 
 on: [push, pull_request]
 
