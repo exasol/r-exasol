@@ -1,1 +1,1 @@
-tests/test-reader-writer.cpp  tests/test-runner.cpp
+tests/test_reader_writer.cpp  tests/test_runner.cpp

@@ -15,7 +15,7 @@
 #endif
 
 #include <sql.h>
-#include <r-exasol/odbc/r_odbc_fwd.h>
+#include <r_exasol/odbc/r_odbc_fwd.h>
 
 #ifdef __cplusplus
 extern "C" {

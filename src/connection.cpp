@@ -1,5 +1,5 @@
 #include <connection.h>
-#include <r-exasol/connection_context.h>
+#include <r_exasol/connection_context.h>
 
 namespace exa {
     /*
