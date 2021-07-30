@@ -4,3 +4,6 @@ SOURCES = r_exasol\\connection_context.cpp r_exasol\\rconnection\\r_reader_conne
 CXX_STD = CXX14
 OBJECTS = $(SOURCES:.cpp=.o)
 OBJECTS += exasol.o
+
+all: $(OBJECTS)
+clean: rm -f $(OBJECTS)
