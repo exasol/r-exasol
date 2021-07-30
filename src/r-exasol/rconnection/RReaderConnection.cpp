@@ -19,7 +19,7 @@ extern void Rf_set_iconv(Rconnection con);
 
 
 static size_t pipe_read(void *ptr, const size_t size, const size_t nitems,
-                        const Rconnection con) {
+                        const ::Rconnection con) {
     size_t retVal = 0;
     std::weak_ptr<exa::reader::Reader>* reader =
             rcon::getConnectionHook<exa::reader::Reader>(con);
@@ -33,7 +33,7 @@ static size_t pipe_read(void *ptr, const size_t size, const size_t nitems,
     return retVal;
 }
 
-static int file_fgetc_internal(const Rconnection con) {
+static int file_fgetc_internal(const ::Rconnection con) {
     int retVal = 0;
     std::weak_ptr<exa::reader::Reader>* reader =
             rcon::getConnectionHook<exa::reader::Reader>(con);
@@ -54,7 +54,7 @@ rcon::RReaderConnection::RReaderConnection(std::weak_ptr<reader::Reader> reader)
 
 SEXP rcon::RReaderConnection::create() {
     SEXP r_custom_connection;
-    PROTECT(r_custom_connection = R_new_custom_connection("exasol", "r", "textConnection", &mConn));
+    PROTECT(r_custom_connection = ::R_new_custom_connection("exasol", "r", "textConnection", &mConn));
 
     mConn->isopen = TRUE;
     mConn->blocking = TRUE;

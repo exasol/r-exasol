@@ -28,7 +28,7 @@ namespace exa {
          * @throws OdbcException if the statement allocation fails.
          * @param errorHandler Callback function to invoke if an error occurs.
          */
-        void execute(tBackgroundOdbcErrorFunction errorHandler) override;
+        void execute(exa::tBackgroundOdbcErrorFunction errorHandler) override;
 
         /**
          * Indicates if data transfer has finished.
@@ -48,14 +48,14 @@ namespace exa {
          * Executes the @private mStmt in a bg thread. If an error occurs it calls errorHandler.
          * @param errorHandler Callback function to invoke if an error occurs.
          */
-        void asyncRODBCQueryExecuter(tBackgroundOdbcErrorFunction errorHandler);
+        void asyncRODBCQueryExecuter(exa::tBackgroundOdbcErrorFunction errorHandler);
 
     private:
         const OdbcSessionInfoImpl mOdbcSessionInfo;
-        SQLHSTMT mStmt;
+        ::SQLHSTMT mStmt;
         std::atomic_bool mDone{};
         std::thread mThread;
-        SQLRETURN mRes;
+        ::SQLRETURN mRes;
     };
 }
 

@@ -57,7 +57,7 @@ int exa::ConnectionContext::destroyConnection(int closeFd) {
     return wasDone ? 0 : -1;
 }
 
-SEXP exa::ConnectionContext::createReadConnection(pRODBCHandle handle, SQLCHAR *query) {
+SEXP exa::ConnectionContext::createReadConnection(::pRODBCHandle handle, ::SQLCHAR *query) {
     SEXP retVal = nullptr;
     if (mConnectionController) {
         std::weak_ptr<exa::reader::Reader> reader = mConnectionController->startReading(exa::OdbcSessionInfoImpl(handle, query),
@@ -71,7 +71,7 @@ SEXP exa::ConnectionContext::createReadConnection(pRODBCHandle handle, SQLCHAR *
     return retVal;
 }
 
-SEXP exa::ConnectionContext::createWriteConnection(pRODBCHandle handle, SQLCHAR *query) {
+SEXP exa::ConnectionContext::createWriteConnection(::pRODBCHandle handle, ::SQLCHAR *query) {
     SEXP retVal = nullptr;
     if (mConnectionController) {
         std::weak_ptr<exa::writer::Writer> writer = mConnectionController->startWriting(exa::OdbcSessionInfoImpl(handle, query),

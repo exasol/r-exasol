@@ -11,26 +11,26 @@ exa::OdbcAsyncExecutorImpl::OdbcAsyncExecutorImpl(OdbcSessionInfoImpl  odbcSessi
 
 exa::OdbcAsyncExecutorImpl::~OdbcAsyncExecutorImpl() {
     if (mStmt != nullptr) {
-        (void)SQLFreeHandle(SQL_HANDLE_STMT, mStmt);
+        (void)::SQLFreeHandle(SQL_HANDLE_STMT, mStmt);
     }
 }
 
-void exa::OdbcAsyncExecutorImpl::asyncRODBCQueryExecuter(tBackgroundOdbcErrorFunction errorHandler) {
+void exa::OdbcAsyncExecutorImpl::asyncRODBCQueryExecuter(exa::tBackgroundOdbcErrorFunction errorHandler) {
 
-    mRes = SQLExecDirect(mStmt, mOdbcSessionInfo.mQuery, SQL_NTS);
+    mRes = ::SQLExecDirect(mStmt, mOdbcSessionInfo.mQuery, SQL_NTS);
     mDone = true;
     if (mRes != SQL_SUCCESS && mRes != SQL_SUCCESS_WITH_INFO) {
         errorHandler();
     }
 }
 
-void exa::OdbcAsyncExecutorImpl::execute(tBackgroundOdbcErrorFunction errorHandler) {
-    SQLRETURN res = SQLAllocHandle(SQL_HANDLE_STMT, mOdbcSessionInfo.mHandle->hDbc, &mStmt);
+void exa::OdbcAsyncExecutorImpl::execute(exa::tBackgroundOdbcErrorFunction errorHandler) {
+    ::SQLRETURN res = ::SQLAllocHandle(SQL_HANDLE_STMT, mOdbcSessionInfo.mHandle->hDbc, &mStmt);
 
     if (res != SQL_SUCCESS && res != SQL_SUCCESS_WITH_INFO) {
         std::stringstream sError;
         sError << "Could not allocate SQLAllocHandle (" << res << ")";
-        throw OdbcException(sError.str());
+        throw exa::OdbcException(sError.str());
     }
     mDone = false;
     mThread = std::thread(&OdbcAsyncExecutorImpl::asyncRODBCQueryExecuter, this, errorHandler);
@@ -46,10 +46,10 @@ std::string exa::OdbcAsyncExecutorImpl::joinAndCheckResult() {
     }
     std::string errorMsg;
     if (mRes != SQL_SUCCESS && mRes != SQL_SUCCESS_WITH_INFO) {
-        SQLCHAR sqlstate[6], msg[SQL_MAX_MESSAGE_LENGTH];
-        SQLINTEGER NativeError;
-        SQLSMALLINT MsgLen;
-        SQLRETURN res = SQLGetDiagRec(SQL_HANDLE_STMT,
+        ::SQLCHAR sqlstate[6], msg[SQL_MAX_MESSAGE_LENGTH];
+        ::SQLINTEGER NativeError;
+        ::SQLSMALLINT MsgLen;
+        ::SQLRETURN res = ::SQLGetDiagRec(SQL_HANDLE_STMT,
                             mStmt, 1,
                             sqlstate, &NativeError, msg, sizeof(msg),
                             &MsgLen);
@@ -63,5 +63,3 @@ std::string exa::OdbcAsyncExecutorImpl::joinAndCheckResult() {
     }
     return errorMsg;
 }
-
-

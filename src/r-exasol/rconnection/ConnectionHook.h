@@ -10,7 +10,7 @@ namespace exa {
          * @param value The pointer to be stored. Can be null.
          */
         template<typename T>
-        inline void storeConnectionHook(Rconnection con, std::weak_ptr<T>* value) {
+        inline void storeConnectionHook(::Rconnection con, std::weak_ptr<T>* value) {
             //conn->priv allows us to store a private pointer to anything.
             //However, RExt Connections will free this memory if it is not null when cleaning up connection
             //As we want to keep control about when to delete Reader, we allocate memory for one pointer;
@@ -32,7 +32,7 @@ namespace exa {
          * @param con The pointer to the R_ext connection struct.
          */
         template<typename T>
-        inline std::weak_ptr<T>* getConnectionHook(const Rconnection con) {
+        inline std::weak_ptr<T>* getConnectionHook(const ::Rconnection con) {
             return *((std::weak_ptr<T> **) con->priv);
         }
     }

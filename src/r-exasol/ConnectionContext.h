@@ -28,13 +28,13 @@ namespace exa {
         SEXP copyHostName();
         SEXP copyHostPort();
         int destroyConnection(int closeFd);
-        SEXP createReadConnection(pRODBCHandle handle, SQLCHAR *query);
-        SEXP createWriteConnection(pRODBCHandle handle, SQLCHAR *query);
+        SEXP createReadConnection(::pRODBCHandle handle, ::SQLCHAR *query);
+        SEXP createWriteConnection(::pRODBCHandle handle, ::SQLCHAR *query);
 
     private:
-        std::unique_ptr <rconnection::RConnection> mConnection;
-        std::unique_ptr <ConnectionController> mConnectionController;
-        ConnectionFactoryImpl mConnectionFactory;
+        std::unique_ptr <exa::rconnection::RConnection> mConnection;
+        std::unique_ptr <exa::ConnectionController> mConnectionController;
+        exa::ConnectionFactoryImpl mConnectionFactory;
     };
 }
 

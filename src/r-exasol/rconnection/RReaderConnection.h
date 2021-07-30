@@ -14,9 +14,9 @@ namespace exa {
         /**
          * Implements r-reader connection. Serves as a bridge between the network reader(@class exa::reader::Reader) and the R client.
          */
-        class RReaderConnection : public RConnection {
+        class RReaderConnection : public exa::rconnection::RConnection {
         public:
-            explicit RReaderConnection(std::weak_ptr<reader::Reader> reader);
+            explicit RReaderConnection(std::weak_ptr<exa::reader::Reader> reader);
 
             /**
              * Creates the R-connection object(Using R_new_custom_connection). The R- client can use this object
@@ -30,8 +30,8 @@ namespace exa {
             void release() override;
 
         private:
-            std::weak_ptr<reader::Reader> mReader;
-            Rconnection mConn;
+            std::weak_ptr<exa::reader::Reader> mReader;
+            ::Rconnection mConn;
         };
     }
 }

@@ -54,8 +54,8 @@ void exa::SocketImpl::shutdownRdWr() {
 
 void exa::SocketImpl::connect(const char *host, uint16_t port) {
     mConnectionInfo = std::make_pair(std::string(host), port);
-    struct sockaddr_in serv_addr;
-    struct hostent *server;
+    struct ::sockaddr_in serv_addr;
+    struct ::hostent *server;
 
 #ifdef _WIN32
     {
@@ -66,7 +66,7 @@ void exa::SocketImpl::connect(const char *host, uint16_t port) {
     }
 #endif
 
-    mSocket = socket(AF_INET, SOCK_STREAM, 0);
+    mSocket = ::socket(AF_INET, SOCK_STREAM, 0);
     if (mSocket < 0) {
         throw ConnectionException("Could not create socket.");
     }

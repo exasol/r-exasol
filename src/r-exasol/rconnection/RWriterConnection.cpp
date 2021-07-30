@@ -19,16 +19,16 @@ namespace rcon = exa::rconnection;
 extern "C" {
 
 
-extern void Rf_set_iconv(Rconnection con);
-extern int dummy_vfprintf(Rconnection con, const char *format, va_list ap);
+extern void Rf_set_iconv(::Rconnection con);
+extern int dummy_vfprintf(::Rconnection con, const char *format, va_list ap);
 
 
-static int pipe_vfprintf(const Rconnection con, const char *format, va_list ap) {
+static int pipe_vfprintf(const ::Rconnection con, const char *format, va_list ap) {
     return dummy_vfprintf(con, format, ap);
 }
 
 static size_t pipe_write(const void *ptr, size_t size, size_t nitems,
-                         const Rconnection con) {
+                         const ::Rconnection con) {
     size_t  retVal = 0;
     std::weak_ptr<exa::writer::Writer>* writer =
             rcon::getConnectionHook<exa::writer::Writer>(con);
@@ -41,7 +41,7 @@ static size_t pipe_write(const void *ptr, size_t size, size_t nitems,
     return retVal;
 }
 
-static int pipe_fflush(Rconnection con) {
+static int pipe_fflush(::Rconnection con) {
     int retVal = 0;
     std::weak_ptr<exa::writer::Writer>* writer =
             rcon::getConnectionHook<exa::writer::Writer>(con);
@@ -62,7 +62,7 @@ rcon::RWriterConnection::RWriterConnection(std::weak_ptr<writer::Writer> writer)
 
 SEXP rcon::RWriterConnection::create() {
     SEXP r_custom_connection;
-    PROTECT(r_custom_connection = R_new_custom_connection("exasol", "w", "textConnection", &mConn));
+    PROTECT(r_custom_connection = ::R_new_custom_connection("exasol", "w", "textConnection", &mConn));
 
     mConn->isopen = TRUE;
     mConn->blocking = TRUE;

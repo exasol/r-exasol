@@ -15,7 +15,7 @@ namespace exa {
     /**
      * Implementation of the OdbcSessionInfo which stores the ODBCHandle and Query.
      */
-    struct OdbcSessionInfoImpl : public OdbcSessionInfo {
+    struct OdbcSessionInfoImpl : public exa::OdbcSessionInfo {
         OdbcSessionInfoImpl(pRODBCHandle handle, SQLCHAR *query);
         /**
          * Creates an instance of @class OdbcAsyncExecutorImpl.
@@ -25,11 +25,11 @@ namespace exa {
         /**
          * External Odbc handle.
          */
-        pRODBCHandle mHandle;
+        ::pRODBCHandle mHandle;
         /**
          * Query string.
          */
-        SQLCHAR *mQuery;
+        ::SQLCHAR *mQuery;
     };
 }
 

@@ -12,7 +12,7 @@ namespace exa {
         /**
          * Implements r-writer connection. Serves as a bridge between the network writer(@class exa::writer::Writer) and the R client.
          */
-        class RWriterConnection : public RConnection {
+        class RWriterConnection : public exa::rconnection::RConnection {
         public:
             explicit RWriterConnection(std::weak_ptr<writer::Writer> writer);
 
@@ -28,8 +28,8 @@ namespace exa {
             void release() override;
 
         private:
-            std::weak_ptr<writer::Writer> mWriter;
-            Rconnection mConn;
+            std::weak_ptr<exa::writer::Writer> mWriter;
+            ::Rconnection mConn;
         };
     }
 }
