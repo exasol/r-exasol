@@ -32,7 +32,6 @@ def reading_test():
     assert recvmsg == b'HTTP/1.1 200 OK\r\nServer: EXASolution R Package\r\nConnection: close\r\n\r\n'
     p_unit_test.wait()
     clientsocket.shutdown(socket.SHUT_RDWR)
-    serversocket.shutdown(socket.SHUT_RDWR)
     assert p_unit_test.returncode == 0
 
 
@@ -57,7 +56,6 @@ def writing_test():
 
     p_unit_test.wait()
     clientsocket.shutdown(socket.SHUT_RDWR)
-    serversocket.shutdown(socket.SHUT_RDWR)
     assert p_unit_test.returncode == 0
 
 
@@ -128,7 +126,6 @@ def con_controller_read_test():
     assert recvmsg == b'HTTP/1.1 200 OK\r\nServer: EXASolution R Package\r\nConnection: close\r\n\r\n'
     p_unit_test.wait()
     clientsocket.shutdown(socket.SHUT_RDWR)
-    serversocket.shutdown(socket.SHUT_RDWR)
     assert p_unit_test.returncode == 0
 
 def con_controller_read_test_with_error():
@@ -173,7 +170,6 @@ def con_controller_read_test_with_error():
     assert recvmsg == b'HTTP/1.1 200 OK\r\nServer: EXASolution R Package\r\nConnection: close\r\n\r\n'
     p_unit_test.wait()
     newClientsocket.shutdown(socket.SHUT_RDWR)
-    serversocket.shutdown(socket.SHUT_RDWR)
     assert p_unit_test.returncode == 0
 
 
@@ -232,7 +228,6 @@ def con_controller_echo_test():
     p_unit_test.wait()
     clientsocket.close()
     newclientsocket.close()
-    serversocket.close()
     assert p_unit_test.returncode == 0
 
 
