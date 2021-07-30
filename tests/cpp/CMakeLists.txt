@@ -43,10 +43,12 @@ add_executable(r_exasol
 
 if (WIN32)
     set (CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -Wa,-mbig-obj")
+    target_link_libraries(r_exasol PRIVATE Catch2::Catch2 wsock32 ws2_32)
 else()
     set (CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -fno-omit-frame-pointer -fsanitize=address")
     set (CMAKE_LINKER_FLAGS_DEBUG "${CMAKE_LINKER_FLAGS_DEBUG} -fno-omit-frame-pointer -fsanitize=address")
+    target_link_libraries(r_exasol PRIVATE Catch2::Catch2)
 endif()
-target_link_libraries(r_exasol PRIVATE Catch2::Catch2)
+
 set(TEST_EXEC "python3" "${CMAKE_SOURCE_DIR}/python_server_tests.py")
 add_test(NAME r_exasol COMMAND ${TEST_EXEC})
