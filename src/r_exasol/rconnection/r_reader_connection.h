@@ -1,9 +1,9 @@
 #ifndef R_EXASOL_R_READER_CONNECTION_H
 #define R_EXASOL_R_READER_CONNECTION_H
 
-#include <r_exasol/rconnection/r_conn_fwd.h>
+#include <r_exasol/external/r_conn_fwd.h>
+#include <r_exasol/external/r.h>
 #include <r_exasol/rconnection/r_connection.h>
-#include <Rdefines.h>
 #include <r_exasol/connection/reader.h>
 #include <memory>
 

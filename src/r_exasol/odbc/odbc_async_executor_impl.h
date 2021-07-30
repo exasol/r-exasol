@@ -1,7 +1,7 @@
 #ifndef R_EXASOL_ODBC_ASYNC_EXECUTOR_IMPL_H
 #define R_EXASOL_ODBC_ASYNC_EXECUTOR_IMPL_H
 
-#include <r_exasol/odbc/r_odbc.h>
+#include <r_exasol/external/r_odbc.h>
 
 #include <r_exasol/connection/odbc_async_executor.h>
 #include <r_exasol/odbc/odbc_session_info_impl.h>

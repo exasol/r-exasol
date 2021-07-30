@@ -90,7 +90,7 @@ TEST_CASE( "ConnectionControllerImport", "[reader]" ) {
     static bool joinCalled = false;
     class OdbcAsyncExecutorMock : public exa::OdbcAsyncExecutor {
     public:
-        virtual bool execute(exa::tBackgroundOdbcErrorFunction errorHandler) { return true; }
+        virtual void execute(exa::tBackgroundOdbcErrorFunction errorHandler) { }
         virtual bool isDone() {return true;}
         virtual std::string joinAndCheckResult() { joinCalled = true; return std::string(); }
     };
@@ -134,7 +134,7 @@ TEST_CASE( "ConnectionControllerEcho", "[reader/writer]" ) {
     static bool joinCalled = false;
     class OdbcAsyncExecutorMock : public exa::OdbcAsyncExecutor {
     public:
-        virtual bool execute(exa::tBackgroundOdbcErrorFunction errorHandler) { return true; }
+        virtual void execute(exa::tBackgroundOdbcErrorFunction errorHandler) { }
         virtual bool isDone() {return true;}
         virtual std::string joinAndCheckResult() { joinCalled = true; return std::string(); }
     };
@@ -203,7 +203,7 @@ TEST_CASE( "ConnectionControllerImportWithError", "[reader]" ) {
     static bool joinCalled = false;
     class OdbcAsyncExecutorMock : public exa::OdbcAsyncExecutor {
     public:
-        virtual bool execute(exa::tBackgroundOdbcErrorFunction errorHandler) { return true; }
+        virtual void execute(exa::tBackgroundOdbcErrorFunction errorHandler) { }
         virtual bool isDone() {return true;}
         virtual std::string joinAndCheckResult() { joinCalled = true; return std::string(); }
     };

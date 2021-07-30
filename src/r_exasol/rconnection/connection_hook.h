@@ -1,6 +1,9 @@
 #ifndef R_EXASOL_CONNECTION_HOOK_H
 #define R_EXASOL_CONNECTION_HOOK_H
 
+#include <r_exasol/external/r_conn.h>
+#include <memory>
+
 namespace exa {
     namespace rconnection {
         /**

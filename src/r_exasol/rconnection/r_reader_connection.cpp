@@ -1,14 +1,9 @@
 #include <r_exasol/rconnection/r_reader_connection.h>
 #include <r_exasol/connection/reader.h>
+#include <r_exasol/rconnection/connection_hook.h>
+#include <r_exasol/external/r_conn.h>
 #include <utility>
 
-#define class clss //need to hide class as it is reserved in C++, but used as variable name in Connections.h
-#define private priv //need to hide private as it is reserved in C++, but used as variable name in Connections.h
-#include <R_ext/Connections.h>
-#undef class
-#undef private
-
-#include "connection_hook.h"
 
 namespace rcon = exa::rconnection;
 

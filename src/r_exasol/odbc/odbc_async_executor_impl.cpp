@@ -1,7 +1,6 @@
 #include <r_exasol/odbc/odbc_async_executor_impl.h>
 #include <r_exasol/connection/odbc_exception.h>
 
-
 #include <sstream>
 #include <utility>
 

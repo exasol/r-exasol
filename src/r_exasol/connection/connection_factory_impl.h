@@ -5,7 +5,7 @@
 
 namespace exa {
 
-    class Chunk;
+    struct Chunk;
 
     /**
      * Concrete implementation of the connection factory which provides instance creation of sockets, reader and writer.

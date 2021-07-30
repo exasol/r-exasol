@@ -1,15 +1,9 @@
 #ifndef R_EXASOL_CONNECTION_CONTEXT_H
 #define R_EXASOL_CONNECTION_CONTEXT_H
 
-#include <Rdefines.h>
-
-#ifdef _WIN32
-#define WIN32_LEAN_AND_MEAN
-#include <windows.h>
-#endif
-
-#include <sql.h>
-#include <r_exasol/odbc/r_odbc.h>
+#include <r_exasol/external/r.h>
+#include <r_exasol/external/sql.h>
+#include <r_exasol/external/r_odbc_fwd.h>
 #include <memory>
 #include <r_exasol/rconnection/r_connection.h>
 #include <r_exasol/connection/connection_controller.h>
