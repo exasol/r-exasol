@@ -5,7 +5,6 @@
 
 #include <r-exasol/connection/OdbcAsyncExecutor.h>
 #include <r-exasol/odbc/OdbcSessionInfoImpl.h>
-#include <r-exasol/odbc/RODBCFwd.h>
 #include <thread>
 #include <atomic>
 
