@@ -101,8 +101,8 @@ TEST_CASE( "ConnectionControllerImport", "[reader]" ) {
 
     exa::ConnectionFactoryImpl factory;
     exa::ConnectionController connectionController(factory, [](const std::string& error) { std::cout << "ERROR:" << error << std::endl;});
-    const int retVal = connectionController.connect(host, PORT);
-    REQUIRE(retVal == 0);
+    const bool retVal = connectionController.connect(host, PORT);
+    REQUIRE(retVal);
     REQUIRE(connectionController.getHostInfo().first == "Test");
     REQUIRE(connectionController.getHostInfo().second == 4);
     OdbcSessionImpl odbcSessionImpl;
@@ -149,8 +149,8 @@ TEST_CASE( "ConnectionControllerEcho", "[reader/writer]" ) {
         exa::ConnectionController connectionController(factory, [](const std::string &error) {
             std::cout << "ERROR:" << error << std::endl;
         });
-        const int retVal = connectionController.connect(host, PORT);
-        REQUIRE(retVal == 0);
+        const bool retVal = connectionController.connect(host, PORT);
+        REQUIRE(retVal);
         REQUIRE(connectionController.getHostInfo().first == "Test");
         REQUIRE(connectionController.getHostInfo().second == 4);
         OdbcSessionImpl odbcSessionImpl;
@@ -178,8 +178,8 @@ TEST_CASE( "ConnectionControllerEcho", "[reader/writer]" ) {
         exa::ConnectionController connectionController(factory, [](const std::string &error) {
             std::cout << "ERROR:" << error << std::endl;
         });
-        const int retVal = connectionController.connect(host, PORT);
-        REQUIRE(retVal == 0);
+        const bool retVal = connectionController.connect(host, PORT);
+        REQUIRE(retVal);
         REQUIRE(connectionController.getHostInfo().first == "Test");
         REQUIRE(connectionController.getHostInfo().second == 4);
         OdbcSessionImpl odbcSessionImpl;
@@ -218,9 +218,9 @@ TEST_CASE( "ConnectionControllerImportWithError", "[reader]" ) {
         exa::ConnectionController connectionController(factory, [](const std::string &error) {
             std::cout << "ERROR:" << error << std::endl;
         });
-        const int retVal = connectionController.connect(host, PORT);
+        const bool retVal = connectionController.connect(host, PORT);
 
-        REQUIRE(retVal == -1);
+        REQUIRE(!retVal);
         connectionController.shutDown();
     }
     SECTION( "now testing success case" )
@@ -228,8 +228,8 @@ TEST_CASE( "ConnectionControllerImportWithError", "[reader]" ) {
         exa::ConnectionController newConnectionController(factory, [](const std::string &error) {
             std::cout << "ERROR:" << error << std::endl;
         });
-        const int retVal = newConnectionController.connect(host, PORT);
-        REQUIRE(retVal == 0);
+        const bool retVal = newConnectionController.connect(host, PORT);
+        REQUIRE(retVal);
         REQUIRE(newConnectionController.getHostInfo().first == "Test");
         REQUIRE(newConnectionController.getHostInfo().second == 4);
         OdbcSessionImpl odbcSessionImpl;
