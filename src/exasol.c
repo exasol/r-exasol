@@ -98,6 +98,31 @@ typedef struct {
 
 static asyncODBC_t asyncODBC[MAX_RODBC_THREADS];
 
+
+static inline ssize_t recv_with_retry (int __fd, void *__buf, size_t __n, int __flags) {
+    int rc = 0;
+    const int maxNrTrial = 1000;
+#ifdef _WIN32
+    rc = recv(__fd, __buf, __n, __flags);
+#else
+    int idxTry = 0;
+    for (; idxTry < maxNrTrial; idxTry++) {
+
+        rc = recv(__fd, __buf, __n, __flags);
+
+        if (0 == rc && 0 == errno) {
+            usleep(10000); //sleep 10ms = 10000microseconds
+        } else {
+            break;
+        }
+    }
+    if (idxTry >= maxNrTrial) {
+        fprintf(stderr, "Reached max number of trials.\n");
+
+    }
+#endif
+    return rc;
+}
 static inline ssize_t read_next_chunk(asyncODBC_t *t) {
     size_t pos = 0;
     int buflen, rc;
@@ -110,9 +135,11 @@ static inline ssize_t read_next_chunk(asyncODBC_t *t) {
         "Server: EXASolution R Package\r\n"
         "Connection: close\r\n\r\n";
 
+    int numTentatives = 0;
     for (pos = 0; pos < 20; pos++) {
         t->chunk_buf[pos] = t->chunk_buf[pos + 1] = '\0';
-        if ((rc = recv(t->fd, &(t->chunk_buf[pos]), 1, MSG_WAITALL)) < 1) {
+
+        if ((rc = recv_with_retry(t->fd, &(t->chunk_buf[pos]), 1, MSG_WAITALL)) < 1) {
             // fprintf(stderr, "### error (%d)\n", rc);
             goto error;
         }
@@ -143,7 +170,7 @@ static inline ssize_t read_next_chunk(asyncODBC_t *t) {
       goto error;
     }
 
-    buflen = recv(t->fd, t->chunk_buf, buflen + 2, MSG_WAITALL);
+    buflen = recv_with_retry(t->fd, t->chunk_buf, buflen + 2, MSG_WAITALL);
     if (buflen < 3) {
       goto error;
     }
@@ -390,7 +417,7 @@ SEXP asyncRODBCIOStart(SEXP slotA, SEXP hostA, SEXP portA) {
 	errno = 0;
 #endif
 
-	if ((r = recv(t->fd, (void*)&(proxy_answer), sizeof(proxy_answer), MSG_WAITALL)) != sizeof(proxy_answer)) {
+	if ((r = recv_with_retry(t->fd, (void*)&(proxy_answer), sizeof(proxy_answer), MSG_WAITALL)) != sizeof(proxy_answer)) {
 #ifndef _WIN32
 	 // error("Proxy header... - M = %d; x = %d; y = %d", proxy_header.m, proxy_header.x, proxy_header.y);
 	  error("Failed to receive proxy header from %s:%d (%d != %d); errno: %d", inet_ntoa(serv_addr.sin_addr), ntohs(serv_addr.sin_port), r, sizeof(proxy_answer), errno);
@@ -503,7 +530,7 @@ SEXP asyncRODBCQueryStart(SEXP slotA, SEXP chan, SEXP query, SEXP writerA) {
             error("Could not read header, line too long.");
             goto error;
         }
-        len = recv(t->fd, &data, 1, MSG_WAITALL);
+        len = recv_with_retry(t->fd, &data, 1, MSG_WAITALL);
         if (len != 1) {
             error("Could not read header. errno=%d", errno);
             goto error;
