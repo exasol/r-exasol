@@ -45,5 +45,18 @@ When the client invokes ```readData()``` the library reads the server info (host
 Then the librart calls```asyncRODBCQueryStart()``` creates internally a new thread which sends the export statements via ODBC to the server (B1). The server then starts to write the data in CSV format to the formerly created TCP socket. Thus, the client receives the data from the server via the socket (not via ODBC). 
 
 
+### C level structure
+
+The following diagram describes the high level architecture of the C level package.
+![](./images/r-exasol-c_component.png)
+
+R uses the plain C interface, which delegates all call to class ```ConnectionContext```.
+When initiating a new connection, ```ConnectionContext``` instantiates ```ConnectionController```, which opens the socket
+and reads the meta-data.
+After receiving ```asuncRODBCQueryStart```, the ```ConnectionController``` triggers the asynchronous ODBC call (```ODBCAsyncExecutor```) and creates a ```HttpChunkReader``` or ```HttpChunkWriter``` instance, which is returned to the ```ConnectionContext``` class.
+ConnectionContext then create a specific rconnection class: ```RWriterConnection``` or ```RReaderConnection```, and passes the reader/writer obtained from ```ConnectionController``` to it.
+Finally, ```ConnectionContext``` returns the ```SEXP``` instance (which encapsulates the rconnection data structure) to the R client, which can start reading/writing:
+
+
 
 
