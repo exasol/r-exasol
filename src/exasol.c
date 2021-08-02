@@ -101,10 +101,10 @@ static asyncODBC_t asyncODBC[MAX_RODBC_THREADS];
 
 static inline ssize_t recv_with_retry (int __fd, void *__buf, size_t __n, int __flags) {
     int rc = 0;
-    const int maxRetries = 1000;
 #ifdef _WIN32
     rc = recv(__fd, __buf, __n, __flags);
 #else
+    const int maxRetries = 1000;
     int idxTry = 0;
     for (; idxTry < maxRetries; idxTry++) {
 
