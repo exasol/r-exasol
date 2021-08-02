@@ -4,7 +4,6 @@ import subprocess
 import http.server
 
 
-
 def reading_test():
     serversocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     serversocket.bind(("localhost", 5000))
@@ -31,7 +30,10 @@ def reading_test():
 
     assert recvmsg == b'HTTP/1.1 200 OK\r\nServer: EXASolution R Package\r\nConnection: close\r\n\r\n'
     p_unit_test.wait()
-    clientsocket.shutdown(socket.SHUT_RDWR)
+    try:
+        clientsocket.shutdown(socket.SHUT_RDWR)
+    except socket.error:
+        pass # Under MacOS shutdown can throw an exception if the client has closed the socket already
     assert p_unit_test.returncode == 0
 
 
@@ -55,12 +57,14 @@ def writing_test():
     assert data.encode('UTF-8') == recvmsg
 
     p_unit_test.wait()
-    clientsocket.shutdown(socket.SHUT_RDWR)
+    try:
+        clientsocket.shutdown(socket.SHUT_RDWR)
+    except socket.error:
+        pass # Under MacOS shutdown can throw an exception if the client has closed the socket already
     assert p_unit_test.returncode == 0
 
 
 def reading_http_test():
-
     class handler(http.server.BaseHTTPRequestHandler):
         def handle_one_request(self):
             global done
@@ -94,7 +98,6 @@ def reading_http_test():
 
 
 def con_controller_read_test():
-
     serversocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     serversocket.bind(("localhost", 5000))
     # become a server socket
@@ -107,7 +110,7 @@ def con_controller_read_test():
     recvMetaInfoRequest = clientsocket.recv(12)
     b = bytearray(b'\x00\x00\x00\x00\4\0\0\0Test\0\0\0\0\0\0\0\0\0\0\0\0')
     clientsocket.send(b)
-    b = bytearray(b"\r\n") #empty header
+    b = bytearray(b"\r\n")  # empty header
     clientsocket.send(b)
     data = 'CHUNK DATA;' * 20
     b = bytearray(f'{hex(len(data))}\n', 'UTF-8')
@@ -125,12 +128,14 @@ def con_controller_read_test():
 
     assert recvmsg == b'HTTP/1.1 200 OK\r\nServer: EXASolution R Package\r\nConnection: close\r\n\r\n'
     p_unit_test.wait()
-    clientsocket.shutdown(socket.SHUT_RDWR)
+    try:
+        clientsocket.shutdown(socket.SHUT_RDWR)
+    except socket.error:
+        pass # Under MacOS shutdown can throw an exception if the client has closed the socket already
     assert p_unit_test.returncode == 0
 
+
 def con_controller_read_test_with_error():
-
-
     serversocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     serversocket.bind(("localhost", 5000))
     # become a server socket
@@ -142,16 +147,16 @@ def con_controller_read_test_with_error():
 
     recvMetaInfoRequest = clientsocket.recv(12)
 
-    #Simulate connection abort by close socket
+    # Simulate connection abort by close socket
     clientsocket.shutdown(socket.SHUT_RDWR)
 
-    #Next attempt
+    # Next attempt
     (newClientsocket, address) = serversocket.accept()
 
     recvMetaInfoRequest = newClientsocket.recv(12)
     b = bytearray(b'\x00\x00\x00\x00\4\0\0\0Test\0\0\0\0\0\0\0\0\0\0\0\0')
     newClientsocket.send(b)
-    b = bytearray(b"\r\n") #empty header
+    b = bytearray(b"\r\n")  # empty header
     newClientsocket.send(b)
     data = 'CHUNK DATA;' * 20
     b = bytearray(f'{hex(len(data))}\n', 'UTF-8')
@@ -169,12 +174,14 @@ def con_controller_read_test_with_error():
 
     assert recvmsg == b'HTTP/1.1 200 OK\r\nServer: EXASolution R Package\r\nConnection: close\r\n\r\n'
     p_unit_test.wait()
-    newClientsocket.shutdown(socket.SHUT_RDWR)
+    try:
+        clientsocket.shutdown(socket.SHUT_RDWR)
+    except socket.error:
+        pass # Under MacOS shutdown can throw an exception if the client has closed the socket already
     assert p_unit_test.returncode == 0
 
 
 def con_controller_echo_test():
-
     serversocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     serversocket.bind(("localhost", 5000))
     # become a server socket
@@ -187,12 +194,12 @@ def con_controller_echo_test():
     recvMetaInfoRequest = clientsocket.recv(12)
     b = bytearray(b'\x00\x00\x00\x00\4\0\0\0Test\0\0\0\0\0\0\0\0\0\0\0\0')
     clientsocket.send(b)
-    b = bytearray(b"\r\n") #empty header
+    b = bytearray(b"\r\n")  # empty header
     clientsocket.send(b)
     ok_answer = "HTTP/1.1 200 OK\r\n" \
-                "Server: EXASolution R Package\r\n"\
-                "Content-type: application/octet-stream\r\n"\
-                "Content-disposition: attachment; filename=data.csv\r\n"\
+                "Server: EXASolution R Package\r\n" \
+                "Content-type: application/octet-stream\r\n" \
+                "Content-disposition: attachment; filename=data.csv\r\n" \
                 "Connection: close\r\n\r\n"
     header_from_client = clientsocket.recv(len(ok_answer))
     assert header_from_client == ok_answer.encode("UTF-8")
@@ -209,7 +216,7 @@ def con_controller_echo_test():
     recvMetaInfoRequest = newclientsocket.recv(100)
     b = bytearray(b'\x00\x00\x00\x00\4\0\0\0Test\0\0\0\0\0\0\0\0\0\0\0\0')
     newclientsocket.send(b)
-    b = bytearray(b"\r\n") #empty header
+    b = bytearray(b"\r\n")  # empty header
     newclientsocket.send(b)
     data = "Name\na\nb"
     b = bytearray(f'{hex(len(data))}\n', 'UTF-8')
@@ -226,8 +233,11 @@ def con_controller_echo_test():
     recvmsg = newclientsocket.recv(100)
     assert recvmsg == b'HTTP/1.1 200 OK\r\nServer: EXASolution R Package\r\nConnection: close\r\n\r\n'
     p_unit_test.wait()
-    clientsocket.close()
-    newclientsocket.close()
+    try:
+        clientsocket.shutdown(socket.SHUT_RDWR)
+        newclientsocket.close()
+    except socket.error:
+        pass # Under MacOS shutdown can throw an exception if the client has closed the socket already
     assert p_unit_test.returncode == 0
 
 
@@ -238,4 +248,3 @@ if __name__ == "__main__":
     con_controller_read_test()
     con_controller_echo_test()
     con_controller_read_test_with_error()
-

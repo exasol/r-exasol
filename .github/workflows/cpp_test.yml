@@ -3,7 +3,7 @@ name: CI-cpp
 on: [push, pull_request]
 
 jobs:
-  build:
+  check:
     runs-on: ${{ matrix.config.os }}
     strategy:
       fail-fast: false
