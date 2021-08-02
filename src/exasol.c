@@ -135,7 +135,6 @@ static inline ssize_t read_next_chunk(asyncODBC_t *t) {
         "Server: EXASolution R Package\r\n"
         "Connection: close\r\n\r\n";
 
-    int numTentatives = 0;
     for (pos = 0; pos < 20; pos++) {
         t->chunk_buf[pos] = t->chunk_buf[pos + 1] = '\0';
 
