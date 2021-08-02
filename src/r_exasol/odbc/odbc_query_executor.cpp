@@ -1,48 +1,36 @@
-#include <r_exasol/odbc/odbc_async_executor_impl.h>
-#include <r_exasol/connection/odbc_exception.h>
+#include <r_exasol/odbc/odbc_query_executor.h>
+#include <r_exasol/connection/async_executor/async_executor_exception.h>
+#include <r_exasol/connection/error_handler.h>
 
 #include <sstream>
 #include <utility>
 
-exa::OdbcAsyncExecutorImpl::OdbcAsyncExecutorImpl(OdbcSessionInfoImpl  odbcSessionInfo)
+exa::OdbcQueryExecutor::OdbcQueryExecutor(OdbcSessionInfoImpl  odbcSessionInfo)
 : mOdbcSessionInfo(std::move(odbcSessionInfo))
 , mStmt(nullptr) {}
 
-exa::OdbcAsyncExecutorImpl::~OdbcAsyncExecutorImpl() {
+exa::OdbcQueryExecutor::~OdbcQueryExecutor() {
     if (mStmt != nullptr) {
         (void)::SQLFreeHandle(SQL_HANDLE_STMT, mStmt);
     }
 }
 
-void exa::OdbcAsyncExecutorImpl::asyncRODBCQueryExecuter(exa::tBackgroundOdbcErrorFunction errorHandler) {
+bool exa::OdbcQueryExecutor::executeAsyncQuery() {
 
     mRes = ::SQLExecDirect(mStmt, mOdbcSessionInfo.mQuery, SQL_NTS);
-    mDone = true;
-    if (mRes != SQL_SUCCESS && mRes != SQL_SUCCESS_WITH_INFO) {
-        errorHandler();
-    }
+    return (SQL_SUCCESS == mRes || SQL_SUCCESS_WITH_INFO == mRes );
 }
 
-void exa::OdbcAsyncExecutorImpl::execute(exa::tBackgroundOdbcErrorFunction errorHandler) {
+void exa::OdbcQueryExecutor::initializeQueryExecutor() {
     ::SQLRETURN res = ::SQLAllocHandle(SQL_HANDLE_STMT, mOdbcSessionInfo.mHandle->hDbc, &mStmt);
-
     if (res != SQL_SUCCESS && res != SQL_SUCCESS_WITH_INFO) {
         std::stringstream sError;
         sError << "Could not allocate SQLAllocHandle (" << res << ")";
-        throw exa::OdbcException(sError.str());
+        throw exa::AsyncExecutorException(sError.str());
     }
-    mDone = false;
-    mThread = std::thread(&OdbcAsyncExecutorImpl::asyncRODBCQueryExecuter, this, errorHandler);
 }
 
-bool exa::OdbcAsyncExecutorImpl::isDone() {
-    return mDone;
-}
-
-std::string exa::OdbcAsyncExecutorImpl::joinAndCheckResult() {
-    if (mThread.joinable()) {
-        mThread.join();
-    }
+std::string exa::OdbcQueryExecutor::getQueryExecutorResult() {
     std::string errorMsg;
     if (mRes != SQL_SUCCESS && mRes != SQL_SUCCESS_WITH_INFO) {
         ::SQLCHAR sqlstate[6], msg[SQL_MAX_MESSAGE_LENGTH];

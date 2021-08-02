@@ -31,8 +31,8 @@ add_executable(r_exasol
         ../../src/r_exasol/connection/connection_controller.h
         ../../src/r_exasol/connection/socket/socket.h
         ../../src/r_exasol/connection/error_handler.h
-        ../../src/r_exasol/connection/odbc_async_executor.h
-        ../../src/r_exasol/connection/odbc_session_info.h
+        ../../src/r_exasol/connection/async_executor/async_executor.h
+        ../../src/r_exasol/connection/async_executor/async_executor_session_info.h
         ../../src/r_exasol/connection/reader.h
         ../../src/r_exasol/connection/writer.h
         ../../src/r_exasol/connection/connection_factory.h

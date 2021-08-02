@@ -2,8 +2,8 @@
 #define R_EXASOL_CONNECTION_CONTROLLER_H
 
 #include <r_exasol/connection/connection_factory.h>
-#include <r_exasol/connection/odbc_async_executor.h>
-#include <r_exasol/connection/odbc_session_info.h>
+#include <r_exasol/connection/async_executor/async_executor.h>
+#include <r_exasol/connection/async_executor/async_executor_session_info.h>
 #include <r_exasol/connection/error_handler.h>
 #include <memory>
 
@@ -30,18 +30,18 @@ namespace exa {
 
         /**
          * This function triggers the async ODBC statement executor, creates and prepares the reader (for the given protocol).
-         * @param odbcSessionInfo Information about the current Odbc session.
+         * @param sessionInfo Information about the current async execution session.
          * @param protocolType Specific requested protocol.
          * @return Returns reader which can be used for reading user data.
          */
-        std::weak_ptr<reader::Reader> startReading(const OdbcSessionInfo&, ProtocolType);
+        std::weak_ptr<reader::Reader> startReading(const AsyncExecutorSessionInfo&, ProtocolType);
         /**
          * This function triggers the async ODBC statement executor, creates and prepares the writer (for the given protocol).
-         * @param odbcSessionInfo Information about the current Odbc session.
+         * @param sessionInfo Information about the current async execution session.
          * @param protocolType Specific requested protocol.
          * @return Returns reader which can be used for writing user data.
          */
-        std::weak_ptr<writer::Writer> startWriting(const OdbcSessionInfo&,ProtocolType);
+        std::weak_ptr<writer::Writer> startWriting(const AsyncExecutorSessionInfo&,ProtocolType);
 
         void onOdbcError();
         /**
@@ -56,7 +56,7 @@ namespace exa {
         ConnectionFactory & mConnectionFactory;
         std::shared_ptr<reader::Reader> mReader;
         std::shared_ptr<writer::Writer> mWriter;
-        std::shared_ptr<OdbcAsyncExecutor> mOdbcAsyncExecutor;
+        std::unique_ptr<AsyncExecutor> mOdbcAsyncExecutor;
         std::shared_ptr<Socket> mSocket;
         std::pair<std::string, uint16_t > mHostInfo;
         tErrorFunction mErrorHandler;

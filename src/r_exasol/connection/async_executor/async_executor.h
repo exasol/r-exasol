@@ -1,25 +1,25 @@
-#ifndef R_EXASOL_ODBC_ASYNC_EXECUTOR_H
-#define R_EXASOL_ODBC_ASYNC_EXECUTOR_H
+#ifndef R_EXASOL_ASYNC_EXECUTOR_H
+#define R_EXASOL_ASYNC_EXECUTOR_H
 
 #include <r_exasol/connection/error_handler.h>
 
 namespace exa {
     /**
-     * Abstract interface which used by the @class ConnectionController to trigger the asynchronous ODBC statement execution.
+     * Abstract interface which used by the @class ConnectionController to trigger the asynchronous remote statement execution.
      */
-    class OdbcAsyncExecutor {
+    class AsyncExecutor {
     public:
-        virtual ~OdbcAsyncExecutor() = default;
+        virtual ~AsyncExecutor() = default;
         /**
-         * Starts the asynchronous ODBC statement execution. The function returns immediately (before the statement execution has been finished).
+         * Starts the asynchronous remote statement execution. The function returns immediately (before the statement execution has been finished).
          * @param errorHandler Reference to a error callback function which shall be invoked if an error occurs during the asynchronous operation.
          */
-        virtual void execute(tBackgroundOdbcErrorFunction errorHandler) = 0;
+        virtual void execute(tBackgroundAsyncErrorFunction errorHandler) = 0;
         /**
          * Indicates if the asynchronous ODBC statement execution has been finished.
          * @return true if the asynchronous ODBC statement execution has been finished, false otherwise.
          */
-        virtual bool isDone() = 0;
+        virtual bool isDone() const = 0;
 
         /**
          * Blocks until the background execution has been finished, and returns the result.
@@ -28,4 +28,4 @@ namespace exa {
         virtual std::string joinAndCheckResult() = 0;
     };
 }
-#endif //R_EXASOL_ODBC_ASYNC_EXECUTOR_H
+#endif //R_EXASOL_ASYNC_EXECUTOR_H

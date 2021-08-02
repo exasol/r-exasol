@@ -8,9 +8,23 @@
 #include <r_exasol/connection/connection_factory_impl.h>
 #include <r_exasol/connection/connection_controller.h>
 #include <sstream>
+#include <r_exasol/connection/async_executor/async_executor_impl.h>
 
 static const char host[] = "localhost";
 const int PORT = 5000;
+
+struct AsyncExecutorMock {
+    void initializeQueryExecutor() {}
+    std::string getQueryExecutorResult() { return {}; }
+    bool executeAsyncQuery() {}
+};
+
+struct MockSessionImpl : exa::AsyncExecutorSessionInfo {
+    std::unique_ptr<exa::AsyncExecutor> createAsyncExecutor() const override {
+         return std::make_unique< exa::AsyncExecutorImpl<AsyncExecutorMock, MockSessionImpl> >  ();
+    }
+};
+
 
 std::string createTestString() {
     std::ostringstream os;
@@ -91,16 +105,7 @@ TEST_CASE( "ImportHttp", "[reader]" ) {
 
 TEST_CASE( "ConnectionControllerImport", "[reader]" ) {
     static bool joinCalled = false;
-    class OdbcAsyncExecutorMock : public exa::OdbcAsyncExecutor {
-    public:
-        virtual void execute(exa::tBackgroundOdbcErrorFunction errorHandler) { }
-        virtual bool isDone() {return true;}
-        virtual std::string joinAndCheckResult() { joinCalled = true; return std::string(); }
-    };
 
-    struct OdbcSessionImpl : exa::OdbcSessionInfo {
-        std::unique_ptr<exa::OdbcAsyncExecutor> createOdbcAsyncExecutor() const override { return std::make_unique<OdbcAsyncExecutorMock>(); }
-    };
 
     exa::ConnectionFactoryImpl factory;
     exa::ConnectionController connectionController(factory, [](const std::string& error) { std::cout << "ERROR:" << error << std::endl;});
@@ -108,8 +113,8 @@ TEST_CASE( "ConnectionControllerImport", "[reader]" ) {
     REQUIRE(retVal);
     REQUIRE(connectionController.getHostInfo().first == "Test");
     REQUIRE(connectionController.getHostInfo().second == 4);
-    OdbcSessionImpl odbcSessionImpl;
-    std::weak_ptr<exa::reader::Reader> readerWeak = connectionController.startReading(odbcSessionImpl, exa::ProtocolType::http);
+    MockSessionImpl mockSessionImpl;
+    std::weak_ptr<exa::reader::Reader> readerWeak = connectionController.startReading(mockSessionImpl, exa::ProtocolType::http);
 
     REQUIRE(!readerWeak.expired());
     auto reader = readerWeak.lock();
@@ -134,17 +139,6 @@ TEST_CASE( "ConnectionControllerImport", "[reader]" ) {
 }
 
 TEST_CASE( "ConnectionControllerEcho", "[reader/writer]" ) {
-    static bool joinCalled = false;
-    class OdbcAsyncExecutorMock : public exa::OdbcAsyncExecutor {
-    public:
-        virtual void execute(exa::tBackgroundOdbcErrorFunction errorHandler) { }
-        virtual bool isDone() {return true;}
-        virtual std::string joinAndCheckResult() { joinCalled = true; return std::string(); }
-    };
-
-    struct OdbcSessionImpl : exa::OdbcSessionInfo {
-        std::unique_ptr<exa::OdbcAsyncExecutor> createOdbcAsyncExecutor() const override { return std::make_unique<OdbcAsyncExecutorMock>(); }
-    };
 
     exa::ConnectionFactoryImpl factory;
     SECTION( "first testing writing to server" )
@@ -156,8 +150,8 @@ TEST_CASE( "ConnectionControllerEcho", "[reader/writer]" ) {
         REQUIRE(retVal);
         REQUIRE(connectionController.getHostInfo().first == "Test");
         REQUIRE(connectionController.getHostInfo().second == 4);
-        OdbcSessionImpl odbcSessionImpl;
-        std::weak_ptr<exa::writer::Writer> writer_weak = connectionController.startWriting(odbcSessionImpl, exa::ProtocolType::http);
+        MockSessionImpl mockSessionImpl;
+        std::weak_ptr<exa::writer::Writer> writer_weak = connectionController.startWriting(mockSessionImpl, exa::ProtocolType::http);
         REQUIRE(!writer_weak.expired());
         auto writer = writer_weak.lock();
         std::string data = "\"a\"";
@@ -177,7 +171,6 @@ TEST_CASE( "ConnectionControllerEcho", "[reader/writer]" ) {
     }
     SECTION( "now testing reading from server" )
     {
-        joinCalled = false;
         exa::ConnectionController connectionController(factory, [](const std::string &error) {
             std::cout << "ERROR:" << error << std::endl;
         });
@@ -185,9 +178,9 @@ TEST_CASE( "ConnectionControllerEcho", "[reader/writer]" ) {
         REQUIRE(retVal);
         REQUIRE(connectionController.getHostInfo().first == "Test");
         REQUIRE(connectionController.getHostInfo().second == 4);
-        OdbcSessionImpl odbcSessionImpl;
+        MockSessionImpl mockSessionImpl;
         std::weak_ptr<exa::reader::Reader> readerWeak = 
-                connectionController.startReading(odbcSessionImpl, exa::ProtocolType::http);
+                connectionController.startReading(mockSessionImpl, exa::ProtocolType::http);
         REQUIRE(!readerWeak.expired());
         auto reader = readerWeak.lock();
         std::stringstream data;
@@ -203,18 +196,6 @@ TEST_CASE( "ConnectionControllerEcho", "[reader/writer]" ) {
 }
 
 TEST_CASE( "ConnectionControllerImportWithError", "[reader]" ) {
-    static bool joinCalled = false;
-    class OdbcAsyncExecutorMock : public exa::OdbcAsyncExecutor {
-    public:
-        virtual void execute(exa::tBackgroundOdbcErrorFunction errorHandler) { }
-        virtual bool isDone() {return true;}
-        virtual std::string joinAndCheckResult() { joinCalled = true; return std::string(); }
-    };
-
-    struct OdbcSessionImpl : exa::OdbcSessionInfo {
-        std::unique_ptr<exa::OdbcAsyncExecutor> createOdbcAsyncExecutor() const override { return std::make_unique<OdbcAsyncExecutorMock>(); }
-    };
-
     exa::ConnectionFactoryImpl factory;
     SECTION( "testing first error case" )
     {
@@ -235,9 +216,9 @@ TEST_CASE( "ConnectionControllerImportWithError", "[reader]" ) {
         REQUIRE(retVal);
         REQUIRE(newConnectionController.getHostInfo().first == "Test");
         REQUIRE(newConnectionController.getHostInfo().second == 4);
-        OdbcSessionImpl odbcSessionImpl;
+        MockSessionImpl mockSessionImpl;
         std::weak_ptr<exa::reader::Reader> readerWeak = 
-                newConnectionController.startReading(odbcSessionImpl, exa::ProtocolType::http);
+                newConnectionController.startReading(mockSessionImpl, exa::ProtocolType::http);
         REQUIRE(!readerWeak.expired());
 
         auto reader = readerWeak.lock();
@@ -258,7 +239,7 @@ TEST_CASE( "ConnectionControllerImportWithError", "[reader]" ) {
         sizeReceived = reader->pipe_read(buffer.data(), 1, buffer.size());
         REQUIRE(sizeReceived == 0);
         newConnectionController.shutDown();
-        REQUIRE(joinCalled == true);
+
     }
 }
 

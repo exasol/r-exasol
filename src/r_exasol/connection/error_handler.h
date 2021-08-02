@@ -14,8 +14,8 @@ namespace exa {
      */
     typedef std::function<void(std::string)> tErrorFunction;
     /**
-     * Error function which might be called by the asynchronous ODBC statement execution.
+     * Error function which might be called by the asynchronous remote execution.
      */
-    typedef std::function<void()> tBackgroundOdbcErrorFunction;
+    typedef std::function<void()> tBackgroundAsyncErrorFunction;
 }
 #endif //R_EXASOL_ERROR_HANDLER_H
