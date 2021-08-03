@@ -39,7 +39,15 @@ add_executable(r_exasol
         ../../src/r_exasol/connection/socket/socket_impl.h
         ../../src/r_exasol/connection/socket/socket_impl.cpp
         #../../src/exasol.c
-        main.cpp)
+        main.cpp
+        AsyncExecutorMock.cpp
+        AsyncExecutorMock.h
+        AsyncSessionMock.cpp
+        AsyncSessionMock.h
+        SyncExecutorMock.cpp
+        SyncExecutorMock.h
+        SyncSessionMock.cpp
+        SyncSessionMock.h)
 
 if (WIN32)
     set (CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -Wa,-mbig-obj")

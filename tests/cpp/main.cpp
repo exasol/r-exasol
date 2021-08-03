@@ -10,20 +10,11 @@
 #include <sstream>
 #include <r_exasol/connection/async_executor/async_executor_impl.h>
 
+#include "AsyncSessionMock.h"
+#include "SyncSessionMock.h"
+
 static const char host[] = "localhost";
 const int PORT = 5000;
-
-struct AsyncExecutorMock {
-    void initializeQueryExecutor() {}
-    std::string getQueryExecutorResult() { return {}; }
-    bool executeAsyncQuery() {}
-};
-
-struct MockSessionImpl : exa::AsyncExecutorSessionInfo {
-    std::unique_ptr<exa::AsyncExecutor> createAsyncExecutor() const override {
-         return std::make_unique< exa::AsyncExecutorImpl<AsyncExecutorMock, MockSessionImpl> >  ();
-    }
-};
 
 
 std::string createTestString() {
@@ -106,14 +97,13 @@ TEST_CASE( "ImportHttp", "[reader]" ) {
 TEST_CASE( "ConnectionControllerImport", "[reader]" ) {
     static bool joinCalled = false;
 
-
     exa::ConnectionFactoryImpl factory;
     exa::ConnectionController connectionController(factory, [](const std::string& error) { std::cout << "ERROR:" << error << std::endl;});
     const bool retVal = connectionController.connect(host, PORT);
     REQUIRE(retVal);
     REQUIRE(connectionController.getHostInfo().first == "Test");
     REQUIRE(connectionController.getHostInfo().second == 4);
-    MockSessionImpl mockSessionImpl;
+    AsyncSessionMock mockSessionImpl(joinCalled);
     std::weak_ptr<exa::reader::Reader> readerWeak = connectionController.startReading(mockSessionImpl, exa::ProtocolType::http);
 
     REQUIRE(!readerWeak.expired());
@@ -135,7 +125,6 @@ TEST_CASE( "ConnectionControllerImport", "[reader]" ) {
     sizeReceived = reader->pipe_read(buffer.data(), 1, buffer.size());
     REQUIRE(sizeReceived == 0);
     connectionController.shutDown();
-    REQUIRE(joinCalled == true);
 }
 
 TEST_CASE( "ConnectionControllerEcho", "[reader/writer]" ) {
@@ -146,11 +135,13 @@ TEST_CASE( "ConnectionControllerEcho", "[reader/writer]" ) {
         exa::ConnectionController connectionController(factory, [](const std::string &error) {
             std::cout << "ERROR:" << error << std::endl;
         });
+        bool joinCalled(false);
         const bool retVal = connectionController.connect(host, PORT);
+
         REQUIRE(retVal);
         REQUIRE(connectionController.getHostInfo().first == "Test");
         REQUIRE(connectionController.getHostInfo().second == 4);
-        MockSessionImpl mockSessionImpl;
+        AsyncSessionMock mockSessionImpl(joinCalled);
         std::weak_ptr<exa::writer::Writer> writer_weak = connectionController.startWriting(mockSessionImpl, exa::ProtocolType::http);
         REQUIRE(!writer_weak.expired());
         auto writer = writer_weak.lock();
@@ -168,9 +159,11 @@ TEST_CASE( "ConnectionControllerEcho", "[reader/writer]" ) {
         REQUIRE(sizeWritten == data.size());
         writer->pipe_fflush();
         connectionController.shutDown();
+        REQUIRE(joinCalled);
     }
     SECTION( "now testing reading from server" )
     {
+        bool joinCalled(false);
         exa::ConnectionController connectionController(factory, [](const std::string &error) {
             std::cout << "ERROR:" << error << std::endl;
         });
@@ -178,7 +171,7 @@ TEST_CASE( "ConnectionControllerEcho", "[reader/writer]" ) {
         REQUIRE(retVal);
         REQUIRE(connectionController.getHostInfo().first == "Test");
         REQUIRE(connectionController.getHostInfo().second == 4);
-        MockSessionImpl mockSessionImpl;
+        AsyncSessionMock mockSessionImpl(joinCalled);
         std::weak_ptr<exa::reader::Reader> readerWeak = 
                 connectionController.startReading(mockSessionImpl, exa::ProtocolType::http);
         REQUIRE(!readerWeak.expired());
@@ -192,6 +185,7 @@ TEST_CASE( "ConnectionControllerEcho", "[reader/writer]" ) {
 
         REQUIRE(std::string("Name\na\nb") == data.str());
         connectionController.shutDown();
+        REQUIRE(joinCalled);
     }
 }
 
@@ -213,10 +207,11 @@ TEST_CASE( "ConnectionControllerImportWithError", "[reader]" ) {
             std::cout << "ERROR:" << error << std::endl;
         });
         const bool retVal = newConnectionController.connect(host, PORT);
+        bool joinCalled(false);
         REQUIRE(retVal);
         REQUIRE(newConnectionController.getHostInfo().first == "Test");
         REQUIRE(newConnectionController.getHostInfo().second == 4);
-        MockSessionImpl mockSessionImpl;
+        AsyncSessionMock mockSessionImpl(joinCalled);
         std::weak_ptr<exa::reader::Reader> readerWeak = 
                 newConnectionController.startReading(mockSessionImpl, exa::ProtocolType::http);
         REQUIRE(!readerWeak.expired());
@@ -239,6 +234,7 @@ TEST_CASE( "ConnectionControllerImportWithError", "[reader]" ) {
         sizeReceived = reader->pipe_read(buffer.data(), 1, buffer.size());
         REQUIRE(sizeReceived == 0);
         newConnectionController.shutDown();
+        REQUIRE(joinCalled);
 
     }
 }
