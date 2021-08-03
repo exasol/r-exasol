@@ -336,6 +336,7 @@ static void *asyncRODBCQueryExecuter(void *arg) {
     t->res = SQLExecDirect(t->stmt, t->query, SQL_NTS);
     t->done = 1;
     if (t->res != SQL_SUCCESS && t->res != SQL_SUCCESS_WITH_INFO) {
+        fprintf(stderr, "Error executing SQLExecDirect:%d", t->res);
       shutdown(t->fd, SHUT_RDWR);
     }
     return NULL;
