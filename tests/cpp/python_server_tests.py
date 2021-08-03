@@ -242,9 +242,9 @@ def con_controller_echo_test():
 
 
 if __name__ == "__main__":
-    reading_test()
-    writing_test()
-    reading_http_test()
-    con_controller_read_test()
-    con_controller_echo_test()
+    #reading_test()
+    #writing_test()
+    #reading_http_test()
+    #con_controller_read_test()
+    #con_controller_echo_test()
     con_controller_read_test_with_error()
