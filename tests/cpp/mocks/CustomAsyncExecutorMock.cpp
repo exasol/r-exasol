@@ -2,14 +2,16 @@
 #include "CustomAsyncSessionMock.h"
 
 CustomAsyncExecutorMock::CustomAsyncExecutorMock(const CustomAsyncSessionMock & customAsyncSessionMock)
-: asyncFunction(customAsyncSessionMock.asyncFunction) {}
+: asyncFunction(customAsyncSessionMock.asyncFunction)
+, asyncFunctionWasSuccessful(false) {}
 
 bool CustomAsyncExecutorMock::executeAsyncQuery() {
-    return asyncFunction();
+    asyncFunctionWasSuccessful = asyncFunction();
+    return asyncFunctionWasSuccessful;
 }
 
 void CustomAsyncExecutorMock::initializeQueryExecutor() {}
 
 std::string CustomAsyncExecutorMock::getQueryExecutorResult() {
-    return {};
+    return asyncFunctionWasSuccessful ? std::string() : std::string("Async Error");
 }

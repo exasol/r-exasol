@@ -15,6 +15,7 @@ public:
 
 private:
     tAsyncFunction asyncFunction;
+    bool asyncFunctionWasSuccessful;
 };
 
 #endif //R_EXASOL_CUSTOMASYNCEXECUTORMOCK_H
