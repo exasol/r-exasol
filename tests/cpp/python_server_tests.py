@@ -40,6 +40,40 @@ def reading_test():
     assert p_unit_test.returncode == 0
 
 
+def reading_test_big():
+    serversocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    serversocket.bind(("localhost", 5000))
+    # become a server socket
+    serversocket.listen(5)
+
+    p_unit_test = subprocess.Popen(["./r_exasol", "ImportBig"])
+
+    (clientsocket, address) = serversocket.accept()
+
+    for idxChunk in range(1000):
+        data = 'CHUNK DATA;' * 20000
+        b = bytearray(f'{hex(len(data))}\n', 'UTF-8')
+        clientsocket.send(b)
+        d = bytearray(data, 'UTF-8')
+        d.append(0)
+        d.append(0)
+        clientsocket.send(d)
+
+    # Send zer termination
+    b = bytearray(f'{0}\n', 'UTF-8')
+    clientsocket.send(b)
+
+    recvmsg = clientsocket.recv(100)
+
+    assert recvmsg == b'HTTP/1.1 200 OK\r\nServer: EXASolution R Package\r\nConnection: close\r\n\r\n'
+    p_unit_test.wait()
+    try:
+        clientsocket.shutdown(socket.SHUT_RDWR)
+    except socket.error:
+        pass # Under MacOS shutdown can throw an exception if the client has closed the socket already
+    assert p_unit_test.returncode == 0
+
+
 def writing_test():
     serversocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     serversocket.bind(("localhost", 5000))
@@ -405,13 +439,14 @@ def writing_async_test_abort():
 
 
 if __name__ == "__main__":
-    reading_test()
-    writing_test()
-    reading_http_test()
-    con_controller_read_test()
-    con_controller_echo_test()
-    reading_async_test()
-    reading_async_test_abort()
-    writing_async_test()
-    writing_async_test_abort()
-    con_controller_read_test_with_error()
+    #reading_test()
+    #writing_test()
+    reading_test_big()
+    #reading_http_test()
+    #con_controller_read_test()
+    #con_controller_echo_test()
+    #reading_async_test()
+    #reading_async_test_abort()
+    #writing_async_test()
+    #writing_async_test_abort()
+    #con_controller_read_test_with_error()

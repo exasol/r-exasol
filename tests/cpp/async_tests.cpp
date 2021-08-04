@@ -101,7 +101,8 @@ TEST_CASE( "ReaderCloseConnectionAbort", "[async]" ) {
 }
 
 /**
- * In case of writer test, the client (we) closes the connection. We assume here that the server behaves correctly (here the Python server sends us the command via stdin)
+ * In case of writer test, the client (we) closes the connection.
+ * We assume here that the server behaves correctly (here the Python server sends us the command via stdin)
  */
 TEST_CASE( "WriterCloseConnection", "[async]" ) {
 

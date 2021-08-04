@@ -10,6 +10,11 @@
 #include "mocks/AsyncSessionMock.h"
 
 
+/**
+ * Purpose of this test is to verify behavior of HttpChunkReader:
+ * 1. Testing reading of the HttpHeader
+ * 2. Testing correct reading of the Http payload (chunk), by comparing content (@see test_utils::createTestString())
+ */
 TEST_CASE( "ImportHttp", "[connection]" ) {
     std::shared_ptr<exa::Socket> socket = std::make_shared<exa::SocketImpl>();
     socket->connect(test_utils::host, test_utils::PORT);
@@ -36,11 +41,22 @@ TEST_CASE( "ImportHttp", "[connection]" ) {
 }
 
 
+/**
+ * Purpose of this test is to verify behavior of ConnectionController:
+ * 1. Test correct reading of the metadata (remote host + port)
+ * 2. Creation of reader object
+ * 3. Testing reading of the HttpHeader
+ * 4. Testing correct reading of the Http payload (chunk), by comparing content (@see test_utils::createTestString())
+ * 5. Correct behavior of the asynchronous executor during shutdown (calling join on std::thread()).
+ */
 TEST_CASE( "ConnectionControllerImport", "[connection]" ) {
-    static bool joinCalled = false;
-
+    bool errorCalled = false;
+    bool joinCalled = false;
     exa::ConnectionFactoryImpl factory;
-    exa::ConnectionController connectionController(factory, [](const std::string& error) { std::cout << "ERROR:" << error << std::endl;});
+    exa::ConnectionController connectionController(factory, [&errorCalled](const std::string& error) {
+        std::cout << "ERROR:" << error << std::endl;
+        errorCalled = true;
+    });
     const bool retVal = connectionController.connect(test_utils::host, test_utils::PORT);
     REQUIRE(retVal);
     REQUIRE(connectionController.getHostInfo().first == "Test");
@@ -67,15 +83,24 @@ TEST_CASE( "ConnectionControllerImport", "[connection]" ) {
     sizeReceived = reader->pipe_read(buffer.data(), 1, buffer.size());
     REQUIRE(sizeReceived == 0);
     connectionController.shutDown();
+    REQUIRE(!errorCalled);
 }
 
+/**
+ * Purpose of this test is to verify if we can successful read data after writing to server,
+ * with other words we test if no garbage remains in memory after one cycle, and that we can instatiate a clean
+ * reaer object after we used a writer object.
+ *
+ */
 TEST_CASE( "ConnectionControllerEcho", "[connection]" ) {
 
     exa::ConnectionFactoryImpl factory;
     SECTION( "first testing writing to server" )
     {
-        exa::ConnectionController connectionController(factory, [](const std::string &error) {
+        bool errorCalled = false;
+        exa::ConnectionController connectionController(factory, [&errorCalled](const std::string &error) {
             std::cout << "ERROR:" << error << std::endl;
+            errorCalled = true;
         });
         bool joinCalled(false);
         const bool retVal = connectionController.connect(test_utils::host, test_utils::PORT);
@@ -102,12 +127,15 @@ TEST_CASE( "ConnectionControllerEcho", "[connection]" ) {
         writer->pipe_fflush();
         connectionController.shutDown();
         REQUIRE(joinCalled);
+        REQUIRE(!errorCalled);
     }
     SECTION( "now testing reading from server" )
     {
+        bool errorCalled = false;
         bool joinCalled(false);
-        exa::ConnectionController connectionController(factory, [](const std::string &error) {
+        exa::ConnectionController connectionController(factory, [&errorCalled](const std::string &error) {
             std::cout << "ERROR:" << error << std::endl;
+            errorCalled = true;
         });
         const bool retVal = connectionController.connect(test_utils::host, test_utils::PORT);
         REQUIRE(retVal);
@@ -128,25 +156,37 @@ TEST_CASE( "ConnectionControllerEcho", "[connection]" ) {
         REQUIRE(std::string("Name\na\nb") == data.str());
         connectionController.shutDown();
         REQUIRE(joinCalled);
+        REQUIRE(!errorCalled);
     }
 }
 
+/**
+ * Purpose of this test is to simulate an error during import.
+ * The server (python program) aborts the connections after receiving metadata.
+ * We check that the controller correctly returns "false" in this case.
+ * In the second step we verify that another attempts of running the import works correctly.
+ */
 TEST_CASE( "ConnectionControllerImportWithError", "[connection]" ) {
     exa::ConnectionFactoryImpl factory;
     SECTION( "testing first error case" )
     {
-        exa::ConnectionController connectionController(factory, [](const std::string &error) {
+        bool errorCalled = false;
+        exa::ConnectionController connectionController(factory, [&errorCalled](const std::string &error) {
             std::cout << "ERROR:" << error << std::endl;
+            errorCalled = true;
         });
         const bool retVal = connectionController.connect(test_utils::host, test_utils::PORT);
 
         REQUIRE(!retVal);
+        REQUIRE(errorCalled);
         connectionController.shutDown();
     }
     SECTION( "now testing success case" )
     {
-        exa::ConnectionController newConnectionController(factory, [](const std::string &error) {
+        bool errorCalled = false;
+        exa::ConnectionController newConnectionController(factory, [&errorCalled](const std::string &error) {
             std::cout << "ERROR:" << error << std::endl;
+            errorCalled = true;
         });
         const bool retVal = newConnectionController.connect(test_utils::host, test_utils::PORT);
         bool joinCalled(false);
@@ -177,5 +217,6 @@ TEST_CASE( "ConnectionControllerImportWithError", "[connection]" ) {
         REQUIRE(sizeReceived == 0);
         newConnectionController.shutDown();
         REQUIRE(joinCalled);
+        REQUIRE(!errorCalled);
     }
 }

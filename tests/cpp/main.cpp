@@ -13,7 +13,10 @@
 #include "test_utils.h"
 
 
-
+/**
+ * Because of asynchronous behavior, we wait one second before starting test, to give server (Python program)
+ * time to prepare server socket.
+ */
 struct MyListener : Catch::TestEventListenerBase {
 
     using TestEventListenerBase::TestEventListenerBase; // inherit constructor
