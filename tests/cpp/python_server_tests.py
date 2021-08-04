@@ -276,8 +276,6 @@ def reading_async_test():
 
     assert recvmsg == b'HTTP/1.1 200 OK\r\nServer: EXASolution R Package\r\nConnection: close\r\n\r\n'
     result = p_unit_test.communicate(input=b'FINISHED')[0]
-    time.sleep(0.1)
-    clientsocket.send(b'blabla')
     p_unit_test.wait()
     try:
         clientsocket.shutdown(socket.SHUT_RDWR)
