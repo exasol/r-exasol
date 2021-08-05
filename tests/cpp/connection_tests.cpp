@@ -19,22 +19,36 @@ TEST_CASE( "ImportHttp", "[connection]" ) {
     std::shared_ptr<exa::Socket> socket = std::make_shared<exa::SocketImpl>();
     socket->connect(test_utils::host, test_utils::PORT);
     exa::Chunk chunk{};
+
+    //Create reader instance
     std::unique_ptr<exa::reader::HttpChunkReader> reader = std::make_unique<exa::reader::HttpChunkReader>(socket, chunk);
+
+    //This will read the Http Header.
     reader->start();
+
+    //Create test data
     std::vector<char> buffer(100);
-    std::string testString = test_utils::createTestString();
+    std::string testString = test_utils::createTestString(); //returns 220 bytes of test data
+
+    //Read first 100 bytes of data from remote (Python program) and compare content
     size_t sizeReceived = reader->pipe_read(buffer.data(), 1, buffer.size());
     REQUIRE(sizeReceived == buffer.size());
     std::string strRep(buffer.data(), buffer.size());
     REQUIRE(testString.substr(0, 100) == strRep);
+
+    //Read next 100 bytes and compare content
     sizeReceived = reader->pipe_read(buffer.data(), 1, buffer.size());
     REQUIRE(sizeReceived == buffer.size());
     strRep = std::string(buffer.data(), buffer.size());
     REQUIRE(testString.substr(100, 100) == strRep);
+
+    //Read last 20 bytes and compare content
     sizeReceived = reader->pipe_read(buffer.data(), 1, 20);
     REQUIRE(sizeReceived == 20);
     strRep = std::string(buffer.data(), 20);
     REQUIRE(testString.substr(200, 20) == strRep);
+
+    //Read terminating 0
     sizeReceived = reader->pipe_read(buffer.data(), 1, buffer.size());
     REQUIRE(sizeReceived == 0);
     socket->shutdownRdWr();
@@ -53,36 +67,59 @@ TEST_CASE( "ConnectionControllerImport", "[connection]" ) {
     bool errorCalled = false;
     bool joinCalled = false;
     exa::ConnectionFactoryImpl factory;
+    //Instantiate controller and declare error callback as a lambda.
     exa::ConnectionController connectionController(factory, [&errorCalled](const std::string& error) {
         std::cout << "ERROR:" << error << std::endl;
         errorCalled = true;
     });
+
+    //Connection to remote (Python program) and read meta data (hostname = Test, port number = 4)
     const bool retVal = connectionController.connect(test_utils::host, test_utils::PORT);
     REQUIRE(retVal);
     REQUIRE(connectionController.getHostInfo().first == "Test");
     REQUIRE(connectionController.getHostInfo().second == 4);
-    AsyncSessionMock mockSessionImpl(joinCalled);
-    std::weak_ptr<exa::reader::Reader> readerWeak = connectionController.startReading(mockSessionImpl, exa::ProtocolType::http);
 
+    //Create our async mock which uses the std::thread implementation.
+    //This implementation does nothing in the background and returns immediately.
+    //When join is called, it sets the given parameter (@param joinCalled).
+    AsyncSessionMock mockSessionImpl(joinCalled);
+
+    //Create reader
+    std::weak_ptr<exa::reader::Reader> readerWeak =
+            connectionController.startReading(mockSessionImpl, exa::ProtocolType::http);
     REQUIRE(!readerWeak.expired());
     auto reader = readerWeak.lock();
+
+    //Create test data
     std::vector<char> buffer(100);
-    std::string testString = test_utils::createTestString();
+    std::string testString = test_utils::createTestString(); //returns 220 bytes of test data
+
+    //Read first 100 bytes of data from remote (Python program) and compare content
     size_t sizeReceived = reader->pipe_read(buffer.data(), 1, buffer.size());
     REQUIRE(sizeReceived == buffer.size());
     std::string strRep(buffer.data(), buffer.size());
     REQUIRE(testString.substr(0, 100) == strRep);
+
+    //Read next 100 bytes and compare content
     sizeReceived = reader->pipe_read(buffer.data(), 1, buffer.size());
     REQUIRE(sizeReceived == buffer.size());
     strRep = std::string(buffer.data(), buffer.size());
     REQUIRE(testString.substr(100, 100) == strRep);
+
+    //Read last 20 bytes and compare content
     sizeReceived = reader->pipe_read(buffer.data(), 1, 20);
     REQUIRE(sizeReceived == 20);
     strRep = std::string(buffer.data(), 20);
     REQUIRE(testString.substr(200, 20) == strRep);
+
+    //Read terminating 0
     sizeReceived = reader->pipe_read(buffer.data(), 1, buffer.size());
     REQUIRE(sizeReceived == 0);
+
+    //Shutdown connection controller.
     connectionController.shutDown();
+
+    //No error is supposed to happen in this test
     REQUIRE(!errorCalled);
 }
 
@@ -98,20 +135,32 @@ TEST_CASE( "ConnectionControllerEcho", "[connection]" ) {
     SECTION( "first testing writing to server" )
     {
         bool errorCalled = false;
+        //Instantiate controller and declare error callback as a lambda.
         exa::ConnectionController connectionController(factory, [&errorCalled](const std::string &error) {
             std::cout << "ERROR:" << error << std::endl;
             errorCalled = true;
         });
         bool joinCalled(false);
+        //Connection to remote (Python program) and read meta data (hostname = Test, port number = 4)
         const bool retVal = connectionController.connect(test_utils::host, test_utils::PORT);
-
         REQUIRE(retVal);
         REQUIRE(connectionController.getHostInfo().first == "Test");
         REQUIRE(connectionController.getHostInfo().second == 4);
+
+        //Create our async mock which uses the std::thread implementation.
+        //This implementation does nothing in the background and returns immediately.
+        //When join is called, it sets the given parameter (@param joinCalled).
         AsyncSessionMock mockSessionImpl(joinCalled);
-        std::weak_ptr<exa::writer::Writer> writer_weak = connectionController.startWriting(mockSessionImpl, exa::ProtocolType::http);
+
+        //create writer
+        std::weak_ptr<exa::writer::Writer> writer_weak =
+                connectionController.startWriting(mockSessionImpl, exa::ProtocolType::http);
         REQUIRE(!writer_weak.expired());
         auto writer = writer_weak.lock();
+
+        //Write 2 lines of test data:
+        // "a"
+        // "b"
         std::string data = "\"a\"";
         size_t sizeWritten = writer->pipe_write(&(data[0]), 1, data.size());
         REQUIRE(sizeWritten == data.size());
@@ -125,27 +174,42 @@ TEST_CASE( "ConnectionControllerEcho", "[connection]" ) {
         sizeWritten = writer->pipe_write(&(data[0]), 1, data.size());
         REQUIRE(sizeWritten == data.size());
         writer->pipe_fflush();
+
+        //shutdown controller
         connectionController.shutDown();
+
+        //shutdown controller must have called join to the background thread
         REQUIRE(joinCalled);
+
+        //No error is supposed to happen in this test
         REQUIRE(!errorCalled);
     }
     SECTION( "now testing reading from server" )
     {
         bool errorCalled = false;
         bool joinCalled(false);
+        //Instantiate controller and declare error callback as a lambda.
         exa::ConnectionController connectionController(factory, [&errorCalled](const std::string &error) {
             std::cout << "ERROR:" << error << std::endl;
             errorCalled = true;
         });
+
+        //Connection to remote (Python program) and read meta data (hostname = Test, port number = 4)
         const bool retVal = connectionController.connect(test_utils::host, test_utils::PORT);
         REQUIRE(retVal);
         REQUIRE(connectionController.getHostInfo().first == "Test");
         REQUIRE(connectionController.getHostInfo().second == 4);
+
+        //Create our async mock which uses the std::thread implementation.
+        //This implementation does nothing in the background and returns immediately.
+        //When join is called, it sets the given parameter (@param joinCalled).
         AsyncSessionMock mockSessionImpl(joinCalled);
         std::weak_ptr<exa::reader::Reader> readerWeak =
                 connectionController.startReading(mockSessionImpl, exa::ProtocolType::http);
         REQUIRE(!readerWeak.expired());
         auto reader = readerWeak.lock();
+
+        //Read back the data from the server (python program) which have been sent in the first step
         std::stringstream data;
         do {
             const int c = reader->fgetc();
@@ -153,9 +217,16 @@ TEST_CASE( "ConnectionControllerEcho", "[connection]" ) {
             data << static_cast<char>(c);
         } while (true);
 
+        //Compare imported content with oiginal sent content
         REQUIRE(std::string("Name\na\nb") == data.str());
+
+        //Shutdown controller
         connectionController.shutDown();
+
+        //Check that connection controller joined the background thread.
         REQUIRE(joinCalled);
+
+        //No error is supposed to happen in this test.
         REQUIRE(!errorCalled);
     }
 }
@@ -171,52 +242,84 @@ TEST_CASE( "ConnectionControllerImportWithError", "[connection]" ) {
     SECTION( "testing first error case" )
     {
         bool errorCalled = false;
+        //Instantiate controller and declare error callback as a lambda.
         exa::ConnectionController connectionController(factory, [&errorCalled](const std::string &error) {
             std::cout << "ERROR:" << error << std::endl;
             errorCalled = true;
         });
-        const bool retVal = connectionController.connect(test_utils::host, test_utils::PORT);
 
+        //Connection to remote (Python program) and try to read meta data (hostname = Test, port number = 4)
+        const bool retVal = connectionController.connect(test_utils::host, test_utils::PORT);
+        //Server aborted connection before sending meta data.
         REQUIRE(!retVal);
+
+        //Error callback must have been called.
         REQUIRE(errorCalled);
+
+        //Shutdown connection controller
         connectionController.shutDown();
     }
     SECTION( "now testing success case" )
     {
         bool errorCalled = false;
+        //Instantiate controller and declare error callback as a lambda.
         exa::ConnectionController newConnectionController(factory, [&errorCalled](const std::string &error) {
             std::cout << "ERROR:" << error << std::endl;
             errorCalled = true;
         });
+
+        //Connection to remote (Python program) and try to read meta data (hostname = Test, port number = 4)
         const bool retVal = newConnectionController.connect(test_utils::host, test_utils::PORT);
         bool joinCalled(false);
         REQUIRE(retVal);
         REQUIRE(newConnectionController.getHostInfo().first == "Test");
         REQUIRE(newConnectionController.getHostInfo().second == 4);
+
+
+        //Create our async mock which uses the std::thread implementation.
+        //This implementation does nothing in the background and returns immediately.
+        //When join is called, it sets the given parameter (@param joinCalled).
         AsyncSessionMock mockSessionImpl(joinCalled);
+
+        //Create reader
         std::weak_ptr<exa::reader::Reader> readerWeak =
                 newConnectionController.startReading(mockSessionImpl, exa::ProtocolType::http);
         REQUIRE(!readerWeak.expired());
-
         auto reader = readerWeak.lock();
+
+        //Create test data
         std::vector<char> buffer(100);
-        std::string testString = test_utils::createTestString();
+        std::string testString = test_utils::createTestString(); //returns 220 bytes of test data
+
+        //Read first 100 bytes of data from remote (Python program) and compare content
         size_t sizeReceived = reader->pipe_read(buffer.data(), 1, buffer.size());
         REQUIRE(sizeReceived == buffer.size());
         std::string strRep(buffer.data(), buffer.size());
         REQUIRE(testString.substr(0, 100) == strRep);
+
+        //Read next 100 bytes and compare content
         sizeReceived = reader->pipe_read(buffer.data(), 1, buffer.size());
         REQUIRE(sizeReceived == buffer.size());
         strRep = std::string(buffer.data(), buffer.size());
         REQUIRE(testString.substr(100, 100) == strRep);
+
+        //Read last 20 bytes and compare content
         sizeReceived = reader->pipe_read(buffer.data(), 1, 20);
         REQUIRE(sizeReceived == 20);
         strRep = std::string(buffer.data(), 20);
         REQUIRE(testString.substr(200, 20) == strRep);
+
+        //Read terminating 0
         sizeReceived = reader->pipe_read(buffer.data(), 1, buffer.size());
         REQUIRE(sizeReceived == 0);
+
+        //Shutdown connection controller
         newConnectionController.shutDown();
+
+        //Assume that connection controller joined background thread.
         REQUIRE(joinCalled);
+
+        //No error is supposed to happen in this part of the test
         REQUIRE(!errorCalled);
     }
 }

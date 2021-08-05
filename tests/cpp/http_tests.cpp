@@ -9,31 +9,36 @@
 #include "test_utils.h"
 
 /**
- * Import small test data and read buffer-wise from server.
+ * Import small test data and read character by character from server.
  * This test also will compare content received from server.
  */
 TEST_CASE( "Import", "[http]" ) {
     std::shared_ptr<exa::Socket> socket = std::make_shared<exa::SocketImpl>();
+
+    //Connect to remote (Python program)
     socket->connect(test_utils::host, test_utils::PORT);
     exa::Chunk chunk{};
-    std::unique_ptr<exa::reader::HttpChunkReader> reader = std::make_unique<exa::reader::HttpChunkReader>(socket, chunk);
-    std::vector<char> buffer(100);
-    std::string testString = test_utils::createTestString();
-    size_t sizeReceived = reader->pipe_read(buffer.data(), 1, buffer.size());
-    REQUIRE(sizeReceived == buffer.size());
-    std::string strRep(buffer.data(), buffer.size());
-    REQUIRE(testString.substr(0, 100) == strRep);
-    sizeReceived = reader->pipe_read(buffer.data(), 1, buffer.size());
-    REQUIRE(sizeReceived == buffer.size());
-    strRep = std::string(buffer.data(), buffer.size());
-    REQUIRE(testString.substr(100, 100) == strRep);
-    sizeReceived = reader->pipe_read(buffer.data(), 1, 20);
-    REQUIRE(sizeReceived == 20);
-    strRep = std::string(buffer.data(), 20);
-    REQUIRE(testString.substr(200, 20) == strRep);
 
-    sizeReceived = reader->pipe_read(buffer.data(), 1, buffer.size());
-    REQUIRE(sizeReceived == 0);
+    //Create reader
+    std::unique_ptr<exa::reader::HttpChunkReader> reader = std::make_unique<exa::reader::HttpChunkReader>(socket, chunk);
+
+    //Create test data
+    std::vector<char> buffer(220);
+    std::string testString = test_utils::createTestString(); //returns 220 bytes of test data
+    size_t sizeReceived = 0;
+    int c = -1;
+    do {
+        c = reader->fgetc();
+        if (c >= 0) {
+            REQUIRE(sizeReceived < buffer.size());
+            buffer[sizeReceived] = static_cast<char>(c);
+            sizeReceived++;
+        }
+    } while (c >= 0);
+
+    //Compare what we received.....
+    REQUIRE(buffer.size() == sizeReceived);
+    REQUIRE(::memcmp(buffer.data(), testString.c_str(), buffer.size()) == 0);
     socket->shutdownRdWr();
 }
 
@@ -45,13 +50,21 @@ TEST_CASE( "Export", "[http]" ) {
     std::shared_ptr<exa::Socket> socket = std::make_shared<exa::SocketImpl>();
     socket->connect(test_utils::host, test_utils::PORT);
     exa::Chunk chunk{};
+
+    //Create writer
     std::unique_ptr<exa::writer::HttpChunkWriter> writer = std::make_unique<exa::writer::HttpChunkWriter>(socket, chunk);
-    std::string testString = test_utils::createTestString();
+    std::string testString = test_utils::createTestString(); //returns 220 bytes of test data
+
+    //Write first 100 bytes to server
     const int bufferSize = 100;
     size_t sizeWritten = writer->pipe_write(&(testString[0]), 1, bufferSize);
     REQUIRE(sizeWritten == bufferSize);
+
+    //Write next 100 bytes to server
     sizeWritten = writer->pipe_write(&(testString[bufferSize]), 1, bufferSize);
     REQUIRE(sizeWritten == bufferSize);
+
+    //Write last 20 bytes to server
     sizeWritten = writer->pipe_write(&(testString[2*bufferSize]), 1, 20);
     REQUIRE(sizeWritten == 20);
     writer->pipe_fflush();
@@ -70,10 +83,8 @@ TEST_CASE( "ImportBig", "[http]" ) {
     socket->connect(test_utils::host, test_utils::PORT);
     exa::Chunk chunk{};
     std::unique_ptr<exa::reader::HttpChunkReader> reader = std::make_unique<exa::reader::HttpChunkReader>(socket, chunk);
-    std::vector<char> buffer(100);
-    std::string testString = test_utils::createTestString();
     int charReceived = 0;
-    int idxChunk = 0;
+    //Read from remote until we receive a -1
     do {
         charReceived = reader->fgetc();
     } while(charReceived >= 0);
