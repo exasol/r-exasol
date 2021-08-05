@@ -56,7 +56,7 @@ exa.writeData <- function(channel, data, tableName, tableColumns = NA,
   }
   slot <- 0
 
-  try(.Call(C_asyncRODBCQueryFinish, 1))
+  try(.Call(C_asyncRODBCQueryFinish, 0))
 
   if (missing(server)) {
     server <- odbcGetInfo(channel)[["Server_Name"]]
@@ -76,12 +76,12 @@ exa.writeData <- function(channel, data, tableName, tableColumns = NA,
                  else {paste("(",paste(tableColumns,collapse=", "),")")},
                  " FROM CSV AT 'http://", proxyHost, ":",
                  proxyPort, "' FILE 'importData.csv' ENCODING = '", encoding, "'")
-  on.exit(.Call(C_asyncRODBCQueryFinish, 1))
+  on.exit(.Call(C_asyncRODBCQueryFinish, 0))
 
   fd <- .Call(C_asyncRODBCQueryStart, attr(channel, "handle_ptr"), query, 1)
 
   res <- writer(data, fd)
   flush(fd)
-  .Call(C_asyncRODBCQueryFinish, 0)
+  .Call(C_asyncRODBCQueryFinish, 1)
   ifelse(is.null(res), return(TRUE), return(res))
 }

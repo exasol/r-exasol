@@ -8,6 +8,8 @@
 namespace exa {
     /**
      * Implements the @interface AsyncExecutor using std::thread.
+     * @tparam TQueryExecutor must implement interface QueryExecutor. This type will be instantiated as member variable
+     *         and used to execute queries in the background thread.
      */
     template<typename TQueryExecutor, typename TSessionInfo>
     class AsyncExecutorImpl : public AsyncExecutor {
@@ -17,8 +19,8 @@ namespace exa {
 
 
         /**
-         * Allocates the SQL statement and starts the bg thread.
-         * @throws OdbcException if the statement allocation fails.
+         * Initializes the query executor and starts the bg thread.
+         * @throws AsyncExecutorException if the statement allocation fails.
          * @param errorHandler Callback function to invoke if an error occurs.
          */
         void execute(exa::tBackgroundAsyncErrorFunction errorHandler) override {
@@ -38,7 +40,7 @@ namespace exa {
         /**
          * Blocks current thread until the bg thread has joined.
          * Please note that in case of the writer the socket connection needs to be closed before joining the bg thread.
-         * After the background thread has joined it check a possible error message from the native ODBC API.
+         * After the background thread has joined it check a possible error message from @tparam TQueryExecutor.
          * @return Empty string if no error occured. Error message otherwise.
          */
         std::string joinAndCheckResult() override {

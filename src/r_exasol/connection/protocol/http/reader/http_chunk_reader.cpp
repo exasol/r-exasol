@@ -124,6 +124,11 @@ size_t re::HttpChunkReader::pipe_read(void *ptr, const size_t size, const size_t
     if (rlen > 0) {
         return rlen / size;
     }
+    /*
+     * r_len is of type ssize_t and might return -1, while this function returns a size_t (which is unsigned)
+     * This is expected behavior as the Rextension function will cast the size_t back to an integer for error checking
+     * @see https://github.com/wch/r-source/blob/15c308bc93d4bed2803088ecf93a65e551da4c25/src/main/connections.c#L294
+     */
     return rlen;
 }
 

@@ -60,15 +60,20 @@ void exa::SocketImpl::connect(const char *host, uint16_t port) {
 #ifdef _WIN32
     {
         WSADATA wsa;
-	    if (WSAStartup(MAKEWORD(2,0), &wsa) != 0) {
-    	    throw ConnectionException("Could not initialize WSA");
+        const int wsaResult = WSAStartup(MAKEWORD(2,0), &wsa);
+	    if (wsaResult != 0) {
+	        std::stringstream stringStream;
+	        stringStream << "Could not initialize WSA: return value - " << wsaResult;
+    	    throw ConnectionException(stringStream.str());
 	    }
     }
 #endif
 
     mSocket = ::socket(AF_INET, SOCK_STREAM, 0);
     if (mSocket < 0) {
-        throw ConnectionException("Could not create socket.");
+        std::stringstream stringStream;
+        stringStream << "Could not create socket: return value - " << mSocket << " errno - " << errno;
+        throw ConnectionException(stringStream.str());
     }
 
     ::memset((char *) &serv_addr, 0, sizeof(serv_addr));
@@ -82,9 +87,11 @@ void exa::SocketImpl::connect(const char *host, uint16_t port) {
     }
     memcpy((char *)&serv_addr.sin_addr.s_addr, (char *) server->h_addr, server->h_length);
 
-    if (::connect(mSocket, (struct sockaddr *)&serv_addr, sizeof(serv_addr)) < 0) {
+    int connection = ::connect(mSocket, (struct sockaddr *)&serv_addr, sizeof(serv_addr));
+    if (connection < 0) {
         std::stringstream stringStream;
-        stringStream << "Could not connect to " << host << ":" << port;
+        stringStream << "Could not connect to " << host << ":" << port
+            << " return value:" << connection << " errno:" << errno;
 
 #ifdef _WIN32
         stringStream << " (" << WSAGetLastError() << ")";

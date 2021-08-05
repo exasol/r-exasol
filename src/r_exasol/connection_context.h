@@ -21,7 +21,7 @@ namespace exa {
         int initConnection(const char* host, int port);
         SEXP copyHostName();
         SEXP copyHostPort();
-        int destroyConnection(int closeFd);
+        int destroyConnection(bool checkDone);
         SEXP createReadConnection(::pRODBCHandle handle, ::SQLCHAR *query);
         SEXP createWriteConnection(::pRODBCHandle handle, ::SQLCHAR *query);
 

@@ -16,7 +16,7 @@ namespace exa {
 }
 
 int exa::ConnectionContext::initConnection(const char *host, int port) {
-    destroyConnection(1);
+    destroyConnection(false);
     mConnectionController = std::make_unique<exa::ConnectionController>(mConnectionFactory, exa::onError);
     return mConnectionController->connect(host, static_cast<uint16_t>(port)) ? 0 : -1;
 }
@@ -40,7 +40,7 @@ SEXP exa::ConnectionContext::copyHostPort() {
     return ScalarInteger(hostPort);
 }
 
-int exa::ConnectionContext::destroyConnection(int closeFd) {
+int exa::ConnectionContext::destroyConnection(bool checkDone) {
     bool wasDone(false);
 
     if (mConnection) {
@@ -49,7 +49,7 @@ int exa::ConnectionContext::destroyConnection(int closeFd) {
     if (mConnectionController) {
         wasDone = mConnectionController->shutDown();
     }
-    if(!closeFd && !wasDone) {
+    if(checkDone && !wasDone) {
         ::warning("Transfer was not done jet.");
     }
     mConnection.reset();

@@ -16,6 +16,11 @@ std::shared_ptr<exa::writer::Writer> exa::ConnectionFactoryImpl::createHttpWrite
 }
 
 exa::Chunk & exa::ConnectionFactoryImpl::getChunk() {
+    /**
+     * Chunk will be used accross different transfers. Reason is that it's allocation is quiete expansive (@see MAX_HTTP_CHUNK_SIZE)
+     * We use a static variable here, which is initialized the first time the function gets invoked,
+     * and then remains allocated until the program ends.
+     */
     static Chunk chunk;
     return chunk;
 }

@@ -40,9 +40,9 @@ SEXP asyncRODBCQueryStart(SEXP chan, SEXP query, SEXP writerA) {
     return retVal;
 }
 
-SEXP asyncRODBCQueryFinish(SEXP closeA) {
-    const int closefd = asInteger(closeA);
-    const int retVal = destroyConnection(closefd);
+SEXP asyncRODBCQueryFinish(SEXP checkWasDone) {
+    const int checkWasDoneNative = asInteger(checkWasDone);
+    const int retVal = destroyConnection(checkWasDoneNative);
     return ScalarInteger(retVal);
 }
 

@@ -20,8 +20,8 @@ int initConnection(const char* host, int port) {
     return exa::getConnectionContext().initConnection(host, port);
 }
 
-int destroyConnection(int closeFd) {
-    return exa::getConnectionContext().destroyConnection(closeFd);
+int destroyConnection(int checkWasDone) {
+    return exa::getConnectionContext().destroyConnection(1 == checkWasDone);
 }
 
 SEXP createReadConnection(pRODBCHandle handle, SQLCHAR *query) {

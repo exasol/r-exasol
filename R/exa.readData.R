@@ -53,7 +53,7 @@ exa.readData <- function(channel, query, encoding = 'UTF-8',
                          server = NA,...) {
   query <- as.character(query)
 
-  try(.Call(C_asyncRODBCQueryFinish, 1))
+  try(.Call(C_asyncRODBCQueryFinish, 0))
 
   if (is.na(server)) {
     server <- odbcGetInfo(channel)[["Server_Name"]]
@@ -72,13 +72,13 @@ exa.readData <- function(channel, query, encoding = 'UTF-8',
                  proxyPort, "' FILE 'executeSQL.csv' ENCODING = '",encoding,"' BOOLEAN = 'TRUE/FALSE' WITH COLUMN NAMES",
                  sep = "")
 
-  on.exit(.Call(C_asyncRODBCQueryFinish, 1))
+  on.exit(.Call(C_asyncRODBCQueryFinish, 0))
 
   fd <- .Call(C_asyncRODBCQueryStart,
               attr(channel, "handle_ptr"), query, 0)
 
   res <- reader(fd,...)
   on.exit(NULL)
-  .Call(C_asyncRODBCQueryFinish, 0)
+  .Call(C_asyncRODBCQueryFinish, 1)
   res
 }
