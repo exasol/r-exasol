@@ -1,10 +1,9 @@
-name: CI
+name: Windows-CI
 
 on: [push, pull_request]
 
 jobs:
    integration_tests:
-    needs: prep-testbed
     environment: publish
     runs-on: windows-latest
 
