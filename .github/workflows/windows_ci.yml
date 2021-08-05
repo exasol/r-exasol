@@ -8,6 +8,7 @@ jobs:
     runs-on: windows-latest
 
     steps:
+      - uses: Vampire/setup-wsl@v1
       - uses: actions/checkout@v2
       - name: Checkout test environment
         run: git clone https://github.com/exasol/integration-test-docker-environment.git
