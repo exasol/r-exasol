@@ -346,8 +346,6 @@ def reading_async_test_abort():
     clientsocket.send(b)
     time.sleep(0.1)
     result = p_unit_test.communicate(input=b'ABORT')[0]
-    time.sleep(0.1)
-    recvmsg = clientsocket.recv(100)
     print(f'stdout={p_unit_test.stdout}')
     print(f'result={result}')
     p_unit_test.wait()
