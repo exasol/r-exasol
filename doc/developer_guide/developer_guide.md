@@ -1,4 +1,4 @@
-# Script-Languages-Container-Tool Developer Guide
+# r-exasol Developer Guide
 
 r-exasol is a R library providing access to an Exasol DB. 
 This document is about the inner working of r-exasol.
