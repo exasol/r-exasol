@@ -1,14 +1,17 @@
-# r-exasol 0.1.0, released t.b.d.
+# r-exasol 5.3.0, released 2021-08-09
 
-Code name: t.b.d.
+Code name: Initial official release
 
 ## Summary 
 
-t.b.d.
+This is the first official release of r-exasol. 
 
 ## Features / Enhancements
 * Initial implementation
 * #41: Added connection pane snippets (#57)
+* #61: add standard documentation (#62)
+* #59: Move CI build system from Travis to Github actions (#60)
+* #65: Log errno when socket access fails (#66)
 
 ## Bug Fixes
 * #40: Fixed empty char column data type mapping (#55)
