@@ -1,0 +1,15 @@
+name: Release Droid - Upload GitHub Release Assets
+
+on:
+  workflow_dispatch:
+    inputs:
+      upload_url:
+        description: 'Upload URL'
+        required: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Dummy step
+        run: echo "Nothing to do"
