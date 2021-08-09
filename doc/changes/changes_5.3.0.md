@@ -9,9 +9,9 @@ This is the first official release of r-exasol.
 ## Features / Enhancements
 * Initial implementation
 * #41: Added connection pane snippets (#57)
-* #61: add standard documentation (#62)
-* #59: Move CI build system from Travis to Github actions (#60)
-* #65: Log errno when socket access fails (#66)
+* #61: Added standard documentation (#62)
+* #59: Migrated CI build system from Travis to Github actions (#60)
+* #65: Added logging errno when socket access fails (#66)
 
 ## Bug Fixes
 * #40: Fixed empty char column data type mapping (#55)
