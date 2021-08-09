@@ -30,9 +30,11 @@ jobs:
           devtools::install_github("marcelboldt/DBI")
           devtools::install_github("marcelboldt/DBItest")
         shell: Rscript {0}
-        env: # Set the secret as an input
+        env: # Set individual GH PAT
           GITHUB_PAT: ${{ secrets.PAT_FOR_DEVTOOLS }}
       - name: Build
         run: |
           devtools::install()
         shell: Rscript {0}
+        env: # Set individual GH PAT
+          GITHUB_PAT: ${{ secrets.PAT_FOR_DEVTOOLS }}
