@@ -20,6 +20,7 @@ exa::Chunk & exa::ConnectionFactoryImpl::getChunk() {
      * Chunk will be used accross different transfers. Reason is that it's allocation is quite expensive (@see MAX_HTTP_CHUNK_SIZE)
      * We use a static variable here, which is initialized the first time the function gets invoked,
      * and then remains allocated until the program ends.
+     * We assume here, that only one read or write can happen at the same time.
      */
     static Chunk chunk;
     return chunk;
