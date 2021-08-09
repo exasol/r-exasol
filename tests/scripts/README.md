@@ -10,9 +10,9 @@ integration tests within the docker container.
 * Docker
 * Bash
 
-##Available R version
+## Available R version
 
-First, you ned to select the R version.
+First, you need to select the R version.
 You can get a list of all available versions by running:
 ```$r-exasol/tests/scripts/cran/get_R_releases.sh```
 
