@@ -1,5 +1,5 @@
 #include <r_exasol/connection/protocol/http/writer/http_chunk_writer.h>
-#include <r_exasol/connection/protocol/http/common.h>
+#include <r_exasol/connection/protocol/common.h>
 #include <r_exasol/connection/connection_exception.h>
 #include <cstring>
 #include <utility>

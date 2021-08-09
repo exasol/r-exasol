@@ -436,6 +436,12 @@ def writing_async_test_abort():
     assert p_unit_test.returncode == 0
 
 
+def algo_tests():
+    p_unit_test = subprocess.Popen(["./r_exasol", "[algo]"])
+    p_unit_test.wait()
+    assert p_unit_test.returncode == 0
+
+
 if __name__ == "__main__":
     reading_test()
     writing_test()
@@ -448,3 +454,4 @@ if __name__ == "__main__":
     writing_async_test()
     writing_async_test_abort()
     con_controller_read_test_with_error()
+    algo_tests()

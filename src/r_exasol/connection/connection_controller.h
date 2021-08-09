@@ -6,10 +6,12 @@
 #include <r_exasol/connection/async_executor/async_executor_session_info.h>
 #include <r_exasol/connection/error_handler.h>
 #include <memory>
+#include "connection_info.h"
 
 namespace exa {
     enum ProtocolType {
-        http = 0
+        http = 0,
+        https = 1
     };
 
     /**
@@ -22,11 +24,12 @@ namespace exa {
 
         /**
          * Established connection: Opens sockets and read meta data.
+         * @param protocolType Protocol type (Http, Https,...)
          * @param host Database host
          * @param port Host port.
          * @return true if successful, false if an error occurred.
          */
-        bool connect(const char* host, uint16_t port);
+        bool connect(exa::ProtocolType protocolType, const char* host, uint16_t port);
 
         /**
          * This function triggers the async ODBC statement executor, creates and prepares the reader (for the given protocol).
@@ -50,15 +53,22 @@ namespace exa {
          */
         bool shutDown();
 
-        std::pair<std::string, uint16_t > getHostInfo() const { return mHostInfo; }
+        std::string getProxyHost() const { return mConnectionInfo.proxyHost; }
+
+        uint16_t getProxyPort() const { return mConnectionInfo.proxyPort; }
+
+    private:
+        bool isValidProtocol(ProtocolType protocolType);
+        std::shared_ptr<reader::Reader> createReader(ProtocolType);
+        std::shared_ptr<writer::Writer> createWriter(ProtocolType);
+
 
     private:
         ConnectionFactory & mConnectionFactory;
         std::shared_ptr<reader::Reader> mReader;
         std::shared_ptr<writer::Writer> mWriter;
         std::unique_ptr<AsyncExecutor> mOdbcAsyncExecutor;
-        std::shared_ptr<Socket> mSocket;
-        std::pair<std::string, uint16_t > mHostInfo;
+        ConnectionInfo mConnectionInfo;
         tErrorFunction mErrorHandler;
     };
 }

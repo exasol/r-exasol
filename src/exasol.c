@@ -12,10 +12,11 @@
 extern SEXP run_testthat_tests(SEXP);
 
 
-SEXP asyncRODBCIOStart(SEXP hostA, SEXP portA) {
+SEXP asyncRODBCIOStart(SEXP hostA, SEXP portA, SEXP protocolA) {
     const int port = asInteger(portA);
     const char *host = CHAR(STRING_ELT(hostA, 0));
-    int retVal = initConnection(host, port);
+    const char *protocol = CHAR(STRING_ELT(protocolA, 0));
+    int retVal = initConnection(host, port, protocol);
     return ScalarInteger(retVal);
 }
 
@@ -27,13 +28,14 @@ SEXP asyncRODBCProxyPort() {
     return copyHostPort();
 }
 
-SEXP asyncRODBCQueryStart(SEXP chan, SEXP query, SEXP writerA) {
+SEXP asyncRODBCQueryStart(SEXP chan, SEXP query, SEXP protocol, SEXP writerA) {
     SEXP retVal = ScalarInteger(-1);
     const int writer = asInteger(writerA);
     pRODBCHandle rodbc = R_ExternalPtrAddr(chan);
     SQLCHAR *q = (SQLCHAR *) translateChar(STRING_ELT(query, 0));
+    const char *protocol_native = (const char *) translateChar(STRING_ELT(protocol, 0));
     if (rodbc != NULL && q != NULL) {
-        retVal = writer ? createWriteConnection(rodbc, q) : createReadConnection(rodbc, q);
+        retVal = writer ? createWriteConnection(rodbc, q, protocol_native) : createReadConnection(rodbc, q, protocol_native);
     } else {
         error("Could not get RODBC structure from channel");
     }
@@ -49,9 +51,9 @@ SEXP asyncRODBCQueryFinish(SEXP checkWasDone) {
 #include <R_ext/Rdynload.h>
 
 R_CallMethodDef CallEntries[] = {
-    {"asyncRODBCIOStart", (DL_FUNC) &asyncRODBCIOStart, 2},
+    {"asyncRODBCIOStart", (DL_FUNC) &asyncRODBCIOStart, 3},
     {"asyncRODBCProxyHost", (DL_FUNC) &asyncRODBCProxyHost, 0},
-    {"asyncRODBCQueryStart", (DL_FUNC) &asyncRODBCQueryStart, 3},
+    {"asyncRODBCQueryStart", (DL_FUNC) &asyncRODBCQueryStart, 4},
     {"asyncRODBCProxyPort", (DL_FUNC) &asyncRODBCProxyPort, 0},
     {"asyncRODBCQueryFinish", (DL_FUNC) &asyncRODBCQueryFinish, 1},
     {"run_testthat_tests", (DL_FUNC) &run_testthat_tests, 1},

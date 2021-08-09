@@ -45,7 +45,7 @@
 #'
 #' @example examples/readData.R
 #' @export
-exa.readData <- function(channel, query, encoding = 'UTF-8',
+exa.readData <- function(channel, query, protocol="http", encoding = 'UTF-8',
                          reader = function(x,..., enc = encoding) {
                            read.csv(x,..., stringsAsFactors = FALSE, encoding = enc,
                                     blank.lines.skip = FALSE, numerals="no.loss")
@@ -54,6 +54,10 @@ exa.readData <- function(channel, query, encoding = 'UTF-8',
   query <- as.character(query)
 
   try(.Call(C_asyncRODBCQueryFinish, 0))
+
+  if (protocol != "http" && protocol != "https") {
+    stop(paste0("Unsupported protocol:", protocol))
+  }
 
   if (is.na(server)) {
     server <- odbcGetInfo(channel)[["Server_Name"]]
@@ -64,18 +68,17 @@ exa.readData <- function(channel, query, encoding = 'UTF-8',
   serverHost <- as.character(serverAddress[[1]])
   serverPort <- as.integer(serverAddress[[2]])
 
-  .Call(C_asyncRODBCIOStart,serverHost, serverPort)
+  .Call(C_asyncRODBCIOStart,serverHost, serverPort, protocol)
 
   proxyHost <- .Call(C_asyncRODBCProxyHost)
   proxyPort <- .Call(C_asyncRODBCProxyPort)
-  query <- paste("EXPORT (", query, ") INTO CSV AT 'http://",  proxyHost, ":",
-                 proxyPort, "' FILE 'executeSQL.csv' ENCODING = '",encoding,"' BOOLEAN = 'TRUE/FALSE' WITH COLUMN NAMES",
-                 sep = "")
+  query <- paste0("EXPORT (", query, ") INTO CSV AT '", protocol, "://",  proxyHost, ":",
+                 proxyPort, "' FILE 'executeSQL.csv' ENCODING = '",encoding,"' BOOLEAN = 'TRUE/FALSE' WITH COLUMN NAMES")
 
   on.exit(.Call(C_asyncRODBCQueryFinish, 0))
 
   fd <- .Call(C_asyncRODBCQueryStart,
-              attr(channel, "handle_ptr"), query, 0)
+              attr(channel, "handle_ptr"), query, protocol, 0)
 
   res <- reader(fd,...)
   on.exit(NULL)

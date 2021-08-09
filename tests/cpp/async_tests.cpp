@@ -24,10 +24,10 @@ TEST_CASE( "ReaderCloseConnection", "[async]" ) {
         errorWasCalled = true;
     });
     //Connection to remote (Python program) and read meta data (hostname = Test, port number = 4)
-    const bool retVal = connectionController.connect(test_utils::host, test_utils::PORT);
+    const bool retVal = connectionController.connect(exa::ProtocolType::http, test_utils::host, test_utils::PORT);
     REQUIRE(retVal);
-    REQUIRE(connectionController.getHostInfo().first == "Test");
-    REQUIRE(connectionController.getHostInfo().second == 4);
+    REQUIRE(connectionController.getProxyHost() == "Test");
+    REQUIRE(connectionController.getProxyPort() == 4);
     //Create our async mock which uses the std::thread implementation.
     //-> reading from cin will not block the main thread immediately,
     // only after the ConnectionController calls shutdown (which will try to join the bg thread).
@@ -92,10 +92,10 @@ TEST_CASE( "ReaderCloseConnectionAbort", "[async]" ) {
         errorWasCalled = true;
     });
     //Connection to remote (Python program) and read meta data (hostname = Test, port number = 4)
-    const bool retVal = connectionController.connect(test_utils::host, test_utils::PORT);
+    const bool retVal = connectionController.connect(exa::ProtocolType::http, test_utils::host, test_utils::PORT);
     REQUIRE(retVal);
-    REQUIRE(connectionController.getHostInfo().first == "Test");
-    REQUIRE(connectionController.getHostInfo().second == 4);
+    REQUIRE(connectionController.getProxyHost() == "Test");
+    REQUIRE(connectionController.getProxyPort() == 4);
     //Create our async mock which uses the std::thread implementation.
     //-> reading from cin will not block the main thread immediately,
     // only after the ConnectionController calls shutdown (which will try to join the bg thread).
@@ -162,10 +162,10 @@ TEST_CASE( "WriterCloseConnection", "[async]" ) {
     });
 
     //Connection to remote (Python program) and read meta data (hostname = Test, port number = 4)
-    const bool retVal = connectionController.connect(test_utils::host, test_utils::PORT);
+    const bool retVal = connectionController.connect(exa::ProtocolType::http, test_utils::host, test_utils::PORT);
     REQUIRE(retVal);
-    REQUIRE(connectionController.getHostInfo().first == "Test");
-    REQUIRE(connectionController.getHostInfo().second == 4);
+    REQUIRE(connectionController.getProxyHost() == "Test");
+    REQUIRE(connectionController.getProxyPort() == 4);
 
 
     //Create our async mock which uses the std::thread implementation.
@@ -226,10 +226,10 @@ TEST_CASE( "WriterCloseConnectionAbort", "[async]" ) {
     });
 
     //Connection to remote (Python program) and read meta data (hostname = Test, port number = 4)
-    const bool retVal = connectionController.connect(test_utils::host, test_utils::PORT);
+    const bool retVal = connectionController.connect(exa::ProtocolType::http, test_utils::host, test_utils::PORT);
     REQUIRE(retVal);
-    REQUIRE(connectionController.getHostInfo().first == "Test");
-    REQUIRE(connectionController.getHostInfo().second == 4);
+    REQUIRE(connectionController.getProxyHost() == "Test");
+    REQUIRE(connectionController.getProxyPort() == 4);
 
 
     //Create our async mock which uses the std::thread implementation.

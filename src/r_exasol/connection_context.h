@@ -18,12 +18,15 @@ namespace exa {
     class ConnectionContext {
     public:
 
-        int initConnection(const char* host, int port);
+        int initConnection(const char* host, int port, const char* protocol);
         SEXP copyHostName();
         SEXP copyHostPort();
         int destroyConnection(bool checkDone);
-        SEXP createReadConnection(::pRODBCHandle handle, ::SQLCHAR *query);
-        SEXP createWriteConnection(::pRODBCHandle handle, ::SQLCHAR *query);
+        SEXP createReadConnection(::pRODBCHandle handle, ::SQLCHAR *query, const char* protocol);
+        SEXP createWriteConnection(::pRODBCHandle handle, ::SQLCHAR *query, const char* protocol);
+
+    private:
+        exa::ProtocolType convertProtocol(const char*);
 
     private:
         std::unique_ptr <exa::rconnection::RConnection> mConnection;

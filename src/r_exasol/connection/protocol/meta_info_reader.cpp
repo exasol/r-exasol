@@ -3,12 +3,14 @@
 #include <r_exasol/connection/connection_exception.h>
 #include <sstream>
 
+#include <r_exasol/external/r.h>
+
 #ifdef _WIN32
 #include <winsock2.h>
 #include <windows.h>
 #endif
 
-std::pair<std::string, uint16_t>  exa::metaInfoReader::read(exa::Socket& socket) {
+std::pair<std::string, uint16_t>  exa::metaInfoReader::read(exa::Socket& socket, const char *host, uint16_t port) {
     std::pair<std::string, uint16_t> hostInfo(std::string(), 0);
 
     struct { int32_t m; int32_t x; int32_t y:32; } proxyHeader = {0x02212102, 1, 1};
@@ -26,8 +28,8 @@ std::pair<std::string, uint16_t>  exa::metaInfoReader::read(exa::Socket& socket)
 
     if ((r = socket.recv((void*)&(proxyAnswer), sizeof(proxyAnswer))) != sizeof(proxyAnswer)) {
         std::stringstream stringStream;
-        stringStream << "Failed to receive proxy header from " << socket.getConnectionInfo().first << ":" <<
-                     socket.getConnectionInfo().second << " (" << r << " != " << sizeof(proxyAnswer) << "); errno: ";
+        stringStream << "Failed to receive proxy header from " << host << ":" <<
+                     port << " (" << r << " != " << sizeof(proxyAnswer) << "); errno: ";
     #ifndef _WIN32
         stringStream << errno;
     #else
@@ -38,5 +40,6 @@ std::pair<std::string, uint16_t>  exa::metaInfoReader::read(exa::Socket& socket)
     proxyAnswer.s[15] = '\0';
     hostInfo.first = proxyAnswer.s;
     hostInfo.second = proxyAnswer.port;
+
     return hostInfo;
 }

@@ -5,7 +5,6 @@
 #include <r_exasol/connection/socket/socket_impl.h>
 
 #include <r_exasol/connection/connection_factory_impl.h>
-#include <iostream>
 #include "test_utils.h"
 
 /**
@@ -13,7 +12,7 @@
  * This test also will compare content received from server.
  */
 TEST_CASE( "Import", "[http]" ) {
-    std::shared_ptr<exa::Socket> socket = std::make_shared<exa::SocketImpl>();
+    std::shared_ptr<exa::SocketImpl> socket = std::make_shared<exa::SocketImpl>();
 
     //Connect to remote (Python program)
     socket->connect(test_utils::host, test_utils::PORT);
@@ -47,7 +46,7 @@ TEST_CASE( "Import", "[http]" ) {
  * Server (python script) will compare content.
  */
 TEST_CASE( "Export", "[http]" ) {
-    std::shared_ptr<exa::Socket> socket = std::make_shared<exa::SocketImpl>();
+    std::shared_ptr<exa::SocketImpl> socket = std::make_shared<exa::SocketImpl>();
     socket->connect(test_utils::host, test_utils::PORT);
     exa::Chunk chunk{};
 
@@ -79,7 +78,7 @@ TEST_CASE( "Export", "[http]" ) {
  * We don't compare the content of the data here.
  */
 TEST_CASE( "ImportBig", "[http]" ) {
-    std::shared_ptr<exa::Socket> socket = std::make_shared<exa::SocketImpl>();
+    std::shared_ptr<exa::SocketImpl> socket = std::make_shared<exa::SocketImpl>();
     socket->connect(test_utils::host, test_utils::PORT);
     exa::Chunk chunk{};
     std::unique_ptr<exa::reader::HttpChunkReader> reader = std::make_unique<exa::reader::HttpChunkReader>(socket, chunk);

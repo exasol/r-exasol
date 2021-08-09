@@ -16,7 +16,7 @@
  * 2. Testing correct reading of the Http payload (chunk), by comparing content (@see test_utils::createTestString())
  */
 TEST_CASE( "ImportHttp", "[connection]" ) {
-    std::shared_ptr<exa::Socket> socket = std::make_shared<exa::SocketImpl>();
+    std::shared_ptr<exa::SocketImpl> socket = std::make_shared<exa::SocketImpl>();
     socket->connect(test_utils::host, test_utils::PORT);
     exa::Chunk chunk{};
 
@@ -74,10 +74,10 @@ TEST_CASE( "ConnectionControllerImport", "[connection]" ) {
     });
 
     //Connection to remote (Python program) and read meta data (hostname = Test, port number = 4)
-    const bool retVal = connectionController.connect(test_utils::host, test_utils::PORT);
+    const bool retVal = connectionController.connect(exa::ProtocolType::http, test_utils::host, test_utils::PORT);
     REQUIRE(retVal);
-    REQUIRE(connectionController.getHostInfo().first == "Test");
-    REQUIRE(connectionController.getHostInfo().second == 4);
+    REQUIRE(connectionController.getProxyHost() == "Test");
+    REQUIRE(connectionController.getProxyPort() == 4);
 
     //Create our async mock which uses the std::thread implementation.
     //This implementation does nothing in the background and returns immediately.
@@ -142,10 +142,10 @@ TEST_CASE( "ConnectionControllerEcho", "[connection]" ) {
         });
         bool joinCalled(false);
         //Connection to remote (Python program) and read meta data (hostname = Test, port number = 4)
-        const bool retVal = connectionController.connect(test_utils::host, test_utils::PORT);
+        const bool retVal = connectionController.connect(exa::ProtocolType::http, test_utils::host, test_utils::PORT);
         REQUIRE(retVal);
-        REQUIRE(connectionController.getHostInfo().first == "Test");
-        REQUIRE(connectionController.getHostInfo().second == 4);
+        REQUIRE(connectionController.getProxyHost() == "Test");
+        REQUIRE(connectionController.getProxyPort() == 4);
 
         //Create our async mock which uses the std::thread implementation.
         //This implementation does nothing in the background and returns immediately.
@@ -195,10 +195,10 @@ TEST_CASE( "ConnectionControllerEcho", "[connection]" ) {
         });
 
         //Connection to remote (Python program) and read meta data (hostname = Test, port number = 4)
-        const bool retVal = connectionController.connect(test_utils::host, test_utils::PORT);
+        const bool retVal = connectionController.connect(exa::ProtocolType::http, test_utils::host, test_utils::PORT);
         REQUIRE(retVal);
-        REQUIRE(connectionController.getHostInfo().first == "Test");
-        REQUIRE(connectionController.getHostInfo().second == 4);
+        REQUIRE(connectionController.getProxyHost() == "Test");
+        REQUIRE(connectionController.getProxyPort() == 4);
 
         //Create our async mock which uses the std::thread implementation.
         //This implementation does nothing in the background and returns immediately.
@@ -249,7 +249,7 @@ TEST_CASE( "ConnectionControllerImportWithError", "[connection]" ) {
         });
 
         //Connection to remote (Python program) and try to read meta data (hostname = Test, port number = 4)
-        const bool retVal = connectionController.connect(test_utils::host, test_utils::PORT);
+        const bool retVal = connectionController.connect(exa::ProtocolType::http, test_utils::host, test_utils::PORT);
         //Server aborted connection before sending meta data.
         REQUIRE(!retVal);
 
@@ -269,11 +269,11 @@ TEST_CASE( "ConnectionControllerImportWithError", "[connection]" ) {
         });
 
         //Connection to remote (Python program) and try to read meta data (hostname = Test, port number = 4)
-        const bool retVal = newConnectionController.connect(test_utils::host, test_utils::PORT);
+        const bool retVal = newConnectionController.connect(exa::ProtocolType::http, test_utils::host, test_utils::PORT);
         bool joinCalled(false);
         REQUIRE(retVal);
-        REQUIRE(newConnectionController.getHostInfo().first == "Test");
-        REQUIRE(newConnectionController.getHostInfo().second == 4);
+        REQUIRE(newConnectionController.getProxyHost() == "Test");
+        REQUIRE(newConnectionController.getProxyPort() == 4);
 
 
         //Create our async mock which uses the std::thread implementation.

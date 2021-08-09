@@ -33,7 +33,7 @@
 #' @author EXASOL AG <support@@exasol.com>
 #' @example examples/writeData.R
 #' @export
-exa.writeData <- function(channel, data, tableName, tableColumns = NA,
+exa.writeData <- function(channel, data, tableName, protocol="http", tableColumns = NA,
                           encoding = tryCatch(strsplit(Sys.getlocale("LC_CTYPE"),".", fixed=TRUE)[[1]][2],
                                               error = function(e) stop(paste("Cannot get system encoding.
                                                                              Please set manually.\n",e)
@@ -54,7 +54,10 @@ exa.writeData <- function(channel, data, tableName, tableColumns = NA,
     message(paste0("Empty dataframe, skipping writing into Exasol table.\n"))
     return(TRUE)
   }
-  slot <- 0
+
+  if (protocol != "http" && protocol != "https") {
+    stop(paste0("Unsupported protocol:", protocol))
+  }
 
   try(.Call(C_asyncRODBCQueryFinish, 0))
 
@@ -67,18 +70,19 @@ exa.writeData <- function(channel, data, tableName, tableColumns = NA,
   serverHost <- as.character(serverAddress[[1]])
   serverPort <- as.integer(serverAddress[[2]])
 
-  .Call(C_asyncRODBCIOStart, serverHost, serverPort)
+  .Call(C_asyncRODBCIOStart, serverHost, serverPort, protocol)
   proxyHost <- .Call(C_asyncRODBCProxyHost)
   proxyPort <- .Call(C_asyncRODBCProxyPort)
 
   query <- paste0("IMPORT INTO ", tableName,
                  if (is.na(tableColumns)) ""
                  else {paste("(",paste(tableColumns,collapse=", "),")")},
-                 " FROM CSV AT 'http://", proxyHost, ":",
+                 " FROM CSV AT '" , protocol, "://", proxyHost, ":",
                  proxyPort, "' FILE 'importData.csv' ENCODING = '", encoding, "'")
   on.exit(.Call(C_asyncRODBCQueryFinish, 0))
 
-  fd <- .Call(C_asyncRODBCQueryStart, attr(channel, "handle_ptr"), query, 1)
+  fd <- .Call(C_asyncRODBCQueryStart, attr(channel, "handle_ptr"),
+              query, protocol, 1)
 
   res <- writer(data, fd)
   flush(fd)
