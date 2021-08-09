@@ -10,3 +10,6 @@ src/*.dll
 .DS_Store
 .project
 .cproject
+config.log
+config.status
+/tests/cpp/cmake-build-debug/

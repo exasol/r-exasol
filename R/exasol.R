@@ -134,19 +134,10 @@ ALLOWED_UDF_OUT_TYPES <- c(EMITS, RETURNS)
 "C_asyncRODBCIOStart"
 
 #' TODO comment
-"C_asyncRODBCIsDone"
-
-#' TODO comment
-"C_asyncRODBCMax"
-
-#' TODO comment
 "C_asyncRODBCProxyHost"
 
 #' TODO comment
 "C_asyncRODBCProxyPort"
-
-#' TODO comment
-"C_asyncRODBCQueryCheck"
 
 #' TODO comment
 "C_asyncRODBCQueryFinish"

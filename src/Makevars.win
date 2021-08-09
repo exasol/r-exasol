@@ -1,2 +1,10 @@
-PKG_CPPFLAGS=.
 PKG_LIBS=-lodbc32 -lpthread -lws2_32
+PKG_CPPFLAGS =  -I.
+SOURCES = r_exasol/connection_context.cpp r_exasol/rconnection/r_reader_connection.cpp r_exasol/rconnection/r_writer_connection.cpp r_exasol/connection/socket/socket_impl.cpp r_exasol/connection/protocol/meta_info_reader.cpp r_exasol/connection/protocol/http/common.cpp r_exasol/connection/protocol/http/writer/http_chunk_writer.cpp r_exasol/connection/protocol/http/reader/http_chunk_reader.cpp r_exasol/connection/connection_controller.cpp r_exasol/connection/connection_factory_impl.cpp r_exasol/odbc/odbc_query_executor.cpp r_exasol/odbc/odbc_session_info_impl.cpp connection.cpp tests/test_runner.cpp
+CXX_STD = CXX14
+OBJECTS = $(SOURCES:.cpp=.o)
+OBJECTS += exasol.o
+
+all: $(OBJECTS)
+clean:
+	rm -f $(OBJECTS)
