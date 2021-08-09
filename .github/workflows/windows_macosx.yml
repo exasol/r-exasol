@@ -11,7 +11,7 @@ jobs:
         config:
           - { os: windows-latest, r: 'release' }
           - { os: macOS-latest, r: 'release' }
-
+    environment: ci_build
     steps:
       - uses: actions/checkout@v2
 
@@ -30,6 +30,8 @@ jobs:
           devtools::install_github("marcelboldt/DBI")
           devtools::install_github("marcelboldt/DBItest")
         shell: Rscript {0}
+        env: # Set the secret as an input
+          GITHUB_PAT: ${{ secrets.PAT_FOR_DEVTOOLS }}
       - name: Build
         run: |
           devtools::install()
