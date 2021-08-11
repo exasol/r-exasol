@@ -14,7 +14,7 @@
 extern "C" {
 #endif
 
-
+    extern int enableTracing(const char * traceFile);
     extern int initConnection(const char* host, int port, const char* protocol);
     extern SEXP copyHostName();
     extern SEXP copyHostPort();

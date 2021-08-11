@@ -6,4 +6,5 @@ r_exasol/connection/protocol/http/writer/http_chunk_writer.cpp r_exasol/connecti
 r_exasol/connection/protocol/http/conn/http_connection_establisher.cpp \
 r_exasol/connection/protocol/https/conn/https_connection_establisher.cpp \
 r_exasol/connection/connection_controller.cpp r_exasol/connection/connection_factory_impl.cpp \
+r_exasol/debug_print/debug_printer.cpp r_exasol/debug_print/file_logger.cpp \
 r_exasol/odbc/odbc_query_executor.cpp r_exasol/odbc/odbc_session_info_impl.cpp connection.cpp

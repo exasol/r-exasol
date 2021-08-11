@@ -142,6 +142,9 @@ ALLOWED_UDF_OUT_TYPES <- c(EMITS, RETURNS)
 #' TODO comment
 "C_asyncRODBCQueryFinish"
 
+#' TODO comment
+"C_asyncEnableTracing"
+
 .onAttach <- function(libname, pkgname) {
   # show startup message
   message <- paste("EXASOL SDK", utils::packageVersion("exasol"), "loaded.")

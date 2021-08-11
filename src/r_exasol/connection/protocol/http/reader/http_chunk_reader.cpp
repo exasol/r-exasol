@@ -1,7 +1,6 @@
 #include <r_exasol/connection/protocol/http/reader/http_chunk_reader.h>
 #include <cstring>
 #include <r_exasol/connection/protocol/common.h>
-#include <iostream>
 #include <r_exasol/connection/connection_exception.h>
 #include <utility>
 
@@ -89,7 +88,6 @@ ssize_t re::HttpChunkReader::read_next_chunk() {
     } catch (const ConnectionFinished & ex) {
         closeSocketWithError();
     } catch (const exa::ConnectionException &ex) {
-        std::cerr << "Error occurred in HttpChunkReader:" << ex.what() << std::endl;
         closeSocketWithError();
     }
     return retVal;

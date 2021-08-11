@@ -5,6 +5,7 @@
 
 #include <r_exasol/connection/async_executor/query_executor.h>
 #include <r_exasol/odbc/odbc_session_info_impl.h>
+#include <r_exasol/debug_print/debug_printer.h>
 #include <thread>
 #include <atomic>
 
@@ -42,6 +43,7 @@ namespace exa {
         bool executeAsyncQuery() override;
 
     private:
+        ObjectLifecycleLogger<OdbcQueryExecutor> mObjectLifecycleLogger;
         const OdbcSessionInfoImpl mOdbcSessionInfo;
         ::SQLHSTMT mStmt;
         ::SQLRETURN mRes;

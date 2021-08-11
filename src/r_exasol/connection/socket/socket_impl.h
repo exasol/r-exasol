@@ -3,6 +3,7 @@
 
 #include <r_exasol/connection/socket/socket.h>
 #include <r_exasol/external/socket_fwd.h>
+#include <r_exasol/debug_print/debug_printer.h>
 #include <cstdio>
 #include <cstdint>
 #include <utility>
@@ -27,6 +28,7 @@ namespace exa {
         tSocket detach();
 
     private:
+        ObjectLifecycleLogger<SocketImpl> mLifecycleLogger;
         tSocket mSocket;
     };
 }

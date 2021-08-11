@@ -15,6 +15,9 @@ namespace exa {
     typedef std::function<void(std::string)> tErrorFunction;
     /**
      * Error function which might be called by the asynchronous remote execution.
+     * <p>
+     * Do not call any R functions (at least not such which use R's memory management) here!
+     * <p>
      */
     typedef std::function<void()> tBackgroundAsyncErrorFunction;
 }

@@ -15,13 +15,19 @@ namespace exa {
     }
 }
 
+
+typedef exa::StackTraceLogger<exa::ConnectionContext> cc_stack_trace_logger;
+
+
 int exa::ConnectionContext::initConnection(const char *host, int port, const char* protocol) {
+    cc_stack_trace_logger("initConnection");
     destroyConnection(false);
     mConnectionController = std::make_unique<exa::ConnectionController>(mConnectionFactory, exa::onError);
     return mConnectionController->connect(convertProtocol(protocol), host, static_cast<uint16_t>(port)) ? 0 : -1;
 }
 
 SEXP exa::ConnectionContext::copyHostName() {
+    cc_stack_trace_logger("copyHostName");
     SEXP host = nullptr;
     if (mConnectionController) {
         PROTECT(host = allocVector(STRSXP, 1));
@@ -33,6 +39,7 @@ SEXP exa::ConnectionContext::copyHostName() {
 }
 
 SEXP exa::ConnectionContext::copyHostPort() {
+    cc_stack_trace_logger("copyHostPort");
     uint16_t hostPort = -1;
     if (mConnectionController) {
         hostPort = mConnectionController->getProxyPort();
@@ -41,6 +48,7 @@ SEXP exa::ConnectionContext::copyHostPort() {
 }
 
 int exa::ConnectionContext::destroyConnection(bool checkDone) {
+    cc_stack_trace_logger("destroyConnection");
     bool wasDone(false);
 
     if (mConnection) {
@@ -58,6 +66,7 @@ int exa::ConnectionContext::destroyConnection(bool checkDone) {
 }
 
 SEXP exa::ConnectionContext::createReadConnection(::pRODBCHandle handle, ::SQLCHAR *query, const char* protocol) {
+    cc_stack_trace_logger("createReadConnection");
     SEXP retVal = nullptr;
     if (mConnectionController) {
         std::weak_ptr<exa::reader::Reader> reader =
@@ -72,6 +81,7 @@ SEXP exa::ConnectionContext::createReadConnection(::pRODBCHandle handle, ::SQLCH
 }
 
 SEXP exa::ConnectionContext::createWriteConnection(::pRODBCHandle handle, ::SQLCHAR *query, const char* protocol) {
+    cc_stack_trace_logger("createWriteConnection");
     SEXP retVal = nullptr;
     if (mConnectionController) {
         std::weak_ptr<exa::writer::Writer> writer =
@@ -96,4 +106,8 @@ exa::ProtocolType exa::ConnectionContext::convertProtocol(const char *protocol) 
         ::error("Unknown protocol:%s", protocol);
     }
     return retVal;
+}
+
+int exa::ConnectionContext::enableTracing(const char *tracefile) {
+    return mLogger.enableLogging(tracefile) ? 0 : -1;
 }

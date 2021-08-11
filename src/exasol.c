@@ -7,7 +7,9 @@
 #endif
 #include <Rdefines.h>
 
+#include <stdio.h>
 #include <connection.h>
+
 
 extern SEXP run_testthat_tests(SEXP);
 
@@ -48,6 +50,11 @@ SEXP asyncRODBCQueryFinish(SEXP checkWasDone) {
     return ScalarInteger(retVal);
 }
 
+SEXP asyncEnableTracing(SEXP tracefile) {
+    const char *tracefileNative = CHAR(STRING_ELT(tracefile, 0));
+    return ScalarInteger(enableTracing(tracefileNative));
+}
+
 #include <R_ext/Rdynload.h>
 
 R_CallMethodDef CallEntries[] = {
@@ -56,6 +63,7 @@ R_CallMethodDef CallEntries[] = {
     {"asyncRODBCQueryStart", (DL_FUNC) &asyncRODBCQueryStart, 4},
     {"asyncRODBCProxyPort", (DL_FUNC) &asyncRODBCProxyPort, 0},
     {"asyncRODBCQueryFinish", (DL_FUNC) &asyncRODBCQueryFinish, 1},
+    {"asyncEnableTracing", (DL_FUNC) &asyncEnableTracing, 1},
     {"run_testthat_tests", (DL_FUNC) &run_testthat_tests, 1},
     {NULL, NULL, 0}
 };

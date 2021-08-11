@@ -1616,3 +1616,16 @@ EXAConnectionLog <- function (con, view = TRUE) {
   else
     return(df)
 }
+
+
+#' Enables tracing for debugging purpose.
+#' @param tracefile The output tracefile
+#' @export
+EXATrace <- function (tracefile) {
+  tracefileAsString <- as.character(tracefile)
+  if (tracefileAsString == "") {
+    warning("Tracefile is empty.")
+  } else {
+    .Call(C_asyncEnableTracing, tracefile)
+  }
+}
