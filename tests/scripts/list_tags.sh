@@ -23,7 +23,7 @@ tags=`wget -q https://registry.hub.docker.com/v1/repositories/${image}/tags -O -
 
 if [ -n "$2" ]
 then
-    tags=` echo "${tags}" | grep "$2" `
+    tags=` echo "${tags}" | grep "$2" || true` # We don't want to fail when we don't find tags for container $2
 fi
 
 echo "${tags}"
