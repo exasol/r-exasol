@@ -20,9 +20,8 @@ std::weak_ptr<exa::reader::Reader> exa::ConnectionController::startReading(const
         mOdbcAsyncExecutor = odbcSessionInfo.createAsyncExecutor();
 
         try {
-
             mOdbcAsyncExecutor->execute([this]() { onOdbcError(); });
-            mReader = createReader(protocolType);
+            mReader = mConnectionFactory.createHttpReader(mConnectionInfo.socket);
             mReader->start();
             retVal = mReader;
         } catch (const AsyncExecutorException & ex) {
@@ -46,7 +45,7 @@ std::weak_ptr<exa::writer::Writer> exa::ConnectionController::startWriting(const
         mOdbcAsyncExecutor = odbcSessionInfo.createAsyncExecutor();
         try {
             mOdbcAsyncExecutor->execute([this]() { onOdbcError(); });
-            mWriter = createWriter(protocolType);
+            mWriter = mConnectionFactory.createHttpWriter(mConnectionInfo.socket);
             mWriter->start();
             retVal = mWriter;
         } catch (const AsyncExecutorException & ex) {
@@ -94,18 +93,8 @@ void exa::ConnectionController::onOdbcError() {
 
 bool exa::ConnectionController::connect(exa::ProtocolType protocolType, const char *host, uint16_t port) {
     bool success = false;
-    std::unique_ptr<ConnectionEstablisher> conn_est;
     if (isValidProtocol(protocolType)) {
-        switch (protocolType) {
-            case ProtocolType::http:
-                conn_est = std::make_unique<HttpConnectionEstablisher>(mConnectionFactory);
-                break;
-            case ProtocolType::https:
-                conn_est = std::make_unique<HttpsConnectionEstablisher>(mConnectionFactory);
-                break;
-            default:
-                assert(false);
-        }
+        std::unique_ptr<ConnectionEstablisher> conn_est = getConnectionEstablisher(protocolType);
 
         try {
             mConnectionInfo = conn_est->connect(host, port);
@@ -121,26 +110,24 @@ bool exa::ConnectionController::connect(exa::ProtocolType protocolType, const ch
     return success;
 }
 
+std::unique_ptr<exa::ConnectionEstablisher>
+exa::ConnectionController::getConnectionEstablisher(const exa::ProtocolType &protocolType) const {
+    std::unique_ptr<ConnectionEstablisher> conn_est;
+    switch (protocolType) {
+        case http:
+            conn_est = std::make_unique<HttpConnectionEstablisher>();
+            break;
+        case https:
+            conn_est = std::make_unique<HttpsConnectionEstablisher>();
+            break;
+        default:
+            assert(false);
+    }
+    return conn_est;
+}
+
 bool exa::ConnectionController::isValidProtocol(exa::ProtocolType protocolType) {
     return ProtocolType::http == protocolType || ProtocolType::https == protocolType;
 }
 
-std::shared_ptr<exa::reader::Reader> exa::ConnectionController::createReader(exa::ProtocolType protocolType) {
-    std::shared_ptr<reader::Reader> retVal;
-    if(ProtocolType::http == protocolType) {
-        retVal = mConnectionFactory.createHttpReader(mConnectionInfo.socket);
-    } else if (ProtocolType::https == protocolType) {
-        retVal = mConnectionFactory.createHttpsReader(mConnectionInfo.socket);
-    }
-    return retVal;
-}
 
-std::shared_ptr<exa::writer::Writer> exa::ConnectionController::createWriter(exa::ProtocolType protocolType) {
-    std::shared_ptr<writer::Writer> retVal;
-    if(ProtocolType::http == protocolType) {
-        retVal = mConnectionFactory.createHttpWriter(mConnectionInfo.socket);
-    } else if (ProtocolType::https == protocolType) {
-        retVal = mConnectionFactory.createHttpsWriter(mConnectionInfo.socket);
-    }
-    return retVal;
-}

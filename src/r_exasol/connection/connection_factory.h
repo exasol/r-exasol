@@ -16,8 +16,6 @@ namespace exa {
         virtual ~ConnectionFactory() = default;
         virtual std::shared_ptr<reader::Reader> createHttpReader(std::weak_ptr<Socket>) = 0;
         virtual std::shared_ptr<writer::Writer> createHttpWriter(std::weak_ptr<Socket>) = 0;
-        virtual std::shared_ptr<reader::Reader> createHttpsReader(std::weak_ptr<Socket>) = 0;
-        virtual std::shared_ptr<writer::Writer> createHttpsWriter(std::weak_ptr<Socket>) = 0;
     };
 }
 

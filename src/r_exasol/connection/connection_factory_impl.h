@@ -14,9 +14,6 @@ namespace exa {
     class ConnectionFactoryImpl : public ConnectionFactory {
         std::shared_ptr<reader::Reader> createHttpReader(std::weak_ptr<Socket>) override;
         std::shared_ptr<writer::Writer> createHttpWriter(std::weak_ptr<Socket>) override;
-        std::shared_ptr<reader::Reader> createHttpsReader(std::weak_ptr<Socket>) override;
-        std::shared_ptr<writer::Writer> createHttpsWriter(std::weak_ptr<Socket>) override;
-
 
     private:
         Chunk & getChunk();

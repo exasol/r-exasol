@@ -16,7 +16,3 @@ exa::ConnectionInfo exa::HttpsConnectionEstablisher::connect(const char *host, u
     };
     return connectionInfo;
 }
-
-
-exa::HttpsConnectionEstablisher::HttpsConnectionEstablisher(exa::ConnectionFactory &connectionFactory)
-: mConnectionFactory(connectionFactory) {}

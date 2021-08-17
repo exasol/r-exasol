@@ -12,6 +12,3 @@ exa::ConnectionInfo exa::HttpConnectionEstablisher::connect(const char *host, ui
         .socket = socket
     };
 }
-
-exa::HttpConnectionEstablisher::HttpConnectionEstablisher(exa::ConnectionFactory &connectionFactory)
-: mConnectionFactory(connectionFactory) {}

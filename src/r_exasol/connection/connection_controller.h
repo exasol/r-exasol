@@ -5,10 +5,13 @@
 #include <r_exasol/connection/async_executor/async_executor.h>
 #include <r_exasol/connection/async_executor/async_executor_session_info.h>
 #include <r_exasol/connection/error_handler.h>
+#include <r_exasol/connection/connection_info.h>
 #include <memory>
-#include "connection_info.h"
+
 
 namespace exa {
+    class ConnectionEstablisher;
+
     enum ProtocolType {
         http = 0,
         https = 1
@@ -59,8 +62,8 @@ namespace exa {
 
     private:
         bool isValidProtocol(ProtocolType protocolType);
-        std::shared_ptr<reader::Reader> createReader(ProtocolType);
-        std::shared_ptr<writer::Writer> createWriter(ProtocolType);
+        std::unique_ptr<exa::ConnectionEstablisher>
+        getConnectionEstablisher(const ProtocolType &protocolType) const;
 
 
     private:
@@ -70,6 +73,7 @@ namespace exa {
         std::unique_ptr<AsyncExecutor> mOdbcAsyncExecutor;
         ConnectionInfo mConnectionInfo;
         tErrorFunction mErrorHandler;
+
     };
 }
 

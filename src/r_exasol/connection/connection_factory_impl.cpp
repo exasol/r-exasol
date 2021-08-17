@@ -1,5 +1,4 @@
 #include <r_exasol/connection/connection_factory_impl.h>
-#include <r_exasol/connection/socket/socket_impl.h>
 #include <r_exasol/connection/protocol/http/reader/http_chunk_reader.h>
 #include <r_exasol/connection/protocol/http/writer/http_chunk_writer.h>
 
@@ -21,12 +20,4 @@ exa::Chunk & exa::ConnectionFactoryImpl::getChunk() {
      */
     static Chunk chunk;
     return chunk;
-}
-
-std::shared_ptr<exa::reader::Reader> exa::ConnectionFactoryImpl::createHttpsReader(std::weak_ptr<Socket> socket) {
-    return std::make_shared<exa::reader::HttpChunkReader>(socket, getChunk());
-}
-
-std::shared_ptr<exa::writer::Writer> exa::ConnectionFactoryImpl::createHttpsWriter(std::weak_ptr<Socket> socket) {
-    return std::make_shared<exa::writer::HttpChunkWriter>(socket, getChunk());
 }
