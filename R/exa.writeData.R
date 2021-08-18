@@ -33,7 +33,7 @@
 #' @author EXASOL AG <support@@exasol.com>
 #' @example examples/writeData.R
 #' @export
-exa.writeData <- function(channel, data, tableName, protocol="http", tableColumns = NA,
+exa.writeData <- function(channel, data, tableName, tableColumns = NA,
                           encoding = tryCatch(strsplit(Sys.getlocale("LC_CTYPE"),".", fixed=TRUE)[[1]][2],
                                               error = function(e) stop(paste("Cannot get system encoding.
                                                                              Please set manually.\n",e)
@@ -55,9 +55,7 @@ exa.writeData <- function(channel, data, tableName, protocol="http", tableColumn
     return(TRUE)
   }
 
-  if (protocol != "http" && protocol != "https") {
-    stop(paste0("Unsupported protocol:", protocol))
-  }
+  protocol <- ifelse(channel@encrypted, "https", "http")
 
   try(.Call(C_asyncRODBCQueryFinish, 0))
 

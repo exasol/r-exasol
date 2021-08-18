@@ -45,7 +45,7 @@
 #'
 #' @example examples/readData.R
 #' @export
-exa.readData <- function(channel, query, protocol="http", encoding = 'UTF-8',
+exa.readData <- function(channel, query, encoding = 'UTF-8',
                          reader = function(x,..., enc = encoding) {
                            read.csv(x,..., stringsAsFactors = FALSE, encoding = enc,
                                     blank.lines.skip = FALSE, numerals="no.loss")
@@ -55,9 +55,7 @@ exa.readData <- function(channel, query, protocol="http", encoding = 'UTF-8',
 
   try(.Call(C_asyncRODBCQueryFinish, 0))
 
-  if (protocol != "http" && protocol != "https") {
-    stop(paste0("Unsupported protocol:", protocol))
-  }
+  protocol <- ifelse(channel@encrypted, "https", "http")
 
   if (is.na(server)) {
     server <- odbcGetInfo(channel)[["Server_Name"]]
