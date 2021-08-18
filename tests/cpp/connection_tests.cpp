@@ -11,51 +11,6 @@
 
 
 /**
- * Purpose of this test is to verify behavior of HttpChunkReader:
- * 1. Testing reading of the HttpHeader
- * 2. Testing correct reading of the Http payload (chunk), by comparing content (@see test_utils::createTestString())
- */
-TEST_CASE( "ImportHttp", "[connection]" ) {
-    std::shared_ptr<exa::SocketImpl> socket = std::make_shared<exa::SocketImpl>();
-    socket->connect(test_utils::host, test_utils::PORT);
-    exa::Chunk chunk{};
-
-    //Create reader instance
-    std::unique_ptr<exa::reader::HttpChunkReader> reader = std::make_unique<exa::reader::HttpChunkReader>(socket, chunk);
-
-    //This will read the Http Header.
-    reader->start();
-
-    //Create test data
-    std::vector<char> buffer(100);
-    std::string testString = test_utils::createTestString(); //returns 220 bytes of test data
-
-    //Read first 100 bytes of data from remote (Python program) and compare content
-    size_t sizeReceived = reader->pipe_read(buffer.data(), 1, buffer.size());
-    REQUIRE(sizeReceived == buffer.size());
-    std::string strRep(buffer.data(), buffer.size());
-    REQUIRE(testString.substr(0, 100) == strRep);
-
-    //Read next 100 bytes and compare content
-    sizeReceived = reader->pipe_read(buffer.data(), 1, buffer.size());
-    REQUIRE(sizeReceived == buffer.size());
-    strRep = std::string(buffer.data(), buffer.size());
-    REQUIRE(testString.substr(100, 100) == strRep);
-
-    //Read last 20 bytes and compare content
-    sizeReceived = reader->pipe_read(buffer.data(), 1, 20);
-    REQUIRE(sizeReceived == 20);
-    strRep = std::string(buffer.data(), 20);
-    REQUIRE(testString.substr(200, 20) == strRep);
-
-    //Read terminating 0
-    sizeReceived = reader->pipe_read(buffer.data(), 1, buffer.size());
-    REQUIRE(sizeReceived == 0);
-    socket->shutdownRdWr();
-}
-
-
-/**
  * Purpose of this test is to verify behavior of ConnectionController:
  * 1. Test correct reading of the metadata (remote host + port)
  * 2. Creation of reader object
@@ -63,7 +18,7 @@ TEST_CASE( "ImportHttp", "[connection]" ) {
  * 4. Testing correct reading of the Http payload (chunk), by comparing content (@see test_utils::createTestString())
  * 5. Correct behavior of the asynchronous executor during shutdown (calling join on std::thread()).
  */
-TEST_CASE( "ConnectionControllerImport", "[connection]" ) {
+void testConnectionControllerImport(exa::ProtocolType protocolType) {
     bool errorCalled = false;
     bool joinCalled = false;
     exa::ConnectionFactoryImpl factory;
@@ -74,7 +29,7 @@ TEST_CASE( "ConnectionControllerImport", "[connection]" ) {
     });
 
     //Connection to remote (Python program) and read meta data (hostname = Test, port number = 4)
-    const bool retVal = connectionController.connect(exa::ProtocolType::http, test_utils::host, test_utils::PORT);
+    const bool retVal = connectionController.connect(protocolType, test_utils::host, test_utils::PORT);
     REQUIRE(retVal);
     REQUIRE(connectionController.getProxyHost() == "Test");
     REQUIRE(connectionController.getProxyPort() == 4);
@@ -121,6 +76,15 @@ TEST_CASE( "ConnectionControllerImport", "[connection]" ) {
 
     //No error is supposed to happen in this test
     REQUIRE(!errorCalled);
+
+}
+
+TEST_CASE( "ConnectionControllerImportHttp", "[connection]" ) {
+    testConnectionControllerImport(exa::ProtocolType::http);
+}
+
+TEST_CASE( "ConnectionControllerImportHttps", "[connection]" ) {
+    testConnectionControllerImport(exa::ProtocolType::https);
 }
 
 /**
@@ -129,8 +93,7 @@ TEST_CASE( "ConnectionControllerImport", "[connection]" ) {
  * reaer object after we used a writer object.
  *
  */
-TEST_CASE( "ConnectionControllerEcho", "[connection]" ) {
-
+void testConnectionControllerEcho(exa::ProtocolType protocolType) {
     exa::ConnectionFactoryImpl factory;
     SECTION( "first testing writing to server" )
     {
@@ -142,7 +105,7 @@ TEST_CASE( "ConnectionControllerEcho", "[connection]" ) {
         });
         bool joinCalled(false);
         //Connection to remote (Python program) and read meta data (hostname = Test, port number = 4)
-        const bool retVal = connectionController.connect(exa::ProtocolType::http, test_utils::host, test_utils::PORT);
+        const bool retVal = connectionController.connect(protocolType, test_utils::host, test_utils::PORT);
         REQUIRE(retVal);
         REQUIRE(connectionController.getProxyHost() == "Test");
         REQUIRE(connectionController.getProxyPort() == 4);
@@ -154,7 +117,7 @@ TEST_CASE( "ConnectionControllerEcho", "[connection]" ) {
 
         //create writer
         std::weak_ptr<exa::writer::Writer> writer_weak =
-                connectionController.startWriting(mockSessionImpl, exa::ProtocolType::http);
+                connectionController.startWriting(mockSessionImpl, protocolType);
         REQUIRE(!writer_weak.expired());
         auto writer = writer_weak.lock();
 
@@ -195,7 +158,7 @@ TEST_CASE( "ConnectionControllerEcho", "[connection]" ) {
         });
 
         //Connection to remote (Python program) and read meta data (hostname = Test, port number = 4)
-        const bool retVal = connectionController.connect(exa::ProtocolType::http, test_utils::host, test_utils::PORT);
+        const bool retVal = connectionController.connect(protocolType, test_utils::host, test_utils::PORT);
         REQUIRE(retVal);
         REQUIRE(connectionController.getProxyHost() == "Test");
         REQUIRE(connectionController.getProxyPort() == 4);
@@ -205,7 +168,7 @@ TEST_CASE( "ConnectionControllerEcho", "[connection]" ) {
         //When join is called, it sets the given parameter (@param joinCalled).
         AsyncSessionMock mockSessionImpl(joinCalled);
         std::weak_ptr<exa::reader::Reader> readerWeak =
-                connectionController.startReading(mockSessionImpl, exa::ProtocolType::http);
+                connectionController.startReading(mockSessionImpl, protocolType);
         REQUIRE(!readerWeak.expired());
         auto reader = readerWeak.lock();
 
@@ -229,6 +192,14 @@ TEST_CASE( "ConnectionControllerEcho", "[connection]" ) {
         //No error is supposed to happen in this test.
         REQUIRE(!errorCalled);
     }
+}
+
+TEST_CASE( "ConnectionControllerEchoHttp", "[connection]" ) {
+    testConnectionControllerEcho(exa::ProtocolType::http);
+}
+
+TEST_CASE( "ConnectionControllerEchoHttps", "[connection]" ) {
+    testConnectionControllerEcho(exa::ProtocolType::https);
 }
 
 /**

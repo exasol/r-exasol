@@ -1,17 +1,17 @@
 #include <openssl/bio.h>
 #include <openssl/ssl.h>
 #include <openssl/err.h>
-#include <utility>
-#include <string>
-#include <fstream>
 #include <r_exasol/connection/socket/ssl/certificate.h>
-#include "socket.h"
-#include "socket_impl.h"
+#include <r_exasol/connection/socket/socket.h>
+
 
 #ifndef R_EXASOL_SSL_SOCKET_IMPL_H
 #define R_EXASOL_SSL_SOCKET_IMPL_H
 
 namespace exa {
+
+    class SocketImpl;
+
     class SSLSocketImpl : public Socket {
     public:
         explicit SSLSocketImpl(SocketImpl & socket);

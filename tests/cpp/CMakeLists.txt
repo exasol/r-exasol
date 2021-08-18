@@ -74,5 +74,5 @@ else()
     target_link_libraries(r_exasol PRIVATE Catch2::Catch2 OpenSSL::SSL)
 endif()
 
-set(TEST_EXEC "python3" "${CMAKE_SOURCE_DIR}/python_server_tests.py")
+set(TEST_EXEC "python3" "${CMAKE_SOURCE_DIR}/python/python_tests.py")
 add_test(NAME r_exasol COMMAND ${TEST_EXEC})

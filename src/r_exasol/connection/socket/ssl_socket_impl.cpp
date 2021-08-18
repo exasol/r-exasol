@@ -1,7 +1,7 @@
 #include <r_exasol/connection/socket/ssl_socket_impl.h>
+#include <r_exasol/connection/socket/socket_impl.h>
 #include <r_exasol/algorithm/repeating_buffer_fill.h>
 #include <r_exasol/external/socket_api.h>
-
 
 size_t exa::SSLSocketImpl::recv(void *buf, size_t len) {
 
@@ -11,6 +11,7 @@ size_t exa::SSLSocketImpl::recv(void *buf, size_t len) {
     auto sslRead = std::bind(::SSL_read, mSsl,  _1, _2);
     bool success =
             exa::algo::repeatingBufferFill<char*>(buffer, buffer + len, sslRead);
+
     return success ? len : -1;
 }
 
@@ -21,11 +22,11 @@ ssize_t exa::SSLSocketImpl::send(const void *buf, size_t len) {
 }
 
 void exa::SSLSocketImpl::shutdownWr() {
-    SSL_shutdown(mSsl);
+    ::SSL_shutdown(mSsl);
 }
 
 void exa::SSLSocketImpl::shutdownRdWr() {
-    SSL_shutdown(mSsl);
+    ::SSL_shutdown(mSsl);
 }
 
 exa::SSLSocketImpl::SSLSocketImpl(SocketImpl & socket) {
