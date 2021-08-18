@@ -39,6 +39,9 @@ ssize_t re::HttpChunkReader::read_next_chunk() {
                 //We should not treat as error, but jump to end and return -1.
                 throw ConnectionFinished();
             }
+            if (mChunk.chunk_buf[pos] == '\r') {
+                mChunk.chunk_buf[pos] = '\0';
+            }
             if (mChunk.chunk_buf[pos] == '\n') {
                 break;
             }
@@ -47,10 +50,16 @@ ssize_t re::HttpChunkReader::read_next_chunk() {
         if (pos > 19) {
             throw exa::ConnectionException("buffer length exceed size");
         }
-
         mChunk.chunk_buf[pos] = '\0';
-        buflen = -1;
 
+        //Here is a difference between Http and Https.
+        //With Http it might happen, that no more chunks are available and the server already closed the connection.
+        //With Https, the server will send a chunk with empty chunk length (\r\n).
+        if ('\0' == mChunk.chunk_buf[0]) {
+            throw ConnectionFinished();
+        }
+
+        buflen = 0;
         if (::sscanf(mChunk.chunk_buf, "%x", &buflen) < 1) {
             throw exa::ConnectionException("invalid buffer size provided");
         }
