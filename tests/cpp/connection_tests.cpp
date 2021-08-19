@@ -29,7 +29,8 @@ void testConnectionControllerImport(exa::ProtocolType protocolType) {
     });
 
     //Connection to remote (Python program) and read meta data (hostname = Test, port number = 4)
-    const bool retVal = connectionController.connect(protocolType, test_utils::host, test_utils::PORT);
+    const bool retVal = connectionController.connect(protocolType, test_utils::host,
+                                                     test_utils::PORT, test_utils::getCertificate());
     REQUIRE(retVal);
     REQUIRE(connectionController.getProxyHost() == "Test");
     REQUIRE(connectionController.getProxyPort() == 4);
@@ -40,8 +41,7 @@ void testConnectionControllerImport(exa::ProtocolType protocolType) {
     AsyncSessionMock mockSessionImpl(joinCalled);
 
     //Create reader
-    std::weak_ptr<exa::reader::Reader> readerWeak =
-            connectionController.startReading(mockSessionImpl, exa::ProtocolType::http);
+    std::weak_ptr<exa::reader::Reader> readerWeak = connectionController.startReading(mockSessionImpl);
     REQUIRE(!readerWeak.expired());
     auto reader = readerWeak.lock();
 
@@ -105,7 +105,8 @@ void testConnectionControllerEcho(exa::ProtocolType protocolType) {
         });
         bool joinCalled(false);
         //Connection to remote (Python program) and read meta data (hostname = Test, port number = 4)
-        const bool retVal = connectionController.connect(protocolType, test_utils::host, test_utils::PORT);
+        const bool retVal = connectionController.connect(protocolType, test_utils::host,
+                                                         test_utils::PORT, test_utils::getCertificate());
         REQUIRE(retVal);
         REQUIRE(connectionController.getProxyHost() == "Test");
         REQUIRE(connectionController.getProxyPort() == 4);
@@ -116,8 +117,7 @@ void testConnectionControllerEcho(exa::ProtocolType protocolType) {
         AsyncSessionMock mockSessionImpl(joinCalled);
 
         //create writer
-        std::weak_ptr<exa::writer::Writer> writer_weak =
-                connectionController.startWriting(mockSessionImpl, protocolType);
+        std::weak_ptr<exa::writer::Writer> writer_weak = connectionController.startWriting(mockSessionImpl);
         REQUIRE(!writer_weak.expired());
         auto writer = writer_weak.lock();
 
@@ -158,7 +158,7 @@ void testConnectionControllerEcho(exa::ProtocolType protocolType) {
         });
 
         //Connection to remote (Python program) and read meta data (hostname = Test, port number = 4)
-        const bool retVal = connectionController.connect(protocolType, test_utils::host, test_utils::PORT);
+        const bool retVal = connectionController.connect(protocolType, test_utils::host, test_utils::PORT, test_utils::getCertificate());
         REQUIRE(retVal);
         REQUIRE(connectionController.getProxyHost() == "Test");
         REQUIRE(connectionController.getProxyPort() == 4);
@@ -167,8 +167,7 @@ void testConnectionControllerEcho(exa::ProtocolType protocolType) {
         //This implementation does nothing in the background and returns immediately.
         //When join is called, it sets the given parameter (@param joinCalled).
         AsyncSessionMock mockSessionImpl(joinCalled);
-        std::weak_ptr<exa::reader::Reader> readerWeak =
-                connectionController.startReading(mockSessionImpl, protocolType);
+        std::weak_ptr<exa::reader::Reader> readerWeak = connectionController.startReading(mockSessionImpl);
         REQUIRE(!readerWeak.expired());
         auto reader = readerWeak.lock();
 
@@ -220,7 +219,8 @@ TEST_CASE( "ConnectionControllerImportWithError", "[connection]" ) {
         });
 
         //Connection to remote (Python program) and try to read meta data (hostname = Test, port number = 4)
-        const bool retVal = connectionController.connect(exa::ProtocolType::http, test_utils::host, test_utils::PORT);
+        const bool retVal = connectionController.connect(exa::ProtocolType::http, test_utils::host,
+                                                         test_utils::PORT, test_utils::getCertificate());
         //Server aborted connection before sending meta data.
         REQUIRE(!retVal);
 
@@ -240,7 +240,8 @@ TEST_CASE( "ConnectionControllerImportWithError", "[connection]" ) {
         });
 
         //Connection to remote (Python program) and try to read meta data (hostname = Test, port number = 4)
-        const bool retVal = newConnectionController.connect(exa::ProtocolType::http, test_utils::host, test_utils::PORT);
+        const bool retVal = newConnectionController.connect(exa::ProtocolType::http, test_utils::host,
+                                                            test_utils::PORT, test_utils::getCertificate());
         bool joinCalled(false);
         REQUIRE(retVal);
         REQUIRE(newConnectionController.getProxyHost() == "Test");
@@ -253,8 +254,7 @@ TEST_CASE( "ConnectionControllerImportWithError", "[connection]" ) {
         AsyncSessionMock mockSessionImpl(joinCalled);
 
         //Create reader
-        std::weak_ptr<exa::reader::Reader> readerWeak =
-                newConnectionController.startReading(mockSessionImpl, exa::ProtocolType::http);
+        std::weak_ptr<exa::reader::Reader> readerWeak = newConnectionController.startReading(mockSessionImpl);
         REQUIRE(!readerWeak.expired());
         auto reader = readerWeak.lock();
 
@@ -293,4 +293,55 @@ TEST_CASE( "ConnectionControllerImportWithError", "[connection]" ) {
         //No error is supposed to happen in this part of the test
         REQUIRE(!errorCalled);
     }
+}
+
+/**
+ * Purpose of this test is to verify behavior of HttpChunkReader:
+ * 1. Testing reading of the HttpHeader
+ * 2. Testing correct reading of the Http payload (chunk), by comparing content (@see test_utils::createTestString())
+ */
+void testHttpProtocol(std::shared_ptr<exa::Socket> socket) {
+    exa::Chunk chunk{};
+
+    //Create reader instance
+    std::unique_ptr<exa::reader::HttpChunkReader> reader = std::make_unique<exa::reader::HttpChunkReader>(socket, chunk);
+
+    //This will read the Http Header.
+    reader->start();
+
+    //Create test data
+    std::vector<char> buffer(100);
+    std::string testString = test_utils::createTestString(); //returns 220 bytes of test data
+
+    //Read first 100 bytes of data from remote (Python program) and compare content
+    size_t sizeReceived = reader->pipe_read(buffer.data(), 1, buffer.size());
+    REQUIRE(sizeReceived == buffer.size());
+    std::string strRep(buffer.data(), buffer.size());
+    REQUIRE(testString.substr(0, 100) == strRep);
+
+    //Read next 100 bytes and compare content
+    sizeReceived = reader->pipe_read(buffer.data(), 1, buffer.size());
+    REQUIRE(sizeReceived == buffer.size());
+    strRep = std::string(buffer.data(), buffer.size());
+    REQUIRE(testString.substr(100, 100) == strRep);
+
+    //Read last 20 bytes and compare content
+    sizeReceived = reader->pipe_read(buffer.data(), 1, 20);
+    REQUIRE(sizeReceived == 20);
+    strRep = std::string(buffer.data(), 20);
+    REQUIRE(testString.substr(200, 20) == strRep);
+
+    //Read terminating 0
+    sizeReceived = reader->pipe_read(buffer.data(), 1, buffer.size());
+    REQUIRE(sizeReceived == 0);
+    socket->shutdownRdWr();
+}
+
+TEST_CASE( "ProtocolHttp", "[connection]" ) {
+    testHttpProtocol(test_utils::createSocket());
+}
+
+
+TEST_CASE( "ProtocolHttps", "[connection]" ) {
+    testHttpProtocol(test_utils::createSecureSocket());
 }

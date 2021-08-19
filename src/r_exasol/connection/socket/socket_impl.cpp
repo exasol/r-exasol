@@ -87,6 +87,6 @@ exa::SocketImpl::~SocketImpl() {
     }
 }
 
-tSocket exa::SocketImpl::transferOwnership() {
+tSocket exa::SocketImpl::detach() {
     return std::exchange(mSocket, -1);
 }

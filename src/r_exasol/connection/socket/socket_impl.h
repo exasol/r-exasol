@@ -24,7 +24,7 @@ namespace exa {
         void shutdownWr() override;
         void shutdownRdWr() override;
 
-        tSocket transferOwnership();
+        tSocket detach();
 
     private:
         tSocket mSocket;

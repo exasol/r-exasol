@@ -11,7 +11,7 @@ namespace exa {
             Certificate(const Certificate&) = delete;
             Certificate& operator=(const Certificate&) = delete;
             ~Certificate();
-            bool mkcert(int bits, int serial, int days);
+            bool mkcert(int bits = 2048, int serial = 0, int days = 365);
             void apply(SSL_CTX *ctx) const;
             bool isValid() const;
         private:

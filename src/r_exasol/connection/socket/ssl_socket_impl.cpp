@@ -43,7 +43,7 @@ exa::SSLSocketImpl::SSLSocketImpl(SocketImpl & socket, const ssl::Certificate & 
     mSsl = nullptr;
     mSsl = ::SSL_new(mCtx);
     ::SSL_set_mode(mSsl, SSL_MODE_AUTO_RETRY);
-    ::SSL_set_fd(mSsl, socket.transferOwnership());
+    ::SSL_set_fd(mSsl, socket.detach());
     ::SSL_set_accept_state(mSsl);
 }
 

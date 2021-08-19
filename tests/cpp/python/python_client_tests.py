@@ -1,6 +1,7 @@
 import socket
 import string
 import subprocess
+import http.client
 
 import socket_wrapper
 
@@ -162,3 +163,50 @@ def con_controller_echo_test(protocol: string):
     except socket.error:
         pass # Under MacOS shutdown can throw an exception if the client has closed the socket already
     assert p_unit_test.returncode == 0
+
+
+def httpTest(protocol: string):
+    serversocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    serversocket.bind(("localhost", 5000))
+    # become a server socket
+    serversocket.listen(5)
+
+    p_unit_test = subprocess.Popen(["./r_exasol", "Protocol" + protocol])
+
+    (clientsocket, address) = serversocket.accept()
+    clientsocket = socket_wrapper.wrap(clientsocket, protocol)
+
+    class TestHttpConnection(http.client.HTTPConnection):
+
+        def _mock_connection(self, _address, _timeout, _source_address):
+            return self._mocked_socket
+
+        def __init__(self, s, host: str):
+            super().__init__(host)
+            self._mocked_socket = s
+            self._create_connection = self._mock_connection
+
+    testClient = TestHttpConnection(clientsocket, "localhost")
+    testClient.connect()
+    testClient.putrequest('PUT', '/put')
+    testClient.putheader('Transfer-Encoding', 'chunked')
+    testClient.putheader('Connection', 'Keep-Alive')
+    testClient.putheader('Cache-Control', 'no-cache')
+    testClient.endheaders()
+    data = 'CHUNK DATA;' * 20
+    b = bytearray(f'{hex(len(data))}\r\n', 'UTF-8')
+    testClient.send(b)
+    d = bytearray(f"{data}\r\n", 'UTF-8')
+    testClient.send(d)
+
+    # Send zer termination
+    b = bytearray(f'{0}\r\n\r\n', 'UTF-8')
+    testClient.send(b)
+
+    r = testClient.getresponse()
+    assert r.status == 200
+    p_unit_test.wait()
+
+    testClient.close()
+    serversocket.close()
+    assert  p_unit_test.returncode == 0

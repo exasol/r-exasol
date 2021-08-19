@@ -17,6 +17,7 @@ if __name__ == "__main__":
         python_http_tests.reading_test_big(protocol)
         python_client_tests.con_controller_read_test(protocol)
         python_client_tests.con_controller_echo_test(protocol)
+        python_client_tests.httpTest(protocol)
     python_async_tests.reading_async_test()
     python_async_tests.reading_async_test_abort()
     python_async_tests.writing_async_test()

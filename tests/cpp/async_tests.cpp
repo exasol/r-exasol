@@ -24,7 +24,8 @@ TEST_CASE( "ReaderCloseConnection", "[async]" ) {
         errorWasCalled = true;
     });
     //Connection to remote (Python program) and read meta data (hostname = Test, port number = 4)
-    const bool retVal = connectionController.connect(exa::ProtocolType::http, test_utils::host, test_utils::PORT);
+    const bool retVal = connectionController.connect(exa::ProtocolType::http, test_utils::host,
+                                                     test_utils::PORT, test_utils::getCertificate());
     REQUIRE(retVal);
     REQUIRE(connectionController.getProxyHost() == "Test");
     REQUIRE(connectionController.getProxyPort() == 4);
@@ -36,7 +37,7 @@ TEST_CASE( "ReaderCloseConnection", "[async]" ) {
         const bool retVal = lock == "FINISHED";
         return retVal;});
     //Create reader instance
-    std::weak_ptr<exa::reader::Reader> readerWeak = connectionController.startReading(mockSessionImpl, exa::ProtocolType::http);
+    std::weak_ptr<exa::reader::Reader> readerWeak = connectionController.startReading(mockSessionImpl);
     REQUIRE(!readerWeak.expired());
     auto reader = readerWeak.lock();
 
@@ -92,7 +93,8 @@ TEST_CASE( "ReaderCloseConnectionAbort", "[async]" ) {
         errorWasCalled = true;
     });
     //Connection to remote (Python program) and read meta data (hostname = Test, port number = 4)
-    const bool retVal = connectionController.connect(exa::ProtocolType::http, test_utils::host, test_utils::PORT);
+    const bool retVal = connectionController.connect(exa::ProtocolType::http, test_utils::host,
+                                                     test_utils::PORT, test_utils::getCertificate());
     REQUIRE(retVal);
     REQUIRE(connectionController.getProxyHost() == "Test");
     REQUIRE(connectionController.getProxyPort() == 4);
@@ -105,7 +107,7 @@ TEST_CASE( "ReaderCloseConnectionAbort", "[async]" ) {
         return retVal;});
 
     //Create reader instance
-    std::weak_ptr<exa::reader::Reader> readerWeak = connectionController.startReading(mockSessionImpl, exa::ProtocolType::http);
+    std::weak_ptr<exa::reader::Reader> readerWeak = connectionController.startReading(mockSessionImpl);
     REQUIRE(!readerWeak.expired());
     auto reader = readerWeak.lock();
 
@@ -162,7 +164,8 @@ TEST_CASE( "WriterCloseConnection", "[async]" ) {
     });
 
     //Connection to remote (Python program) and read meta data (hostname = Test, port number = 4)
-    const bool retVal = connectionController.connect(exa::ProtocolType::http, test_utils::host, test_utils::PORT);
+    const bool retVal = connectionController.connect(exa::ProtocolType::http, test_utils::host,
+                                                     test_utils::PORT, test_utils::getCertificate());
     REQUIRE(retVal);
     REQUIRE(connectionController.getProxyHost() == "Test");
     REQUIRE(connectionController.getProxyPort() == 4);
@@ -177,7 +180,7 @@ TEST_CASE( "WriterCloseConnection", "[async]" ) {
         return retVal;});
 
     //Create writer instance
-    std::weak_ptr<exa::writer::Writer> writer_weak = connectionController.startWriting(mockSessionImpl, exa::ProtocolType::http);
+    std::weak_ptr<exa::writer::Writer> writer_weak = connectionController.startWriting(mockSessionImpl);
     REQUIRE(!writer_weak.expired());
     auto writer = writer_weak.lock();
 
@@ -216,7 +219,6 @@ TEST_CASE( "WriterCloseConnection", "[async]" ) {
  * If an error occurs on server side, we assume that the error function will be called.
  */
 TEST_CASE( "WriterCloseConnectionAbort", "[async]" ) {
-
     exa::ConnectionFactoryImpl factory;
     bool errorWasCalled = false;
     //Instantiate controller and declare error callback as a lambda.
@@ -226,7 +228,8 @@ TEST_CASE( "WriterCloseConnectionAbort", "[async]" ) {
     });
 
     //Connection to remote (Python program) and read meta data (hostname = Test, port number = 4)
-    const bool retVal = connectionController.connect(exa::ProtocolType::http, test_utils::host, test_utils::PORT);
+    const bool retVal = connectionController.connect(exa::ProtocolType::http, test_utils::host,
+                                                     test_utils::PORT, test_utils::getCertificate());
     REQUIRE(retVal);
     REQUIRE(connectionController.getProxyHost() == "Test");
     REQUIRE(connectionController.getProxyPort() == 4);
@@ -241,7 +244,7 @@ TEST_CASE( "WriterCloseConnectionAbort", "[async]" ) {
         return retVal;});
 
     //Create writer instance
-    std::weak_ptr<exa::writer::Writer> writer_weak = connectionController.startWriting(mockSessionImpl, exa::ProtocolType::http);
+    std::weak_ptr<exa::writer::Writer> writer_weak = connectionController.startWriting(mockSessionImpl);
     REQUIRE(!writer_weak.expired());
     auto writer = writer_weak.lock();
 
