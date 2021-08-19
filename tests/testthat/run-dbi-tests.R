@@ -195,3 +195,13 @@ test_that("dbWriteTable imports dataframe with mixed characters", {
   expect_type(result$name, "character")
   dbDisconnect(con)
 })
+
+#CLEANUP
+ctx <- DBItest::get_default_context()
+con <- DBItest:::connect(ctx)
+dbSendQuery(con, "DROP SCHEMA IF EXISTS TESTSCHEMA CASCADE")
+schemas <- dbGetQuery(con, "SELECT SCHEMA_NAME FROM SYS.EXA_ALL_SCHEMAS WHERE SCHEMA_NAME LIKE '%CREATED_BY_R'")
+for(schema in schemas[,1]) {
+  q <- paste0("DROP SCHEMA IF EXISTS ", schema, " CASCADE")
+  dbSendQuery(con, q)
+}

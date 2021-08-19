@@ -48,10 +48,16 @@ SEXP asyncRODBCQueryFinish(SEXP checkWasDone) {
     return ScalarInteger(retVal);
 }
 
+
+SEXP asyncCreateCertificate() {
+    return createCertificate();
+}
+
 #include <R_ext/Rdynload.h>
 
 R_CallMethodDef CallEntries[] = {
     {"asyncRODBCIOStart", (DL_FUNC) &asyncRODBCIOStart, 3},
+    {"asyncCreateCertificate", (DL_FUNC) &asyncCreateCertificate, 0},
     {"asyncRODBCProxyHost", (DL_FUNC) &asyncRODBCProxyHost, 0},
     {"asyncRODBCQueryStart", (DL_FUNC) &asyncRODBCQueryStart, 4},
     {"asyncRODBCProxyPort", (DL_FUNC) &asyncRODBCProxyPort, 0},

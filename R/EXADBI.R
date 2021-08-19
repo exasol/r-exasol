@@ -618,7 +618,9 @@ EXANewConnection <- function(# change defaults also above
 
     con_str <- paste0(con_str,";autocommit=",autocommit)
     con_str <- paste0(con_str, ";Encrypt=", ifelse(encryption == "Y", "yes", "no"))
-
+    if (encryption == "Y") {
+      .Call(C_asyncCreateCertificate)
+    }
     # dots
     d <- list(...)
     while (length(d) > 0) {

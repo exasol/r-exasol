@@ -8,6 +8,8 @@
 #include <r_exasol/rconnection/r_reader_connection.h>
 #include <r_exasol/rconnection/r_writer_connection.h>
 #include <r_exasol/odbc/odbc_session_info_impl.h>
+#include <r_exasol/ssl/certificate.h>
+#include <r_exasol/ssl/certificate_exception.h>
 
 namespace exa {
     void onError(std::string e) {
@@ -18,7 +20,7 @@ namespace exa {
 int exa::ConnectionContext::initConnection(const char *host, int port, const char* protocol) {
     destroyConnection(false);
     mConnectionController = std::make_unique<exa::ConnectionController>(mConnectionFactory, exa::onError);
-    return mConnectionController->connect(convertProtocol(protocol), host, static_cast<uint16_t>(port)) ? 0 : -1;
+    return mConnectionController->connect(convertProtocol(protocol), host, static_cast<uint16_t>(port), mCertificate) ? 0 : -1;
 }
 
 SEXP exa::ConnectionContext::copyHostName() {
@@ -60,8 +62,8 @@ int exa::ConnectionContext::destroyConnection(bool checkDone) {
 SEXP exa::ConnectionContext::createReadConnection(::pRODBCHandle handle, ::SQLCHAR *query, const char* protocol) {
     SEXP retVal = nullptr;
     if (mConnectionController) {
-        std::weak_ptr<exa::reader::Reader> reader = mConnectionController->startReading(exa::OdbcSessionInfoImpl(handle, query),
-                                                                                        convertProtocol(protocol));
+        std::weak_ptr<exa::reader::Reader> reader =
+                mConnectionController->startReading(exa::OdbcSessionInfoImpl(handle, query));
         if (!reader.expired()) {
             auto readerConnection = std::make_unique<exa::rconnection::RReaderConnection>(reader);
             retVal = readerConnection->create();
@@ -74,8 +76,8 @@ SEXP exa::ConnectionContext::createReadConnection(::pRODBCHandle handle, ::SQLCH
 SEXP exa::ConnectionContext::createWriteConnection(::pRODBCHandle handle, ::SQLCHAR *query, const char* protocol) {
     SEXP retVal = nullptr;
     if (mConnectionController) {
-        std::weak_ptr<exa::writer::Writer> writer = mConnectionController->startWriting(exa::OdbcSessionInfoImpl(handle, query),
-                                                                                        convertProtocol(protocol));
+        std::weak_ptr<exa::writer::Writer> writer =
+                mConnectionController->startWriting(exa::OdbcSessionInfoImpl(handle, query));
         if (!writer.expired()) {
             auto writeConnection = std::make_unique<exa::rconnection::RWriterConnection>(writer);
             retVal = writeConnection->create();
@@ -93,7 +95,23 @@ exa::ProtocolType exa::ConnectionContext::convertProtocol(const char *protocol) 
     else if (0 == ::strcmp("https", protocol)) {
         retVal = ProtocolType::https;
     } else {
-        ::error("Unknown protocol:", protocol);
+        ::error("Unknown protocol:%s", protocol);
     }
     return retVal;
+}
+
+SEXP exa::ConnectionContext::createCertificate() {
+    bool success = true;
+    try {
+        //We create one certificate for the lifetime of the library.
+        //In other words: If the client creates different connections, the same certificate will be used.
+        if (!mCertificate.isValid()) {
+            mCertificate.mkcert(2048, 0, 365);
+        }
+    } catch (const exa::ssl::CertificateException & ex) {
+        success = false;
+        ::error ("Error creating certificate:%s", ex.what());
+    }
+    return success ? ScalarInteger(0) : ScalarInteger(-1);
+
 }

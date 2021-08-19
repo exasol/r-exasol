@@ -1,6 +1,5 @@
 #include <r_exasol/connection/connection_controller.h>
 #include <r_exasol/connection/connection_exception.h>
-#include <r_exasol/connection/protocol/meta_info_reader.h>
 #include <r_exasol/connection/async_executor/async_executor_exception.h>
 #include <cassert>
 #include <r_exasol/connection/protocol/http/conn/http_connection_establisher.h>
@@ -13,10 +12,9 @@ exa::ConnectionController::ConnectionController(ConnectionFactory &connectionFac
 : mConnectionFactory(connectionFactory)
 , mErrorHandler(errorHandler) {}
 
-std::weak_ptr<exa::reader::Reader> exa::ConnectionController::startReading(const AsyncExecutorSessionInfo& odbcSessionInfo,
-                                                                           ProtocolType protocolType) {
+std::weak_ptr<exa::reader::Reader> exa::ConnectionController::startReading(const AsyncExecutorSessionInfo& odbcSessionInfo) {
     std::weak_ptr<exa::reader::Reader> retVal;
-    if (mConnectionInfo.socket && isValidProtocol(protocolType)) {
+    if (mConnectionInfo.socket) {
         mOdbcAsyncExecutor = odbcSessionInfo.createAsyncExecutor();
 
         try {
@@ -31,17 +29,14 @@ std::weak_ptr<exa::reader::Reader> exa::ConnectionController::startReading(const
         }
     } else if (!mConnectionInfo.socket) {
         mErrorHandler("Connection not established");
-    } else if (protocolType != ProtocolType::http) {
-        mErrorHandler("Protocol not supported");
     }
     return retVal;
 }
 
-std::weak_ptr<exa::writer::Writer> exa::ConnectionController::startWriting(const AsyncExecutorSessionInfo& odbcSessionInfo,
-                                                                           exa::ProtocolType protocolType) {
+std::weak_ptr<exa::writer::Writer> exa::ConnectionController::startWriting(const AsyncExecutorSessionInfo& odbcSessionInfo) {
     std::weak_ptr<exa::writer::Writer> retVal;
 
-    if (mConnectionInfo.socket && isValidProtocol(protocolType)) {
+    if (mConnectionInfo.socket) {
         mOdbcAsyncExecutor = odbcSessionInfo.createAsyncExecutor();
         try {
             mOdbcAsyncExecutor->execute([this]() { onOdbcError(); });
@@ -55,8 +50,6 @@ std::weak_ptr<exa::writer::Writer> exa::ConnectionController::startWriting(const
         }
     } else if (!mConnectionInfo.socket) {
         mErrorHandler("Connection not established");
-    } else if (protocolType != ProtocolType::http) {
-        mErrorHandler("Protocol not supported");
     }
     return retVal;
 }
@@ -91,13 +84,14 @@ void exa::ConnectionController::onOdbcError() {
     }
 }
 
-bool exa::ConnectionController::connect(exa::ProtocolType protocolType, const char *host, uint16_t port) {
+bool exa::ConnectionController::connect(exa::ProtocolType protocolType, const char *host,
+                                        uint16_t port, const ssl::Certificate & certificate) {
     bool success = false;
     if (isValidProtocol(protocolType)) {
         std::unique_ptr<ConnectionEstablisher> conn_est = getConnectionEstablisher(protocolType);
 
         try {
-            mConnectionInfo = conn_est->connect(host, port);
+            mConnectionInfo = conn_est->connect(host, port, certificate);
             success = true;
         } catch(const ConnectionException& ex) {
             mErrorHandler(ex.what());

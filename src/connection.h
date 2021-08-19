@@ -21,6 +21,7 @@ extern "C" {
     extern int destroyConnection(int closeFd);
     extern SEXP createReadConnection(pRODBCHandle handle, SQLCHAR *query, const char * protocol);
     extern SEXP createWriteConnection(pRODBCHandle handle, SQLCHAR *query, const char * protocol);
+    extern SEXP createCertificate();
 
 #ifdef __cplusplus
 }

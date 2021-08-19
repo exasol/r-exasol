@@ -1,7 +1,7 @@
 #include <openssl/bio.h>
 #include <openssl/ssl.h>
 #include <openssl/err.h>
-#include <r_exasol/connection/socket/ssl/certificate.h>
+#include <r_exasol/ssl/certificate.h>
 #include <r_exasol/connection/socket/socket.h>
 
 
@@ -14,7 +14,7 @@ namespace exa {
 
     class SSLSocketImpl : public Socket {
     public:
-        explicit SSLSocketImpl(SocketImpl & socket);
+        explicit SSLSocketImpl(SocketImpl & socket, const ssl::Certificate & certificate);
         ~SSLSocketImpl() override;
         size_t recv(void *buf, size_t len) override;
         ssize_t send(const void *buf, size_t len) override;
@@ -25,7 +25,7 @@ namespace exa {
 
         SSL_CTX * mCtx;
         SSL* mSsl;
-        ssl::Certificate mCertificate;
+        const ssl::Certificate & mCertificate;
     };
 }
 

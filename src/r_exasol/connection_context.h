@@ -24,6 +24,7 @@ namespace exa {
         int destroyConnection(bool checkDone);
         SEXP createReadConnection(::pRODBCHandle handle, ::SQLCHAR *query, const char* protocol);
         SEXP createWriteConnection(::pRODBCHandle handle, ::SQLCHAR *query, const char* protocol);
+        SEXP createCertificate();
 
     private:
         exa::ProtocolType convertProtocol(const char*);
@@ -32,6 +33,7 @@ namespace exa {
         std::unique_ptr <exa::rconnection::RConnection> mConnection;
         std::unique_ptr <exa::ConnectionController> mConnectionController;
         exa::ConnectionFactoryImpl mConnectionFactory;
+        exa::ssl::Certificate mCertificate;
     };
 }
 

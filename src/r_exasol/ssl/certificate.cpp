@@ -1,4 +1,4 @@
-#include <r_exasol/connection/connection_exception.h>
+#include <r_exasol/ssl/certificate_exception.h>
 #include "certificate.h"
 #include <openssl/conf.h>
 #include <openssl/x509v3.h>
@@ -45,46 +45,46 @@ namespace exa {
             X509V3_set_ctx(&ctx, mCert, mCert, nullptr, nullptr, 0);
             ex = X509V3_EXT_conf_nid(nullptr, &ctx, certExtension.mNid, certExtension.mValue);
             if (!ex) {
-                throw ConnectionException("Cannot add extension to certificate.");
+                throw CertificateException("Cannot add extension to certificate.");
             }
             X509_add_ext(mCert,ex,-1);
             X509_EXTENSION_free(ex);
             return *this;
         }
-    }
 
-    struct CertName {
-        CertName(const char * field, int type, const char * bytes)
-        : mField(field)
-        , mType(type)
-        , mBytes(bytes) {}
-        const char * mField;
-        int mType;
-        const char * mBytes;
-    };
+        struct CertName {
+            CertName(const char * field, int type, const char * bytes)
+            : mField(field)
+            , mType(type)
+            , mBytes(bytes) {}
+            const char * mField;
+            int mType;
+            const char * mBytes;
+        };
 
-    class CertNameBuilder  {
-    public:
-        CertNameBuilder(X509_NAME *name) : mName(name) {}
+        class CertNameBuilder  {
+        public:
+            CertNameBuilder(X509_NAME *name) : mName(name) {}
 
-        CertNameBuilder & operator <<(const CertName && certName);
+            CertNameBuilder & operator <<(const CertName && certName);
 
-    private:
-        X509_NAME *mName;
-    };
+        private:
+            X509_NAME *mName;
+        };
 
-    CertNameBuilder &CertNameBuilder::operator<<(const CertName &&certName) {
-        const unsigned char* bytes = reinterpret_cast<const unsigned char *>(certName.mBytes);
-        int ret = X509_NAME_add_entry_by_txt(mName, certName.mField,
-                                         certName.mType, bytes, -1, -1, 0);
-        if (1 != ret) {
-            throw ConnectionException(std::string("cannot set name of certificate for field:") + certName.mField);
+        CertNameBuilder &CertNameBuilder::operator<<(const CertName &&certName) {
+            const unsigned char* bytes = reinterpret_cast<const unsigned char *>(certName.mBytes);
+            int ret = X509_NAME_add_entry_by_txt(mName, certName.mField,
+                                                 certName.mType, bytes, -1, -1, 0);
+            if (1 != ret) {
+                throw CertificateException(std::string("cannot set name of certificate for field:") + certName.mField);
+            }
+            return *this;
         }
-        return *this;
     }
 }
 
-void exa::ssl::Certificate::mkcert(int bits, int serial, int days) {
+bool exa::ssl::Certificate::mkcert(int bits, int serial, int days) {
     X509 *x;
     EVP_PKEY *pk;
     RSA *rsa = nullptr;
@@ -101,11 +101,11 @@ void exa::ssl::Certificate::mkcert(int bits, int serial, int days) {
     int ret = RSA_generate_key_ex(rsa, bits, bn, nullptr);
     BN_free(bn);
     if (!ret) {
-        throw ConnectionException("Error generating RSA key.");
+        throw CertificateException("Error generating RSA key.");
     }
     if (!EVP_PKEY_assign_RSA(pk,rsa))
     {
-        throw ConnectionException("Error assigning RSA key.");
+        throw CertificateException("Error assigning RSA key.");
     }
     rsa=nullptr;
 
@@ -141,7 +141,7 @@ void exa::ssl::Certificate::mkcert(int bits, int serial, int days) {
 
 
     if (!X509_sign(x,pk,EVP_md5())) {
-        throw ConnectionException("Cannot create X509 signature.");
+        throw CertificateException("Cannot create X509 signature.");
     }
     mX509p = x;
     mPkeyp = pk;
@@ -152,14 +152,17 @@ exa::ssl::Certificate::~Certificate() {
     ::EVP_PKEY_free(mPkeyp);
 }
 
-void exa::ssl::Certificate::apply(SSL_CTX *ctx) {
+void exa::ssl::Certificate::apply(SSL_CTX *ctx) const {
     int retVal = ::SSL_CTX_use_certificate(ctx, mX509p);
     if (1 != retVal) {
-        throw ConnectionException("Error assigning certificate.");
+        throw CertificateException("Error assigning certificate.");
     }
     retVal = ::SSL_CTX_use_PrivateKey(ctx, mPkeyp);
     if (1 != retVal) {
-        throw ConnectionException("Error assigning private key.");
+        throw CertificateException("Error assigning private key.");
     }
+}
 
+bool exa::ssl::Certificate::isValid() const {
+    return (mX509p != nullptr && mPkeyp != nullptr);
 }

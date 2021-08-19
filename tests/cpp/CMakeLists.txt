@@ -48,7 +48,7 @@ add_executable(r_exasol
         ../../src/r_exasol/connection/socket/socket_impl.cpp
         ../../src/r_exasol/connection/socket/ssl_socket_impl.h
         ../../src/r_exasol/connection/socket/ssl_socket_impl.cpp
-        ../../src/r_exasol/connection/socket/ssl/certificate.cpp
+        ../../src/r_exasol/ssl/certificate.cpp
         #../../src/exasol.c
         main.cpp
         algo.cpp

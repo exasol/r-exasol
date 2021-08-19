@@ -32,12 +32,16 @@ SEXP createWriteConnection(pRODBCHandle handle, SQLCHAR *query, const char * pro
     return exa::getConnectionContext().createWriteConnection(handle, query, protocol);
 }
 
-extern SEXP copyHostName() {
+SEXP copyHostName() {
     return exa::getConnectionContext().copyHostName();
 }
 
-extern SEXP copyHostPort() {
+SEXP copyHostPort() {
     return exa::getConnectionContext().copyHostPort();
+}
+
+SEXP createCertificate() {
+    return exa::getConnectionContext().createCertificate();
 }
 
 }

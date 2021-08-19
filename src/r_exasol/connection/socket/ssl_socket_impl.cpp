@@ -29,7 +29,8 @@ void exa::SSLSocketImpl::shutdownRdWr() {
     ::SSL_shutdown(mSsl);
 }
 
-exa::SSLSocketImpl::SSLSocketImpl(SocketImpl & socket) {
+exa::SSLSocketImpl::SSLSocketImpl(SocketImpl & socket, const ssl::Certificate & certificate)
+: mCertificate(certificate) {
     ::SSL_load_error_strings();
     ::SSL_library_init();
     ::ERR_load_BIO_strings();
@@ -38,7 +39,6 @@ exa::SSLSocketImpl::SSLSocketImpl(SocketImpl & socket) {
     mCtx = ::SSL_CTX_new(SSLv23_server_method());
     SSL_CTX_set_ecdh_auto(ctx, 1);
 
-    mCertificate.mkcert(2048, 0, 365);
     mCertificate.apply(mCtx);
     mSsl = nullptr;
     mSsl = ::SSL_new(mCtx);

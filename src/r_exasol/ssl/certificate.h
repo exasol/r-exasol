@@ -8,9 +8,12 @@ namespace exa {
         class Certificate {
         public:
             Certificate() = default;
+            Certificate(const Certificate&) = delete;
+            Certificate& operator=(const Certificate&) = delete;
             ~Certificate();
-            void mkcert(int bits, int serial, int days);
-            void apply(SSL_CTX *ctx);
+            bool mkcert(int bits, int serial, int days);
+            void apply(SSL_CTX *ctx) const;
+            bool isValid() const;
         private:
             X509 *mX509p = nullptr;
             EVP_PKEY *mPkeyp = nullptr;
