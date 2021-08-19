@@ -33,5 +33,5 @@ jobs:
           buildWithCMakeArgs: '-- -v'
           buildDirectory: '${{ runner.workspace }}/b/'
       - name: Run Cpp tests
-        run: 'python3 ${{ github.workspace }}/tests/cpp/python_server_tests.py'
+        run: 'python3 ${{ github.workspace }}/tests/cpp/python/python_client_tests.py'
         working-directory: '${{ runner.workspace }}/b/'
