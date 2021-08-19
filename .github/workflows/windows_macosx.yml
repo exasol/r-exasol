@@ -20,10 +20,10 @@ jobs:
           r-version: ${{ matrix.config.r }}
 
       - name: Install openssl MacOsX
-        if: matrix.os == 'macOS-latest'
+        if: matrix.config.os == 'macOS-latest'
         run: brew install openssl
       - name: Install openssl Windows
-        if: matrix.os == 'windows-latest'
+        if: matrix.config.os == 'windows-latest'
         run: choco install openssl
       - name: Query dependencies
         run: |
