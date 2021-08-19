@@ -29,8 +29,7 @@ void testConnectionControllerImport(exa::ProtocolType protocolType) {
     });
 
     //Connection to remote (Python program) and read meta data (hostname = Test, port number = 4)
-    const bool retVal = connectionController.connect(protocolType, test_utils::host,
-                                                     test_utils::PORT, test_utils::getCertificate());
+    const bool retVal = connectionController.connect(protocolType, test_utils::host, test_utils::PORT);
     REQUIRE(retVal);
     REQUIRE(connectionController.getProxyHost() == "Test");
     REQUIRE(connectionController.getProxyPort() == 4);
@@ -105,8 +104,7 @@ void testConnectionControllerEcho(exa::ProtocolType protocolType) {
         });
         bool joinCalled(false);
         //Connection to remote (Python program) and read meta data (hostname = Test, port number = 4)
-        const bool retVal = connectionController.connect(protocolType, test_utils::host,
-                                                         test_utils::PORT, test_utils::getCertificate());
+        const bool retVal = connectionController.connect(protocolType, test_utils::host, test_utils::PORT);
         REQUIRE(retVal);
         REQUIRE(connectionController.getProxyHost() == "Test");
         REQUIRE(connectionController.getProxyPort() == 4);
@@ -158,7 +156,7 @@ void testConnectionControllerEcho(exa::ProtocolType protocolType) {
         });
 
         //Connection to remote (Python program) and read meta data (hostname = Test, port number = 4)
-        const bool retVal = connectionController.connect(protocolType, test_utils::host, test_utils::PORT, test_utils::getCertificate());
+        const bool retVal = connectionController.connect(protocolType, test_utils::host, test_utils::PORT);
         REQUIRE(retVal);
         REQUIRE(connectionController.getProxyHost() == "Test");
         REQUIRE(connectionController.getProxyPort() == 4);
@@ -219,8 +217,7 @@ TEST_CASE( "ConnectionControllerImportWithError", "[connection]" ) {
         });
 
         //Connection to remote (Python program) and try to read meta data (hostname = Test, port number = 4)
-        const bool retVal = connectionController.connect(exa::ProtocolType::http, test_utils::host,
-                                                         test_utils::PORT, test_utils::getCertificate());
+        const bool retVal = connectionController.connect(exa::ProtocolType::http, test_utils::host, test_utils::PORT);
         //Server aborted connection before sending meta data.
         REQUIRE(!retVal);
 
@@ -240,8 +237,7 @@ TEST_CASE( "ConnectionControllerImportWithError", "[connection]" ) {
         });
 
         //Connection to remote (Python program) and try to read meta data (hostname = Test, port number = 4)
-        const bool retVal = newConnectionController.connect(exa::ProtocolType::http, test_utils::host,
-                                                            test_utils::PORT, test_utils::getCertificate());
+        const bool retVal = newConnectionController.connect(exa::ProtocolType::http, test_utils::host, test_utils::PORT);
         bool joinCalled(false);
         REQUIRE(retVal);
         REQUIRE(newConnectionController.getProxyHost() == "Test");

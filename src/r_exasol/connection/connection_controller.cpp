@@ -1,11 +1,7 @@
 #include <r_exasol/connection/connection_controller.h>
 #include <r_exasol/connection/connection_exception.h>
 #include <r_exasol/connection/async_executor/async_executor_exception.h>
-#include <cassert>
-#include <r_exasol/connection/protocol/http/conn/http_connection_establisher.h>
-#include <r_exasol/connection/protocol/https/conn/https_connection_establisher.h>
-#include <thread>
-#include "connection_establisher.h"
+#include <r_exasol/connection/connection_establisher.h>
 
 
 exa::ConnectionController::ConnectionController(ConnectionFactory &connectionFactory, const tErrorFunction & errorHandler)
@@ -84,14 +80,12 @@ void exa::ConnectionController::onOdbcError() {
     }
 }
 
-bool exa::ConnectionController::connect(exa::ProtocolType protocolType, const char *host,
-                                        uint16_t port, const ssl::Certificate & certificate) {
+bool exa::ConnectionController::connect(exa::ProtocolType protocolType, const char *host, uint16_t port) {
     bool success = false;
     if (isValidProtocol(protocolType)) {
-        std::unique_ptr<ConnectionEstablisher> conn_est = getConnectionEstablisher(protocolType);
-
+        std::shared_ptr<ConnectionEstablisher> conn_est = mConnectionFactory.createConnectionEstablisher(protocolType);
         try {
-            mConnectionInfo = conn_est->connect(host, port, certificate);
+            mConnectionInfo = conn_est->connect(host, port);
             success = true;
         } catch(const ConnectionException& ex) {
             mErrorHandler(ex.what());
@@ -102,22 +96,6 @@ bool exa::ConnectionController::connect(exa::ProtocolType protocolType, const ch
         }
     }
     return success;
-}
-
-std::unique_ptr<exa::ConnectionEstablisher>
-exa::ConnectionController::getConnectionEstablisher(const exa::ProtocolType &protocolType) const {
-    std::unique_ptr<ConnectionEstablisher> conn_est;
-    switch (protocolType) {
-        case http:
-            conn_est = std::make_unique<HttpConnectionEstablisher>();
-            break;
-        case https:
-            conn_est = std::make_unique<HttpsConnectionEstablisher>();
-            break;
-        default:
-            assert(false);
-    }
-    return conn_est;
 }
 
 bool exa::ConnectionController::isValidProtocol(exa::ProtocolType protocolType) {

@@ -5,6 +5,8 @@
 #include <r_exasol/connection/writer.h>
 #include <r_exasol/connection/socket/socket.h>
 #include <memory>
+#include "connection_establisher.h"
+#include "protocol_type.h"
 
 namespace exa {
 
@@ -16,6 +18,7 @@ namespace exa {
         virtual ~ConnectionFactory() = default;
         virtual std::shared_ptr<reader::Reader> createHttpReader(std::weak_ptr<Socket>) = 0;
         virtual std::shared_ptr<writer::Writer> createHttpWriter(std::weak_ptr<Socket>) = 0;
+        virtual std::shared_ptr<ConnectionEstablisher> createConnectionEstablisher(ProtocolType protocolType) = 0;
     };
 }
 

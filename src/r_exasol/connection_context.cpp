@@ -8,8 +8,6 @@
 #include <r_exasol/rconnection/r_reader_connection.h>
 #include <r_exasol/rconnection/r_writer_connection.h>
 #include <r_exasol/odbc/odbc_session_info_impl.h>
-#include <r_exasol/ssl/certificate.h>
-#include <r_exasol/ssl/certificate_exception.h>
 
 namespace exa {
     void onError(std::string e) {
@@ -20,7 +18,7 @@ namespace exa {
 int exa::ConnectionContext::initConnection(const char *host, int port, const char* protocol) {
     destroyConnection(false);
     mConnectionController = std::make_unique<exa::ConnectionController>(mConnectionFactory, exa::onError);
-    return mConnectionController->connect(convertProtocol(protocol), host, static_cast<uint16_t>(port), mCertificate) ? 0 : -1;
+    return mConnectionController->connect(convertProtocol(protocol), host, static_cast<uint16_t>(port)) ? 0 : -1;
 }
 
 SEXP exa::ConnectionContext::copyHostName() {
@@ -98,20 +96,4 @@ exa::ProtocolType exa::ConnectionContext::convertProtocol(const char *protocol) 
         ::error("Unknown protocol:%s", protocol);
     }
     return retVal;
-}
-
-SEXP exa::ConnectionContext::createCertificate() {
-    bool success = true;
-    try {
-        //We create one certificate for the lifetime of the library.
-        //In other words: If the client creates different connections, the same certificate will be used.
-        if (!mCertificate.isValid()) {
-            mCertificate.mkcert(2048, 0, 365);
-        }
-    } catch (const exa::ssl::CertificateException & ex) {
-        success = false;
-        ::error ("Error creating certificate:%s", ex.what());
-    }
-    return success ? ScalarInteger(0) : ScalarInteger(-1);
-
 }

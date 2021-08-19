@@ -6,17 +6,14 @@
 #include <r_exasol/connection/async_executor/async_executor_session_info.h>
 #include <r_exasol/connection/error_handler.h>
 #include <r_exasol/connection/connection_info.h>
-#include <r_exasol/ssl/certificate.h>
+#include <r_exasol/connection/protocol_type.h>
 #include <memory>
 
 
 namespace exa {
     class ConnectionEstablisher;
 
-    enum ProtocolType {
-        http = 0,
-        https = 1
-    };
+
 
     /**
      * The ConnectionController establishes the socket connection, reads the metadata (which then can be access
@@ -33,7 +30,7 @@ namespace exa {
          * @param port Host port.
          * @return true if successful, false if an error occurred.
          */
-        bool connect(exa::ProtocolType protocolType, const char* host, uint16_t port, const ssl::Certificate &);
+        bool connect(exa::ProtocolType protocolType, const char* host, uint16_t port);
 
         /**
          * This function triggers the async ODBC statement executor, creates and prepares the reader (for the given protocol).
@@ -61,9 +58,6 @@ namespace exa {
 
     private:
         bool isValidProtocol(ProtocolType protocolType);
-        std::unique_ptr<exa::ConnectionEstablisher>
-        getConnectionEstablisher(const ProtocolType &protocolType) const;
-
 
     private:
         ConnectionFactory & mConnectionFactory;
@@ -72,7 +66,6 @@ namespace exa {
         std::unique_ptr<AsyncExecutor> mOdbcAsyncExecutor;
         ConnectionInfo mConnectionInfo;
         tErrorFunction mErrorHandler;
-
     };
 }
 

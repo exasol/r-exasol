@@ -40,8 +40,4 @@ SEXP copyHostPort() {
     return exa::getConnectionContext().copyHostPort();
 }
 
-SEXP createCertificate() {
-    return exa::getConnectionContext().createCertificate();
-}
-
 }

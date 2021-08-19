@@ -8,7 +8,11 @@
 namespace exa {
     class HttpsConnectionEstablisher : public ConnectionEstablisher {
     public:
-        ConnectionInfo connect(const char *host, uint16_t port, const ssl::Certificate&) override;
+        explicit HttpsConnectionEstablisher(const exa::ssl::Certificate&);
+        ConnectionInfo connect(const char *host, uint16_t port) override;
+
+    private:
+        const ssl::Certificate& mCertificate;
     };
 }
 
