@@ -2141,6 +2141,7 @@ fi
 
 ##Setup OpenSSL
 
+### check RSA/crypto
 ac_ext=c
 ac_cpp='$CPP $CPPFLAGS'
 ac_compile='$CC -c $CFLAGS $CPPFLAGS conftest.$ac_ext >&5'
@@ -3328,44 +3329,6 @@ fi
 done
 
 
-ac_fn_c_check_header_mongrel "$LINENO" "openssl/ssl.h" "ac_cv_header_openssl_ssl_h" "$ac_includes_default"
-if test "x$ac_cv_header_openssl_ssl_h" = xyes; then :
-
-else
-
-  if test "`uname -s`" = Darwin; then
-     { $as_echo "$as_me:${as_lineno-$LINENO}: Missing OpenSSL headers on macOS," >&5
-$as_echo "$as_me: Missing OpenSSL headers on macOS," >&6;}
-     { $as_echo "$as_me:${as_lineno-$LINENO}: attempting to get headers from Apple..." >&5
-$as_echo "$as_me: attempting to get headers from Apple..." >&6;}
-     mkdir tmp
-     cd tmp
-     curl -L https://opensource.apple.com/tarballs/OpenSSL098/OpenSSL098-59.tar.gz | tar fxz -
-     if test -e OpenSSL098-59/src/include/openssl; then
-        mkdir ../src/include
-        mv OpenSSL098-59/src/include/openssl ../src/include
-     else
-        as_fn_error $? "Failed to download OpenSSL sources from Apple. Please install OpenSSL headers before installing PKI." "$LINENO" 5
-     fi
-     cd ..
-     rm -rf tmp
-     CPPFLAGS="-Iinclude -Isrc/include ${CPPFLAGS}"
-     { ac_cv_header_openssl_ssl_h=; unset ac_cv_header_openssl_ssl_h;}
-     ac_fn_c_check_header_mongrel "$LINENO" "openssl/ssl.h" "ac_cv_header_openssl_ssl_h" "$ac_includes_default"
-if test "x$ac_cv_header_openssl_ssl_h" = xyes; then :
-
-else
-  as_fn_error $? "Failed to find usable OpenSSL headers" "$LINENO" 5
-fi
-
-
-  fi
-
-fi
-
-
-
-# check RSA/crypto
 ac_fn_c_check_header_mongrel "$LINENO" "openssl/rsa.h" "ac_cv_header_openssl_rsa_h" "$ac_includes_default"
 if test "x$ac_cv_header_openssl_rsa_h" = xyes; then :
   { $as_echo "$as_me:${as_lineno-$LINENO}: checking for library containing RSA_generate_key_ex" >&5
@@ -3423,84 +3386,18 @@ if test "$ac_res" != no; then :
   test "$ac_res" = "none required" || LIBS="$ac_res $LIBS"
 
 else
-   works=no
-    ## more Darwin woes - Catalina SDK removes crypto, so we have to force
-    ## the .dylib itself from the system since -l only searches in the SDK
-    if test "`uname -s`" = Darwin; then
-      { $as_echo "$as_me:${as_lineno-$LINENO}: Regular linking failed, trying force-link crypto from system location:" >&5
-$as_echo "$as_me: Regular linking failed, trying force-link crypto from system location:" >&6;}
-      for lib in /usr/lib/libcrypto.dylib; do
-        save_LIBS="$LIBS"
-        LIBS="$LIBS $lib"
-	cat confdefs.h - <<_ACEOF >conftest.$ac_ext
-/* end confdefs.h.  */
-/* Define RSA_generate_key_ex to an innocuous variant, in case <limits.h> declares RSA_generate_key_ex.
-   For example, HP-UX 11i <limits.h> declares gettimeofday.  */
-#define RSA_generate_key_ex innocuous_RSA_generate_key_ex
-
-/* System header to define __stub macros and hopefully few prototypes,
-    which can conflict with char RSA_generate_key_ex (); below.
-    Prefer <limits.h> to <assert.h> if __STDC__ is defined, since
-    <limits.h> exists even on freestanding compilers.  */
-
-#ifdef __STDC__
-# include <limits.h>
-#else
-# include <assert.h>
-#endif
-
-#undef RSA_generate_key_ex
-
-/* Override any GCC internal prototype to avoid an error.
-   Use char because int might match the return type of a GCC
-   builtin and then its argument prototype would still apply.  */
-#ifdef __cplusplus
-extern "C"
-#endif
-char RSA_generate_key_ex ();
-/* The GNU C library defines this for functions which it implements
-    to always fail with ENOSYS.  Some functions are actually named
-    something starting with __ and the normal name is an alias.  */
-#if defined __stub_RSA_generate_key_ex || defined __stub___RSA_generate_key_ex
-choke me
-#endif
-
-int
-main ()
-{
-return RSA_generate_key_ex ();
-  ;
-  return 0;
-}
-_ACEOF
-if ac_fn_c_try_link "$LINENO"; then :
-  works=yes
-else
-  LIBS="${save_LIBS}"
+  as_fn_error $? "Cannot find usable crypto library. Please install openssl-dev or equivalent and/or set PKG_LIBS if not in default location." "$LINENO" 5
 fi
-rm -f core conftest.err conftest.$ac_objext \
-    conftest$ac_exeext conftest.$ac_ext
-	if test $works = yes; then
-	   { $as_echo "$as_me:${as_lineno-$LINENO}: Found working library: $lib" >&5
-$as_echo "$as_me: Found working library: $lib" >&6;}
-	   break;
-	fi
-      done
-    fi
-    if test "$works" = no; then
-      as_fn_error $? "Cannot find usable crypto library. Please install openssl-dev or equivalent and/or set PKG_LIBS if not in default location." "$LINENO" 5
-    fi
 
-fi
 
 else
-  as_fn_error $? "Failed to find usable ssl headers. Please install openssl-dev or equivalent and/or set PKG_LIBS/PKG_CPPFLAGS if not in default location." "$LINENO" 5
+  as_fn_error $? "Failed to find usable rsa headers. Please install openssl-dev or equivalent and/or set PKG_LIBS/PKG_CPPFLAGS if not in default location." "$LINENO" 5
 
 fi
 
 
 
-# check SSL support
+# ##check SSL support
 ac_fn_c_check_header_mongrel "$LINENO" "openssl/ssl.h" "ac_cv_header_openssl_ssl_h" "$ac_includes_default"
 if test "x$ac_cv_header_openssl_ssl_h" = xyes; then :
   { $as_echo "$as_me:${as_lineno-$LINENO}: checking for library containing SSL_CTX_load_verify_locations" >&5
@@ -3565,7 +3462,6 @@ else
   as_fn_error $? "Failed to find usable SSL library. Please install openssl-dev or equivalent and/or set PKG_LIBS if not in default location." "$LINENO" 5
 
 fi
-
 
 
 

@@ -28,7 +28,7 @@ fi
 ### check RSA/crypto
 AC_CHECK_HEADER([openssl/rsa.h],
     [AC_SEARCH_LIBS(RSA_generate_key_ex, [crypto ssl openssl],,
-        AC_MSG_ERROR([Cannot find usable crypto library. Please install openssl-dev or equivalent and/or set PKG_LIBS if not in default location.])
+        AC_MSG_ERROR([Cannot find usable crypto library. Please install openssl-dev or equivalent and/or set PKG_LIBS if not in default location.]))
     ],
 [AC_MSG_ERROR([Failed to find usable rsa headers. Please install openssl-dev or equivalent and/or set PKG_LIBS/PKG_CPPFLAGS if not in default location.])]
 )
