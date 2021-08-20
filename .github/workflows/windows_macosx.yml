@@ -21,7 +21,9 @@ jobs:
 
       - name: Install openssl MacOsX
         if: matrix.config.os == 'macOS-latest'
-        run: brew install openssl
+        run: |
+        brew install openssl
+        brew install pkg-config
       - name: Install openssl Windows
         if: matrix.config.os == 'windows-latest'
         run: choco install openssl
