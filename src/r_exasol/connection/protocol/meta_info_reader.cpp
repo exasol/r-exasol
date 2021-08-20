@@ -3,8 +3,6 @@
 #include <r_exasol/connection/connection_exception.h>
 #include <sstream>
 
-#include <r_exasol/external/r.h>
-
 #ifdef _WIN32
 #include <winsock2.h>
 #include <windows.h>
