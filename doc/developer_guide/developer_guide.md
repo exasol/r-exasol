@@ -59,5 +59,20 @@ Finally, ```ConnectionContext``` returns the ```SEXP``` instance (which encapsul
 The communication with ODBC requires access to the connection handle; we get access to this handle by reading the "handle_ptr" attribute in readData.R/writeData.R; please check [here](https://github.com/cran/RODBC/blob/59b0b93bd4947eb7c2c0223b0b45d56bc928d912/src/RODBC.c#L121).
 
 
+#### OpenSSL Dependencies
 
+##### Linux
 
+On Linux we assume that OpenSSL has been installed (for example via ```sudo apt-get install libssl-dev``).
+The build script (configure) checks if the header files and libraries are correctly installed.
+
+The unit tests use CMake, CMake also finds the OpenSSL package on the system.
+
+##### MacOS
+
+t.b.d.
+
+##### Windows
+
+On Windows we leverage the [OpenSSL rwin-repository](https://github.com/rwinlib/openssl) for building the package.
+It provides a static library for OpenSSL, this version is downloaded, unzipped and used for compilation.

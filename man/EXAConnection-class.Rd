@@ -32,6 +32,8 @@ initialise the connection.}
 
 \item{\code{drv_name}}{A string containing the connection driver version.}
 
+\item{\code{encrypted}}{A logical indicating if connection should be encrypted.}
+
 \item{\code{connection.string}}{RODBC}
 
 \item{\code{handle_ptr}}{RODBC}
