@@ -25,20 +25,26 @@ fi
 
 ##Setup OpenSSL
 
+m4_include([./ax_check_openssl.m4])
+AX_CHECK_OPENSSL(, [AC_MSG_ERROR([Cannot find OpenSSL])])
+
+echo OpenSSL Libs = "$OPENSSL_LIBS"
+echo OpenSSL Includes = "$OPENSSL_INCLUDES"
+
 ### check RSA/crypto
-AC_CHECK_HEADER([openssl/rsa.h],
-    [AC_SEARCH_LIBS(RSA_generate_key_ex, [crypto ssl openssl],,
-        AC_MSG_ERROR([Cannot find usable crypto library. Please install openssl-dev or equivalent and/or set PKG_LIBS if not in default location.]))
-    ],
-[AC_MSG_ERROR([Failed to find usable rsa headers. Please install openssl-dev or equivalent and/or set PKG_LIBS/PKG_CPPFLAGS if not in default location.])]
-)
+#AC_CHECK_HEADER([openssl/rsa.h],
+#    [AC_SEARCH_LIBS(RSA_generate_key_ex, [crypto ssl openssl],,
+#        AC_MSG_ERROR([Cannot find usable crypto library. Please install openssl-dev or equivalent and/or set PKG_LIBS if not in default location.]))
+#    ],
+#[AC_MSG_ERROR([Failed to find usable rsa headers. Please install openssl-dev or equivalent and/or set PKG_LIBS/PKG_CPPFLAGS if not in default location.])]
+#)
 
 # ##check SSL support
-AC_CHECK_HEADER([openssl/ssl.h],
-[AC_SEARCH_LIBS(SSL_CTX_load_verify_locations, [ssl openssl],,
-  [AC_MSG_ERROR([Cannot find usable SSL library])])],
-[AC_MSG_ERROR([Failed to find usable SSL library. Please install openssl-dev or equivalent and/or set PKG_LIBS if not in default location.])]
-)
+#AC_CHECK_HEADER([openssl/ssl.h],
+#[AC_SEARCH_LIBS(SSL_CTX_load_verify_locations, [ssl openssl],,
+#  [AC_MSG_ERROR([Cannot find usable SSL library])])],
+#[AC_MSG_ERROR([Failed to find usable SSL library. Please install openssl-dev or equivalent and/or set PKG_LIBS if not in default location.])]
+#)
 
 
 ## Setup RBin
@@ -57,7 +63,7 @@ CPPFLAGS="${CPPFLAGS} -I. ${UNIT_TESTFLAGS_CPPFLAGS}"
 echo "CPPFLAGS:${CPPFLAGS}"
 
 # honor PKG_xx overrides
-LIBS="-lodbc ${LIBS} ${PKG_LIBS}"
+LIBS="-lodbc ${LIBS} ${PKG_LIBS} ${OPENSSL_LIBS}"
 
 ## We are using C++
 AC_LANG(C++)
