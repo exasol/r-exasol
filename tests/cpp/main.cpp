@@ -21,7 +21,7 @@ struct MyListener : Catch::TestEventListenerBase {
 
     using TestEventListenerBase::TestEventListenerBase; // inherit constructor
 
-    void testCaseStarting( Catch::TestCaseInfo const& testInfo ) override {
+    void testCaseStarting(Catch::TestCaseInfo const&) override {
 #ifdef _WIN32
         _sleep(1);
 #else
@@ -29,7 +29,7 @@ struct MyListener : Catch::TestEventListenerBase {
 #endif
     }
 
-    void testCaseEnded( Catch::TestCaseStats const& testCaseStats ) override {
+    void testCaseEnded(Catch::TestCaseStats const&) override {
         // Tear-down after a test case is run
     }
 };

@@ -65,12 +65,13 @@ add_executable(r_exasol
         mocks/CustomAsyncSessionMock.cpp
         mocks/CustomAsyncSessionMock.h)
 
+
 if (WIN32)
-    set (CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -Wa,-mbig-obj")
+    target_compile_options (r_exasol PRIVATE -Wa,-mbig-obj)
     target_link_libraries(r_exasol PRIVATE Catch2::Catch2 wsock32 ws2_32 OpenSSL::SSL)
 else()
-    set (CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -fno-omit-frame-pointer -fsanitize=address")
-    set (CMAKE_LINKER_FLAGS_DEBUG "${CMAKE_LINKER_FLAGS_DEBUG} -fno-omit-frame-pointer -fsanitize=address")
+    target_compile_options (r_exasol PRIVATE -fno-omit-frame-pointer -fsanitize=address -Wall -Wextra -pedantic -Werror)
+    target_link_options (r_exasol PRIVATE -fno-omit-frame-pointer -fsanitize=address)
     target_link_libraries(r_exasol PRIVATE Catch2::Catch2 OpenSSL::SSL)
 endif()
 

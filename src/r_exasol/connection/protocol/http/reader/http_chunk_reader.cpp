@@ -20,7 +20,6 @@ re::HttpChunkReader::HttpChunkReader(std::weak_ptr<Socket> socket, Chunk &chunk)
 
 ssize_t re::HttpChunkReader::read_next_chunk() {
     size_t pos = 0;
-    int buflen, rc;
     static const char *ok_answer =
             "HTTP/1.1 200 OK\r\n"
             "Server: EXASolution R Package\r\n"
@@ -34,7 +33,9 @@ ssize_t re::HttpChunkReader::read_next_chunk() {
 
         for (pos = 0; pos < 20; pos++) {
             mChunk.chunk_buf[pos] = mChunk.chunk_buf[pos + 1] = '\0';
-            if ((rc = socket->recv(&(mChunk.chunk_buf[pos]), 1)) < 1) {
+            //carefully: recv returns an unsigned but, but nevertheless -1 if an error occurs!
+            const int rc = static_cast<int>(socket->recv(&(mChunk.chunk_buf[pos]), 1));
+            if (rc < 1) {
                 //Chunk reader might try to read from socket after stream has fnished.
                 //We should not treat as error, but jump to end and return -1.
                 throw ConnectionFinished();
@@ -59,7 +60,7 @@ ssize_t re::HttpChunkReader::read_next_chunk() {
             throw ConnectionFinished();
         }
 
-        buflen = 0;
+        unsigned int buflen = 0;
         if (::sscanf(mChunk.chunk_buf, "%x", &buflen) < 1) {
             throw exa::ConnectionException("invalid buffer size provided");
         }

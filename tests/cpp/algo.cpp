@@ -12,7 +12,7 @@ TEST_CASE( "repeatingBufferFill", "[algo]" ) {
     static int counter = 0;
     auto bufferFiller = [] (tBuffer::iterator it, int len) {
         const int currentLen = std::min(12, len);
-        for(size_t idx(0); idx < currentLen; idx++) {
+        for(int idx(0); idx < currentLen; idx++) {
             *it++ = counter++;
         }
         return currentLen;
@@ -36,7 +36,7 @@ TEST_CASE( "repeatingBufferFillSmallerBuffer", "[algo]" ) {
     static int counter = 0;
     auto bufferFiller = [] (tBuffer::iterator it, int len) {
         const int currentLen = std::min(12, len);
-        for(size_t idx(0); idx < currentLen; idx++) {
+        for(int idx(0); idx < currentLen; idx++) {
             *it++ = counter++;
         }
         return currentLen;

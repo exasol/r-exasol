@@ -7,8 +7,8 @@ exa::ConnectionInfo exa::HttpConnectionEstablisher::connect(const char *host, ui
     socket->connect(host, port);
     std::pair<std::string, uint16_t> hostInfo = metaInfoReader::read(*socket, host, port);
     return {
-        .proxyHost = hostInfo.first,
-        .proxyPort = hostInfo.second,
-        .socket = socket
+        hostInfo.first,
+        hostInfo.second,
+        socket
     };
 }

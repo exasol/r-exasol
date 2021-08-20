@@ -20,9 +20,9 @@ exa::ConnectionInfo exa::HttpsConnectionEstablisher::connect(const char *host, u
         throw ConnectionException(std::string("Error using certificate for connection:") + ex.what());
     }
     ConnectionInfo connectionInfo = {
-            .proxyHost = hostInfo.first,
-            .proxyPort = hostInfo.second,
-            .socket = sslSocket
+            hostInfo.first,
+            hostInfo.second,
+            sslSocket
     };
     return connectionInfo;
 }
