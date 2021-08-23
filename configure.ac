@@ -26,8 +26,26 @@ fi
 ##Setup OpenSSL
 
 m4_include([./ax_check_openssl.m4])
-AX_CHECK_OPENSSL(, [AC_MSG_ERROR([Cannot find OpenSSL])])
+#AX_CHECK_OPENSSL(, [AC_MSG_ERROR([Cannot find OpenSSL])])
+AX_CHECK_OPENSSL(, [
 
+if test "`uname -s`" = Darwin; then
+  dnl On MacOsX
+  PKG_BREW_NAME="openssl@1.1"
+  brew --version 2>/dev/null
+  if [[ $? -eq 0 ]]; then
+    BREWDIR="`brew --prefix`"
+    with_openssl="$BREWDIR/opt/openssl@1.1"
+    AX_CHECK_OPENSSL(, AC_MSG_ERROR([Cannot find OpenSSL. Please install with "brew install $PKG_BREW_NAME"]))
+  else
+    AC_MSG_ERROR([Cannot find Homebrew])
+  fi  
+else 
+  AC_MSG_ERROR([Cannot find OpenSSL])
+fi
+])
+
+echo "OpenSSL: ${OPENSSL_INCLUDES}"
 
 ## Setup RBin
 RBIN="${R_HOME}/bin/R"
@@ -41,11 +59,11 @@ CPPFLAGS=`"${RBIN}" CMD config CPPFLAGS`
 CXXFLAGS=`"${RBIN}" CMD config CXX14FLAGS`
 CXX="${CXX14} ${CXX14STD}"
 echo "CPPFLAGS:${CPPFLAGS}"
-CPPFLAGS="${CPPFLAGS} -I. ${UNIT_TESTFLAGS_CPPFLAGS}"
+CPPFLAGS="${CPPFLAGS} -I. ${UNIT_TESTFLAGS_CPPFLAGS} ${OPENSSL_INCLUDES}"
 echo "CPPFLAGS:${CPPFLAGS}"
 
 # honor PKG_xx overrides
-LIBS="-lodbc ${LIBS} ${PKG_LIBS} ${OPENSSL_LIBS}"
+LIBS="-lodbc ${LIBS} ${PKG_LIBS} ${OPENSSL_LDFLAGS} ${OPENSSL_LIBS}"
 
 ## We are using C++
 AC_LANG(C++)

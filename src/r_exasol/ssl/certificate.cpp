@@ -3,6 +3,7 @@
 #include <openssl/conf.h>
 #include <openssl/x509v3.h>
 #include <openssl/ssl.h>
+#include <string>
 
 //Code based on OpenSSL demo:
 //https://opensource.apple.com/source/OpenSSL/OpenSSL-22/openssl/demos/x509/mkcert.c
