@@ -617,7 +617,7 @@ EXANewConnection <- function(# change defaults also above
     # autocommit
 
     con_str <- paste0(con_str,";autocommit=",autocommit)
-    con_str <- paste0(con_str, ";Encrypt=", ifelse(encryption == "Y", "yes", "no"))
+    con_str <- paste0(con_str, ";ENCRYPTION=", ifelse(encryption == "Y", "yes", "no"))
     # dots
     d <- list(...)
     while (length(d) > 0) {
