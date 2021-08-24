@@ -89,7 +89,7 @@ TEST_CASE( "ConnectionControllerImportHttps", "[connection]" ) {
 /**
  * Purpose of this test is to verify if we can successful read data after writing to server,
  * with other words we test if no garbage remains in memory after one cycle, and that we can instatiate a clean
- * reaer object after we used a writer object.
+ * reader object after we used a writer object.
  *
  */
 void testConnectionControllerEcho(exa::ProtocolType protocolType) {
