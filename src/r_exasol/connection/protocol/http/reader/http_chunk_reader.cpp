@@ -36,8 +36,8 @@ ssize_t re::HttpChunkReader::read_next_chunk() {
             //carefully: recv returns an unsigned, but nevertheless -1 if an error occurs!
             const int rc = static_cast<int>(socket->recv(&(mChunk.chunk_buf[pos]), 1));
             if (rc < 1) {
-                //Chunk reader might try to read from socket after stream has fnished.
-                //We should not treat as error, but jump to end and return -1.
+                //Chunk reader might try to read from socket after stream has finished.
+                //In this case jump to end and return -1.
                 throw ConnectionFinished();
             }
             if (mChunk.chunk_buf[pos] == '\r') {

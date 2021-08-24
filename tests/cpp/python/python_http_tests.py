@@ -11,7 +11,7 @@ def reading_test(protocol: string):
     # become a server socket
     serversocket.listen(5)
 
-    p_unit_test = subprocess.Popen(["./r_exasol", "Import" + protocol])
+    p_unit_test = subprocess.Popen(["./r_exasol_tests", "Import" + protocol])
 
     (clientsocket, address) = serversocket.accept()
     clientsocket = socket_wrapper.wrap(clientsocket, protocol)
@@ -47,7 +47,7 @@ def reading_test_big(protocol: string):
     # become a server socket
     serversocket.listen(5)
 
-    p_unit_test = subprocess.Popen(["./r_exasol", "ImportBig" + protocol])
+    p_unit_test = subprocess.Popen(["./r_exasol_tests", "ImportBig" + protocol])
 
     (clientsocket, address) = serversocket.accept()
     clientsocket = socket_wrapper.wrap(clientsocket, protocol)
@@ -84,7 +84,7 @@ def writing_test(protocol: string):
     # become a server socket
     serversocket.listen(5)
 
-    p_unit_test = subprocess.Popen(["./r_exasol", "Export" + protocol])
+    p_unit_test = subprocess.Popen(["./r_exasol_tests", "Export" + protocol])
 
     (clientsocket, address) = serversocket.accept()
     clientsocket = socket_wrapper.wrap(clientsocket, protocol)

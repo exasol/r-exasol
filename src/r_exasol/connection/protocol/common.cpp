@@ -21,7 +21,6 @@ namespace exa {
             line[pos++] = data;
             line[pos] = '\0';
             if (data == '\n' && pos > 1 && line[pos-2] == '\r') {
-                //fprintf(stderr, "### got line: %s", line);
                 if (pos == 2) {
                     break; /* header finished */
                 }

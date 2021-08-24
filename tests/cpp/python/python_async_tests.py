@@ -9,7 +9,7 @@ def reading_async_test():
     # become a server socket
     serversocket.listen(5)
 
-    p_unit_test = subprocess.Popen(["./r_exasol", "ReaderCloseConnection"],
+    p_unit_test = subprocess.Popen(["./r_exasol_tests", "ReaderCloseConnection"],
                                    stdout=subprocess.PIPE, stdin=subprocess.PIPE, stderr=subprocess.STDOUT)
 
     (clientsocket, address) = serversocket.accept()
@@ -48,7 +48,7 @@ def reading_async_test_abort():
     # become a server socket
     serversocket.listen(5)
 
-    p_unit_test = subprocess.Popen(["./r_exasol", "ReaderCloseConnectionAbort"],
+    p_unit_test = subprocess.Popen(["./r_exasol_tests", "ReaderCloseConnectionAbort"],
                                    stdout=subprocess.PIPE, stdin=subprocess.PIPE, stderr=subprocess.STDOUT)
 
     (clientsocket, address) = serversocket.accept()
@@ -87,7 +87,7 @@ def writing_async_test():
     # become a server socket
     serversocket.listen(5)
 
-    p_unit_test = subprocess.Popen(["./r_exasol", "WriterCloseConnection"],
+    p_unit_test = subprocess.Popen(["./r_exasol_tests", "WriterCloseConnection"],
                                    stdout=subprocess.PIPE, stdin=subprocess.PIPE, stderr=subprocess.STDOUT)
 
     (clientsocket, address) = serversocket.accept()
@@ -128,7 +128,7 @@ def writing_async_test_abort():
     # become a server socket
     serversocket.listen(5)
 
-    p_unit_test = subprocess.Popen(["./r_exasol", "WriterCloseConnectionAbort"],
+    p_unit_test = subprocess.Popen(["./r_exasol_tests", "WriterCloseConnectionAbort"],
                                    stdout=subprocess.PIPE, stdin=subprocess.PIPE, stderr=subprocess.STDOUT)
 
     (clientsocket, address) = serversocket.accept()

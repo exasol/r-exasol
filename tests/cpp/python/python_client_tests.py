@@ -12,7 +12,7 @@ def con_controller_read_test(protocol: string):
     # become a server socket
     serversocket.listen(5)
 
-    p_unit_test = subprocess.Popen(["./r_exasol", "ConnectionControllerImport" + protocol])
+    p_unit_test = subprocess.Popen(["./r_exasol_tests", "ConnectionControllerImport" + protocol])
 
     (clientsocket, address) = serversocket.accept()
 
@@ -54,7 +54,7 @@ def con_controller_read_test_with_error():
     # become a server socket
     serversocket.listen(5)
 
-    p_unit_test = subprocess.Popen(["./r_exasol", "ConnectionControllerImportWithError"])
+    p_unit_test = subprocess.Popen(["./r_exasol_tests", "ConnectionControllerImportWithError"])
 
     (clientsocket, address) = serversocket.accept()
 
@@ -100,7 +100,7 @@ def con_controller_echo_test(protocol: string):
     # become a server socket
     serversocket.listen(5)
 
-    p_unit_test = subprocess.Popen(["./r_exasol", "ConnectionControllerEcho" + protocol])
+    p_unit_test = subprocess.Popen(["./r_exasol_tests", "ConnectionControllerEcho" + protocol])
 
     (clientsocket, address) = serversocket.accept()
 
@@ -171,7 +171,7 @@ def httpTest(protocol: string):
     # become a server socket
     serversocket.listen(5)
 
-    p_unit_test = subprocess.Popen(["./r_exasol", "Protocol" + protocol])
+    p_unit_test = subprocess.Popen(["./r_exasol_tests", "Protocol" + protocol])
 
     (clientsocket, address) = serversocket.accept()
     clientsocket = socket_wrapper.wrap(clientsocket, protocol)

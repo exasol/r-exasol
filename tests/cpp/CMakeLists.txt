@@ -17,7 +17,7 @@ FetchContent_Declare(
 # CMake 3.14+
 FetchContent_MakeAvailable(catch)
 
-add_executable(r_exasol
+add_executable(r_exasol_tests
         ../../src/r_exasol/connection/protocol/http/reader/http_chunk_reader.cpp
         ../../src/r_exasol/connection/protocol/http/reader/http_chunk_reader.h
         ../../src/r_exasol/connection/protocol/http/writer/http_chunk_writer.cpp
@@ -67,13 +67,13 @@ add_executable(r_exasol
 
 
 if (WIN32)
-    target_compile_options (r_exasol PRIVATE -Wa,-mbig-obj)
-    target_link_libraries(r_exasol PRIVATE Catch2::Catch2 wsock32 ws2_32 OpenSSL::SSL)
+    target_compile_options (r_exasol_tests PRIVATE -Wa,-mbig-obj)
+    target_link_libraries(r_exasol_tests PRIVATE Catch2::Catch2 wsock32 ws2_32 OpenSSL::SSL)
 else()
-    target_compile_options (r_exasol PRIVATE -fno-omit-frame-pointer -fsanitize=address -Wall -Wextra -pedantic -Werror)
-    target_link_options (r_exasol PRIVATE -fno-omit-frame-pointer -fsanitize=address)
-    target_link_libraries(r_exasol PRIVATE Catch2::Catch2 OpenSSL::SSL)
+    target_compile_options (r_exasol_tests PRIVATE -fno-omit-frame-pointer -fsanitize=address -Wall -Wextra -pedantic -Werror)
+    target_link_options (r_exasol_tests PRIVATE -fno-omit-frame-pointer -fsanitize=address)
+    target_link_libraries(r_exasol_tests PRIVATE Catch2::Catch2 OpenSSL::SSL)
 endif()
 
 set(TEST_EXEC "python3" "${CMAKE_SOURCE_DIR}/python/python_tests.py")
-add_test(NAME r_exasol COMMAND ${TEST_EXEC})
+add_test(NAME r_exasol_tests COMMAND ${TEST_EXEC})

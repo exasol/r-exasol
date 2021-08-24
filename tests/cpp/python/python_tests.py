@@ -5,7 +5,7 @@ import python_async_tests
 import python_http_tests
 
 def algo_tests():
-    p_unit_test = subprocess.Popen(["./r_exasol", "[algo]"])
+    p_unit_test = subprocess.Popen(["./r_exasol_tests", "[algo]"])
     p_unit_test.wait()
     assert p_unit_test.returncode == 0
 
