@@ -35,7 +35,7 @@ if test "`uname -s`" = Darwin; then
   brew --version 2>/dev/null
   if [[ $? -eq 0 ]]; then
     BREWDIR="`brew --prefix`"
-    with_openssl="$BREWDIR/opt/openssl@1.1"
+    with_openssl="$BREWDIR/opt/openssl"
     AX_CHECK_OPENSSL(, AC_MSG_ERROR([Cannot find OpenSSL. Please install with "brew install $PKG_BREW_NAME"]))
   else
     AC_MSG_ERROR([Cannot find Homebrew])
