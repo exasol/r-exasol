@@ -19,7 +19,7 @@ namespace exa {
         explicit SocketImpl();
         ~SocketImpl() override;
         void connect(const char* host, uint16_t port);
-        size_t recv(void *buf, size_t len) override;
+        ssize_t recv(void *buf, size_t len) override;
         ssize_t send(const void *buf, size_t len) override;
         void shutdownWr() override;
         void shutdownRdWr() override;

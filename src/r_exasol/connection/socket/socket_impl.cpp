@@ -7,10 +7,10 @@
 exa::SocketImpl::SocketImpl()
 : mSocket(-1) {}
 
-size_t exa::SocketImpl::recv(void *buf, size_t len) {
-    size_t retVal = 0;
+ssize_t exa::SocketImpl::recv(void *buf, size_t len) {
+    ssize_t retVal = 0;
 #ifdef _WIN32
-    retVal = ::recv(mSocket, static_cast<char*>(buf), len, MSG_WAITALL);
+    retVal = ::recv(mSocket, static_cast<char*>(buf), len, MSG_WAITALL); //Winsocket returns SOCKET_ERROR = -1 in case of error! So this should be safe.
 #else
     retVal = ::recv(mSocket, buf, len, MSG_WAITALL);
 #endif

@@ -13,7 +13,7 @@ std::pair<std::string, uint16_t>  exa::metaInfoReader::read(exa::Socket& socket,
 
     struct { int32_t m; int32_t x; int32_t y:32; } proxyHeader = {0x02212102, 1, 1};
     struct { int32_t v; int32_t port; char s[16]; } proxyAnswer = {0, 0, ""};
-    int r = 0;
+    ssize_t r = 0;
     if ((r = socket.send((void*)&proxyHeader, sizeof(proxyHeader))) != sizeof(proxyHeader)) {
         std::stringstream stringStream;
         stringStream << "Failed to send proxy header (" << r << " != " << sizeof(proxyHeader) << ")";

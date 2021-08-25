@@ -34,8 +34,7 @@ ssize_t re::HttpChunkReader::read_next_chunk() {
         for (pos = 0; pos < 20; pos++) {
             mChunk.chunk_buf[pos] = mChunk.chunk_buf[pos + 1] = '\0';
             //carefully: recv returns an unsigned, but nevertheless -1 if an error occurs!
-            const int rc = static_cast<int>(socket->recv(&(mChunk.chunk_buf[pos]), 1));
-            if (rc < 1) {
+            if (socket->recv(&(mChunk.chunk_buf[pos]), 1) < 1) {
                 //Chunk reader might try to read from socket after stream has finished.
                 //In this case jump to end and return -1.
                 throw ConnectionFinished();
@@ -74,14 +73,14 @@ ssize_t re::HttpChunkReader::read_next_chunk() {
                 throw exa::ConnectionException("Buffer received larger than max chunk size.");
             }
 
-            buflen = socket->recv(mChunk.chunk_buf, buflen + 2);
-            if (buflen < 3) {
+            const ssize_t receivedBuffer = socket->recv(mChunk.chunk_buf, buflen + 2);
+            if (receivedBuffer < 3) {
                 throw exa::ConnectionException("invalid buffer length");
             }
 
-            mChunk.chunk_len = buflen - 2;
+            mChunk.chunk_len = receivedBuffer - 2;
             mChunk.chunk_pos = 0;
-            mChunk.chunk_buf[buflen - 2] = '\0';
+            mChunk.chunk_buf[receivedBuffer - 2] = '\0';
             mChunk.chunk_num++;
             retVal = mChunk.chunk_len;
         }

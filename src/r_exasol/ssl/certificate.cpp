@@ -86,8 +86,8 @@ namespace exa {
 }
 
 void exa::ssl::Certificate::mkcert(int bits, int serial, int days) {
-    X509 *x;
-    EVP_PKEY *pk;
+    X509 *x = nullptr;
+    EVP_PKEY *pk = nullptr;
     RSA *rsa = nullptr;
     X509_NAME *name=nullptr;
 

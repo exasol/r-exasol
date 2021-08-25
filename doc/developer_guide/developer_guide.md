@@ -68,9 +68,12 @@ The build script (configure) checks if the header files and libraries are correc
 
 The unit tests use CMake, CMake also finds the OpenSSL package on the system.
 
-##### MacOS
+##### MacOSX
 
-t.b.d.
+On MacOsX we also assume that OpenSSL has been installed (for example via ```brew install openssl``).
+However, the package is not exposed publicly. So the build script (configure) will usually fail to 
+find OpenSSL using the ```pkg-info```; for that case configure checks again for the predefined
+path where brew installs OpenSSL.
 
 ##### Windows
 
