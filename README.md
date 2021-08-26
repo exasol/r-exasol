@@ -107,8 +107,8 @@ library(exasol)
 
 # connect to Exasol DB with an ODBC DSN
 con <- dbConnect("exa", dsn="ExaSolo", schema="test")
-# OR connect to Exasol DB running on default port (8563) with a hostname, default 'sys' user and default schema ('SYS')
-con <- dbConnect("exa", exahost = "<hostname>:8563", uid = "sys", pwd = "<password>")
+# OR connect to Exasol DB running on default port (8563) with a hostname, default 'sys' user and default schema ('SYS'), using an encrypted channel
+con <- dbConnect("exa", exahost = "<hostname>:8563", uid = "sys", pwd = "<password>", encrypted = "Y")
 
 # list all tables in Exasol (returns a character vector).
 dbListTables(con)
