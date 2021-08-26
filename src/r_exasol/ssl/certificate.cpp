@@ -108,6 +108,8 @@ void exa::ssl::Certificate::mkcert(int bits, int serial, int days) {
     {
         throw CertificateException("Error assigning RSA key.");
     }
+    //According to https://www.openssl.org/docs/man1.1.1/man3/EVP_PKEY_assign_RSA.html
+    //pk is associated with rsa, and OpenSSL will release the memory of rsa together with pk.
     rsa=nullptr;
 
     X509_set_version(x,2);
