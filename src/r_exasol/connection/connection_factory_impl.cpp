@@ -41,6 +41,11 @@ exa::Chunk & exa::ConnectionFactoryImpl::getChunk() {
 }
 
 const exa::ssl::Certificate &exa::ConnectionFactoryImpl::getCertificate() {
+    /**
+     * The certificate creation is implemented as singleton. This means, it is created once per lifetime of the library.
+     * It is no problem if different database nodes (which are the SSL clients) use the same certificate.
+     * The certificate will have a duration of 365, so this should also be no problem.
+     */
     static ssl::Certificate certificate;
     if(!certificate.isValid()) {
         certificate.mkcert();
