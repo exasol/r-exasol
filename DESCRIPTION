@@ -3,8 +3,11 @@ Type: Package
 Title: R Interface & SDK for the EXASOL Database
 Version: 6.0.0
 Date: 2016-01-01
-Author: EXASOL AG & Community
-Maintainer: Exasol <opensource@exasol.com>
+Author: Ian Formanek, Marcel Boldt, Mathias Golombek, Muhammet Orazov, Pieterjan Spoelders, Sebastian Bär, Szilard Barany, Thomas Ubensee, Torsten Kilias, Valerie Wiedemann, Viliam Simko
+Maintainer: Thomas Ubensee <ext.Thomas.Uebensee@exasol.com>
+Contact: Exasol <opensource@exasol.com>
+BugReports: https://github.com/exasol/r-exasol/issues
+URL: https://github.com/EXASOL/r-exasol https://www.exasol.com/portal
 Depends:
     R (>= 3.3.0),
     DBI (>= 0.3.1)
@@ -23,7 +26,6 @@ Description: The EXASOL R Package offers interface functionality such as
     the fastest analytical data warehouse available. A community edition can be
     downloaded for free on <https://www.exasol.com/portal>.
 License: BSD_3_clause + file LICENSE
-URL: https://github.com/EXASOL/r-exasol https://www.exasol.com/portal
 LazyData: yes
 Suggests:
     testthat,
@@ -31,7 +33,6 @@ Suggests:
     xml2
 LinkingTo: testthat
 SystemRequirements: EXASOL DB v5 onwards
-BugReports: https://github.com/EXASOL/r-exasol/issues
 RoxygenNote: 7.1.1
 Collate:
     'EXADBI-internal.R'

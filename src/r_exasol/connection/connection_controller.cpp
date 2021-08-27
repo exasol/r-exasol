@@ -103,14 +103,16 @@ bool exa::ConnectionController::connect(exa::ProtocolType protocolType, const ch
     bool success = false;
     if (isValidProtocol(protocolType)) {
         std::shared_ptr<ConnectionEstablisher> conn_est = mConnectionFactory.createConnectionEstablisher(protocolType);
-        try {
-            mConnectionInfo = conn_est->connect(host, port);
-            success = true;
-        } catch(const ConnectionException& ex) {
-            mErrorHandler(ex.what());
-            if (mConnectionInfo.socket) {
-                mConnectionInfo.socket->shutdownRdWr();
-                mConnectionInfo.socket.reset();
+        if (conn_est) {
+            try {
+                mConnectionInfo = conn_est->connect(host, port);
+                success = true;
+            } catch(const ConnectionException& ex) {
+                mErrorHandler(ex.what());
+                if (mConnectionInfo.socket) {
+                    mConnectionInfo.socket->shutdownRdWr();
+                    mConnectionInfo.socket.reset();
+                }
             }
         }
     }
