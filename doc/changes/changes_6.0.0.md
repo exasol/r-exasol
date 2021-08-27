@@ -1,4 +1,4 @@
-# r-exasol 6.0.0, released t.b.d.
+# r-exasol 6.0.0, released 2021-08-27
 
 Code name: t.b.d.
 
