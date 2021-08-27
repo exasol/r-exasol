@@ -15,17 +15,17 @@ namespace exa {
     }
 }
 
-int exa::ConnectionContext::initConnection(const char *host, int port) {
+int exa::ConnectionContext::initConnection(const char *host, int port, const char* protocol) {
     destroyConnection(false);
     mConnectionController = std::make_unique<exa::ConnectionController>(mConnectionFactory, exa::onError);
-    return mConnectionController->connect(host, static_cast<uint16_t>(port)) ? 0 : -1;
+    return mConnectionController->connect(convertProtocol(protocol), host, static_cast<uint16_t>(port)) ? 0 : -1;
 }
 
 SEXP exa::ConnectionContext::copyHostName() {
     SEXP host = nullptr;
     if (mConnectionController) {
         PROTECT(host = allocVector(STRSXP, 1));
-        const std::string hostName = mConnectionController->getHostInfo().first;
+        const std::string hostName = mConnectionController->getProxyHost();
         SET_STRING_ELT(host, 0, mkChar(hostName.c_str()));
         UNPROTECT(1);
     }
@@ -35,7 +35,7 @@ SEXP exa::ConnectionContext::copyHostName() {
 SEXP exa::ConnectionContext::copyHostPort() {
     uint16_t hostPort = -1;
     if (mConnectionController) {
-        hostPort = mConnectionController->getHostInfo().second;
+        hostPort = mConnectionController->getProxyPort();
     }
     return ScalarInteger(hostPort);
 }
@@ -57,11 +57,11 @@ int exa::ConnectionContext::destroyConnection(bool checkDone) {
     return wasDone ? 0 : -1;
 }
 
-SEXP exa::ConnectionContext::createReadConnection(::pRODBCHandle handle, ::SQLCHAR *query) {
+SEXP exa::ConnectionContext::createReadConnection(::pRODBCHandle handle, ::SQLCHAR *query, const char* protocol) {
     SEXP retVal = nullptr;
     if (mConnectionController) {
-        std::weak_ptr<exa::reader::Reader> reader = mConnectionController->startReading(exa::OdbcSessionInfoImpl(handle, query),
-                                                                            exa::ProtocolType::http);
+        std::weak_ptr<exa::reader::Reader> reader =
+                mConnectionController->startReading(exa::OdbcSessionInfoImpl(handle, query));
         if (!reader.expired()) {
             auto readerConnection = std::make_unique<exa::rconnection::RReaderConnection>(reader);
             retVal = readerConnection->create();
@@ -71,16 +71,29 @@ SEXP exa::ConnectionContext::createReadConnection(::pRODBCHandle handle, ::SQLCH
     return retVal;
 }
 
-SEXP exa::ConnectionContext::createWriteConnection(::pRODBCHandle handle, ::SQLCHAR *query) {
+SEXP exa::ConnectionContext::createWriteConnection(::pRODBCHandle handle, ::SQLCHAR *query, const char* protocol) {
     SEXP retVal = nullptr;
     if (mConnectionController) {
-        std::weak_ptr<exa::writer::Writer> writer = mConnectionController->startWriting(exa::OdbcSessionInfoImpl(handle, query),
-                                                                              exa::ProtocolType::http);
+        std::weak_ptr<exa::writer::Writer> writer =
+                mConnectionController->startWriting(exa::OdbcSessionInfoImpl(handle, query));
         if (!writer.expired()) {
             auto writeConnection = std::make_unique<exa::rconnection::RWriterConnection>(writer);
             retVal = writeConnection->create();
             mConnection = std::move(writeConnection);
         }
+    }
+    return retVal;
+}
+
+exa::ProtocolType exa::ConnectionContext::convertProtocol(const char *protocol) {
+    exa::ProtocolType retVal = ProtocolType::http;
+    if (0 == ::strcmp("http", protocol)) {
+        retVal = ProtocolType::http;
+    }
+    else if (0 == ::strcmp("https", protocol)) {
+        retVal = ProtocolType::https;
+    } else {
+        ::error("Unknown protocol:%s", protocol);
     }
     return retVal;
 }

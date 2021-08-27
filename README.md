@@ -34,8 +34,8 @@ Writing tests have not yet been implemented (only quick-tests), but it hopefully
 `dplyr` methods have been moved to a [separate package](https://github.com/marcelboldt/r-exasol-dplyr).
 
 Code coverage of tests:
+[![codecov.io](https://codecov.io/github/exasol/r-exasol/coverage.svg?branch=main)](https://codecov.io/github/exasol/r-exasol?branch=main)
 
-![codecov.io](https://codecov.io/github/EXASOL/r-exasol/branch.svg?branch=main)
 
 
 ## Getting started
@@ -47,6 +47,9 @@ Code coverage of tests:
    For Windows: Install `Rtools` matching your version of R from [here](https://cran.r-project.org/bin/windows/Rtools/).
    
    For Linux: Install the `R-devel` (RPM) or `r-base-dev` (Debian) package.
+   
+   For MacOsX: If you install R via Homebrew, use the CASK version: ```brew install --cask r```. (The normal version, ```brew install r``` will only install packages via source, which will require additional dependencies)
+
 
    The packages might change over time, so generally you can go to the
    official R-project website download section for your OS to find the
@@ -59,13 +62,23 @@ Code coverage of tests:
    your database instance. Read the README of Exasol's ODBC
    driver package for details.
 
+#### Linux
    On Linux, you also need to install the development files for ODBC.
    Therefore please install `unixodbc-devel` (RPM) or `unixodbc-dev`
    (Debian) package.
 
+#### MacOsX
+   On MacOsX you can install `unixodbc` with Homebrew:
+   ```brew install unixodbc```
+
 3. The R package **devtools** must be available as it contains the `install_github()` method
    and the things needed to build the package.
 
+   You can install it in R with: ```install.packages("devtools")```.
+   If you followed step 1., this installation should work on Linux/Windows.
+   Under MacOsX you might need to install additional dependencies, please check the [devtools page](https://www.rdocumentation.org/packages/devtools/versions/1.13.6)
+
+   
 4. Install the necessary dependencies, such as RODBC or the DBI packages. For the versions of these package, checkout the section [Status](#status). Have a look into the [Github Actions Docker](https://github.com/exasol/r-exasol/blob/main/tests/Dockerfile), if you look for an example, how to install the necessary dependencies.
 
    
@@ -97,8 +110,8 @@ library(exasol)
 
 # connect to Exasol DB with an ODBC DSN
 con <- dbConnect("exa", dsn="ExaSolo", schema="test")
-# OR connect to Exasol DB running on default port (8563) with a hostname, default 'sys' user and default schema ('SYS')
-con <- dbConnect("exa", exahost = "<hostname>:8563", uid = "sys", pwd = "<password>")
+# OR connect to Exasol DB running on default port (8563) with a hostname, default 'sys' user and default schema ('SYS'), using an encrypted channel
+con <- dbConnect("exa", exahost = "<hostname>:8563", uid = "sys", pwd = "<password>", encrypted = "Y")
 
 # list all tables in Exasol (returns a character vector).
 dbListTables(con)

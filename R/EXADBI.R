@@ -170,6 +170,7 @@ setMethod(
 #' @slot db_prod_name A string containing the database product name.
 #' @slot db_version A string containing the database version.
 #' @slot drv_name A string containing the connection driver version.
+#' @slot encrypted A logical indicating if connection should be encrypted.
 #' @slot connection.string RODBC
 #' @slot handle_ptr RODBC
 #' @slot case RODBC
@@ -192,7 +193,8 @@ EXAConnection <- setClass(
     db_name = "character",
     db_prod_name = "character",
     db_version = "character",
-    drv_name = "character"
+    drv_name = "character",
+    encrypted = "logical"
   ),
   contains = c("DBIConnection", "EXAObject", "RODBC")
 )
@@ -203,7 +205,7 @@ setMethod(
   "dbGetInfo","EXAConnection",
   definition = function(dbObj) {
     if (!dbIsValid(dbObj)) {
-      stop("Connection exipired.")
+      stop("Connection expired.")
     }
     list(
       db.version = paste(dbObj@db_prod_name, dbObj@db_version),
@@ -615,7 +617,7 @@ EXANewConnection <- function(# change defaults also above
     # autocommit
 
     con_str <- paste0(con_str,";autocommit=",autocommit)
-
+    con_str <- paste0(con_str, ";ENCRYPTION=", ifelse(encryption == "Y", "yes", "no"))
     # dots
     d <- list(...)
     while (length(d) > 0) {
@@ -648,6 +650,7 @@ EXANewConnection <- function(# change defaults also above
     db_prod_name = exa_metadata["DBMS_Name"],
     db_version = exa_metadata["DBMS_Ver"],
     drv_name = exa_metadata["Driver_Name"],
+    encrypted = ifelse(encryption == "Y",TRUE,FALSE),
     con
   )
   }
@@ -735,6 +738,7 @@ EXACloneConnection <-
       db_prod_name = exa_metadata["DBMS_Name"],
       db_version = exa_metadata["DBMS_Ver"],
       drv_name = exa_metadata["Driver_Name"],
+      encrypted = drv@encrypted,
       con
     )
   }

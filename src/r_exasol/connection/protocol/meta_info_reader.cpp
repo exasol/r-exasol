@@ -8,12 +8,12 @@
 #include <windows.h>
 #endif
 
-std::pair<std::string, uint16_t>  exa::metaInfoReader::read(exa::Socket& socket) {
+std::pair<std::string, uint16_t>  exa::metaInfoReader::read(exa::Socket& socket, const char *host, uint16_t port) {
     std::pair<std::string, uint16_t> hostInfo(std::string(), 0);
 
     struct { int32_t m; int32_t x; int32_t y:32; } proxyHeader = {0x02212102, 1, 1};
     struct { int32_t v; int32_t port; char s[16]; } proxyAnswer = {0, 0, ""};
-    int r = 0;
+    ssize_t r = 0;
     if ((r = socket.send((void*)&proxyHeader, sizeof(proxyHeader))) != sizeof(proxyHeader)) {
         std::stringstream stringStream;
         stringStream << "Failed to send proxy header (" << r << " != " << sizeof(proxyHeader) << ")";
@@ -26,8 +26,8 @@ std::pair<std::string, uint16_t>  exa::metaInfoReader::read(exa::Socket& socket)
 
     if ((r = socket.recv((void*)&(proxyAnswer), sizeof(proxyAnswer))) != sizeof(proxyAnswer)) {
         std::stringstream stringStream;
-        stringStream << "Failed to receive proxy header from " << socket.getConnectionInfo().first << ":" <<
-                     socket.getConnectionInfo().second << " (" << r << " != " << sizeof(proxyAnswer) << "); errno: ";
+        stringStream << "Failed to receive proxy header from " << host << ":" <<
+                     port << " (" << r << " != " << sizeof(proxyAnswer) << "); errno: ";
     #ifndef _WIN32
         stringStream << errno;
     #else
@@ -38,5 +38,6 @@ std::pair<std::string, uint16_t>  exa::metaInfoReader::read(exa::Socket& socket)
     proxyAnswer.s[15] = '\0';
     hostInfo.first = proxyAnswer.s;
     hostInfo.second = proxyAnswer.port;
+
     return hostInfo;
 }

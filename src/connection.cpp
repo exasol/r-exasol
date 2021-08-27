@@ -16,27 +16,27 @@ namespace exa {
 extern "C" {
 
 
-int initConnection(const char* host, int port) {
-    return exa::getConnectionContext().initConnection(host, port);
+int initConnection(const char* host, int port, const char* protocol) {
+    return exa::getConnectionContext().initConnection(host, port, protocol);
 }
 
 int destroyConnection(int checkWasDone) {
     return exa::getConnectionContext().destroyConnection(1 == checkWasDone);
 }
 
-SEXP createReadConnection(pRODBCHandle handle, SQLCHAR *query) {
-    return exa::getConnectionContext().createReadConnection(handle, query);
+SEXP createReadConnection(pRODBCHandle handle, SQLCHAR *query, const char * protocol) {
+    return exa::getConnectionContext().createReadConnection(handle, query, protocol);
 }
 
-SEXP createWriteConnection(pRODBCHandle handle, SQLCHAR *query) {
-    return exa::getConnectionContext().createWriteConnection(handle, query);
+SEXP createWriteConnection(pRODBCHandle handle, SQLCHAR *query, const char * protocol) {
+    return exa::getConnectionContext().createWriteConnection(handle, query, protocol);
 }
 
-extern SEXP copyHostName() {
+SEXP copyHostName() {
     return exa::getConnectionContext().copyHostName();
 }
 
-extern SEXP copyHostPort() {
+SEXP copyHostPort() {
     return exa::getConnectionContext().copyHostPort();
 }
 

@@ -1,38 +1,20 @@
 #include <r_exasol/connection/socket/socket_impl.h>
-
 #include <r_exasol/connection/connection_exception.h>
-
-#ifndef _WIN32
-#include <sys/socket.h>
-#include <netinet/in.h>
-#include <cstring>
-#include <netdb.h>
-
-#else
-
-#define WIN32_LEAN_AND_MEAN
-#include <windows.h>
-#include <winsock2.h>
-#ifndef SHUT_RDWR
-#define SHUT_RDWR SD_BOTH
-#endif
-#ifndef SHUT_WR
-#define SHUT_WR SD_RECEIVE
-#endif
-
-#endif
+#include <r_exasol/external/socket_api.h>
 
 #include <sstream>
 
 exa::SocketImpl::SocketImpl()
 : mSocket(-1) {}
 
-size_t exa::SocketImpl::recv(void *buf, size_t len) {
+ssize_t exa::SocketImpl::recv(void *buf, size_t len) {
+    ssize_t retVal = 0;
 #ifdef _WIN32
-    return ::recv(mSocket, static_cast<char*>(buf), len, MSG_WAITALL);
+    retVal = ::recv(mSocket, static_cast<char*>(buf), len, MSG_WAITALL); //Winsocket returns SOCKET_ERROR = -1 in case of error! So this should be safe.
 #else
-    return ::recv(mSocket, buf, len, MSG_WAITALL);
+    retVal = ::recv(mSocket, buf, len, MSG_WAITALL);
 #endif
+    return retVal;
 }
 
 ssize_t exa::SocketImpl::send(const void *buf, size_t len) {
@@ -53,7 +35,6 @@ void exa::SocketImpl::shutdownRdWr() {
 }
 
 void exa::SocketImpl::connect(const char *host, uint16_t port) {
-    mConnectionInfo = std::make_pair(std::string(host), port);
     struct ::sockaddr_in serv_addr;
     struct ::hostent *server;
 
@@ -104,4 +85,8 @@ exa::SocketImpl::~SocketImpl() {
     if(mSocket >= 0) {
         ::shutdown(mSocket, SHUT_RDWR);
     }
+}
+
+tSocket exa::SocketImpl::detach() {
+    return std::exchange(mSocket, -1);
 }

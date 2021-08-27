@@ -16,10 +16,10 @@ Imports:
 Description: The EXASOL R Package offers interface functionality such as
     connecting to, querying and writing into an EXASOL Database (version 5 onwards).
     It is optimised for massively parallel reading & writing from and to a multinode
-    cluster. Further functinality is DBI compatiblity, and use of EXASOL's InDB R
+    cluster. Further functionality is DBI compatibility, and use of EXASOL's InDB R
     capabilities (deploying & executing R code dynamically from an R application
     running on a client). EXASOL is an InMemory RDBMS that runs in a MPP cluster
-    (shared-nothing) environment. Leading the TPC-H benckmark, it is considered
+    (shared-nothing) environment. Leading the TPC-H benchmark, it is considered
     the fastest analytical data warehouse available. A community edition can be
     downloaded for free on <https://www.exasol.com/portal>.
 License: BSD_3_clause + file LICENSE

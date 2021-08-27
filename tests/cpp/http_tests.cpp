@@ -2,23 +2,19 @@
 
 #include <r_exasol/connection//protocol/http/reader/http_chunk_reader.h>
 #include <r_exasol/connection/protocol/http/writer//http_chunk_writer.h>
-#include <r_exasol/connection/socket/socket_impl.h>
-
 #include <r_exasol/connection/connection_factory_impl.h>
 #include <iostream>
 #include "test_utils.h"
+
 
 /**
  * Import small test data and read character by character from server.
  * This test also will compare content received from server.
  */
-TEST_CASE( "Import", "[http]" ) {
-    std::shared_ptr<exa::Socket> socket = std::make_shared<exa::SocketImpl>();
-
-    //Connect to remote (Python program)
-    socket->connect(test_utils::host, test_utils::PORT);
+void testImport(std::shared_ptr<exa::Socket> socket) {
     exa::Chunk chunk{};
 
+    std::cerr << "Creating http chunk reader" << std::endl;
     //Create reader
     std::unique_ptr<exa::reader::HttpChunkReader> reader = std::make_unique<exa::reader::HttpChunkReader>(socket, chunk);
 
@@ -27,6 +23,7 @@ TEST_CASE( "Import", "[http]" ) {
     std::string testString = test_utils::createTestString(); //returns 220 bytes of test data
     size_t sizeReceived = 0;
     int c = -1;
+    std::cerr << "Start import" << std::endl;
     do {
         c = reader->fgetc();
         if (c >= 0) {
@@ -39,16 +36,30 @@ TEST_CASE( "Import", "[http]" ) {
     //Compare what we received.....
     REQUIRE(buffer.size() == sizeReceived);
     REQUIRE(::memcmp(buffer.data(), testString.c_str(), buffer.size()) == 0);
+    std::cerr << "Shutdown socket." << std::endl;
     socket->shutdownRdWr();
+    std::cerr << "Finished." << std::endl;
+}
+
+/**
+ * Create a normal socket and test import.
+ */
+TEST_CASE( "ImportHttp", "[http]" ) {
+    testImport(test_utils::createSocket());
+}
+
+/**
+ * Create a secure socket and test import.
+ */
+TEST_CASE( "ImportHttps", "[http]" ) {
+    testImport(test_utils::createSecureSocket());
 }
 
 /**
  * Export small test data and write buffer-wise to server.
  * Server (python script) will compare content.
  */
-TEST_CASE( "Export", "[http]" ) {
-    std::shared_ptr<exa::Socket> socket = std::make_shared<exa::SocketImpl>();
-    socket->connect(test_utils::host, test_utils::PORT);
+void testExport(std::shared_ptr<exa::Socket> socket) {
     exa::Chunk chunk{};
 
     //Create writer
@@ -69,8 +80,22 @@ TEST_CASE( "Export", "[http]" ) {
     REQUIRE(sizeWritten == 20);
     writer->pipe_fflush();
     socket->shutdownRdWr();
+
 }
 
+/**
+ * Test export with a normal socket.
+ */
+TEST_CASE( "ExportHttp", "[http]" ) {
+    testExport(test_utils::createSocket());
+}
+
+/**
+ * Test export with a secure socket.
+ */
+TEST_CASE( "ExportHttps", "[http]" ) {
+    testExport(test_utils::createSecureSocket());
+}
 
 /**
  * Purpose of this test is to transfer several chunks between server and client and
@@ -78,9 +103,8 @@ TEST_CASE( "Export", "[http]" ) {
  * not fitting into one chunk. (Tests should run with asan enabled).
  * We don't compare the content of the data here.
  */
-TEST_CASE( "ImportBig", "[http]" ) {
-    std::shared_ptr<exa::Socket> socket = std::make_shared<exa::SocketImpl>();
-    socket->connect(test_utils::host, test_utils::PORT);
+
+void testImportBig(std::shared_ptr<exa::Socket> socket) {
     exa::Chunk chunk{};
     std::unique_ptr<exa::reader::HttpChunkReader> reader = std::make_unique<exa::reader::HttpChunkReader>(socket, chunk);
     int charReceived = 0;
@@ -90,4 +114,18 @@ TEST_CASE( "ImportBig", "[http]" ) {
     } while(charReceived >= 0);
 
     socket->shutdownRdWr();
+}
+
+/**
+ * Test import of huge data with normal socket.
+ */
+TEST_CASE( "ImportBigHttp", "[http]" ) {
+    testImportBig(test_utils::createSocket());
+}
+
+/**
+ * Test import of huge data with secure socket.
+ */
+TEST_CASE( "ImportBigHttps", "[http]" ) {
+    testImportBig(test_utils::createSecureSocket());
 }

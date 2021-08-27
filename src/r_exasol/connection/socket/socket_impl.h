@@ -2,29 +2,13 @@
 #define R_EXASOL_SOCKET_IMPL_H
 
 #include <r_exasol/connection/socket/socket.h>
+#include <r_exasol/external/socket_fwd.h>
 #include <cstdio>
 #include <cstdint>
 #include <utility>
 #include <string>
+#include <fstream>
 
-
-#ifdef _WIN32
-#include <winsock2.h>
-#endif
-
-#ifdef __cplusplus
-extern "C" {
-#endif
-
-#ifndef _WIN32
-typedef int tSocket;
-#else
-typedef SOCKET tSocket;
-#endif
-
-#ifdef __cplusplus
-}
-#endif
 
 namespace exa {
     /**
@@ -34,20 +18,16 @@ namespace exa {
     public:
         explicit SocketImpl();
         ~SocketImpl() override;
-        void connect(const char* host, uint16_t port) override;
-        size_t recv(void *buf, size_t len) override;
+        void connect(const char* host, uint16_t port);
+        ssize_t recv(void *buf, size_t len) override;
         ssize_t send(const void *buf, size_t len) override;
         void shutdownWr() override;
         void shutdownRdWr() override;
 
-        /**
-         * Returns connection info which was used to open the socket.
-         * @return Hostname/Port number.
-         */
-        std::pair<std::string, uint16_t> getConnectionInfo() const override { return mConnectionInfo; }
+        tSocket detach();
+
     private:
         tSocket mSocket;
-        std::pair<std::string, uint16_t> mConnectionInfo;
     };
 }
 

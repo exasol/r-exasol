@@ -1,6 +1,6 @@
 #include <r_exasol/connection/protocol/http/reader/http_chunk_reader.h>
 #include <cstring>
-#include <r_exasol/connection/protocol/http/common.h>
+#include <r_exasol/connection/protocol/common.h>
 #include <iostream>
 #include <r_exasol/connection/connection_exception.h>
 #include <utility>
@@ -20,7 +20,6 @@ re::HttpChunkReader::HttpChunkReader(std::weak_ptr<Socket> socket, Chunk &chunk)
 
 ssize_t re::HttpChunkReader::read_next_chunk() {
     size_t pos = 0;
-    int buflen, rc;
     static const char *ok_answer =
             "HTTP/1.1 200 OK\r\n"
             "Server: EXASolution R Package\r\n"
@@ -34,10 +33,16 @@ ssize_t re::HttpChunkReader::read_next_chunk() {
 
         for (pos = 0; pos < 20; pos++) {
             mChunk.chunk_buf[pos] = mChunk.chunk_buf[pos + 1] = '\0';
-            if ((rc = socket->recv(&(mChunk.chunk_buf[pos]), 1)) < 1) {
-                //Chunk reader might try to read from socket after stream has fnished.
-                //We should not treat as error, but jump to end and return -1.
+            //carefully: recv returns an unsigned, but nevertheless -1 if an error occurs!
+            if (socket->recv(&(mChunk.chunk_buf[pos]), 1) < 1) {
+                //Chunk reader might try to read from socket after stream has finished.
+                //In this case, we raise ConnectionFinished exception, which will send an error response to the
+                //server and close the socket, and then return -1 to the caller,
+                //avoiding any further invocation of read_next_chunk().
                 throw ConnectionFinished();
+            }
+            if (mChunk.chunk_buf[pos] == '\r') {
+                mChunk.chunk_buf[pos] = '\0';
             }
             if (mChunk.chunk_buf[pos] == '\n') {
                 break;
@@ -47,10 +52,16 @@ ssize_t re::HttpChunkReader::read_next_chunk() {
         if (pos > 19) {
             throw exa::ConnectionException("buffer length exceed size");
         }
-
         mChunk.chunk_buf[pos] = '\0';
-        buflen = -1;
 
+        //Here is a difference between Http and Https.
+        //With Http it might happen, that no more chunks are available and the server already closed the connection.
+        //With Https, the server will send a chunk with empty chunk length (\r\n).
+        if ('\0' == mChunk.chunk_buf[0]) {
+            throw ConnectionFinished();
+        }
+
+        unsigned int buflen = 0;
         if (::sscanf(mChunk.chunk_buf, "%x", &buflen) < 1) {
             throw exa::ConnectionException("invalid buffer size provided");
         }
@@ -64,14 +75,14 @@ ssize_t re::HttpChunkReader::read_next_chunk() {
                 throw exa::ConnectionException("Buffer received larger than max chunk size.");
             }
 
-            buflen = socket->recv(mChunk.chunk_buf, buflen + 2);
-            if (buflen < 3) {
+            const ssize_t receivedBuffer = socket->recv(mChunk.chunk_buf, buflen + 2);
+            if (receivedBuffer < 3) {
                 throw exa::ConnectionException("invalid buffer length");
             }
 
-            mChunk.chunk_len = buflen - 2;
+            mChunk.chunk_len = receivedBuffer - 2;
             mChunk.chunk_pos = 0;
-            mChunk.chunk_buf[buflen - 2] = '\0';
+            mChunk.chunk_buf[receivedBuffer - 2] = '\0';
             mChunk.chunk_num++;
             retVal = mChunk.chunk_len;
         }

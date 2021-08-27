@@ -8,7 +8,7 @@
 
 namespace exa {
     namespace metaInfoReader {
-        std::pair<std::string, uint16_t> read(Socket &);
+        std::pair<std::string, uint16_t> read(Socket &, const char *host, uint16_t port);
     }
 }
 

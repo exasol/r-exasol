@@ -24,10 +24,10 @@ TEST_CASE( "ReaderCloseConnection", "[async]" ) {
         errorWasCalled = true;
     });
     //Connection to remote (Python program) and read meta data (hostname = Test, port number = 4)
-    const bool retVal = connectionController.connect(test_utils::host, test_utils::PORT);
+    const bool retVal = connectionController.connect(exa::ProtocolType::http, test_utils::host, test_utils::PORT);
     REQUIRE(retVal);
-    REQUIRE(connectionController.getHostInfo().first == "Test");
-    REQUIRE(connectionController.getHostInfo().second == 4);
+    REQUIRE(connectionController.getProxyHost() == "Test");
+    REQUIRE(connectionController.getProxyPort() == 4);
     //Create our async mock which uses the std::thread implementation.
     //-> reading from cin will not block the main thread immediately,
     // only after the ConnectionController calls shutdown (which will try to join the bg thread).
@@ -36,7 +36,7 @@ TEST_CASE( "ReaderCloseConnection", "[async]" ) {
         const bool retVal = lock == "FINISHED";
         return retVal;});
     //Create reader instance
-    std::weak_ptr<exa::reader::Reader> readerWeak = connectionController.startReading(mockSessionImpl, exa::ProtocolType::http);
+    std::weak_ptr<exa::reader::Reader> readerWeak = connectionController.startReading(mockSessionImpl);
     REQUIRE(!readerWeak.expired());
     auto reader = readerWeak.lock();
 
@@ -92,10 +92,10 @@ TEST_CASE( "ReaderCloseConnectionAbort", "[async]" ) {
         errorWasCalled = true;
     });
     //Connection to remote (Python program) and read meta data (hostname = Test, port number = 4)
-    const bool retVal = connectionController.connect(test_utils::host, test_utils::PORT);
+    const bool retVal = connectionController.connect(exa::ProtocolType::http, test_utils::host, test_utils::PORT);
     REQUIRE(retVal);
-    REQUIRE(connectionController.getHostInfo().first == "Test");
-    REQUIRE(connectionController.getHostInfo().second == 4);
+    REQUIRE(connectionController.getProxyHost() == "Test");
+    REQUIRE(connectionController.getProxyPort() == 4);
     //Create our async mock which uses the std::thread implementation.
     //-> reading from cin will not block the main thread immediately,
     // only after the ConnectionController calls shutdown (which will try to join the bg thread).
@@ -105,7 +105,7 @@ TEST_CASE( "ReaderCloseConnectionAbort", "[async]" ) {
         return retVal;});
 
     //Create reader instance
-    std::weak_ptr<exa::reader::Reader> readerWeak = connectionController.startReading(mockSessionImpl, exa::ProtocolType::http);
+    std::weak_ptr<exa::reader::Reader> readerWeak = connectionController.startReading(mockSessionImpl);
     REQUIRE(!readerWeak.expired());
     auto reader = readerWeak.lock();
 
@@ -162,10 +162,10 @@ TEST_CASE( "WriterCloseConnection", "[async]" ) {
     });
 
     //Connection to remote (Python program) and read meta data (hostname = Test, port number = 4)
-    const bool retVal = connectionController.connect(test_utils::host, test_utils::PORT);
+    const bool retVal = connectionController.connect(exa::ProtocolType::http, test_utils::host, test_utils::PORT);
     REQUIRE(retVal);
-    REQUIRE(connectionController.getHostInfo().first == "Test");
-    REQUIRE(connectionController.getHostInfo().second == 4);
+    REQUIRE(connectionController.getProxyHost() == "Test");
+    REQUIRE(connectionController.getProxyPort() == 4);
 
 
     //Create our async mock which uses the std::thread implementation.
@@ -177,7 +177,7 @@ TEST_CASE( "WriterCloseConnection", "[async]" ) {
         return retVal;});
 
     //Create writer instance
-    std::weak_ptr<exa::writer::Writer> writer_weak = connectionController.startWriting(mockSessionImpl, exa::ProtocolType::http);
+    std::weak_ptr<exa::writer::Writer> writer_weak = connectionController.startWriting(mockSessionImpl);
     REQUIRE(!writer_weak.expired());
     auto writer = writer_weak.lock();
 
@@ -216,7 +216,6 @@ TEST_CASE( "WriterCloseConnection", "[async]" ) {
  * If an error occurs on server side, we assume that the error function will be called.
  */
 TEST_CASE( "WriterCloseConnectionAbort", "[async]" ) {
-
     exa::ConnectionFactoryImpl factory;
     bool errorWasCalled = false;
     //Instantiate controller and declare error callback as a lambda.
@@ -226,10 +225,10 @@ TEST_CASE( "WriterCloseConnectionAbort", "[async]" ) {
     });
 
     //Connection to remote (Python program) and read meta data (hostname = Test, port number = 4)
-    const bool retVal = connectionController.connect(test_utils::host, test_utils::PORT);
+    const bool retVal = connectionController.connect(exa::ProtocolType::http, test_utils::host, test_utils::PORT);
     REQUIRE(retVal);
-    REQUIRE(connectionController.getHostInfo().first == "Test");
-    REQUIRE(connectionController.getHostInfo().second == 4);
+    REQUIRE(connectionController.getProxyHost() == "Test");
+    REQUIRE(connectionController.getProxyPort() == 4);
 
 
     //Create our async mock which uses the std::thread implementation.
@@ -241,7 +240,7 @@ TEST_CASE( "WriterCloseConnectionAbort", "[async]" ) {
         return retVal;});
 
     //Create writer instance
-    std::weak_ptr<exa::writer::Writer> writer_weak = connectionController.startWriting(mockSessionImpl, exa::ProtocolType::http);
+    std::weak_ptr<exa::writer::Writer> writer_weak = connectionController.startWriting(mockSessionImpl);
     REQUIRE(!writer_weak.expired());
     auto writer = writer_weak.lock();
 

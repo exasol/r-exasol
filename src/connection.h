@@ -15,12 +15,12 @@ extern "C" {
 #endif
 
 
-    extern int initConnection(const char* host, int port);
+    extern int initConnection(const char* host, int port, const char* protocol);
     extern SEXP copyHostName();
     extern SEXP copyHostPort();
     extern int destroyConnection(int closeFd);
-    extern SEXP createReadConnection(pRODBCHandle handle, SQLCHAR *query);
-    extern SEXP createWriteConnection(pRODBCHandle handle, SQLCHAR *query);
+    extern SEXP createReadConnection(pRODBCHandle handle, SQLCHAR *query, const char * protocol);
+    extern SEXP createWriteConnection(pRODBCHandle handle, SQLCHAR *query, const char * protocol);
 
 #ifdef __cplusplus
 }

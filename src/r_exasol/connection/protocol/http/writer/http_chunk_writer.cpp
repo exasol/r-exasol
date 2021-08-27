@@ -1,5 +1,5 @@
 #include <r_exasol/connection/protocol/http/writer/http_chunk_writer.h>
-#include <r_exasol/connection/protocol/http/common.h>
+#include <r_exasol/connection/protocol/common.h>
 #include <r_exasol/connection/connection_exception.h>
 #include <cstring>
 #include <utility>
@@ -20,8 +20,8 @@ ssize_t wri::HttpChunkWriter::write_next_chunk() {
             "Content-disposition: attachment; filename=data.csv\r\n"
             "Connection: close\r\n\r\n";
 
-    const size_t ok_len = strlen(ok_answer);
-    const size_t chunk_len = mChunk.chunk_len;
+    const auto ok_len = static_cast<ssize_t>(strlen(ok_answer));
+    const auto chunk_len = static_cast<ssize_t>(mChunk.chunk_len);
     static const char *error_answer =
             "HTTP/1.1 404 ERROR\r\n"
             "Server: EXASolution R Package\r\n"

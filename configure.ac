@@ -23,6 +23,30 @@ if test [ -n "$with_unit_tests" ] ; then
    UNIT_TESTFLAGS_CPPFLAGS="-DWITH_UNIT_TESTS"
 fi
 
+##Setup OpenSSL
+
+m4_include([./ax_check_openssl.m4])
+#AX_CHECK_OPENSSL(, [AC_MSG_ERROR([Cannot find OpenSSL])])
+AX_CHECK_OPENSSL(, [
+
+if test "`uname -s`" = Darwin; then
+  dnl On MacOsX
+  PKG_BREW_NAME="openssl@1.1"
+  brew --version 2>/dev/null
+  if [[ $? -eq 0 ]]; then
+    BREWDIR="`brew --prefix`"
+    with_openssl="$BREWDIR/opt/openssl"
+    AX_CHECK_OPENSSL(, AC_MSG_ERROR([Cannot find OpenSSL. Please install with "brew install $PKG_BREW_NAME"]))
+  else
+    AC_MSG_ERROR([Cannot find Homebrew])
+  fi  
+else 
+  AC_MSG_ERROR([Cannot find OpenSSL])
+fi
+])
+
+echo "OpenSSL: ${OPENSSL_INCLUDES}"
+
 ## Setup RBin
 RBIN="${R_HOME}/bin/R"
 
@@ -35,8 +59,11 @@ CPPFLAGS=`"${RBIN}" CMD config CPPFLAGS`
 CXXFLAGS=`"${RBIN}" CMD config CXX14FLAGS`
 CXX="${CXX14} ${CXX14STD}"
 echo "CPPFLAGS:${CPPFLAGS}"
-CPPFLAGS="${CPPFLAGS} -I. ${UNIT_TESTFLAGS_CPPFLAGS}"
+CPPFLAGS="${CPPFLAGS} -I. ${UNIT_TESTFLAGS_CPPFLAGS} ${OPENSSL_INCLUDES}"
 echo "CPPFLAGS:${CPPFLAGS}"
+
+# honor PKG_xx overrides
+LIBS="-lodbc ${LIBS} ${PKG_LIBS} ${OPENSSL_LDFLAGS} ${OPENSSL_LIBS}"
 
 ## We are using C++
 AC_LANG(C++)
@@ -53,9 +80,9 @@ AC_SUBST(PKG_SOURCES)
 PKG_TEST_SOURCES=$(cat src/tests/sources.list)
 AC_SUBST(PKG_TEST_SOURCES)
 
+AC_SUBST(LIBS)
+AC_SUBST(CPPFLAGS)
 
-dnl substitute UNIT_TESTFLAGS_CPPFLAGS
-AC_SUBST(UNIT_TESTFLAGS_CPPFLAGS)
-dnl and do substitution in the src/Makevars.in and src/config.h
+dnl and do substitution in the src/Makevars.in
 AC_CONFIG_FILES([src/Makevars])
 AC_OUTPUT

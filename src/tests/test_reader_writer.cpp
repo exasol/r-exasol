@@ -12,9 +12,9 @@
 // header file.
 #include <testthat.h>
 
-#include <r_exasol/connection/socket/Socket.h>
-#include <r_exasol/connection/protocol/http/reader/HttpChunkReader.h>
-#include <r_exasol/connection/protocol/http/writer/HttpChunkWriter.h>
+#include <r_exasol/connection/socket/socket.h>
+#include <r_exasol/connection/protocol/http/reader/http_chunk_reader.h>
+#include <r_exasol/connection/protocol/http/writer/http_chunk_writer.h>
 #include <cstring>
 #include <iterator>
 #include <iostream>
@@ -54,9 +54,6 @@ public:
 
     virtual void shutdownWr() {}
     virtual void shutdownRdWr() {}
-    virtual std::pair<std::string, uint16_t > getConnectionInfo() const {
-      return std::make_pair("", 0);
-    }
 private:
     std::vector<char> buffer;
 };
