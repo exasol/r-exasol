@@ -5,7 +5,7 @@
 
 #include "CustomMockFunction.h"
 
-class CustomAsyncSessionMock;
+struct CustomAsyncSessionMock;
 class CustomAsyncExecutorMock {
 public:
     explicit CustomAsyncExecutorMock(const CustomAsyncSessionMock & customAsyncSessionMock);
