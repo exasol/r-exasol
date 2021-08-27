@@ -19,9 +19,10 @@ jobs:
 
       - name: Install openssl MacOsX
         if: matrix.config.os == 'macOS-latest'
-        run: brew install openssl
-        BREW_PREFIX=`brew --prefix`
-        export OPENSSL_ROOT_DIR=$BREW_PREFIX/opt/openssl
+        run: |
+            brew install openssl
+            BREW_PREFIX=`brew --prefix`
+            export OPENSSL_ROOT_DIR=$BREW_PREFIX/opt/openssl
       - name: Install openssl Windows
         if: matrix.config.os == 'windows-latest'
         run: choco install openssl
