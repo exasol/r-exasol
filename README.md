@@ -47,6 +47,9 @@ Code coverage of tests:
    For Windows: Install `Rtools` matching your version of R from [here](https://cran.r-project.org/bin/windows/Rtools/).
    
    For Linux: Install the `R-devel` (RPM) or `r-base-dev` (Debian) package.
+   
+   For MacOsX: If you install R via Homebrew, use the CASK version: ```brew install --cask r```. (The normal version, ```brew install r``` will only install packages via source, which will require additional dependencies)
+
 
    The packages might change over time, so generally you can go to the
    official R-project website download section for your OS to find the
