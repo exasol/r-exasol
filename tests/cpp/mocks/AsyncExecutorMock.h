@@ -3,7 +3,7 @@
 
 #include <string>
 
-class AsyncSessionMock;
+struct AsyncSessionMock;
 class AsyncExecutorMock {
 public:
     explicit AsyncExecutorMock(AsyncSessionMock &session);
