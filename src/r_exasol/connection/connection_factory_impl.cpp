@@ -23,8 +23,6 @@ std::shared_ptr<exa::ConnectionEstablisher> exa::ConnectionFactoryImpl::createCo
         case https:
             conn_est = std::make_shared<HttpsConnectionEstablisher>(getCertificate());
             break;
-        default:
-            assert(false);
     }
     return conn_est;
 }

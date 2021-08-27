@@ -14,7 +14,6 @@
 void testImport(std::shared_ptr<exa::Socket> socket) {
     exa::Chunk chunk{};
 
-    std::cerr << "Creating http chunk reader" << std::endl;
     //Create reader
     std::unique_ptr<exa::reader::HttpChunkReader> reader = std::make_unique<exa::reader::HttpChunkReader>(socket, chunk);
 
@@ -23,7 +22,6 @@ void testImport(std::shared_ptr<exa::Socket> socket) {
     std::string testString = test_utils::createTestString(); //returns 220 bytes of test data
     size_t sizeReceived = 0;
     int c = -1;
-    std::cerr << "Start import" << std::endl;
     do {
         c = reader->fgetc();
         if (c >= 0) {
@@ -36,9 +34,7 @@ void testImport(std::shared_ptr<exa::Socket> socket) {
     //Compare what we received.....
     REQUIRE(buffer.size() == sizeReceived);
     REQUIRE(::memcmp(buffer.data(), testString.c_str(), buffer.size()) == 0);
-    std::cerr << "Shutdown socket." << std::endl;
     socket->shutdownRdWr();
-    std::cerr << "Finished." << std::endl;
 }
 
 /**
