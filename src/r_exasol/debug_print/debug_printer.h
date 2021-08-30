@@ -55,7 +55,7 @@ namespace exa {
         std::string funcName;
     };
 
-
+#define STACK_PRINTER(TYPE) StackTraceLogger<TYPE> __stackTraceLogger__(__func__)
 
     template<typename TCaller>
     struct ObjectLifecycleLogger {

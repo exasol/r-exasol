@@ -15,7 +15,7 @@
 #include <r_exasol/debug_print/debug_printer.h>
 
 
-#define TEST_LOGGING
+//#define TEST_LOGGING
 
 void log_func(const char* msg) {
     printf("%s", msg);

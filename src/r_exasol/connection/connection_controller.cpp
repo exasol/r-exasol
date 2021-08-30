@@ -5,15 +5,15 @@
 #include <r_exasol/connection/connection_establisher.h>
 
 typedef exa::DebugPrinter<exa::ConnectionController> conn_debug_printer;
-typedef exa::StackTraceLogger<exa::ConnectionController> conn_stack_trace_logger;
+#define CON_CONTROLLER_STACK_PRINTER STACK_PRINTER( exa::ConnectionController);
 
 exa::ConnectionController::ConnectionController(ConnectionFactory &connectionFactory, const tErrorFunction & errorHandler)
 : mConnectionFactory(connectionFactory)
 , mErrorHandler(errorHandler) {}
 
 std::weak_ptr<exa::reader::Reader> exa::ConnectionController::startReading(const AsyncExecutorSessionInfo& odbcSessionInfo) {
+    CON_CONTROLLER_STACK_PRINTER;
     std::weak_ptr<exa::reader::Reader> retVal;
-    conn_stack_trace_logger csl("startReading");
     if (mConnectionInfo.socket) {
         conn_debug_printer::print("creating asyncExecutor");
         mOdbcAsyncExecutor = odbcSessionInfo.createAsyncExecutor();
@@ -40,8 +40,8 @@ std::weak_ptr<exa::reader::Reader> exa::ConnectionController::startReading(const
 }
 
 std::weak_ptr<exa::writer::Writer> exa::ConnectionController::startWriting(const AsyncExecutorSessionInfo& odbcSessionInfo) {
+    CON_CONTROLLER_STACK_PRINTER;
     std::weak_ptr<exa::writer::Writer> retVal;
-    conn_stack_trace_logger csl("startWriting");
     if (mConnectionInfo.socket) {
         conn_debug_printer::print("creating asyncExecutor");
         mOdbcAsyncExecutor = odbcSessionInfo.createAsyncExecutor();
@@ -67,8 +67,8 @@ std::weak_ptr<exa::writer::Writer> exa::ConnectionController::startWriting(const
 }
 
 bool exa::ConnectionController::shutDown() {
+    CON_CONTROLLER_STACK_PRINTER;
     bool retVal = true;
-    conn_stack_trace_logger csl("shutDown");
     //Close socket before joining background thread.
     //In case of writer this is important because the database server will finish the ODBC execution only after the socket has been closed.
     if (mConnectionInfo.socket) {
@@ -92,15 +92,15 @@ bool exa::ConnectionController::shutDown() {
 }
 
 void exa::ConnectionController::onOdbcError() {
-    conn_stack_trace_logger csl("onOdbcError");
+    CON_CONTROLLER_STACK_PRINTER;
     if(mConnectionInfo.socket) {
         mConnectionInfo.socket->shutdownRdWr();
     }
 }
 
 bool exa::ConnectionController::connect(exa::ProtocolType protocolType, const char *host, uint16_t port) {
+    CON_CONTROLLER_STACK_PRINTER;
     bool success = false;
-    conn_stack_trace_logger csl("connect");
     if (isValidProtocol(protocolType)) {
         std::shared_ptr<ConnectionEstablisher> conn_est = mConnectionFactory.createConnectionEstablisher(protocolType);
         try {

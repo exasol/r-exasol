@@ -8,7 +8,7 @@
 #include <r_exasol/debug_print/debug_printer.h>
 
 typedef exa::DebugPrinter<exa::OdbcQueryExecutor> odbc_debug_printer;
-typedef exa::StackTraceLogger<exa::OdbcQueryExecutor> odbc_stack_trace_logger;
+#define OQE_STACK_PRINTER STACK_PRINTER( exa::OdbcQueryExecutor);
 
 
 exa::OdbcQueryExecutor::OdbcQueryExecutor(OdbcSessionInfoImpl  odbcSessionInfo)
@@ -22,14 +22,14 @@ exa::OdbcQueryExecutor::~OdbcQueryExecutor() {
 }
 
 bool exa::OdbcQueryExecutor::executeAsyncQuery() {
-    odbc_stack_trace_logger ostl("executeAsyncQuery");
+    OQE_STACK_PRINTER;
     mRes = ::SQLExecDirect(mStmt, mOdbcSessionInfo.mQuery, SQL_NTS);
     odbc_debug_printer::print("executeAsyncQuery finished with result = ", static_cast<int>(mRes));
     return (SQL_SUCCESS == mRes || SQL_SUCCESS_WITH_INFO == mRes );
 }
 
 void exa::OdbcQueryExecutor::initializeQueryExecutor() {
-    odbc_stack_trace_logger ostl("initializeQueryExecutor");
+    OQE_STACK_PRINTER;
     odbc_debug_printer::print("mOdbcSessionInfo.mHandle: hDbc=", mOdbcSessionInfo.mHandle->hDbc,
                               " hStmt=", mOdbcSessionInfo.mHandle->hStmt,
                               " nRows=", mOdbcSessionInfo.mHandle->nRows,
@@ -54,7 +54,7 @@ void exa::OdbcQueryExecutor::initializeQueryExecutor() {
 }
 
 std::string exa::OdbcQueryExecutor::getQueryExecutorResult() {
-    odbc_stack_trace_logger ostl("getQueryExecutorResult");
+    OQE_STACK_PRINTER;
     std::string errorMsg;
     if (mRes != SQL_SUCCESS && mRes != SQL_SUCCESS_WITH_INFO) {
         odbc_debug_printer::print("mRes indicates an error...");

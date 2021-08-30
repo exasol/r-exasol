@@ -28,7 +28,7 @@ namespace exa {
          * @param errorHandler Callback function to invoke if an error occurs.
          */
         void execute(exa::tBackgroundAsyncErrorFunction errorHandler) override {
-            ae_stack_trace_logger astl("execute");
+            ae_stack_trace_logger astl(__func__);
             mQueryExecutor.initializeQueryExecutor();
             mDone = false;
             mThread = std::thread(&AsyncExecutorImpl::executeAsyncQuery, this, errorHandler);
@@ -49,7 +49,7 @@ namespace exa {
          * @return Empty string if no error occured. Error message otherwise.
          */
         std::string joinAndCheckResult() override {
-            ae_stack_trace_logger astl("join");
+            ae_stack_trace_logger astl(__func__);
             if (mThread.joinable()) {
                 ae_debug_printer::print("is joinable!. Call join()");
                 mThread.join();
@@ -67,7 +67,7 @@ namespace exa {
          * @param errorHandler Callback function to invoke if an error occurs.
          */
         void executeAsyncQuery(exa::tBackgroundAsyncErrorFunction errorHandler) {
-            ae_stack_trace_logger astl("executeAsyncQuery");
+            ae_stack_trace_logger astl(__func__);
             const bool result = mQueryExecutor.executeAsyncQuery();
             mDone = true;
             if (!result) {

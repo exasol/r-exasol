@@ -5,16 +5,15 @@
 #include <sstream>
 #include <r_exasol/debug_print/debug_printer.h>
 
-typedef exa::DebugPrinter<exa::SocketImpl> socket_debug_printer;
-typedef exa::StackTraceLogger<exa::SocketImpl> socket_stack_trace_logger;
+#define SOCKET_STACK_PRINTER STACK_PRINTER( exa::SocketImpl);
 
 
 exa::SocketImpl::SocketImpl()
 : mSocket(-1) {}
 
 ssize_t exa::SocketImpl::recv(void *buf, size_t len) {
+    SOCKET_STACK_PRINTER;
     ssize_t retVal = 0;
-    socket_stack_trace_logger sstl("recv");
 #ifdef _WIN32
     retVal = ::recv(mSocket, static_cast<char*>(buf), len, MSG_WAITALL); //Winsocket returns SOCKET_ERROR = -1 in case of error! So this should be safe.
 #else
@@ -24,7 +23,7 @@ ssize_t exa::SocketImpl::recv(void *buf, size_t len) {
 }
 
 ssize_t exa::SocketImpl::send(const void *buf, size_t len) {
-    socket_stack_trace_logger sstl("send");
+    SOCKET_STACK_PRINTER;
 #ifdef _WIN32
     return ::send(mSocket, static_cast<const char*>(buf), len, 0);
 #else
@@ -33,18 +32,18 @@ ssize_t exa::SocketImpl::send(const void *buf, size_t len) {
 }
 
 void exa::SocketImpl::shutdownWr() {
-    socket_stack_trace_logger sstl("shutdownWr");
+    SOCKET_STACK_PRINTER;
     ::shutdown(mSocket, SHUT_WR);
     mSocket = -1;
 }
 void exa::SocketImpl::shutdownRdWr() {
-    socket_stack_trace_logger sstl("shutdownRdWr");
+    SOCKET_STACK_PRINTER;
     ::shutdown(mSocket, SHUT_RDWR);
     mSocket = -1;
 }
 
 void exa::SocketImpl::connect(const char *host, uint16_t port) {
-    socket_stack_trace_logger sstl("connect");
+    SOCKET_STACK_PRINTER;
     struct ::sockaddr_in serv_addr;
     struct ::hostent *server;
 
@@ -98,5 +97,6 @@ exa::SocketImpl::~SocketImpl() {
 }
 
 tSocket exa::SocketImpl::detach() {
+    SOCKET_STACK_PRINTER;
     return std::exchange(mSocket, -1);
 }
