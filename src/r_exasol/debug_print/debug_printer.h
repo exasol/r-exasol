@@ -55,6 +55,8 @@ namespace exa {
         std::string funcName;
     };
 
+
+
     template<typename TCaller>
     struct ObjectLifecycleLogger {
         ObjectLifecycleLogger() {

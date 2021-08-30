@@ -7,12 +7,11 @@
 //Check https://opensource.apple.com/source/OpenSSL/OpenSSL-22/openssl/demos/ssl/serv.cpp.auto.html
 
 
-typedef exa::DebugPrinter<exa::SSLSocketImpl> ssl_socket_debug_printer;
-typedef exa::StackTraceLogger<exa::SSLSocketImpl> ssl_socket_stack_trace_logger;
+#define STACK_PRINTER StackTraceLogger<exa::SSLSocketImpl> stackTraceLogger(__func__)
 
 
 ssize_t exa::SSLSocketImpl::recv(void *buf, size_t len) {
-    ssl_socket_stack_trace_logger sl("recv");
+    STACK_PRINTER;
     ssize_t retVal = -1;
     if (len <= static_cast<size_t>(std::numeric_limits<ssize_t>::max())) {
         //SSL works with packets of length 16KB. So we might need to call SSL_read several time to read the whole buffer.
@@ -27,19 +26,19 @@ ssize_t exa::SSLSocketImpl::recv(void *buf, size_t len) {
 }
 
 ssize_t exa::SSLSocketImpl::send(const void *buf, size_t len) {
-    ssl_socket_stack_trace_logger sl("send");
+    STACK_PRINTER;
     //::SSL_write will return only after whole chunk was written
     //unless SSL_MODE_ENABLE_PARTIAL_WRITE has been set. However, per default this mode is disabled.
     return ::SSL_write(mSsl, buf, len);
 }
 
 void exa::SSLSocketImpl::shutdownWr() {
-    ssl_socket_stack_trace_logger sl("shutdownWr");
+    STACK_PRINTER;
     ::SSL_shutdown(mSsl);
 }
 
 void exa::SSLSocketImpl::shutdownRdWr() {
-    ssl_socket_stack_trace_logger sl("shutdownRdWr");
+    STACK_PRINTER;
     ::SSL_shutdown(mSsl);
 }
 
