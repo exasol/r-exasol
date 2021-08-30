@@ -1,19 +1,22 @@
 # r-exasol 6.0.0, released 2021-08-27
 
-Code name: t.b.d.
+Code name: Encryption support.
 
 ## Summary 
 
-t.b.d. 
+This released contains a major refactoring of the C++ layer. This also includes the removal of several C functions, which were exposed to the R-layer, but effectively unused. Also, r-exasol now supports encryption of the data channel via TLS.
 
 ## Features / Enhancements
  #63 refactor c layer
+ #56:Created SSL Socket
 
 ## Bug Fixes
  #71 Fixed docker image nightly upload
+ #78: Fixed cpp and windows/mac build on GHA (#80)
+ #73: Added debug log
 
 ### Compile Dependency Updates
-n/a
+ #OpenSSL
 
 #### Linux
 n/a
@@ -22,7 +25,7 @@ n/a
 n/a
 
 ### Runtime Dependency Updates
-* Updated Exasol ODBC driver
+n/a
 
 ### Test Dependency Updates
 n/a
