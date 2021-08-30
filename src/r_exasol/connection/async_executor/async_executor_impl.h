@@ -60,7 +60,7 @@ namespace exa {
 
     private:
         /**
-         * Executes the remote execution in a bg thread. If an error occurs it calls errorHandler.
+         * Executes the remote execution in a background thread. If an error occurs it calls errorHandler.
          * <p>
          * Do not call any R functions (at least not such which use R's memory management) here!
          * <p>
