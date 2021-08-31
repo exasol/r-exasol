@@ -7,6 +7,7 @@
 #include <r_exasol/connection/error_handler.h>
 #include <r_exasol/connection/connection_info.h>
 #include <r_exasol/connection/protocol_type.h>
+#include <r_exasol/debug_print/debug_printer.h>
 #include <memory>
 
 
@@ -60,12 +61,14 @@ namespace exa {
         bool isValidProtocol(ProtocolType protocolType);
 
     private:
+        ObjectLifecycleLogger<ConnectionController> mLifecycleLogger;
         ConnectionFactory & mConnectionFactory;
         std::shared_ptr<reader::Reader> mReader;
         std::shared_ptr<writer::Writer> mWriter;
         std::unique_ptr<AsyncExecutor> mOdbcAsyncExecutor;
         ConnectionInfo mConnectionInfo;
         tErrorFunction mErrorHandler;
+
     };
 }
 

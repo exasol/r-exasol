@@ -12,6 +12,15 @@
 #include "mocks/AsyncSessionMock.h"
 #include "test_utils.h"
 
+#include <r_exasol/debug_print/debug_printer.h>
+
+
+//#define TEST_LOGGING
+
+void log_func(const char* msg) {
+    printf("%s", msg);
+}
+
 
 /**
  * Because of asynchronous behavior, we wait one second before starting test, to give server (Python program)
@@ -22,6 +31,9 @@ struct MyListener : Catch::TestEventListenerBase {
     using TestEventListenerBase::TestEventListenerBase; // inherit constructor
 
     void testCaseStarting(Catch::TestCaseInfo const&) override {
+#ifdef TEST_LOGGING
+        exa::debug::setLogger(log_func);
+#endif
 #ifdef _WIN32
         _sleep(1);
 #else

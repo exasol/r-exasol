@@ -2,6 +2,7 @@
 #define R_EXASOL_ASYNC_EXECUTOR_IMPL_H
 
 #include <r_exasol/connection/async_executor/async_executor.h>
+#include <r_exasol/debug_print/debug_printer.h>
 #include <thread>
 #include <atomic>
 
@@ -13,6 +14,10 @@ namespace exa {
      */
     template<typename TQueryExecutor, typename TSessionInfo>
     class AsyncExecutorImpl : public AsyncExecutor {
+        typedef exa::DebugPrinter<exa::AsyncExecutor> ae_debug_printer;
+        //don't use the Macro here, because it would be included in all of the header's clients
+        typedef exa::StackTraceLogger<exa::AsyncExecutor> ae_stack_trace_logger;
+
     public:
         AsyncExecutorImpl() = default;
         explicit AsyncExecutorImpl(TSessionInfo sessionInfo) : mQueryExecutor(sessionInfo) {};
@@ -24,6 +29,7 @@ namespace exa {
          * @param errorHandler Callback function to invoke if an error occurs.
          */
         void execute(exa::tBackgroundAsyncErrorFunction errorHandler) override {
+            ae_stack_trace_logger astl(__func__);
             mQueryExecutor.initializeQueryExecutor();
             mDone = false;
             mThread = std::thread(&AsyncExecutorImpl::executeAsyncQuery, this, errorHandler);
@@ -44,18 +50,25 @@ namespace exa {
          * @return Empty string if no error occured. Error message otherwise.
          */
         std::string joinAndCheckResult() override {
+            ae_stack_trace_logger astl(__func__);
             if (mThread.joinable()) {
+                ae_debug_printer::print("is joinable!. Call join()");
                 mThread.join();
+                ae_debug_printer::print("Finished join!");
             }
             return mQueryExecutor.getQueryExecutorResult();
         }
 
     private:
         /**
-         * Executes the remote execution in a bg thread. If an error occurs it calls errorHandler.
+         * Executes the remote execution in a background thread. If an error occurs it calls errorHandler.
+         * <p>
+         * Do not call any R functions (at least not such which use R's memory management) here!
+         * <p>
          * @param errorHandler Callback function to invoke if an error occurs.
          */
         void executeAsyncQuery(exa::tBackgroundAsyncErrorFunction errorHandler) {
+            ae_stack_trace_logger astl(__func__);
             const bool result = mQueryExecutor.executeAsyncQuery();
             mDone = true;
             if (!result) {
@@ -64,6 +77,7 @@ namespace exa {
         }
 
     private:
+        ObjectLifecycleLogger<AsyncExecutorImpl> mObjectLifecycleLogger;
         std::atomic_bool mDone{};
         std::thread mThread;
         TQueryExecutor mQueryExecutor;

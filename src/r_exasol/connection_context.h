@@ -8,6 +8,7 @@
 #include <r_exasol/rconnection/r_connection.h>
 #include <r_exasol/connection/connection_controller.h>
 #include <r_exasol/connection/connection_factory_impl.h>
+#include <r_exasol/debug_print/file_logger.h>
 
 namespace exa {
 
@@ -24,14 +25,16 @@ namespace exa {
         int destroyConnection(bool checkDone);
         SEXP createReadConnection(::pRODBCHandle handle, ::SQLCHAR *query, const char* protocol);
         SEXP createWriteConnection(::pRODBCHandle handle, ::SQLCHAR *query, const char* protocol);
-
+        int enableTracing(const char* tracefile);
     private:
         exa::ProtocolType convertProtocol(const char*);
+
 
     private:
         std::unique_ptr <exa::rconnection::RConnection> mConnection;
         std::unique_ptr <exa::ConnectionController> mConnectionController;
         exa::ConnectionFactoryImpl mConnectionFactory;
+        exa::debug::FileLogger mLogger;
     };
 }
 

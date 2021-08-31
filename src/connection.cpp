@@ -1,5 +1,6 @@
 #include <connection.h>
 #include <r_exasol/connection_context.h>
+#include <r_exasol/debug_print/file_logger.h>
 
 namespace exa {
     /*
@@ -13,8 +14,12 @@ namespace exa {
     }
 }
 
+
 extern "C" {
 
+int enableTracing(const char* tracefile) {
+    return exa::getConnectionContext().enableTracing(tracefile);
+}
 
 int initConnection(const char* host, int port, const char* protocol) {
     return exa::getConnectionContext().initConnection(host, port, protocol);
