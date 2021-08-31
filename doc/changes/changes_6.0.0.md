@@ -4,10 +4,10 @@ Code name: Encryption support.
 
 ## Summary 
 
-This released contains a major refactoring of the C++ layer. This also includes the removal of several C functions, which were exposed to the R-layer, but effectively unused. Also, r-exasol now supports encryption of the data channel via TLS.
+This release contains a major refactoring of the C++ layer. This also includes the removal of several C functions, which were exposed to the R-layer, but effectively unused. Also, r-exasol now supports encryption of the data channel via TLS.
 
 ## Features / Enhancements
- #63 refactor c layer
+ #63 Refactor C layer
  #56:Created SSL Socket
 
 ## Bug Fixes
