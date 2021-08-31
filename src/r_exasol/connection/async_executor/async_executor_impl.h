@@ -15,6 +15,7 @@ namespace exa {
     template<typename TQueryExecutor, typename TSessionInfo>
     class AsyncExecutorImpl : public AsyncExecutor {
         typedef exa::DebugPrinter<exa::AsyncExecutor> ae_debug_printer;
+        //don't use the Macro here, because it would be included in all of the header's clients
         typedef exa::StackTraceLogger<exa::AsyncExecutor> ae_stack_trace_logger;
 
     public:
