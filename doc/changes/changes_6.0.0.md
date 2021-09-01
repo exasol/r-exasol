@@ -1,4 +1,4 @@
-# r-exasol 6.0.0, released 2021-08-31
+# r-exasol 6.0.0, released 2021-09-01
 
 Code name: Encryption support.
 
