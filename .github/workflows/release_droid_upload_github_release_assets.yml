@@ -39,17 +39,22 @@ jobs:
         shell: Rscript {0}
         env: # Set individual GH PAT
           GITHUB_PAT: ${{ secrets.PAT_FOR_DEVTOOLS }}
+      - name: Create output dir
+        id: step_one
+        run: |
+            out_put_dir="${{ runner.temp }}/bin/${{matrix.config.os}}'
+            mkdir -p "${out_put_dir}"
+            echo "output_dir=${out_put_dir}" >> $GITHUB_ENV
       - name: Build
         run: |
-          devtools::build(binary=TRUE, path="${{ runner.temp }}/bin/${{matrix.config.os}}")
+          devtools::build(binary=TRUE, path='${{ env.output_dir }}')
         shell: Rscript {0}
         env: # Set individual GH PAT
           GITHUB_PAT: ${{ secrets.PAT_FOR_DEVTOOLS }}
       - name: Check result
         run: |
-          echo "Target folder is ${{ runner.temp }}/bin/${{matrix.config.os}}"
-          ls "${{ runner.temp }}/bin/${{matrix.config.os}}"
-
+          echo 'Target folder is ${{ env.output_dir }}'
+          ls '${{ env.output_dir }}'
 
 #      - name: Upload assets to the GitHub release draft
 #        uses: shogo82148/actions-upload-release-asset@v1
@@ -73,16 +78,22 @@ jobs:
         shell: Rscript {0}
         env: # Set individual GH PAT
           GITHUB_PAT: ${{ secrets.PAT_FOR_DEVTOOLS }}
+      - name: Create output dir
+        id: step_one
+        run: |
+          out_put_dir="${{ runner.temp }}/bin/source'
+          mkdir -p "${out_put_dir}"
+          echo "output_dir=${out_put_dir}" >> $GITHUB_ENV
       - name: Build
         run: |
-          devtools::build(binary=FALSE, path="${{ runner.temp }}/bin/source")
+          devtools::build(binary=FALSE, path="${{ env.output_dir }}")
         shell: Rscript {0}
         env: # Set individual GH PAT
           GITHUB_PAT: ${{ secrets.PAT_FOR_DEVTOOLS }}
       - name: Check result
         run: |
-           echo "Target folder is ${{ runner.temp }}/bin/source/"
-           ls "${{ runner.temp }}/bin/source/"
+           echo "Target folder is ${{ env.output_dir }}"
+           ls "${{ env.output_dir }}"
 #      - name: Upload assets to the GitHub release draft
 #        uses: shogo82148/actions-upload-release-asset@v1
 #        with:
