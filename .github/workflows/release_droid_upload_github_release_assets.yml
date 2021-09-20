@@ -8,8 +8,80 @@ on:
         required: true
 
 jobs:
-  build:
-    runs-on: ubuntu-latest
+  build-binaries:
+    runs-on: ${{ matrix.config.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        config:
+          - { os: windows-latest, r: 'release' }
+          - { os: macOS-latest, r: 'release' }
+          - { os: ubuntu-latest, r: 'release' }
+    environment: ci_build
     steps:
-      - name: Dummy step
-        run: echo "Nothing to do"
+      - uses: actions/checkout@v2
+
+      - uses: r-lib/actions/setup-r@v1
+        with:
+          r-version: ${{ matrix.config.r }}
+
+      - name: Install openssl MacOsX
+        if: matrix.config.os == 'macOS-latest'
+        run: |
+          brew install openssl
+          BREW_PREFIX=`brew --prefix`
+      - name: Query dependencies
+        run: |
+          install.packages("RODBC")
+          install.packages("DBI")
+          install.packages("devtools")
+        shell: Rscript {0}
+        env: # Set individual GH PAT
+          GITHUB_PAT: ${{ secrets.PAT_FOR_DEVTOOLS }}
+      - name: Build
+        run: |
+          devtools::build(binary=TRUE, path=${{ runner.temp }}/bin/${{matrix.config.os}})
+        shell: Rscript {0}
+        env: # Set individual GH PAT
+          GITHUB_PAT: ${{ secrets.PAT_FOR_DEVTOOLS }}
+      - name: Check result
+        run: |
+          echo "Target folder is ${{ runner.temp }}/bin/source/"
+          ls ${{ runner.temp }}/bin/source/
+
+#      - name: Upload assets to the GitHub release draft
+#        uses: shogo82148/actions-upload-release-asset@v1
+#        with:
+#          upload_url: ${{ github.event.inputs.upload_url }}
+#          asset_path: ${{ runner.temp }}/bin/${{matrix.config.os}}/*
+  build-source:
+    runs-on: ubuntu-latest
+    environment: ci_build
+    steps:
+      - uses: actions/checkout@v2
+      - uses: r-lib/actions/setup-r@v1
+        with:
+          r-version: 'release'
+      - name: Query dependencies
+        run: |
+          install.packages("RODBC")
+          install.packages("DBI")
+          install.packages("devtools")
+        shell: Rscript {0}
+        env: # Set individual GH PAT
+          GITHUB_PAT: ${{ secrets.PAT_FOR_DEVTOOLS }}
+      - name: Build
+        run: |
+          devtools::build(binary=FALSE, path=${{ runner.temp }}/bin/source)
+        shell: Rscript {0}
+        env: # Set individual GH PAT
+          GITHUB_PAT: ${{ secrets.PAT_FOR_DEVTOOLS }}
+       - name: Check result
+         run: |
+           echo "Target folder is ${{ runner.temp }}/bin/source/"
+           ls ${{ runner.temp }}/bin/source/
+#      - name: Upload assets to the GitHub release draft
+#        uses: shogo82148/actions-upload-release-asset@v1
+#        with:
+#          upload_url: ${{ github.event.inputs.upload_url }}
+#          asset_path: ${{ runner.temp }}/bin/source/*
