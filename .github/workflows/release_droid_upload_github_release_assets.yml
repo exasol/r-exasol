@@ -34,7 +34,7 @@ jobs:
         run: |
           install.packages("RODBC")
           install.packages("DBI")
-          install.packages("devtools")
+          install.packages("devtools", dependencies=TRUE)
           devtools::install_deps()
         shell: Rscript {0}
         env: # Set individual GH PAT
@@ -73,7 +73,7 @@ jobs:
         run: |
           install.packages("RODBC")
           install.packages("DBI")
-          install.packages("devtools")
+          install.packages("devtools", dependencies=TRUE)
           devtools::install_deps()
         shell: Rscript {0}
         env: # Set individual GH PAT
