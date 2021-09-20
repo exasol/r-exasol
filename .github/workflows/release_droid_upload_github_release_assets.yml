@@ -40,14 +40,15 @@ jobs:
           GITHUB_PAT: ${{ secrets.PAT_FOR_DEVTOOLS }}
       - name: Build
         run: |
-          devtools::build(binary=TRUE, path=${{ runner.temp }}/bin/${{matrix.config.os}})
+          devtools::build(binary=TRUE, path="${{ runner.temp }}/bin/${{matrix.config.os}}")
         shell: Rscript {0}
         env: # Set individual GH PAT
           GITHUB_PAT: ${{ secrets.PAT_FOR_DEVTOOLS }}
       - name: Check result
         run: |
           echo "Target folder is ${{ runner.temp }}/bin/source/"
-          ls ${{ runner.temp }}/bin/source/
+          ls "${{ runner.temp }}/bin/source/"
+
 
 #      - name: Upload assets to the GitHub release draft
 #        uses: shogo82148/actions-upload-release-asset@v1
@@ -72,14 +73,14 @@ jobs:
           GITHUB_PAT: ${{ secrets.PAT_FOR_DEVTOOLS }}
       - name: Build
         run: |
-          devtools::build(binary=FALSE, path='${{ runner.temp }}/bin/source')
+          devtools::build(binary=FALSE, path="${{ runner.temp }}/bin/source")
         shell: Rscript {0}
         env: # Set individual GH PAT
           GITHUB_PAT: ${{ secrets.PAT_FOR_DEVTOOLS }}
       - name: Check result
         run: |
            echo "Target folder is ${{ runner.temp }}/bin/source/"
-           ls ${{ runner.temp }}/bin/source/
+           ls "${{ runner.temp }}/bin/source/"
 #      - name: Upload assets to the GitHub release draft
 #        uses: shogo82148/actions-upload-release-asset@v1
 #        with:
