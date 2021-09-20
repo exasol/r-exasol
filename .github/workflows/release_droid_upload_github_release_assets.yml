@@ -42,7 +42,7 @@ jobs:
       - name: Create output dir
         id: step_one
         run: |
-            out_put_dir="${{ runner.temp }}/bin/${{matrix.config.os}}'
+            out_put_dir="${{ runner.temp }}/bin/${{matrix.config.os}}"
             mkdir -p "${out_put_dir}"
             echo "output_dir=${out_put_dir}" >> $GITHUB_ENV
       - name: Build
