@@ -35,6 +35,7 @@ jobs:
           install.packages("RODBC")
           install.packages("DBI")
           install.packages("devtools")
+          devtools::install_deps()
         shell: Rscript {0}
         env: # Set individual GH PAT
           GITHUB_PAT: ${{ secrets.PAT_FOR_DEVTOOLS }}
@@ -68,6 +69,7 @@ jobs:
           install.packages("RODBC")
           install.packages("DBI")
           install.packages("devtools")
+          devtools::install_deps()
         shell: Rscript {0}
         env: # Set individual GH PAT
           GITHUB_PAT: ${{ secrets.PAT_FOR_DEVTOOLS }}
