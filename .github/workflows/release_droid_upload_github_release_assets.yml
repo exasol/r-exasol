@@ -47,8 +47,8 @@ jobs:
           GITHUB_PAT: ${{ secrets.PAT_FOR_DEVTOOLS }}
       - name: Check result
         run: |
-          echo "Target folder is ${{ runner.temp }}/bin/source/"
-          ls "${{ runner.temp }}/bin/source/"
+          echo "Target folder is ${{ runner.temp }}/bin/${{matrix.config.os}}"
+          ls "${{ runner.temp }}/bin/${{matrix.config.os}}"
 
 
 #      - name: Upload assets to the GitHub release draft
