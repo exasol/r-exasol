@@ -72,7 +72,7 @@ jobs:
           GITHUB_PAT: ${{ secrets.PAT_FOR_DEVTOOLS }}
       - name: Build
         run: |
-          devtools::build(binary=FALSE, path=${{ runner.temp }}/bin/source)
+          devtools::build(binary=FALSE, path='${{ runner.temp }}/bin/source')
         shell: Rscript {0}
         env: # Set individual GH PAT
           GITHUB_PAT: ${{ secrets.PAT_FOR_DEVTOOLS }}
