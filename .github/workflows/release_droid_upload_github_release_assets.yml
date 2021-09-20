@@ -76,8 +76,8 @@ jobs:
         shell: Rscript {0}
         env: # Set individual GH PAT
           GITHUB_PAT: ${{ secrets.PAT_FOR_DEVTOOLS }}
-       - name: Check result
-         run: |
+      - name: Check result
+        run: |
            echo "Target folder is ${{ runner.temp }}/bin/source/"
            ls ${{ runner.temp }}/bin/source/
 #      - name: Upload assets to the GitHub release draft
