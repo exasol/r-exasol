@@ -76,6 +76,12 @@ AC_PROG_CXX
 PKG_SOURCES=$(cat src/sources.list)
 AC_SUBST(PKG_SOURCES)
 
+PKG_SOURCE_OBJ_FILES=$(sed  's/.cpp/.o/g' src/sources.list)
+PKG_SOURCE_OBJ_FILES+=" exasol.o"
+PKG_TEST_OBJ_FILES=$(sed 's/.cpp/.o/g' src/tests/sources.list)
+PKG_OBJ_FILES="$PKG_SOURCE_OBJ_FILES $PKG_TEST_OBJ_FILES"
+AC_SUBST(PKG_OBJ_FILES)
+
 # substitute unit test source list
 PKG_TEST_SOURCES=$(cat src/tests/sources.list)
 AC_SUBST(PKG_TEST_SOURCES)

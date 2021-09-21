@@ -4,7 +4,7 @@
 \alias{dbListFields}
 \title{Lists all fields of a table.}
 \usage{
-\S4method{dbListFields}{EXAConnection}(conn, name, schema, ...)
+\S4method{dbListFields}{EXAConnection,ANY}(conn, name, schema, ...)
 }
 \arguments{
 \item{conn}{An EXAConnection object}

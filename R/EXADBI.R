@@ -1557,35 +1557,6 @@ EXARemoveTable <- function(con, tbl_name, schema, cascade = FALSE) {
          })
 }
 
-#' Applies an R function to a result set.
-#' The R code is transfered and deployed in an EXASOL database and executed massively parallel.
-#'
-#' @param res An EXAResult set.
-#' @param fun A function to be applied to the result set.
-#' @param simplify A logical indicating whether the result set may be transfered to the client and
-#'      stored in a data.frame. Default: FALSE.
-#' @return An EXAResult object relating to the result set in the EXASOL database, or if SIMPLIFY=TRUE
-#'      a data.frame containing the result set.
-setGeneric(
-  "dbApply",
-  def = function(res, fun,...)
-    standardGeneric("dbApply"),
-  valueClass = c("DBIResult","data.frame")
-)
-
-setMethod(
-  "dbApply", signature("EXAResult"),
-  definition = function(res, fun, simplify = FALSE, ...)
-    EXAApply(res, fun, simplify,...)
-)
-
-EXAApply <- function(res, fun, simplify, ...) {
-  # TODO
-
-  res2
-}
-
-
 #' Shows the EXASOL ODBC connection log.
 #' @param con An EXAConnection object
 #' @param view logical If true, the log is shown in R View, otherwise, a data.frame is returned.

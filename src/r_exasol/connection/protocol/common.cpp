@@ -29,6 +29,4 @@ namespace exa {
             }
         } while(true);
     }
-
-
 }
