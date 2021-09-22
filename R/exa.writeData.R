@@ -17,7 +17,8 @@
 #' @param tableName Name of the table to write the data to. The table has to exist and the records will be appended.
 #' @param tableColumns If your data frame contains only a subset of the columns you can specify these
 #' here. The columns and types have to be specified as a vector of strings like: \code{c("col1", "col2")}
-#' Please take a look at the documentation of the cols parameter in the EXASolution User Manual sec. 2.2.2 '\code{IMPORT}', for details.
+#' Please take a look at the documentation of the cols parameter in the EXASolution
+#' User Manual sec. 2.2.2 '\code{IMPORT}', for details.
 #'
 #' @param encoding A string containing the source encoding (iconv format). By default, the encoding is being
 #'     read from /code{Sys.getlocale("LC_CTYPE")}, which might fail on some OSes. In that case, an error
@@ -35,8 +36,8 @@
 #' @export
 exa.writeData <- function(channel, data, tableName, tableColumns = NA,
                           encoding = tryCatch(strsplit(Sys.getlocale("LC_CTYPE"),".", fixed=TRUE)[[1]][2],
-                                              error = function(e) stop(paste("Cannot get system encoding.
-                                                                             Please set manually.\n",e)
+                                              error = function(e) stop(paste("Cannot get system encoding." +
+                                                                             " Please set manually.\n",e)
                                                                        )
                                               ),
                           writer = function(data, conn, fileEncoding = encoding) {
