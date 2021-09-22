@@ -14,7 +14,7 @@ allows to deploy and execute R code dynamically from an R application running on
 
 EXASOL is an InMemory RDBMS that runs in a MPP cluster (shared-nothing) environment. Leading the TPC-H
 benckmark, it is considered the fastest analytical data warehouse available. The community edition
-can be downloaded for free on \url{https://www.exasol.com/portal}.
+can be downloaded for free on \url{https://docs.exasol.com/get_started/communityedition.htm}.
 }
 \section{Package index}{
 
@@ -93,8 +93,7 @@ can be downloaded for free on \url{https://www.exasol.com/portal}.
 \enumerate{
 \item The development version of the package is available on \url{https://github.com/EXASOL/r-exasol}
 \item Bugs and improvements may be noted on \url{https://github.com/EXASOL/r-exasol/issues}
-\item Downloads & manuals related to the EXASOL Database are at \url{https://www.exasol.com/portal}
-\item Q & A: \url{https://www.exasol.com/portal/questions}
+\item Downloads & manuals related to the EXASOL Database are at \url{https://docs.exasol.com}
 }
 }
 \author{

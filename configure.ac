@@ -25,7 +25,7 @@ fi
 
 ##Setup OpenSSL
 
-m4_include([./ax_check_openssl.m4])
+m4_include([./tools/ax_check_openssl.m4])
 #AX_CHECK_OPENSSL(, [AC_MSG_ERROR([Cannot find OpenSSL])])
 AX_CHECK_OPENSSL(, [
 

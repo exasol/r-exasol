@@ -468,7 +468,7 @@ setMethod(
 #'   with priority to \code{EXAHOST}.
 #' @param connection_string alternatively to everything else, a custom ODBC
 #'   connection sting can be provided. See EXASOL DB manual secion 4.2.5 for
-#'   details, available at \url{https://www.exasol.com/portal}.
+#'   details, available at \url{https://docs.exasol.com/}.
 #' @return A fresh EXAConnection object.
 #' @examples \dontrun{
 #'  con <- dbConnect("exa", dsn = "EXASolo")

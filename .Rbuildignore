@@ -3,3 +3,5 @@
 ^examples$
 ^\.travis\.yml$
 ^integration\-test\-docker\-environment$
+^doc$
+^.git$

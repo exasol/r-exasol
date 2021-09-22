@@ -17,7 +17,7 @@ allows to deploy and execute R code dynamically from an R application running on
 Exasol is an in-memory RDBMS that runs in a MPP cluster (shared-nothing) environment.
 Leading the TPC-H benchmark, it is considered the fastest analytical data warehouse available.
 
-*The community edition can be downloaded for free from the [Exasol Community Portal](https://www.exasol.com/portal).*
+*The community edition can be downloaded for free from the [Exasol Community Portal](https://docs.exasol.com/get_started/communityedition.htm).*
 
 ## Status
 
@@ -56,7 +56,7 @@ Code coverage of tests:
    package that are needed to build packages.
 
 2. Make sure you have ODBC and Exasol ODBC installed and
-   configured on your system. Go to the [download page](https://www.exasol.com/portal/display/DOWNLOAD/) and select your Exasol version in the left menu. Then scroll down to 'Download ODBC Driver' and choose the appropriate version.
+   configured on your system. Go to the [download page](https://docs.exasol.com/connect_exasol/drivers/odbc.htm) and select your Exasol version in the left menu. Then scroll down to 'Download ODBC Driver' and choose the appropriate version.
    
    Once installed, we recommend to create a DSN pointing to
    your database instance. Read the README of Exasol's ODBC

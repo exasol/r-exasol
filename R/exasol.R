@@ -16,7 +16,7 @@
 #'
 #' EXASOL is an InMemory RDBMS that runs in a MPP cluster (shared-nothing) environment. Leading the TPC-H
 #' benckmark, it is considered the fastest analytical data warehouse available. The community edition
-#' can be downloaded for free on \url{https://www.exasol.com/portal}.
+#' can be downloaded for free on \url{https://docs.exasol.com/get_started/communityedition.htm}.
 #'
 #'
 #'
@@ -87,7 +87,6 @@
 #' \item{\code{\link{exa.readData}}}{Execute a SQL query on an EXASolution database and read results fast.}
 #' \item{\code{\link{exa.writeData}}}{Write a data.frame into an EXASOL table fast.}
 #' \item{\code{\link{exa.createScript}}}{Deploys an R function as an UDF in the EXASolution database.}
-#' \item{\code{\link{EXAupper}}}{Changes an identifier into uppercase, except for it is quoted.}
 #' \item{\code{\link{dbCurrentSchema}}}{Fetches and outputs the current schema from an EXASOL DB.}
 #' }}
 #'
@@ -101,8 +100,7 @@
 #' \enumerate{
 #' \item The development version of the package is available on \url{https://github.com/EXASOL/r-exasol}
 #' \item Bugs and improvements may be noted on \url{https://github.com/EXASOL/r-exasol/issues}
-#' \item Downloads & manuals related to the EXASOL Database are at \url{https://www.exasol.com/portal}
-#' \item Q & A: \url{https://www.exasol.com/portal/questions}
+#' \item Downloads & manuals related to the EXASOL Database are at \url{https://docs.exasol.com/get_started/communityedition.htm}
 #'}
 #' @keywords sql
 #' @keywords distributed

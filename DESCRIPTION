@@ -3,11 +3,11 @@ Type: Package
 Title: R Interface & SDK for the EXASOL Database
 Version: 6.0.0
 Date: 2016-01-01
-Author: Ian Formanek, Marcel Boldt, Mathias Golombek, Muhammet Orazov, Pieterjan Spoelders, Sebastian Bär, Szilard Barany, Thomas Ubensee, Torsten Kilias, Valerie Wiedemann, Viliam Simko
+Author: Ian Formanek, Marcel Boldt, Mathias Golombek, Muhammet Orazov, Pieterjan Spoelders, Sebastian Baer, Szilard Barany, Thomas Ubensee, Torsten Kilias, Valerie Wiedemann, Viliam Simko
 Maintainer: Thomas Ubensee <ext.Thomas.Uebensee@exasol.com>
 Contact: Exasol <opensource@exasol.com>
 BugReports: https://github.com/exasol/r-exasol/issues
-URL: https://github.com/EXASOL/r-exasol https://www.exasol.com/portal
+URL: https://github.com/EXASOL/r-exasol https://www.exasol.com
 Depends:
     R (>= 3.3.0),
     DBI (>= 0.3.1)
@@ -24,7 +24,7 @@ Description: The EXASOL R Package offers interface functionality such as
     running on a client). EXASOL is an InMemory RDBMS that runs in a MPP cluster
     (shared-nothing) environment. Leading the TPC-H benchmark, it is considered
     the fastest analytical data warehouse available. A community edition can be
-    downloaded for free on <https://www.exasol.com/portal>.
+    downloaded for free on <https://docs.exasol.com/get_started/communityedition.htm>.
 License: BSD_3_clause + file LICENSE
 LazyData: yes
 Suggests:

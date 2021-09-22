@@ -39,6 +39,9 @@ RUN Rscript -e 'install.packages("RODBC")'
 RUN Rscript -e 'install.packages("devtools", dependencies=TRUE)'
 
 
+RUN mkdir -p /scripts && \
+    curl -L -o /scripts/checkbashisms https://sourceforge.net/projects/checkbaskisms/files/2.0.0.2/checkbashisms/download && \
+    chmod +x /scripts/checkbashisms
 
 COPY run_within_docker.sh /run_within_docker.sh
 RUN mkdir -p /log
