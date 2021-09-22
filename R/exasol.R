@@ -143,46 +143,11 @@ ALLOWED_UDF_OUT_TYPES <- c(EMITS, RETURNS)
 #' TODO comment
 "C_asyncEnableTracing"
 
+#' TODO comment
+"C_run_testthat_tests"
+
 .onAttach <- function(libname, pkgname) {
   # show startup message
   message <- paste("EXASOL SDK", utils::packageVersion("exasol"), "loaded.")
   packageStartupMessage(message, appendLF = TRUE)
 }
-
-
-
-
-# require(RODBC); require(exasol)
-# cnx <- odbcDriverConnect("Driver=/var/Executables/bc/install/ok7500-e8/lib/libexaodbc-uo2214.so;UID=sys;PWD=exasol;EXAHOST=cmw72;EXAPORT=8563")
-# sqlQuery(cnx, "OPEN SCHEMA TEST")
-# require(RODBC); require(exasol); cnx <- odbcDriverConnect("Driver=/var/Executables/bc/install/ok7500-e8/lib/libexaodbc-uo2214.so;UID=sys;PWD=exasol;EXAHOST=cmw67;EXAPORT=8563"); sqlQuery(cnx, "OPEN SCHEMA TEST")
-
-#cnx <- odbcDriverConnect("Driver=/var/Executables/bc/install/ok7500-e8/lib/libexaodbc-uo2214.so;UID=sys;PWD=exasol;EXAHOST=cmw72;EXAPORT=8563")
-#testScript <- exa.createScript(cnx, testScript,
-#env = list(a = 1, b1 = 2, b2 = 2, b3 = 2, b4 = 2, b5 = 2, b6 = 2, b7 = 2, b8 = 2, b9 = 2, ba = 2, bo = 2, be = 2, bu = 2, bi = 2, bd = 2, bh = 2, bt = 2, bn = 2),
-#inArgs = { INT(a) },
-#outArgs = { INT(b); INT(c) },
-#outputAddress = c('192.168.5.61', 3000),
-#initCode = {
-#  require(RODBC); require(data.table)
-#  print(paste("initialize", exa$meta$vm_id));
-#},
-#func = function(data) {
-#  print("begin group")
-#  data$next_row(NA);
-#  data$emit(data$a, data$a + 3);
-#  print("end group")
-#})
-#
-#
-#res <- testScript(1, test)
-#res <- exa.readData(cnx, 'select testScript(1) from test')
-#exa.writeData(cnx, test)
-#
-#res <- sqlQuery(cnx, 'select testScript(1) from test')
-
-# print(testScript(int_index, table = enginetable, groupBy = mod(int_index, 4), returnSQL = TRUE))
-# print(summary(testScript(int_index, table = enginetable, groupBy = mod(int_index, 4))))
-
-# require(RODBC)
-# require(exasol); cnx <- odbcDriverConnect("DSN=EXA"); sqlQuery(cnx, "open schema test"); exa.readData(cnx, "select * from cat")
