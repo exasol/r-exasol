@@ -34,11 +34,23 @@ Suggests:
 LinkingTo: testthat
 SystemRequirements: EXASOL DB v5 onwards
 RoxygenNote: 7.1.2
+Encoding: UTF-8
 Collate:
+    'EXADBI-object.R'
+    'EXADBI-driver.R'
+    'EXADBI-connection.R'
+    'EXADBI-datatype.R'
+    'EXADBI-result.R'
+    'EXADBI-info.R'
     'EXADBI-internal.R'
+    'EXADBI-query.R'
+    'EXADBI-summary.R'
+    'EXADBI-table.R'
+    'EXADBI-transaction.R'
     'exa.createScript.R'
     'exa.writeData.R'
     'exa.readData.R'
     'EXADBI.R'
     'catch-routine-registration.R'
+    'exa.log.R'
     'exasol.R'

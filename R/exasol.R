@@ -42,7 +42,6 @@
 #' \item{\code{\link{dbDriver}}}{Load database drivers.}
 #' \item{\code{\link{dbUnloadDriver}}}{Unload a driver.}
 #' \item{\code{\link{dbConnect}}}{Creates a connection to an EXASOL Database.}
-#' \item{\code{\link{dbListConnections}}}{List currently open connections.}
 #' }
 #'}
 #'

@@ -39,7 +39,6 @@ can be downloaded for free on \url{https://docs.exasol.com/get_started/community
 \item{\code{\link{dbDriver}}}{Load database drivers.}
 \item{\code{\link{dbUnloadDriver}}}{Unload a driver.}
 \item{\code{\link{dbConnect}}}{Creates a connection to an EXASOL Database.}
-\item{\code{\link{dbListConnections}}}{List currently open connections.}
 }
 }
 
@@ -84,7 +83,6 @@ can be downloaded for free on \url{https://docs.exasol.com/get_started/community
 \item{\code{\link{exa.readData}}}{Execute a SQL query on an EXASolution database and read results fast.}
 \item{\code{\link{exa.writeData}}}{Write a data.frame into an EXASOL table fast.}
 \item{\code{\link{exa.createScript}}}{Deploys an R function as an UDF in the EXASolution database.}
-\item{\code{\link{EXAupper}}}{Changes an identifier into uppercase, except for it is quoted.}
 \item{\code{\link{dbCurrentSchema}}}{Fetches and outputs the current schema from an EXASOL DB.}
 }}
 }
@@ -93,7 +91,7 @@ can be downloaded for free on \url{https://docs.exasol.com/get_started/community
 \enumerate{
 \item The development version of the package is available on \url{https://github.com/EXASOL/r-exasol}
 \item Bugs and improvements may be noted on \url{https://github.com/EXASOL/r-exasol/issues}
-\item Downloads & manuals related to the EXASOL Database are at \url{https://docs.exasol.com}
+\item Downloads & manuals related to the EXASOL Database are at \url{https://docs.exasol.com/get_started/communityedition.htm}
 }
 }
 \author{
