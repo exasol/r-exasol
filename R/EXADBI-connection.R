@@ -1,5 +1,4 @@
 #' @include EXADBI-object.R
-#' @import RODBC
 NULL
 
 ## Declaration of EXAConnection and implementation of connection related DBI API.

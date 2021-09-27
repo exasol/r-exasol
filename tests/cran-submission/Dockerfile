@@ -35,9 +35,8 @@ RUN Rscript -e 'install.packages("DBI")'
 RUN Rscript -e 'install.packages("assertthat")'
 RUN Rscript -e 'install.packages("xml2")'
 RUN Rscript -e 'install.packages("DBItest")'
-RUN Rscript -e 'install.packages("RODBC")'
 RUN Rscript -e 'install.packages("devtools", dependencies=TRUE)'
-
+RUN Rscript -e 'install.packages("RODBC")'
 
 RUN mkdir -p /scripts && \
     curl -L -o /scripts/checkbashisms https://sourceforge.net/projects/checkbaskisms/files/2.0.0.2/checkbashisms/download && \

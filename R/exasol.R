@@ -5,6 +5,9 @@
 #' @exportPattern ^[[:alpha:]]+
 #' @import RODBC
 #' @import DBI
+#' @importFrom methods new
+#' @importFrom stats rnorm
+#' @importFrom utils packageVersion read.csv write.table View
 #'
 #' @title R Interface & SDK for the EXASOL Database
 #'

@@ -314,7 +314,7 @@ setMethod(
       gregexpr("CREATED_BY_R",stbl[[1]][1])[[1]][1] > 0) {
       # if the tbl_name & schemaname are equal and contain 'CREATED_BY_R'...
       err <-
-        try(sqlQuery(con, paste("drop schema",stbl[[1]][1]), errors = FALSE))
+        try(sqlQuery(res$connection, paste("drop schema",stbl[[1]][1]), errors = FALSE))
       # ...drop schema if empty
       if (err == -1) {
         stop(paste("Couldn't remove temp. schema:",stbl[[1]][1],"\n",err))

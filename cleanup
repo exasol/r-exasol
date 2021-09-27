@@ -1,3 +1,4 @@
 #!/bin/sh
 
-rm -rf src/Makevars src/**.o
+rm -rf src/Makevars
+find ./src -name "*.o" -type f -delete
