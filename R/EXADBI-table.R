@@ -315,16 +315,14 @@ setMethod(
       })
     } # end of else (table creation)
 
-    if (missing(writeCols) |
-      writeCols[1] == FALSE) {
-      writeCols <-
-        NA
-    } # if write cols are missing or NA, write w/o specifying col names.
-    else if (writeCols[1] == TRUE) {
-      writeCols <-
-        names(data)
-    } # if TRUE, use the data.frame colnames, else use whatever is in it
-
+    if (!is.na(writeCols)) {
+      if (writeCols[1] == FALSE) {
+        writeCols <- NA
+      } # if write cols are missing or NA, write w/o specifying col names.
+      else if (writeCols[1] == TRUE) {
+        writeCols <- names(data)
+      } # if TRUE, use the data.frame colnames, else use whatever is in it
+    }
     message("Writing into table...")
     if (exa.writeData(con, data, paste0(schema,".",tbl_name),
                       tableColumns = processIDs(writeCols),...)) {
