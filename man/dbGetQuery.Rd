@@ -52,5 +52,8 @@ Other DQL functions:
 \code{\link{dbSendQuery,EXAConnection,character-method}},
 \code{\link{fetch,EXAResult,numeric-method}}
 }
+\author{
+EXASOL AG <opensource@exasol.com>
+}
 \concept{DQL functions}
 \concept{EXAConnection related objects}

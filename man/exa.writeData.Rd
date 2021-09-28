@@ -81,6 +81,13 @@ exa.writeData(C, twogroups, tableName = "test.twogroups")
 exa.writeData(con, twogroups, "test.twogroups", encoding="1252")
 }
 }
-\author{
-EXASOL AG <support@exasol.com>
+\seealso{
+Other None-DBI-API: 
+\code{\link{dbEnd}()},
+\code{\link{exa.createScript}()},
+\code{\link{exa.readData}()}
 }
+\author{
+EXASOL AG <opensource@exasol.com>
+}
+\concept{None-DBI-API}

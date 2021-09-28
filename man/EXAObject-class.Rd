@@ -15,4 +15,7 @@ Other DBI classes:
 \code{\link{EXADriver-class}},
 \code{\link{EXAResult-class}}
 }
+\author{
+EXASOL AG <opensource@exasol.com>
+}
 \concept{DBI classes}

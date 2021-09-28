@@ -20,3 +20,6 @@ dbHasCompleted
 \seealso{
 \code{\link[DBI:dbHasCompleted]{DBI::dbHasCompleted()}}
 }
+\author{
+EXASOL AG <opensource@exasol.com>
+}

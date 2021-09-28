@@ -20,3 +20,6 @@ dbGetRowsAffected
 \seealso{
 \code{\link[DBI:dbGetRowsAffected]{DBI::dbGetRowsAffected()}}
 }
+\author{
+EXASOL AG <opensource@exasol.com>
+}

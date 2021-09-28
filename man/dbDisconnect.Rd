@@ -23,3 +23,6 @@ dbDisconnect
 \seealso{
 \code{\link[DBI:dbDisconnect]{DBI::dbDisconnect()}}
 }
+\author{
+EXASOL AG <opensource@exasol.com>
+}

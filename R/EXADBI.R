@@ -45,4 +45,10 @@ NULL
 #' @export dbHasCompleted
 #' @export dbGetRowsAffected
 #' @export dbGetRowCount
+#'
+#' @exportClass EXAResult
+#' @exportClass EXAConnection
+#' @exportClass EXADriver
+#' @exportClass EXAObject
+#' @exportClass EXAResult
 NULL

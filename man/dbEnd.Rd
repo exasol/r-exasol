@@ -57,6 +57,11 @@ Other transaction management functions:
 \code{\link{dbCommit,EXAConnection-method}},
 \code{\link{dbRollback,EXAConnection-method}}
 
+Other None-DBI-API: 
+\code{\link{exa.createScript}()},
+\code{\link{exa.readData}()},
+\code{\link{exa.writeData}()}
+
 Other EXADriver related objects: 
 \code{\link{EXADriver-class}},
 \code{\link{dbConnect,EXADriver-method}},
@@ -77,6 +82,11 @@ Other EXAConnection related objects:
 \code{\link{dbRollback,EXAConnection-method}},
 \code{\link{dbSendQuery,EXAConnection,character-method}},
 \code{\link{dbWriteTable,EXAConnection,character,data.frame-method}}
+}
+\author{
+EXASOL AG <opensource@exasol.com>
+
+EXASOL AG <opensource@exasol.com>
 }
 \concept{EXAConnection related objects}
 \concept{EXADriver related objects}

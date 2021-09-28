@@ -68,5 +68,8 @@ Other DQL functions:
 \code{\link{dbReadTable,EXAConnection,character-method}},
 \code{\link{fetch,EXAResult,numeric-method}}
 }
+\author{
+EXASOL AG <opensource@exasol.com>
+}
 \concept{DQL functions}
 \concept{EXAConnection related objects}

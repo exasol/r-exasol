@@ -44,5 +44,8 @@ Other transaction management functions:
 \code{\link{dbEnd}()},
 \code{\link{dbRollback,EXAConnection-method}}
 }
+\author{
+EXASOL AG <opensource@exasol.com>
+}
 \concept{EXAConnection related objects}
 \concept{transaction management functions}

@@ -43,3 +43,12 @@ summary
 \item \code{EXAConnection}: Info for EXASOL EXAConnection.
 }}
 
+\author{
+EXASOL AG <opensource@exasol.com>
+
+EXASOL AG <opensource@exasol.com>
+
+EXASOL AG <opensource@exasol.com>
+
+EXASOL AG <opensource@exasol.com>
+}

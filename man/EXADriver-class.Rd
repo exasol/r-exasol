@@ -26,5 +26,8 @@ Other EXADriver related objects:
 \code{\link{dbEnd}()},
 \code{\link{exasol_driver}()}
 }
+\author{
+EXASOL AG <opensource@exasol.com>
+}
 \concept{DBI classes}
 \concept{EXADriver related objects}

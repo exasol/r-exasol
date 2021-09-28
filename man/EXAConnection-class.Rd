@@ -59,5 +59,8 @@ Other EXAConnection related objects:
 \code{\link{dbSendQuery,EXAConnection,character-method}},
 \code{\link{dbWriteTable,EXAConnection,character,data.frame-method}}
 }
+\author{
+EXASOL AG <opensource@exasol.com>
+}
 \concept{DBI classes}
 \concept{EXAConnection related objects}

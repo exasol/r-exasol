@@ -25,3 +25,6 @@ dbDataType
 \seealso{
 \code{\link{dbDataType,DBIObject-method}}
 }
+\author{
+EXASOL AG <opensource@exasol.com>
+}

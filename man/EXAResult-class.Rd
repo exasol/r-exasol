@@ -60,5 +60,8 @@ Other EXAResult related objects:
 \code{\link{dbListFields,EXAConnection,character-method}},
 \code{\link{fetch,EXAResult,numeric-method}}
 }
+\author{
+EXASOL AG <opensource@exasol.com>
+}
 \concept{DBI classes}
 \concept{EXAResult related objects}

@@ -33,4 +33,7 @@ Other EXADriver related objects:
 \code{\link{dbConnect,EXADriver-method}},
 \code{\link{dbEnd}()}
 }
+\author{
+EXASOL AG <opensource@exasol.com>
+}
 \concept{EXADriver related objects}

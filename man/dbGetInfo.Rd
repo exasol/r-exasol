@@ -38,3 +38,12 @@ dbGetInfo
 \seealso{
 \code{\link[DBI:dbGetInfo]{DBI::dbGetInfo()}}
 }
+\author{
+EXASOL AG <opensource@exasol.com>
+
+EXASOL AG <opensource@exasol.com>
+
+EXASOL AG <opensource@exasol.com>
+
+EXASOL AG <opensource@exasol.com>
+}

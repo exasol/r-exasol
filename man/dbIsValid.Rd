@@ -23,3 +23,6 @@ dbIsValid
 \seealso{
 \code{\link[DBI:dbIsValid]{DBI::dbIsValid()}}
 }
+\author{
+EXASOL AG <opensource@exasol.com>
+}

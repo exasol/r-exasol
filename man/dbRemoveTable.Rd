@@ -51,5 +51,8 @@ Other EXAConnection related objects:
 Other DML functions: 
 \code{\link{dbWriteTable,EXAConnection,character,data.frame-method}}
 }
+\author{
+EXASOL AG <opensource@exasol.com>
+}
 \concept{DML functions}
 \concept{EXAConnection related objects}

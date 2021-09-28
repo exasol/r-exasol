@@ -168,5 +168,12 @@ Other EXAConnection related objects:
 \code{\link{dbSendQuery,EXAConnection,character-method}},
 \code{\link{dbWriteTable,EXAConnection,character,data.frame-method}}
 }
+\author{
+EXASOL AG <opensource@exasol.com>
+
+EXASOL AG <opensource@exasol.com>
+
+EXASOL AG <opensource@exasol.com>
+}
 \concept{EXAConnection related objects}
 \concept{EXADriver related objects}
