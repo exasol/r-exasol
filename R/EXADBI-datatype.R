@@ -88,6 +88,7 @@ setMethod("EXADataType", "ANY", function(x) {
 #' @param ... Unused.
 #' @seealso \code{\link{dbDataType,DBIObject-method}}
 #' @aliases dbDataType,EXAObject-method
+#' @author EXASOL AG <opensource@exasol.com>
 #' @export
 setMethod("dbDataType", signature("EXAObject"),
           definition = function(dbObj, obj, ...) {

@@ -95,6 +95,7 @@ setMethod(
 #' @param ... further arguements to be passed on to exa.readData.
 #' @return The result exa.readData, by default a data.frame containing the result set.
 #' @seealso \code{\link[DBI:dbReadTable]{DBI::dbReadTable()}}
+#' @export
 setMethod(
   "dbReadTable",
   signature("EXAConnection", "character"),
@@ -138,6 +139,7 @@ setMethod(
 #' @param schema Alternatively to `name`, a schema can be specified separately.
 #' @return A logical indicating if the table exists.
 #' @seealso \code{\link[DBI:dbExistsTable]{DBI::dbExistsTable()}}
+#' @export
 setMethod(
   "dbExistsTable", signature("EXAConnection", "character"),
   definition = function(conn, name, schema = "") {
@@ -194,6 +196,7 @@ setMethod(
 #' @param ... additional parameters to be passed on to exa.writeData.
 #' @return a logical indicating success.
 #' @seealso \code{\link[DBI:dbWriteTable]{DBI::dbWriteTable()}}
+#' @export
 setMethod(
   "dbWriteTable", signature("EXAConnection", "character", "data.frame"),
   definition = function(conn, name, value, schema = "", field_types, overwrite = FALSE, writeCols = NA, ...) {
@@ -345,6 +348,8 @@ setMethod(
 #'      be deleted shall be removed. Default is FALSE.
 #' @return A logicl indicating success.
 #' @seealso \code{\link[DBI:dbRemoveTable]{DBI::dbRemoveTable()}}
+#' @author EXASOL AG <opensource@exasol.com>
+#' @export
 setMethod(
   "dbRemoveTable", signature("EXAConnection", "character"),
   definition = function(conn, name, schema = "", cascade = FALSE) {

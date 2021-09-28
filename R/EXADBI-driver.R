@@ -10,6 +10,7 @@ NULL
 #' @family EXADriver related objects
 #' @slot odbc_drv A string containing the path to the EXASOL ODBC driver file.
 #' @export
+#' @author EXASOL AG <opensource@exasol.com>
 setClass("EXADriver",
          contains = c("DBIDriver", "EXAObject"),
          slots = c(odbc_drv = "character")
@@ -22,6 +23,8 @@ setClass("EXADriver",
 #' Alternatively a path to an ODBC driver library can be provided.
 #' @param silent If TRUE, no message is print.
 #' @return An EXADriver object.
+#' @author EXASOL AG <opensource@exasol.com>
+#' @export
 exasol_driver <- function(driver = NULL, silent = FALSE) {
 
   #TODO: determine driver file according to OS

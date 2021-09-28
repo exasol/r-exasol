@@ -27,6 +27,8 @@ NULL
 #' @field query_sent_time A POSIXct timestamp indicating when the query was sent to the DB.
 #' @field errors A character vector containing errors.
 #' @field default_fetch_rec An int reflecting the default fetch size.
+#' @author EXASOL AG <opensource@exasol.com>
+#' @export
 EXAResult <- setRefClass(
   "EXAResult",
   fields = c(
@@ -91,6 +93,8 @@ EXAResult <- setRefClass(
 #' @describeIn dbHasCompleted Returns if the operation has completed.
 #' @param res EXAResult object to query on.
 #' @seealso \code{\link[DBI:dbHasCompleted]{DBI::dbHasCompleted()}}
+#' @author EXASOL AG <opensource@exasol.com>
+#' @export
 setMethod(
   "dbHasCompleted", signature("EXAResult"),
   definition = function(res) {
@@ -103,6 +107,8 @@ setMethod(
 #' @describeIn dbGetRowsAffected Get rows affected in result.
 #' @seealso \code{\link[DBI:dbGetRowsAffected]{DBI::dbGetRowsAffected()}}
 #' @param res Result from query.
+#' @author EXASOL AG <opensource@exasol.com>
+#' @export
 setMethod("dbGetRowsAffected", signature("EXAResult"), function(res) {
   return(res$rows_affected)
 })

@@ -19,6 +19,8 @@ NULL
 #' @param ... unused.
 #' @return EXAResult object which can be used for fetching rows. It also contains metadata.
 #' @seealso \code{\link[DBI:dbSendQuery]{DBI::dbSendQuery()}}
+#' @author EXASOL AG <opensource@exasol.com>
+#' @export
 setMethod(
   "dbSendQuery",
   signature(conn = "EXAConnection", statement = "character"),
@@ -217,6 +219,7 @@ setMethod(
 #' @include EXADBI-result.R
 #' @seealso \code{\link[DBI:fetch]{DBI::fetch()}}
 #' @export
+#' @author EXASOL AG <opensource@exasol.com>
 setMethod(
   "fetch", signature(res = "EXAResult", n = "numeric"),
   definition = function(res,n,...)
@@ -228,6 +231,7 @@ setMethod(
 #' @family DQL functions
 #' @param res An EXAResult object.
 #' @export
+#' @author EXASOL AG <opensource@exasol.com>
 setMethod(
   "fetch",signature(res = "EXAResult", n = "missing"),
   definition = function(res,...)
@@ -276,6 +280,7 @@ setMethod(
 #' @return A logical indicating success.
 #' @export
 #' @seealso \code{\link[DBI:dbClearResult]{DBI::dbClearResult()}}
+#' @author EXASOL AG <opensource@exasol.com>
 setMethod(
   "dbClearResult", signature(res = "EXAResult"),
   definition = function(res,...)
@@ -338,6 +343,7 @@ setMethod(
 #' @return The result exa.readData, by default a data.frame containing the result set.
 #' @export
 #' @seealso \code{\link[DBI:dbGetQuery]{DBI::dbGetQuery()}}
+#' @author EXASOL AG <opensource@exasol.com>
 setMethod(
   "dbGetQuery", signature("EXAConnection","character"),
   definition = function(conn, statement,...) {

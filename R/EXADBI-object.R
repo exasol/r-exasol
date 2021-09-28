@@ -7,6 +7,7 @@
 #' @family DBI classes
 #'
 #' @docType class
+#' @author EXASOL AG <opensource@exasol.com>
 #' @export
 setClass("EXAObject", contains = c("DBIObject", "VIRTUAL"))
 
@@ -17,6 +18,8 @@ setClass("EXAObject", contains = c("DBIObject", "VIRTUAL"))
 #' @param dbObj An object that inherits EXAObject.
 #' @return A logical indicating if the connection still works.
 #' @seealso \code{\link[DBI:dbIsValid]{DBI::dbIsValid()}}
+#' @author EXASOL AG <opensource@exasol.com>
+#' @export
 setMethod(
   "dbIsValid", signature("EXAObject"),
   definition = function(dbObj) {

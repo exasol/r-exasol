@@ -26,6 +26,7 @@ setOldClass("RODBC")
 #' @slot db_version A string containing the database version.
 #' @slot drv_name A string containing the connection driver version.
 #' @slot encrypted A logical indicating if connection should be encrypted.
+#' @author EXASOL AG <opensource@exasol.com>
 #' @export
 EXAConnection <- setClass(
   "EXAConnection",
@@ -99,6 +100,7 @@ EXAConnection <- setClass(
 #' }
 #' @include EXADBI-driver.R
 #' @seealso \code{\link[DBI:dbConnect]{DBI::dbConnect()}}
+#' @author EXASOL AG <opensource@exasol.com>
 #' @export
 setMethod(
   "dbConnect", "EXADriver",
@@ -144,6 +146,7 @@ setMethod(
 #' @family EXAConnection related objects
 #'
 #' @param drv Driver as character strink which is being forwared to \code{\link{dbDriver}}.
+#' @author EXASOL AG <opensource@exasol.com>
 #' @export
 setMethod(
   "dbConnect", "character",
@@ -157,6 +160,7 @@ setMethod(
 #' @family EXAConnection related objects
 #
 #' @param drv Existing connection
+#' @author EXASOL AG <opensource@exasol.com>
 #' @export
 setMethod(
   "dbConnect", "EXAConnection",
@@ -378,6 +382,7 @@ dbCurrentSchema <- function(con, setSchema=NULL) {
 #' @param conn An EXAConnection object.
 #' @return A logical indicating success.
 #' @export
+#' @author EXASOL AG <opensource@exasol.com>
 #' @seealso \code{\link[DBI:dbDisconnect]{DBI::dbDisconnect()}}
 setMethod(
   "dbDisconnect",signature("EXAConnection"),

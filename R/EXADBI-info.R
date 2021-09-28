@@ -12,6 +12,7 @@ NULL
 #' @param dbObj An EXAObject.
 #' @return A named list.
 #' @export
+#' @author EXASOL AG <opensource@exasol.com>
 #' @seealso \code{\link[DBI:dbGetInfo]{DBI::dbGetInfo()}}
 setMethod(
   "dbGetInfo", "EXAObject",
@@ -23,6 +24,7 @@ setMethod(
 #' @describeIn dbGetInfo Returns metadata on a given EXADriver.
 #'
 #' @param dbObj Existing and valid EXADriver object.
+#' @author EXASOL AG <opensource@exasol.com>
 #' @export
 setMethod(
   "dbGetInfo", "EXADriver",
@@ -40,6 +42,7 @@ setMethod(
 #' @describeIn dbGetInfo Returns metadata on a given EXAConnection.
 #'
 #' @param dbObj Existing and valid EXAConnection object.
+#' @author EXASOL AG <opensource@exasol.com>
 #' @export
 setMethod(
   "dbGetInfo","EXAConnection",
@@ -60,6 +63,7 @@ setMethod(
 #' @describeIn dbGetInfo Returns metadata on a given EXAResult.
 #'
 #' @param dbObj existing EXAResult object.
+#' @author EXASOL AG <opensource@exasol.com>
 #' @export
 setMethod(
   "dbGetInfo","EXAResult",

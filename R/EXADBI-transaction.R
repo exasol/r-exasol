@@ -13,6 +13,8 @@ NULL
 #' @param silent Logical, if FALSE no log messages will be exhibited.
 #' @return a logical indicating success.
 #' @seealso \code{\link[DBI:dbCommit]{DBI::dbCommit()}}
+#' @author EXASOL AG <opensource@exasol.com>
+#' @export
 setMethod("dbCommit", signature("EXAConnection"),
           function(conn, silent = FALSE) {
             switch(as.character(odbcEndTran(conn,commit = TRUE)),
@@ -39,6 +41,8 @@ setMethod("dbCommit", signature("EXAConnection"),
 #' @param conn An EXAConnection object
 #' @return a logical indicating success.
 #' @seealso \code{\link[DBI:dbRollback]{DBI::dbRollback()}}
+#' @author EXASOL AG <opensource@exasol.com>
+#' @export
 setMethod("dbRollback", signature("EXAConnection"),
           function(conn) {
             switch(as.character(odbcEndTran(conn,commit = FALSE)),
@@ -66,6 +70,8 @@ setMethod("dbRollback", signature("EXAConnection"),
 #' @param conn An EXAConnection object
 #' @return a logical indicating success.
 #' @seealso \code{\link[DBI:dbBegin]{DBI::dbBegin()}}
+#' @author EXASOL AG <opensource@exasol.com>
+#' @export
 setMethod("dbBegin", signature("EXAConnection"),
           function(conn) {
             odbcSetAutoCommit(conn, autoCommit = FALSE)
@@ -85,6 +91,7 @@ setMethod("dbBegin", signature("EXAConnection"),
 #' @param ... Additional parameters
 #' @return a logical indicating success.
 #' @export
+#' @author EXASOL AG <opensource@exasol.com>
 setGeneric(
   "dbEnd",
   def = function(conn,...)
@@ -100,6 +107,8 @@ setGeneric(
 #' @param commit Logical. on TRUE the transaction is commmitted, otherwise rolled back.
 #' @param silent Logical. on FALSE, it shows logs in db actions.
 #' @return a logical indicating success.
+#' @author EXASOL AG <opensource@exasol.com>
+#' @export
 setMethod("dbEnd", signature("EXAConnection"),
           function(conn,commit = TRUE, silent = FALSE) {
             ifelse(commit, dbCommit(conn, silent = silent), dbRollback(conn))

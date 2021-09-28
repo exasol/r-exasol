@@ -15,6 +15,8 @@ NULL
 #' @param object Any EXA object.
 #' @param ... Further parameters passed to summary().
 #' @returns A summary string of the EXAObject
+#' @author EXASOL AG <opensource@exasol.com>
+#' @export
 setMethod(
   "summary", "EXAObject",
   definition = function(object, ...) {
@@ -26,6 +28,8 @@ setMethod(
 #' @param object Any EXAResult object.
 #' @param ... Further parameters passed to summary().
 #' @returns A summary string of the EXAResult
+#' @author EXASOL AG <opensource@exasol.com>
+#' @export
 setMethod(
   "summary", "EXAResult",
   definition = function(object, ...) {
@@ -37,6 +41,8 @@ setMethod(
 #' @param object Any EXADriver object.
 #' @param ... Further parameters passed to summary().
 #' @returns A summary string of the EXADriver
+#' @author EXASOL AG <opensource@exasol.com>
+#' @export
 setMethod(
   "summary", "EXADriver",
   definition = function(object, ...)
@@ -47,6 +53,8 @@ setMethod(
 #' @param object EXAConnection object for which the summary info will be returned.
 #' @param ... Further parameters passed to summary().
 #' @returns A summary string of the EXADriver
+#' @author EXASOL AG <opensource@exasol.com>
+#' @export
 setMethod(
   "summary", "EXAConnection",
   definition = function(object, ...)

@@ -31,8 +31,9 @@
 #'
 #' @return The function returns the value returned by the writer, or TRUE if there is none.
 #'
-#' @author EXASOL AG <support@@exasol.com>
+#' @author EXASOL AG <opensource@exasol.com>
 #' @example examples/writeData.R
+#' @family None-DBI-API
 #' @export
 exa.writeData <- function(channel, data, tableName, tableColumns = NA,
                           encoding = tryCatch(strsplit(Sys.getlocale("LC_CTYPE"),".", fixed=TRUE)[[1]][2],
