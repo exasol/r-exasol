@@ -38,7 +38,7 @@ Other EXAConnection related objects:
 \code{\link{dbGetQuery,EXAConnection,character-method}},
 \code{\link{dbListFields,EXAConnection,character-method}},
 \code{\link{dbReadTable,EXAConnection,character-method}},
-\code{\link{dbRemoveTable,EXAConnection,Id-method}},
+\code{\link{dbRemoveTable,EXAConnection,character-method}},
 \code{\link{dbRollback,EXAConnection-method}},
 \code{\link{dbSendQuery,EXAConnection,character-method}},
 \code{\link{dbWriteTable,EXAConnection,character,data.frame-method}}

@@ -5,7 +5,7 @@
 #' @exportPattern ^[[:alpha:]]+
 #' @import RODBC
 #' @import DBI
-#' @importFrom methods new
+#' @importFrom methods new .valueClassTest
 #' @importFrom stats rnorm
 #' @importFrom utils packageVersion read.csv write.table View
 #'

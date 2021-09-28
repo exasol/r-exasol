@@ -346,7 +346,7 @@ setMethod(
 #' @return A logicl indicating success.
 #' @seealso \code{\link[DBI:dbRemoveTable]{DBI::dbRemoveTable()}}
 setMethod(
-  "dbRemoveTable", signature("EXAConnection", "Id"),
+  "dbRemoveTable", signature("EXAConnection", "character"),
   definition = function(conn, name, schema = "", cascade = FALSE) {
     .EXARemoveTable(conn, name, schema, cascade)
   }
