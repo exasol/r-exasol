@@ -1,7 +1,7 @@
 #' @include EXADBI-object.R
 NULL
 
-## EXADriver declaration and definition of driver instation functions.
+## EXADriver declaration and definition of driver instantiation functions.
 
 #' An interface driver object to the EXASOL Database.
 #'
@@ -43,4 +43,3 @@ exasol_driver <- function(driver = NULL, silent = FALSE) {
 
 #' @describeIn exasol_driver An alias for \code{\link{exasol_driver}}
 exa <- exasol_driver
-

@@ -4,7 +4,7 @@ NULL
 ## Query related methods of the DBI API.
 
 #' @title dbSendQuery
-#' @describeIn dbSendQuery Sends an SQL statment to an EXASOL DB, prepares for result fetching.
+#' @describeIn dbSendQuery Sends an SQL statement to an EXASOL DB, prepares for result fetching.
 #' @family EXAConnection related objects
 #' @family DQL functions
 #'
@@ -259,9 +259,6 @@ setMethod(
     if (res$rows_fetched >= res$rows_affected) {
       res$is_complete <- TRUE
     }
-    #print("\n--------------\n")
-    #print(df)
-    #print("\n--------------\n")
     return(df)
   } else {
     warning("Fetch: No more to fetch.")
@@ -288,7 +285,6 @@ setMethod(
 )
 
 .EXAClearResult <- function(res,...) {
-  # close is in row 203
 
   if (res$temp_result_tbl == "CLEARED") {
     message("Clear result: already cleared.")
@@ -339,7 +335,7 @@ setMethod(
 #'
 #' @param conn An EXAConnection object.
 #' @param statement An SQL query statement to be executed in an EXASOL DB.
-#' @param ... further arguments to be passed on to exa.readData.
+#' @param ... Further arguments to be passed on to exa.readData.
 #' @return The result exa.readData, by default a data.frame containing the result set.
 #' @export
 #' @seealso \code{\link[DBI:dbGetQuery]{DBI::dbGetQuery()}}

@@ -19,7 +19,7 @@ setMethod("EXADataType", "data.frame", function(x) {
 setMethod("EXADataType", "integer",  function(x)
   "INT")
 
-#' @describeIn EXADataType Generic method for conversion of all other numerics to an EXASOL "DECIMAL".
+#' @describeIn EXADataType Generic method for conversion of all other numerics to an EXASOL "DECIMAL(36,15)".
 #' @keywords internal
 setMethod("EXADataType", "numeric",  function(x)
   "DECIMAL(36,15)")
@@ -62,12 +62,11 @@ setMethod("EXADataType", "character", .varchar)
 #' @keywords internal
 setMethod("EXADataType", "factor",    .varchar)
 
-#' @describeIn EXADataType Generic method for conversion of a factor to an EXASOL SQL string.
+#' @describeIn EXADataType Generic method for conversion of a list to an EXASOL SQL string.
 #' @keywords internal
 setMethod("EXADataType", "list", function(x) {
   vapply(x, EXADataType, FUN.VALUE = character(1), USE.NAMES = FALSE)
 })
-
 
 #' @describeIn EXADataType Generic method for conversion of a "raw" to an EXASOL SQL string.
 #' @keywords internal
@@ -76,13 +75,12 @@ setMethod("EXADataType", "raw",  .varchar)
 #' @describeIn EXADataType Generic method for conversion of "ANY" to an EXASOL SQL string.
 #' @keywords internal
 setMethod("EXADataType", "ANY", function(x) {
-
   warning(paste("Unrecognised datatype:", x, "Trying to convert to varchar."))
   .varchar(x)
 })
 
 #' @title dbDataType
-#' @describeIn dbDataType Determine the EXASOL data type of an object.
+#' @describeIn dbDataType Determines the EXASOL data type of an object.
 #' @param dbObj A object inheriting from [EXADriver-class] or [EXAConnection-class].
 #' @param obj An R object whose SQL type we want to determine.
 #' @param ... Unused.

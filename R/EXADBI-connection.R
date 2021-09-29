@@ -1,7 +1,7 @@
 #' @include EXADBI-object.R
 NULL
 
-## Declaration of EXAConnection and implementation of connection related DBI API.
+## Declaration of EXAConnection and implementation of connection related to DBI API.
 
 #' The S3 class RODBC will be registered as a superclass of EXAConnection
 #' @name RODBC-class
@@ -20,7 +20,7 @@ setOldClass("RODBC")
 #' @slot autocom_default A logical indicating if autocommit is active.
 #' @slot db_host A string containing the hostname or IP.
 #' @slot db_port An integer containing the connection port.
-#' @slot db_user A string containing the DB user name.
+#' @slot db_user A string containing the database user name.
 #' @slot db_name A string containing the database name.
 #' @slot db_prod_name A string containing the database product name.
 #' @slot db_version A string containing the database version.
@@ -63,7 +63,7 @@ EXAConnection <- setClass(
 #' @param pwd DB user password, e.g. 'exasol'
 #' @param schema Schema in EXASOL db which is opened directly after the
 #'   connection.
-#' @param exalogfile the EXASOL odbc driver log file. By standard a tempfile is
+#' @param exalogfile The EXASOL ODBC driver log file. By standard a tempfile is
 #'   created. Log data may be accessed with 'EXAlog(EXAConnection)'.
 #' @param logmode EXASOL ODBC driver log mode. Allowed options are:
 #' \describe{
@@ -75,7 +75,7 @@ EXAConnection <- setClass(
 #'  tables}
 #' }
 #' @param encryption ODBC encryption. By default off. Switch on with 'Y'.
-#' @param autocommit By default 'Y'. If Y' each SQL statement is committed. 'N'
+#' @param autocommit By default 'Y'. If 'Y' each SQL statement is committed. 'N'
 #'   means that no commits are executed automatically. The transaction will be
 #'   rolled back on disconnect, which causes the loss of all data written during
 #'   the transaction.
@@ -89,7 +89,7 @@ EXAConnection <- setClass(
 #'   cloned, these override the old connection settings.
 #' @param dsn A preconfigured ODBC Data Source Name. Parameter being evaluated
 #'   with priority to \code{EXAHOST}.
-#' @param connection_string alternatively to everything else, a custom ODBC
+#' @param connection_string Alternatively to everything else, a custom ODBC
 #'   connection sting can be provided. See EXASOL DB manual secion 4.2.5 for
 #'   details, available at \url{https://docs.exasol.com/}.
 #' @return A fresh EXAConnection object.
@@ -145,7 +145,7 @@ setMethod(
 #' @family EXADriver related objects
 #' @family EXAConnection related objects
 #'
-#' @param drv Driver as character strink which is being forwared to \code{\link{dbDriver}}.
+#' @param drv Driver as character string which is being forwarded to \code{\link{dbDriver}}.
 #' @author EXASOL AG <opensource@exasol.com>
 #' @export
 setMethod(
@@ -174,7 +174,7 @@ setMethod(
 #' @family EXAConnection related objects
 #'
 #' @name dbCurrentSchema
-#' @param con a valid EXAConnection
+#' @param con A valid EXAConnection
 #' @param setSchema If not NULL, this schema will be opened and attached to EXAConnection metadata.
 #' @return an updated EXAConnection
 #' @export
@@ -246,9 +246,9 @@ dbCurrentSchema <- function(con, setSchema=NULL) {
       )
 
     # autocommit
-
     con_str <- paste0(con_str,";autocommit=",autocommit)
     con_str <- paste0(con_str, ";ENCRYPTION=", ifelse(encryption == "Y", "yes", "no"))
+
     # dots
     d <- list(...)
     while (length(d) > 0) {
@@ -290,10 +290,10 @@ dbCurrentSchema <- function(con, setSchema=NULL) {
 ## @family EXADriver related objects
 ## @family EXAConnection related objects
 ##
-## @param drv an EXAConnection object to be dublicated.
-## @param autocommit Logical. If true autocommit will be enabled for cloned connection.
-## @param ... additional connection string parameter that may override the old settings.
-## @return a fresh EXAConnection
+## @param drv An EXAConnection object to be dublicated.
+## @param autocommit A logical that if it is true, autocommit will be enabled for cloned connection.
+## @param ... An additional connection string parameter that may override the old settings.
+## @return A fresh EXAConnection
 .EXACloneConnection <-
   function(drv, autocommit, ...) {
     # todo: parameters

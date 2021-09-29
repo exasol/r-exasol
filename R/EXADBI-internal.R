@@ -11,7 +11,7 @@
 #' Tries to extrapolate the schema name from the statement given. It looks for strings framed by 'from' and a dot (not case sensitive).
 #'
 #' @param stmt The statement used
-#' @return a character vector containing all schemas found, or alt
+#' @return A character vector containing all schemas found, or alt
 #' @keywords internal
 grep_schema <- function(stmt , statement = TRUE) {
   g1 <-   gregexpr("from(([\\s.]\"[^\"]+\")|([\\s.]\\w+))+?([;\\s)]|$)",  # grep all from stmts.
@@ -49,7 +49,7 @@ grep_schema <- function(stmt , statement = TRUE) {
   identifier
 }
 
-#' Takes an identifier, and transforms it into an EXASOL compatible identifier. In Detail: it
+#' Takes an identifier, and transforms it into an EXASOL compatible identifier. In detail: it
 #'  - removes surrounding whitespaces
 #'  - doubles quotes inside the string,
 #'  - changes dots to underscores,

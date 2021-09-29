@@ -4,7 +4,6 @@
 #' @include EXADBI-connection.R
 NULL
 
-#--------------------- dbGetInfo --------------------------
 
 #' @title dbGetInfo
 #' @describeIn dbGetInfo Returns metadata on a given EXAObject.
@@ -62,7 +61,7 @@ setMethod(
 
 #' @describeIn dbGetInfo Returns metadata on a given EXAResult.
 #'
-#' @param dbObj existing EXAResult object.
+#' @param dbObj Existing EXAResult object.
 #' @author EXASOL AG <opensource@exasol.com>
 #' @export
 setMethod(
