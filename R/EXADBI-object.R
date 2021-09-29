@@ -23,6 +23,6 @@ setClass("EXAObject", contains = c("DBIObject", "VIRTUAL"))
 setMethod(
   "dbIsValid", signature("EXAObject"),
   definition = function(dbObj) {
-    return(TRUE) # TODO
+    return(TRUE)
   }
 )
