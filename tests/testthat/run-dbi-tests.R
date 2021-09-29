@@ -9,6 +9,7 @@ DBItest::test_driver(skip = c("constructor_strict",
 ))
 DBItest::test_connection(skip = c("stress_load_connect_unload"))
 
+
 DBItest::test_result(skip = c("stale_result_warning",
                               "fetch_premature_close",
                               "data_logical_int",
@@ -153,6 +154,18 @@ test_that("dbWriteTable skips importing empty dataframe", {
   dbDisconnect(con)
 })
 
+test_that("dbReadTable", {
+  ctx <- DBItest::get_default_context()
+  con <- DBItest:::connect(ctx)
+  df <- data.frame(c(1, 2, 3), c("StringA", "StringB", "StringC"))
+  colnames(df) <- c("Id", "Val")
+  expect_true(dbWriteTable(con, "TESTTABLE_READ", df, "TESTSCHEMA"))
+  res <- dbReadTable(con, "TESTTABLE_READ", "TESTSCHEMA")
+  expect_equal(res, df)
+  dbDisconnect(con)
+})
+
+
 test_that("dbWriteTable imports dataframe", {
   ctx <- DBItest::get_default_context()
   con <- DBItest:::connect(ctx)
@@ -196,6 +209,22 @@ test_that("dbWriteTable imports dataframe with mixed characters", {
   dbDisconnect(con)
 })
 
+# TODO Implement dbAppend
+# test_that("dbAppend ", {
+#   ctx <- DBItest::get_default_context()
+#   con <- DBItest:::connect(ctx)
+#   df <- data.frame(name=c(1, 2, 3))
+#   dbWriteTable(con, "TESTTABLE_NA", df, "TESTSCHEMA")
+#   df <- data.frame(name=c(4, 5, 6))
+#   dbAppendTable(con, "TESTTABLE_NA", df , "TESTSCHEMA")
+#   result <- dbGetQuery(con, "select * from testschema.testtable_na")
+#   expect_equal(nrow(result), 6)
+#   expect_type(result$name, "integer")
+#   dbDisconnect(con)
+# })
+
+
+
 #CLEANUP
 ctx <- DBItest::get_default_context()
 con <- DBItest:::connect(ctx)
@@ -205,3 +234,5 @@ for(schema in schemas[,1]) {
   q <- paste0("DROP SCHEMA IF EXISTS ", schema, " CASCADE")
   dbSendQuery(con, q)
 }
+dbDisconnect(con)
+
