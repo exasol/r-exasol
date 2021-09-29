@@ -277,7 +277,7 @@ dbCurrentSchema <- function(con, setSchema=NULL) {
           TRUE)
       )[[1]]) - 1
     ),
-    db_name = exa_metadata["Data_Source_name"],
+    db_name = exa_metadata["Data_Source_Name"],
     db_prod_name = exa_metadata["DBMS_Name"],
     db_version = exa_metadata["DBMS_Ver"],
     drv_name = exa_metadata["Driver_Name"],
@@ -366,7 +366,7 @@ dbCurrentSchema <- function(con, setSchema=NULL) {
             TRUE)
         )[[1]]) - 1
       ),
-      db_name = exa_metadata["Data_Source_name"],
+      db_name = exa_metadata["Data_Source_Name"],
       db_prod_name = exa_metadata["DBMS_Name"],
       db_version = exa_metadata["DBMS_Ver"],
       drv_name = exa_metadata["Driver_Name"],
