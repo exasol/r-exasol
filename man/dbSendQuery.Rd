@@ -37,7 +37,7 @@ dbSendQuery
 }
 \section{Methods (by class)}{
 \itemize{
-\item \code{conn = EXAConnection,statement = character}: Sends an SQL statment to an EXASOL DB, prepares for result fetching.
+\item \code{conn = EXAConnection,statement = character}: Sends an SQL statement to an EXASOL DB, prepares for result fetching.
 }}
 
 \seealso{

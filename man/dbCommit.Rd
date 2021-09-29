@@ -9,10 +9,10 @@
 \arguments{
 \item{conn}{An EXAConnection object}
 
-\item{silent}{Logical, if FALSE no log messages will be exhibited.}
+\item{silent}{A logical, if FALSE no log messages will be exhibited.}
 }
 \value{
-a logical indicating success.
+A logical indicating success.
 }
 \description{
 dbCommit

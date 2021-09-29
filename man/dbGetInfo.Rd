@@ -16,7 +16,7 @@
 \S4method{dbGetInfo}{EXAResult}(dbObj)
 }
 \arguments{
-\item{dbObj}{existing EXAResult object.}
+\item{dbObj}{Existing EXAResult object.}
 }
 \value{
 A named list.

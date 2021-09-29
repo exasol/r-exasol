@@ -48,7 +48,7 @@ Generic for conversion to an EXASOL data type.
 
 \item \code{integer}: Generic method for conversion of an integer to an EXASOL "INT".
 
-\item \code{numeric}: Generic method for conversion of all other numerics to an EXASOL "DECIMAL".
+\item \code{numeric}: Generic method for conversion of all other numerics to an EXASOL "DECIMAL(36,15)".
 
 \item \code{logical}: Generic method for conversion of a logical to an EXASOL "BOOLEAN".
 
@@ -60,7 +60,7 @@ Generic for conversion to an EXASOL data type.
 
 \item \code{factor}: Generic method for conversion of a factor to an EXASOL SQL string.
 
-\item \code{list}: Generic method for conversion of a factor to an EXASOL SQL string.
+\item \code{list}: Generic method for conversion of a list to an EXASOL SQL string.
 
 \item \code{raw}: Generic method for conversion of a "raw" to an EXASOL SQL string.
 

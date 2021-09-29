@@ -172,6 +172,7 @@ setMethod(
 
 #' Fetches and outputs the current schema from an EXASOL DB. Also updates EXAConnection metadata.
 #' @family EXAConnection related objects
+#' @family None-DBI-API
 #'
 #' @name dbCurrentSchema
 #' @param con A valid EXAConnection

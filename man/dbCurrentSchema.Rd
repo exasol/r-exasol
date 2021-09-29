@@ -7,7 +7,7 @@
 dbCurrentSchema(con, setSchema = NULL)
 }
 \arguments{
-\item{con}{a valid EXAConnection}
+\item{con}{A valid EXAConnection}
 
 \item{setSchema}{If not NULL, this schema will be opened and attached to EXAConnection metadata.}
 }
@@ -33,5 +33,12 @@ Other EXAConnection related objects:
 \code{\link{dbRollback,EXAConnection-method}},
 \code{\link{dbSendQuery,EXAConnection,character-method}},
 \code{\link{dbWriteTable,EXAConnection,character,data.frame-method}}
+
+Other None-DBI-API: 
+\code{\link{dbEnd}()},
+\code{\link{exa.createScript}()},
+\code{\link{exa.readData}()},
+\code{\link{exa.writeData}()}
 }
 \concept{EXAConnection related objects}
+\concept{None-DBI-API}

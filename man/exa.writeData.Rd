@@ -83,6 +83,7 @@ exa.writeData(con, twogroups, "test.twogroups", encoding="1252")
 }
 \seealso{
 Other None-DBI-API: 
+\code{\link{dbCurrentSchema}()},
 \code{\link{dbEnd}()},
 \code{\link{exa.createScript}()},
 \code{\link{exa.readData}()}

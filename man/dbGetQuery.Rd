@@ -11,7 +11,7 @@
 
 \item{statement}{An SQL query statement to be executed in an EXASOL DB.}
 
-\item{...}{further arguments to be passed on to exa.readData.}
+\item{...}{Further arguments to be passed on to exa.readData.}
 }
 \value{
 The result exa.readData, by default a data.frame containing the result set.

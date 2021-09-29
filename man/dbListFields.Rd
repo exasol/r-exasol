@@ -16,12 +16,12 @@
 
 \item{schema}{Filter on DB schema}
 
-\item{...}{not used.}
+\item{...}{Not used.}
 }
 \value{
-a character vector. If no tables present, a character vector of length 0.
+A character vector. If no tables present, a character vector of length 0.
 
-a character vector. If no tables present, a character vector of length 0.
+A character vector. If no tables present, a character vector of length 0.
 }
 \description{
 dbListFields

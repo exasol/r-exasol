@@ -16,14 +16,14 @@ dbEnd(conn, ...)
 
 \item{...}{Additional parameters}
 
-\item{commit}{Logical. on TRUE the transaction is commmitted, otherwise rolled back.}
+\item{commit}{A logical, on TRUE the transaction is committed, otherwise rolled back.}
 
-\item{silent}{Logical. on FALSE, it shows logs in db actions.}
+\item{silent}{A logical, on FALSE, it shows logs in db actions.}
 }
 \value{
-a logical indicating success.
+A logical indicating success.
 
-a logical indicating success.
+A logical indicating success.
 }
 \description{
 dbEnd
@@ -58,6 +58,7 @@ Other transaction management functions:
 \code{\link{dbRollback,EXAConnection-method}}
 
 Other None-DBI-API: 
+\code{\link{dbCurrentSchema}()},
 \code{\link{exa.createScript}()},
 \code{\link{exa.readData}()},
 \code{\link{exa.writeData}()}

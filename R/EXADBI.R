@@ -20,14 +20,11 @@ NULL
 ## that this statement must stay included and unchanged.
 
 #' @export dbDriver
-#' @export dbUnloadDriver
 
 #' @export dbConnect
 #' @export dbDisconnect
 #' @export dbSendQuery
 #' @export dbGetQuery
-#' @export dbGetException
-#' @export dbListResults
 #' @export dbListFields
 #' @export dbListTables
 #' @export dbReadTable
@@ -38,17 +35,31 @@ NULL
 #' @export dbCommit
 #' @export dbRollback
 
-#' @export dbFetch
 #' @export dbClearResult
 #' @export dbColumnInfo
-#' @export dbGetStatement
 #' @export dbHasCompleted
 #' @export dbGetRowsAffected
-#' @export dbGetRowCount
+#' @export dbGetInfo
+#' @export dbIsValid
+#' @export fetch
+#' @export dbFetch
+#' @export summary
 #'
 #' @exportClass EXAResult
 #' @exportClass EXAConnection
 #' @exportClass EXADriver
 #' @exportClass EXAObject
 #' @exportClass EXAResult
+#'
+#' @export EXADataType
+#'
+#' @export dbEnd
+#' @export dbCurrentSchema
+#' @export exasol_driver
+#' @export exa
+#'
+#' @export exa.readData
+#' @export exa.writeData
+#' @export exa.createScript
+#'
 NULL

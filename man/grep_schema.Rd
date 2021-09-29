@@ -10,7 +10,7 @@ grep_schema(stmt, statement = TRUE)
 \item{stmt}{The statement used}
 }
 \value{
-a character vector containing all schemas found, or alt
+A character vector containing all schemas found, or alt
 }
 \description{
 Tries to extrapolate the schema name from the statement given. It looks for strings framed by 'from' and a dot (not case sensitive).

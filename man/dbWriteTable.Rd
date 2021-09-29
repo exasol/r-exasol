@@ -32,24 +32,24 @@ of c("varchar(20)","int").
 \item{overwrite}{A logical indicating if existing data shall be overwritten. Default is 'FALSE',
 i.e. new data is appended to the DB table.}
 
-\item{writeCols}{a logical or a character vector containing the cols of the DB table to be
+\item{writeCols}{A logical or a character vector containing the cols of the DB table to be
 written into, in the form of c("col1","col4","col3"). If set to TRUE, then the column names
 of the data.frame are used.
 If FALSE, NA, or missing, no write columns are defined and columns are matched by column order.
 Default is NA. Useful to change if the DB table contains more columns than the data.frame, or
 if the column order differs.}
 
-\item{...}{additional parameters to be passed on to exa.writeData.}
+\item{...}{Additional parameters to be passed on to exa.writeData.}
 }
 \value{
-a logical indicating success.
+A logical indicating success.
 }
 \description{
 dbWriteTable
 }
-\section{Functions}{
+\section{Methods (by class)}{
 \itemize{
-\item \code{dbWriteTable,EXAConnection,character,data.frame-method}: Writes a data.frame into a table. If the table does not exist, it is created.
+\item \code{conn = EXAConnection,name = character,value = data.frame}: Writes a data.frame into a table. If the table does not exist, it is created.
 }}
 
 \seealso{

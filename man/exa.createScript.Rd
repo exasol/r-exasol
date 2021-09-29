@@ -164,6 +164,7 @@ testscript("groupid", "val", table = "test.twogroups" , groupBy = "groupid")
 }
 \seealso{
 Other None-DBI-API: 
+\code{\link{dbCurrentSchema}()},
 \code{\link{dbEnd}()},
 \code{\link{exa.readData}()},
 \code{\link{exa.writeData}()}

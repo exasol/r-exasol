@@ -9,17 +9,17 @@
 \arguments{
 \item{conn}{An EXAConnection object.}
 
-\item{name}{a fully qualified table identifier (schema.table) or a simple table identifier, if the
+\item{name}{A fully qualified table identifier (schema.table) or a simple table identifier, if the
 parameter schema is specified.}
 
-\item{schema}{An optional string specifying the DB schema. Caution: use either this parameter, OR give
+\item{schema}{An optional string specifying the DB schema. Caution: use either this parameter, or give
 a fully qualified identifier as giving both will result in an error.}
 
-\item{cascade}{A logical indicating whether also foreign key constraints referencing the table to
-be deleted shall be removed. Default is FALSE.}
+\item{cascade}{A logical indicating whether also foreign key constraints referencing the table should
+be deleted. Default is FALSE.}
 }
 \value{
-A logicl indicating success.
+A logical indicating success.
 }
 \description{
 dbRemoveTable

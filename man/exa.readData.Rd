@@ -82,6 +82,7 @@ print(tables$TABLE_NAME[1])  # print first value of specified column
 }
 \seealso{
 Other None-DBI-API: 
+\code{\link{dbCurrentSchema}()},
 \code{\link{dbEnd}()},
 \code{\link{exa.createScript}()},
 \code{\link{exa.writeData}()}

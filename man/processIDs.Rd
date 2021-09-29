@@ -2,7 +2,7 @@
 % Please edit documentation in R/EXADBI-internal.R
 \name{processIDs}
 \alias{processIDs}
-\title{Takes an identifier, and transforms it into an EXASOL compatible identifier. In Detail: it
+\title{Takes an identifier, and transforms it into an EXASOL compatible identifier. In detail: it
  - removes surrounding whitespaces
  - doubles quotes inside the string,
  - changes dots to underscores,
@@ -16,7 +16,7 @@
 processIDs(id, quotes = "\\"")
 }
 \description{
-Takes an identifier, and transforms it into an EXASOL compatible identifier. In Detail: it
+Takes an identifier, and transforms it into an EXASOL compatible identifier. In detail: it
  - removes surrounding whitespaces
  - doubles quotes inside the string,
  - changes dots to underscores,

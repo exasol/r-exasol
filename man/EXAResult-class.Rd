@@ -22,7 +22,7 @@ active EXAResult object, the table may stay in the DB.
 
 \item{\code{rows_affected}}{An int reflecting the length of the dataset in the DB.}
 
-\item{\code{is_complete}}{A logical indcating if the result set has been entirely fetched.}
+\item{\code{is_complete}}{A logical indicating if the result set has been entirely fetched.}
 
 \item{\code{with_output}}{A logical indicating whether the query produced a result set.}
 

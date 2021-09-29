@@ -215,7 +215,7 @@ setMethod(
 #'
 #' @param res An EXAResult object.
 #' @param n An int declaring the size of the subset to fetch. If missing, the whole subset is fetched.
-#' @param ... further arguments to be passed on to exa.readData.
+#' @param ... further arguments to be passed on to fetch.
 #' @include EXADBI-result.R
 #' @seealso \code{\link[DBI:fetch]{DBI::fetch()}}
 #' @export
@@ -236,6 +236,24 @@ setMethod(
   "fetch",signature(res = "EXAResult", n = "missing"),
   definition = function(res,...)
     .EXAFetch(res,...)
+)
+
+#' @title dbFetch
+#'
+#' @describeIn fetch Fetches a subset of an result set.
+#' @family EXAResult related objects
+#' @family DQL functions
+#'
+#' @param res An EXAResult object.
+#' @param n An int declaring the size of the subset to fetch. If missing, the whole subset is fetched.
+#' @param ... further arguments to be passed on to fetch.
+#' @include EXADBI-result.R
+#' @seealso \code{\link[DBI:dbFetch]{DBI::dbFetch()}}
+#' @export
+#' @author EXASOL AG <opensource@exasol.com>
+setMethod("dbFetch", signature("EXAResult"),
+          definition = function(res, n = -1, ...)
+            .EXAFetch(res, n, ...)
 )
 
 .EXAFetch <- function(res, n = res$default_fetch_rec, ...) {

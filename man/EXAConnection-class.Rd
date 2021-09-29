@@ -22,7 +22,7 @@ initialise the connection.}
 
 \item{\code{db_port}}{An integer containing the connection port.}
 
-\item{\code{db_user}}{A string containing the DB user name.}
+\item{\code{db_user}}{A string containing the database user name.}
 
 \item{\code{db_name}}{A string containing the database name.}
 

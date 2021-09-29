@@ -10,7 +10,7 @@
 \item{conn}{An EXAConnection object}
 }
 \value{
-a logical indicating success.
+A logical indicating success.
 }
 \description{
 dbRollback

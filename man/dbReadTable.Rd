@@ -19,7 +19,7 @@
 CAUTION: a limit without order clause is non-deterministic in EXASOL,
 i.e. subsequent runs of the same statement may deliver differing result sets.}
 
-\item{...}{further arguements to be passed on to exa.readData.}
+\item{...}{Further arguments to be passed on to exa.readData.}
 }
 \value{
 The result exa.readData, by default a data.frame containing the result set.
@@ -27,9 +27,9 @@ The result exa.readData, by default a data.frame containing the result set.
 \description{
 dbReadTable
 }
-\section{Functions}{
+\section{Methods (by class)}{
 \itemize{
-\item \code{dbReadTable,EXAConnection,character-method}: Reads a DB table.
+\item \code{conn = EXAConnection,name = character}: Reads a DB table.
 }}
 
 \seealso{

@@ -41,7 +41,7 @@ e.g. '10.0.2.15..20:8563'}
 \item{schema}{Schema in EXASOL db which is opened directly after the
 connection.}
 
-\item{exalogfile}{the EXASOL odbc driver log file. By standard a tempfile is
+\item{exalogfile}{The EXASOL ODBC driver log file. By standard a tempfile is
 created. Log data may be accessed with 'EXAlog(EXAConnection)'.}
 
 \item{logmode}{EXASOL ODBC driver log mode. Allowed options are:
@@ -56,7 +56,7 @@ created. Log data may be accessed with 'EXAlog(EXAConnection)'.}
 
 \item{encryption}{ODBC encryption. By default off. Switch on with 'Y'.}
 
-\item{autocommit}{By default 'Y'. If Y' each SQL statement is committed. 'N'
+\item{autocommit}{By default 'Y'. If 'Y' each SQL statement is committed. 'N'
 means that no commits are executed automatically. The transaction will be
 rolled back on disconnect, which causes the loss of all data written during
 the transaction.}
@@ -76,7 +76,7 @@ cloned, these override the old connection settings.}
 \item{dsn}{A preconfigured ODBC Data Source Name. Parameter being evaluated
 with priority to \code{EXAHOST}.}
 
-\item{connection_string}{alternatively to everything else, a custom ODBC
+\item{connection_string}{Alternatively to everything else, a custom ODBC
 connection sting can be provided. See EXASOL DB manual secion 4.2.5 for
 details, available at \url{https://docs.exasol.com/}.}
 }
