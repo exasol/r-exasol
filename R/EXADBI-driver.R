@@ -27,9 +27,6 @@ setClass("EXADriver",
 #' @export
 exasol_driver <- function(driver = NULL, silent = FALSE) {
 
-  #TODO: determine driver file according to OS
-  # path.package("exasol")
-
   if(missing(driver) || is.null(driver) || driver =="SYSTEM") {
     if(!silent) print("Using the system driver...")
     driver <- "{EXASolution Driver}"
