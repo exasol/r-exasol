@@ -127,7 +127,7 @@ ALLOWED_UDF_IN_TYPES <- c(SET, SCALAR)
 #' All output types of UDF scripts
 ALLOWED_UDF_OUT_TYPES <- c(EMITS, RETURNS)
 
-#' @describeIn C_API Starts an asynchronous query using the highspeed data channel. Check the developer_guide for more information.
+#' Starts an asynchronous query using the highspeed data channel. Check the developer_guide for more information.
 #' @param chan An open Exasol connection
 #' @param query The SQL query describing the Export/Import
 #' @param protocol Http/Https
@@ -135,31 +135,31 @@ ALLOWED_UDF_OUT_TYPES <- c(EMITS, RETURNS)
 #' @keywords internal
 "C_asyncRODBCQueryStart"
 
-#' @describeIn C_API Prepares the highspeed data channel. Check the developer_guide for more information.
+#' Prepares the highspeed data channel. Check the developer_guide for more information.
 #' @param hostA Database host address
 #' @param portA Database port
 #' @param protocolA Http or Https
 #' @keywords internal
 "C_asyncRODBCIOStart"
 
-#' @describeIn C_API Returns the Database proxy hostname. Check the developer_guide for more information.
+#' Returns the Database proxy hostname. Check the developer_guide for more information.
 #' @keywords internal
 "C_asyncRODBCProxyHost"
 
-#' @describeIn C_API Returns the Database proxy port. Check the developer_guide for more information.
+#' Returns the Database proxy port. Check the developer_guide for more information.
 #' @keywords internal
 "C_asyncRODBCProxyPort"
 
-#' @describeIn C_API Cleans up the high speed data channel. Check the developer_guide for more information.
+#' Cleans up the high speed data channel. Check the developer_guide for more information.
 #' @param checkWasDone Indicating if the import/export has been finished.
 #' @keywords internal
 "C_asyncRODBCQueryFinish"
 
-#' @describeIn C_API Activates debug logs in the C layer.
+#' Activates debug logs in the C layer.
 #' @keywords internal
 "C_asyncEnableTracing"
 
-#' @describeIn C_API Run C++ tests.
+#' Run C++ tests.
 #' @keywords internal
 "C_run_testthat_tests"
 
