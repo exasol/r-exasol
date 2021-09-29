@@ -19,7 +19,7 @@ NULL
 #' @field statement A string containing the SQL query statement.
 #' @field rows_fetched An int reflecting the rows already fetched from the DB.
 #' @field rows_affected An int reflecting the length of the dataset in the DB.
-#' @field is_complete A logical indcating if the result set has been entirely fetched.
+#' @field is_complete A logical indicating if the result set has been entirely fetched.
 #' @field with_output A logical indicating whether the query produced a result set.
 #' @field profile A data.frame containing profile information on the query.
 #' @field columns A data.frame containing column metadata.

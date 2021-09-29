@@ -10,8 +10,8 @@ NULL
 #' @family transaction management functions
 #'
 #' @param conn An EXAConnection object
-#' @param silent Logical, if FALSE no log messages will be exhibited.
-#' @return a logical indicating success.
+#' @param silent A logical, if FALSE no log messages will be exhibited.
+#' @return A logical indicating success.
 #' @seealso \code{\link[DBI:dbCommit]{DBI::dbCommit()}}
 #' @author EXASOL AG <opensource@exasol.com>
 #' @export
@@ -39,7 +39,7 @@ setMethod("dbCommit", signature("EXAConnection"),
 #' @family transaction management functions
 #'
 #' @param conn An EXAConnection object
-#' @return a logical indicating success.
+#' @return A logical indicating success.
 #' @seealso \code{\link[DBI:dbRollback]{DBI::dbRollback()}}
 #' @author EXASOL AG <opensource@exasol.com>
 #' @export
@@ -68,7 +68,7 @@ setMethod("dbRollback", signature("EXAConnection"),
 #' @family transaction management functions
 #'
 #' @param conn An EXAConnection object
-#' @return a logical indicating success.
+#' @return A logical indicating success.
 #' @seealso \code{\link[DBI:dbBegin]{DBI::dbBegin()}}
 #' @author EXASOL AG <opensource@exasol.com>
 #' @export
@@ -89,7 +89,7 @@ setMethod("dbBegin", signature("EXAConnection"),
 #'
 #' @param conn An EXAConnection object
 #' @param ... Additional parameters
-#' @return a logical indicating success.
+#' @return A logical indicating success.
 #' @export
 #' @author EXASOL AG <opensource@exasol.com>
 setGeneric(
@@ -104,9 +104,9 @@ setGeneric(
 #' @family EXAConnection related objects
 #'
 #' @param conn An EXAConnection object
-#' @param commit Logical. on TRUE the transaction is commmitted, otherwise rolled back.
-#' @param silent Logical. on FALSE, it shows logs in db actions.
-#' @return a logical indicating success.
+#' @param commit A logical, on TRUE the transaction is committed, otherwise rolled back.
+#' @param silent A logical, on FALSE, it shows logs in db actions.
+#' @return A logical indicating success.
 #' @author EXASOL AG <opensource@exasol.com>
 #' @export
 setMethod("dbEnd", signature("EXAConnection"),

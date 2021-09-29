@@ -12,8 +12,8 @@ NULL
 #' @param conn An EXAConnection object
 #' @param name A fully qualified table name in the form schema.table.
 #' @param schema Filter on DB schema
-#' @param ... further parameters passed on to `exa.readData()`
-#' @return a character vector. If no tables present, a character vector of length 0.
+#' @param ... Further parameters passed on to `exa.readData()`
+#' @return A character vector. If no tables present, a character vector of length 0.
 #' @export
 #' @seealso \code{\link[DBI:dbListFields]{DBI::dbListFields()}}
 #' @include EXADBI-connection.R
@@ -49,8 +49,8 @@ setMethod(
 #' @family DQL functions
 #'
 #' @param conn An EXAResult object
-#' @param ... not used.
-#' @return a character vector. If no tables present, a character vector of length 0.
+#' @param ... Not used.
+#' @return A character vector. If no tables present, a character vector of length 0.
 #' @export
 #' @include EXADBI-result.R
 setMethod("dbListFields", signature("EXAResult"),
@@ -65,8 +65,8 @@ setMethod("dbListFields", signature("EXAResult"),
 #'
 #' @param conn An EXAConnection object
 #' @param schema Filter on DB schema
-#' @param ... further parameters passed on to `exa.readData()`
-#' @return a character vector. If no tables present, a character vector of length 0.
+#' @param ... Further parameters passed on to `exa.readData()`
+#' @return A character vector. If no tables present, a character vector of length 0.
 #' @export
 #' @seealso \code{\link[DBI:dbListTables]{DBI::dbListTables()}}
 setMethod(
@@ -92,7 +92,7 @@ setMethod(
 #' @param limit A row limit to the result set.
 #'        CAUTION: a limit without order clause is non-deterministic in EXASOL,
 #'        i.e. subsequent runs of the same statement may deliver differing result sets.
-#' @param ... further arguements to be passed on to exa.readData.
+#' @param ... Further arguments to be passed on to exa.readData.
 #' @return The result exa.readData, by default a data.frame containing the result set.
 #' @seealso \code{\link[DBI:dbReadTable]{DBI::dbReadTable()}}
 #' @export
@@ -187,14 +187,14 @@ setMethod(
 #'        If missing, the column types of the data.frame are being converted and used.
 #' @param overwrite A logical indicating if existing data shall be overwritten. Default is 'FALSE',
 #'        i.e. new data is appended to the DB table.
-#' @param writeCols a logical or a character vector containing the cols of the DB table to be
+#' @param writeCols A logical or a character vector containing the cols of the DB table to be
 #'      written into, in the form of c("col1","col4","col3"). If set to TRUE, then the column names
 #'      of the data.frame are used.
 #'      If FALSE, NA, or missing, no write columns are defined and columns are matched by column order.
 #'      Default is NA. Useful to change if the DB table contains more columns than the data.frame, or
 #'      if the column order differs.
-#' @param ... additional parameters to be passed on to exa.writeData.
-#' @return a logical indicating success.
+#' @param ... Additional parameters to be passed on to exa.writeData.
+#' @return A logical indicating success.
 #' @seealso \code{\link[DBI:dbWriteTable]{DBI::dbWriteTable()}}
 #' @export
 setMethod(
@@ -338,13 +338,13 @@ setMethod(
 #' @family DML functions
 #'
 #' @param conn An EXAConnection object.
-#' @param name a fully qualified table identifier (schema.table) or a simple table identifier, if the
+#' @param name A fully qualified table identifier (schema.table) or a simple table identifier, if the
 #' parameter schema is specified.
-#' @param schema An optional string specifying the DB schema. Caution: use either this parameter, OR give
+#' @param schema An optional string specifying the DB schema. Caution: use either this parameter, or give
 #'      a fully qualified identifier as giving both will result in an error.
-#' @param cascade A logical indicating whether also foreign key constraints referencing the table to
-#'      be deleted shall be removed. Default is FALSE.
-#' @return A logicl indicating success.
+#' @param cascade A logical indicating whether also foreign key constraints referencing the table should
+#'      be deleted. Default is FALSE.
+#' @return A logical indicating success.
 #' @seealso \code{\link[DBI:dbRemoveTable]{DBI::dbRemoveTable()}}
 #' @author EXASOL AG <opensource@exasol.com>
 #' @export
