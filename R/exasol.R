@@ -127,25 +127,40 @@ ALLOWED_UDF_IN_TYPES <- c(SET, SCALAR)
 #' All output types of UDF scripts
 ALLOWED_UDF_OUT_TYPES <- c(EMITS, RETURNS)
 
-#' TODO comment
+#' @describeIn C_API Starts an asynchronous query using the highspeed data channel. Check the developer_guide for more information.
+#' @param chan An open Exasol connection
+#' @param query The SQL query describing the Export/Import
+#' @param protocol Http/Https
+#' @param writer Indicating if it's a Export or Import. If 0, it indicates an import (import from DB into R) query, otherwise an export (export from R to the DB) query.
+#' @keywords internal
 "C_asyncRODBCQueryStart"
 
-#' TODO comment
+#' @describeIn C_API Prepares the highspeed data channel. Check the developer_guide for more information.
+#' @param hostA Database host address
+#' @param portA Database port
+#' @param protocolA Http or Https
+#' @keywords internal
 "C_asyncRODBCIOStart"
 
-#' TODO comment
+#' @describeIn C_API Returns the Database proxy hostname. Check the developer_guide for more information.
+#' @keywords internal
 "C_asyncRODBCProxyHost"
 
-#' TODO comment
+#' @describeIn C_API Returns the Database proxy port. Check the developer_guide for more information.
+#' @keywords internal
 "C_asyncRODBCProxyPort"
 
-#' TODO comment
+#' @describeIn C_API Cleans up the high speed data channel. Check the developer_guide for more information.
+#' @param checkWasDone Indicating if the import/export has been finished.
+#' @keywords internal
 "C_asyncRODBCQueryFinish"
 
-#' TODO comment
+#' @describeIn C_API Activates debug logs in the C layer.
+#' @keywords internal
 "C_asyncEnableTracing"
 
-#' TODO comment
+#' @describeIn C_API Run C++ tests.
+#' @keywords internal
 "C_run_testthat_tests"
 
 .onAttach <- function(libname, pkgname) {
