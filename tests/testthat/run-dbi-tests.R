@@ -162,7 +162,6 @@ test_that("dbReadTable", {
   expect_true(dbWriteTable(con, "TESTTABLE_READ", df, "TESTSCHEMA"))
   res <- dbReadTable(con, "TESTTABLE_READ", "TESTSCHEMA")
 
-  print (res)
   expect_equal(nrow(res), 3)
   expect_equal(res$Id, df$Id)
   expect_equal(res$Val, as.character(df$Val))
