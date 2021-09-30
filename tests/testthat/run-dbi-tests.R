@@ -165,7 +165,7 @@ test_that("dbReadTable", {
   print (res)
   expect_equal(nrow(res), 3)
   expect_equal(res$Id, df$Id)
-  expect_equal(res$Val, df$Val)
+  expect_equal(res$Val, as.character(df$Val))
   dbDisconnect(con)
 })
 
