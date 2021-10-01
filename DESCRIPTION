@@ -50,6 +50,7 @@ Collate:
     'exa.writeData.R'
     'exa.readData.R'
     'EXADBI.R'
+    'Viewer.R'
     'catch-routine-registration.R'
     'exa.log.R'
     'exasol.R'
