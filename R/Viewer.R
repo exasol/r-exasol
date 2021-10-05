@@ -5,17 +5,17 @@
   # all databases contain tables, at a minimum
   obj_types <- list(table = list(contains = "data"))
 
-  # # see if we have views too
-  # table_types <- string_values(connection_sql_tables(connection@ptr, "", "", "", "%")[["table_type"]])
-  # if (any(table_types == "VIEW")) {
-  #   obj_types <- c(obj_types, list(view = list(contains = "data")))
-  # }
-  #
-  # # check for multiple schema or a named schema
-  # schemas <- string_values(connection_sql_tables(connection@ptr, "", "%", "", "")[["table_schema"]])
-  # if (length(schemas) > 0) {
-  #   obj_types <- list(schema = list(contains = obj_types))
-  # }
+  # see if we have views too
+  views_df <- exa.readData(connection, "SELECT * FROM EXA_ALL_VIEWS")
+  if (nrow(views_df) >0) {
+    obj_types <- c(obj_types, list(view = list(contains = "data")))
+  }
+
+  obj_types <- c(obj_types, list(db_function = list(contains = "data")))
+
+  # assume we always have schemas!
+  obj_types <- list(schema = list(contains = obj_types))
+
   #
   # # check for multiple catalogs
   # catalogs <- string_values(connection_sql_tables(connection@ptr, "%", "", "", "")[["table_catalog"]])
@@ -26,48 +26,80 @@
   obj_types
 }
 
-.odbcListObjects <- function(connection, catalog = NULL, schema = NULL, name = NULL, type = NULL, ...) {
+.list_table_names <- function(connection, schema, name = NULL) {
+  q <- paste0("SELECT TABLE_NAME FROM EXA_ALL_TABLES WHERE TABLE_SCHEMA=", processIDs(schema, quotes="'"))
+  if (!is.null(name)) {
+    q <- paste0(q, " AND TABLE_NAME=", processIDs(name, quotes = "'"))
+  }
+  tables_df <- exa.readData(connection, q)
 
-  # # if no catalog was supplied but this database has catalogs, return a list of
-  # # catalogs
-  # if (is.null(catalog)) {
-  #   catalogs <- string_values(connection_sql_tables(connection@ptr, catalog_name = "%", "", "", NULL)[["table_catalog"]])
-  #   if (length(catalogs) > 0) {
-  #     return(
-  #       data.frame(
-  #         name = catalogs,
-  #         type = rep("catalog", times = length(catalogs)),
-  #         stringsAsFactors = FALSE
-  #     ))
-  #   }
-  # }
-  #
-  # # if no schema was supplied but this database has schema, return a list of
-  # # schema
-  # if (is.null(schema)) {
-  #   schemas <- string_values(connection_sql_tables(connection@ptr, "", "%", "", NULL)[["table_schema"]])
-  #   if (length(schemas) > 0) {
-  #     return(
-  #       data.frame(
-  #         name = schemas,
-  #         type = rep("schema", times = length(schemas)),
-  #         stringsAsFactors = FALSE
-  #     ))
-  #   }
-  # }
-  #
-  # objs <- tryCatch(connection_sql_tables(connection@ptr, catalog, schema, name, table_type = type), error = function(e) NULL)
-  # # just return a list of the objects and their types, possibly filtered by the
-  # # options above
-  # data.frame(
-  #   name = objs[["table_name"]],
-  #   type = tolower(objs[["table_type"]]),
-  #   stringsAsFactors = FALSE
-  # )
   data.frame(
-     name = c("Table A", "View B"),
-     type = c("Talbe", "View"),
-     stringsAsFactors = FALSE)
+    name = tables_df$TABLE_NAME,
+    type = rep("table", nrow(tables_df)),
+    stringsAsFactors = FALSE
+  )
+}
+
+.list_view_names <- function(connection, schema, name = NULL) {
+  q <- paste0("SELECT VIEW_NAME FROM EXA_ALL_VIEWS WHERE VIEW_SCHEMA=", processIDs(schema, quotes="'"))
+  if (!is.null(name)) {
+    q <- paste0(q, " AND VIEW_NAME=", processIDs(name, quotes = "'"))
+  }
+  views_df <- exa.readData(connection, q)
+
+  data.frame(
+    name = views_df$VIEW_NAME,
+    type = rep("view", nrow(views_df)),
+    stringsAsFactors = FALSE
+  )
+}
+
+.list_function_names <- function(connection, schema, name = NULL) {
+  q <- paste0("SELECT FUNCTION_NAME FROM EXA_ALL_FUNCTIONS WHERE FUNCTION_SCHEMA=", processIDs(schema, quotes="'"))
+  if (!is.null(name)) {
+    q <- paste0(q, " AND FUNCTION_NAME=", processIDs(name, quotes = "'"))
+  }
+  views_df <- exa.readData(connection, q)
+
+  data.frame(
+    name = c("TestFunc"),
+    type = c("db_function"), #rep("db_function", nrow(views_df)),
+    stringsAsFactors = FALSE
+  )
+}
+
+odbcListObjects <- function(connection, catalog = NULL, schema = NULL, name = NULL, type = NULL, ...) {
+
+  res <- data.frame()
+  # if no schema was supplied, return a list of schema
+  warning(paste0("odbcListObjects called with(schema=", schema, " name=", name, " type=", type, ")\n"))
+  if (is.null(schema)) {
+    schemas_df <- exa.readData(connection, "SELECT SCHEMA_NAME FROM EXA_ALL_SCHEMAS")
+    if (nrow(schemas_df) > 0) {
+      res <-
+        data.frame(
+          name = schemas_df$SCHEMA_NAME,
+          type = rep("schema", times = nrow(schemas_df)),
+          stringsAsFactors = FALSE
+      )
+    }
+  }
+  else if (is.null(type)){
+    tables_df <- .list_table_names(connection, schema, name)
+    views_df <- .list_view_names(connection, schema, name)
+    functions_df <- .list_function_names(connection, schema, name)
+    res <- rbind(tables_df, views_df, functions_df)
+  }
+  else if (tolower(type) == "table") {
+    res <- .list_table_names(connection, schema, name)
+  }
+  else if (tolower(type) == "view") {
+    res <- .list_view_names(connection, schema, name)
+  }
+  else if (tolower(type) == "db_function") {
+    res <- .list_function_names(connection, schema, name)
+  }
+  res
 }
 
 # given a connection, returns its "host name" (a unique string which identifies it)
@@ -76,7 +108,11 @@
 }
 
 .computeDisplayName <- function(connection) {
-  connection@db_name
+  connection_name <- connection@db_name
+  if (is.na(connection_name)) {
+    connection_name <- paste0(connection@db_host, ":", connection@db_port)
+  }
+  connection_name
 }
 
 # selects the table or view from arguments
@@ -92,29 +128,36 @@
     stop("`table` and `view` can not both be `NULL`", call. = FALSE)
   }
 
-  table %||% view
+  ifelse(!is.null(table), table, view)
 }
 
 .odbcListColumns <- function(connection, table = NULL, view = NULL,
                                            catalog = NULL, schema = NULL, ...) {
 
-  # specify schema or catalog if given
-  # cols <- connection_sql_columns(connection@ptr,
-  #   table_name = .validateObjectName(table, view),
-  #   catalog_name = catalog,
-  #   schema_name = schema)
+  if (is.null(schema)) {
+    stop("Schema must not be null")
+  }
+  .validateObjectName(table, view)
 
-  # extract and name fields for observer
-  # data.frame(
-  #   name = cols[["name"]],
-  #   type = cols[["field.type"]],
-  #   stringsAsFactors = FALSE)
-
-  data.frame(
-    name = c("Title A", "Title B"),
-    type = c("Integer", "Varchar(100)"),
-    stringsAsFactors = FALSE)
-
+  if(!is.null(table)) {
+    q <-  paste0("SELECT COLUMN_NAME, COLUMN_TYPE FROM EXA_ALL_COLUMNS WHERE COLUMN_SCHEMA=",
+                 processIDs(schema, quotes="'") , " AND COLUMN_TABLE=",  processIDs(table, quotes="'"),
+                 " AND COLUMN_OBJECT_TYPE='TABLE'")
+    columns_df <- exa.readData(connection, q)
+    res <- data.frame(
+      name = columns_df$COLUMN_NAME,
+      type = columns_df$COLUMN_TYPE,
+      stringsAsFactors = FALSE)
+  } else {
+    columns_df <- exa.readData(connection, paste0("SELECT COLUMN_NAME, COLUMN_TYPE FROM EXA_ALL_COLUMNS WHERE COLUMN_SCHEMA=",
+                                                  processIDs(schema, quotes="'") , " AND COLUMN_TABLE=",  processIDs(view, quotes="'"),
+                                                  " AND COLUMN_OBJECT_TYPE='VIEW'"))
+    res <- data.frame(
+      name = columns_df$COLUMN_NAME,
+      type = columns_df$COLUMN_TYPE,
+      stringsAsFactors = FALSE)
+  }
+  res
 }
 
 .odbcPreviewObject <- function(connection, rowLimit, table = NULL, view = NULL,
@@ -122,18 +165,15 @@
   # extract object name from arguments
   name <- .validateObjectName(table, view)
 
-  # prepend schema if specified
-  if (!is.null(schema)) {
-    name <- paste(dbQuoteIdentifier(connection, schema),
-                  dbQuoteIdentifier(connection, name), sep = ".")
+  # check schema
+  if (is.null(schema)) {
+    stop("Schema not defined.")
   }
-
-  # prepend catalog if specified
-  if (!is.null(catalog)) {
-    name <- paste(dbQuoteIdentifier(connection, catalog), name, sep = ".")
-  }
-
-  dbGetQuery(connection, paste("SELECT * FROM", name), n = rowLimit)
+  #res <- dbSendQuery(connection, statement = paste0("SELECT * FROM ", schema, ".", name), default_fetch_rec = rowLimit)
+  #retVal <- dbFetch(res, rowLimit)
+  #dbClearResult(res)
+  retVal = exa.readData(connection, paste0("SELECT * FROM ", schema, ".", name, " LIMIT ", rowLimit))
+  retVal
 }
 
 .exasol_icon <- function() {
@@ -166,7 +206,7 @@
   observer$connectionUpdated(type, host, hint = hint)
 }
 
-.build_code <- function(metadata) {
+.build_code <- function() {
   code <-
     c( paste("library(", packageName(), ")"),
        paste("con <- dbConnect(\"exa\", exahost = \"<hostname>:8563\", uid = \"sys\", pwd = \"<password>\", encrypted = \"Y\")"))
@@ -208,7 +248,7 @@
 
       # table enumeration code
       listObjects = function(...) {
-        .odbcListObjects(connection, ...)
+        odbcListObjects(connection, ...)
       },
 
       # column enumeration code
