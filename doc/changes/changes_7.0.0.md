@@ -1,4 +1,4 @@
-# r-exasol 6.1.0, released t.b.d.
+# r-exasol 7.0.0, released t.b.d.
 
 Code name: t.b.d.
 

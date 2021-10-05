@@ -212,22 +212,6 @@ test_that("dbWriteTable imports dataframe with mixed characters", {
   dbDisconnect(con)
 })
 
-# TODO Implement dbAppend
-# test_that("dbAppend ", {
-#   ctx <- DBItest::get_default_context()
-#   con <- DBItest:::connect(ctx)
-#   df <- data.frame(name=c(1, 2, 3))
-#   dbWriteTable(con, "TESTTABLE_NA", df, "TESTSCHEMA")
-#   df <- data.frame(name=c(4, 5, 6))
-#   dbAppendTable(con, "TESTTABLE_NA", df , "TESTSCHEMA")
-#   result <- dbGetQuery(con, "select * from testschema.testtable_na")
-#   expect_equal(nrow(result), 6)
-#   expect_type(result$name, "integer")
-#   dbDisconnect(con)
-# })
-
-
-
 #CLEANUP
 ctx <- DBItest::get_default_context()
 con <- DBItest:::connect(ctx)

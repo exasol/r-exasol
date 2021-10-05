@@ -56,31 +56,6 @@ EXAResult <- setRefClass(
       rows_fetched <<- rows_fetched + as.numeric(x)
     },
 
-    #         close = function(commit=TRUE) {                         # dbClearResult is in row 880
-    #           "Frees up all resources, in particular drops the temporary table in the DB."
-    #
-    #             if (!dbIsValid(.self)) {
-    #               warning("Connection seems exipired.\n    ...it's gone...")
-    #               return(FALSE)
-    #             }
-    #
-    #             if(odbcEndTran(connection, commit)==0) {
-    #                 if(commit) message("Changes commited.")
-    #             } else stop("Commit failed. Changes NOT commited. Closing aborted.")
-    #           message("Closing connection...")
-    #             res <- try(odbcClose(connection),silent=TRUE)
-    #             if(res==1) {
-    #                 message("Connection closed.")
-    #                 return(TRUE)
-    #             } else if(res==0) {
-    #                 warning("Closing not successful.")
-    #                 return(FALSE)
-    #             } else {
-    #                     warning(res)
-    #                     return(FALSE)
-    #                 }
-    #         },
-
     finalize = function(...) {
       #close()
       if(dbClearResult(.self)) message("Table dropped in EXASOL DB.") else warning("Table not dropped in EXASOL DB")
