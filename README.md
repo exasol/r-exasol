@@ -21,7 +21,7 @@ Leading the TPC-H benchmark, it is considered the fastest analytical data wareho
 
 ## Status
 
-The package gets tested in Github against R 3.5, 3.6, 4.0 and 4.1, but it is also worked on R 3.3 and R 3.4 in the past. For R 3.6 and earlier, an older RODBC package is necessary, the newer versions (1.3-17 and upwards) only support R 4.0. You can use the [remotes package](https://remotes.r-lib.org/) to install specific versions of RODBC. The packages DBI 0.3.1 and a fork of DBItest 1.0-1 are not the current versions. The Exasol R package may however work with DBI 0.4.1, but until this is resolved the fitting older packages can be loaded from here:
+The package gets tested in Github against R 3.5, 3.6, 4.0 and 4.1, but it also worked on R 3.3 and R 3.4 in the past. For R 3.6 and earlier, an older RODBC package is necessary, the newer versions (1.3-17 and upwards) only support R 4.0. You can use the [remotes package](https://remotes.r-lib.org/) to install specific versions of RODBC. The packages DBI 0.3.1 and a fork of DBItest 1.0-1 are not the current versions. The Exasol R package may however work with DBI 0.4.1, but until this is resolved the fitting older packages can be loaded from here:
 
 - https://github.com/marcelboldt/DBI
 - https://github.com/marcelboldt/DBItest
@@ -40,7 +40,7 @@ Code coverage of tests:
 
 ### Known issues
 
-The latest ODBC driver (7.1.1) under MacOsX BigSure has a dependency issue. If you have problems under MacOsX and see an error message like ```...libexaodbc-io418sys.dylib not found```, please revert to the previous ODBC driver (7.0.11) which is know to work. 
+The latest ODBC driver (7.1.1) under MacOsX BigSur has a dependency issue. If you have problems under MacOsX and see an error message like ```...libexaodbc-io418sys.dylib not found```, please revert to the previous ODBC driver (7.0.11) which is know to work. 
 
 ## Getting started
 
