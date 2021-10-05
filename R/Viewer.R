@@ -48,8 +48,8 @@
   }
 
   data.frame(
-    name = views$VIEW_NAME,
-    type = rep("view", length(views$VIEW_NAME)),
+    name = views$TABLE_NAME,
+    type = rep("view", length(views$TABLE_NAME)),
     stringsAsFactors = FALSE
   )
 }
