@@ -21,12 +21,15 @@
 void testConnectionControllerImport(exa::ProtocolType protocolType) {
     bool errorCalled = false;
     bool joinCalled = false;
-    exa::ConnectionFactoryImpl factory;
-    //Instantiate controller and declare error callback as a lambda.
-    exa::ConnectionController connectionController(factory, [&errorCalled](const std::string& error) {
+    bool errorWasCalled = false;
+    auto errorHandler= [&errorWasCalled](const std::string& error) {
         std::cout << "ERROR:" << error << std::endl;
-        errorCalled = true;
-    });
+        errorWasCalled = true;
+    };
+    exa::ConnectionFactoryImpl factory(errorHandler);
+
+    //Instantiate controller and declare error callback as a lambda.
+    exa::ConnectionController connectionController(factory, errorHandler);
 
     //Connection to remote (Python program) and read meta data (hostname = Test, port number = 4)
     const bool retVal = connectionController.connect(protocolType, test_utils::host, test_utils::PORT);
@@ -93,15 +96,18 @@ TEST_CASE( "ConnectionControllerImportHttps", "[connection]" ) {
  *
  */
 void testConnectionControllerEcho(exa::ProtocolType protocolType) {
-    exa::ConnectionFactoryImpl factory;
+
+    bool errorCalled = false;
+    auto errorHandler = [&errorCalled](const std::string& error) {
+        std::cout << "ERROR:" << error << std::endl;
+        errorCalled = true;
+    };
+    exa::ConnectionFactoryImpl factory(errorHandler);
+
     SECTION( "first testing writing to server" )
     {
-        bool errorCalled = false;
         //Instantiate controller and declare error callback as a lambda.
-        exa::ConnectionController connectionController(factory, [&errorCalled](const std::string &error) {
-            std::cout << "ERROR:" << error << std::endl;
-            errorCalled = true;
-        });
+        exa::ConnectionController connectionController(factory, errorHandler);
         bool joinCalled(false);
         //Connection to remote (Python program) and read meta data (hostname = Test, port number = 4)
         const bool retVal = connectionController.connect(protocolType, test_utils::host, test_utils::PORT);
@@ -147,13 +153,10 @@ void testConnectionControllerEcho(exa::ProtocolType protocolType) {
     }
     SECTION( "now testing reading from server" )
     {
-        bool errorCalled = false;
+        errorCalled = false;
         bool joinCalled(false);
         //Instantiate controller and declare error callback as a lambda.
-        exa::ConnectionController connectionController(factory, [&errorCalled](const std::string &error) {
-            std::cout << "ERROR:" << error << std::endl;
-            errorCalled = true;
-        });
+        exa::ConnectionController connectionController(factory, errorHandler);
 
         //Connection to remote (Python program) and read meta data (hostname = Test, port number = 4)
         const bool retVal = connectionController.connect(protocolType, test_utils::host, test_utils::PORT);
@@ -206,15 +209,18 @@ TEST_CASE( "ConnectionControllerEchoHttps", "[connection]" ) {
  * In the second step we verify that another attempts of running the import works correctly.
  */
 TEST_CASE( "ConnectionControllerImportWithError", "[connection]" ) {
-    exa::ConnectionFactoryImpl factory;
+
+    bool errorCalled = false;
+    auto errorHandler = [&errorCalled](const std::string& error) {
+        std::cout << "ERROR:" << error << std::endl;
+        errorCalled = true;
+    };
+    exa::ConnectionFactoryImpl factory(errorHandler);
+
     SECTION( "testing first error case" )
     {
-        bool errorCalled = false;
         //Instantiate controller and declare error callback as a lambda.
-        exa::ConnectionController connectionController(factory, [&errorCalled](const std::string &error) {
-            std::cout << "ERROR:" << error << std::endl;
-            errorCalled = true;
-        });
+        exa::ConnectionController connectionController(factory, errorHandler);
 
         //Connection to remote (Python program) and try to read meta data (hostname = Test, port number = 4)
         const bool retVal = connectionController.connect(exa::ProtocolType::http, test_utils::host, test_utils::PORT);
@@ -229,12 +235,9 @@ TEST_CASE( "ConnectionControllerImportWithError", "[connection]" ) {
     }
     SECTION( "now testing success case" )
     {
-        bool errorCalled = false;
+        errorCalled = false;
         //Instantiate controller and declare error callback as a lambda.
-        exa::ConnectionController newConnectionController(factory, [&errorCalled](const std::string &error) {
-            std::cout << "ERROR:" << error << std::endl;
-            errorCalled = true;
-        });
+        exa::ConnectionController newConnectionController(factory, errorHandler);
 
         //Connection to remote (Python program) and try to read meta data (hostname = Test, port number = 4)
         const bool retVal = newConnectionController.connect(exa::ProtocolType::http, test_utils::host, test_utils::PORT);

@@ -16,13 +16,15 @@
  */
 TEST_CASE( "ReaderCloseConnection", "[async]" ) {
 
-    exa::ConnectionFactoryImpl factory;
     bool errorWasCalled = false;
-    //Instantiate controller and declare error callback as a lambda.
-    exa::ConnectionController connectionController(factory, [&errorWasCalled](const std::string& error) {
+    auto errorHandler= [&errorWasCalled](const std::string& error) {
         std::cout << "ERROR:" << error << std::endl;
         errorWasCalled = true;
-    });
+    };
+    exa::ConnectionFactoryImpl factory(errorHandler);
+
+    //Instantiate controller and declare error callback as a lambda.
+    exa::ConnectionController connectionController(factory, errorHandler);
     //Connection to remote (Python program) and read meta data (hostname = Test, port number = 4)
     const bool retVal = connectionController.connect(exa::ProtocolType::http, test_utils::host, test_utils::PORT);
     REQUIRE(retVal);
@@ -85,7 +87,11 @@ TEST_CASE( "ReaderCloseConnection", "[async]" ) {
 TEST_CASE( "ReaderCloseConnectionAbort", "[async]" ) {
 
     bool errorWasCalled = false;
-    exa::ConnectionFactoryImpl factory;
+    auto errorHandler = [&errorWasCalled](const std::string& error) {
+        std::cout << "ERROR:" << error << std::endl;
+        errorWasCalled = true;
+    };
+    exa::ConnectionFactoryImpl factory(errorHandler);
     //Instantiate controller and declare error callback as a lambda.
     exa::ConnectionController connectionController(factory, [&errorWasCalled](const std::string& error) {
         std::cout << "ERROR:" << error << std::endl;
@@ -153,8 +159,13 @@ TEST_CASE( "ReaderCloseConnectionAbort", "[async]" ) {
  */
 TEST_CASE( "WriterCloseConnection", "[async]" ) {
 
-    exa::ConnectionFactoryImpl factory;
     bool errorWasCalled = false;
+    auto errorHandler = [&errorWasCalled](const std::string& error) {
+        std::cout << "ERROR:" << error << std::endl;
+        errorWasCalled = true;
+    };
+    exa::ConnectionFactoryImpl factory(errorHandler);
+
     //Instantiate controller and declare error callback as a lambda.
     exa::ConnectionController connectionController(factory, [&errorWasCalled](const std::string &error) {
         std::cout << "ERROR:" << error << std::endl;
@@ -216,8 +227,13 @@ TEST_CASE( "WriterCloseConnection", "[async]" ) {
  * If an error occurs on server side, we assume that the error function will be called.
  */
 TEST_CASE( "WriterCloseConnectionAbort", "[async]" ) {
-    exa::ConnectionFactoryImpl factory;
     bool errorWasCalled = false;
+    auto errorHandler = [&errorWasCalled](const std::string& error) {
+        std::cout << "ERROR:" << error << std::endl;
+        errorWasCalled = true;
+    };
+    exa::ConnectionFactoryImpl factory(errorHandler);
+
     //Instantiate controller and declare error callback as a lambda.
     exa::ConnectionController connectionController(factory, [&errorWasCalled](const std::string &error) {
         std::cout << "ERROR:" << error << std::endl;
