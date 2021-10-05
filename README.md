@@ -38,7 +38,9 @@ Following test were implemented:
 Code coverage of tests:
 [![codecov.io](https://codecov.io/github/exasol/r-exasol/coverage.svg?branch=main)](https://codecov.io/github/exasol/r-exasol?branch=main)
 
+### Known issues
 
+The latest ODBC driver (7.1.1) under MacOsX BigSure has a dependency issue. If you have problems under MacOsX and see an error message like ```...libexaodbc-io418sys.dylib not found```, please revert to the previous ODBC driver (7.0.11) which is know to work. 
 
 ## Getting started
 
