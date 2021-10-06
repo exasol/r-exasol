@@ -28,15 +28,24 @@ test_that("encryption_false", {
 
 
 test_that("connection_attributes", {
-  exaconn <- get_connection(encryption = "N", sslcertificate = "ABC", uselegacyencryption = "N")
-  expect_equal(exaconn@db_user, "sys")
-  sslcert <- .parse_odbc_value(exaconn@init_connection_string, "SSLCERTIFICATE=[\\w]+?;", 16)
-  expect_equal(sslcert, "ABC")
+  exaconn <- get_connection(encryption = "Y", sslcertificate = "ABC", uselegacyencryption = "N")
+  expect_true(exaconn@encrypted)
+  sslcert <- grepl("SSLCERTIFICATE=ABC;", exaconn@init_connection_string, fixed = TRUE)
+  expect_true(sslcert)
 
+  uselegacyenc <- grepl("USELEGACYENCRYPTION=N", exaconn@init_connection_string, fixed = TRUE)
+  expect_true(uselegacyenc)
+  dbDisconnect(exaconn)
+})
 
-  uselegacyenc_key_value <- regmatches(exaconn@init_connection_string, gregexpr("USELEGACYENCRYPTION=N$", exaconn@init_connection_string,perl = TRUE))[[1]]
-  uselegacyenc <- substr(uselegacyenc_key_value, 21, nchar(uselegacyenc_key_value))
-  expect_equal(uselegacyenc, "N")
+test_that("connection_no_attributes", {
+  exaconn <- get_connection()
+  expect_false(exaconn@encrypted)
+  sslcert <- grepl("SSLCERTIFICATE=", exaconn@init_connection_string, fixed = TRUE)
+  expect_false(sslcert)
+
+  uselegacyenc <- grepl("USELEGACYENCRYPTION=", exaconn@init_connection_string, fixed = TRUE)
+  expect_false(uselegacyenc)
   dbDisconnect(exaconn)
 })
 
