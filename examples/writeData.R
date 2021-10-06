@@ -18,6 +18,7 @@ odbcQuery(C, "CREATE SCHEMA test")
 odbcQuery(C, "CREATE TABLE test.twogroups (groupid INT, val DOUBLE)")
 exa.writeData(C, twogroups, tableName = "test.twogroups")
 
-# setting the write encoding manually (See also EXASOL User Manual, Appendix D. "Supported Encodings")
+# setting the write encoding manually
+# (See also EXASOL User Manual, Appendix D. "Supported Encodings")
 exa.writeData(con, twogroups, "test.twogroups", encoding="1252")
 }

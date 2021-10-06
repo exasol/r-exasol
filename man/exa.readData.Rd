@@ -80,6 +80,14 @@ print(tables$TABLE_NAME[1])  # print first value of specified column
 
 }
 }
-\author{
-EXASOL AG <support@exasol.com>
+\seealso{
+Other None-DBI-API: 
+\code{\link{dbCurrentSchema}()},
+\code{\link{dbEnd}()},
+\code{\link{exa.createScript}()},
+\code{\link{exa.writeData}()}
 }
+\author{
+EXASOL AG <opensource@exasol.com>
+}
+\concept{None-DBI-API}

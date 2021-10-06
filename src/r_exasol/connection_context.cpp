@@ -18,6 +18,8 @@ namespace exa {
 
 #define CON_CONTEXT_STACK_PRINTER STACK_PRINTER( exa::ConnectionContext);
 
+exa::ConnectionContext::ConnectionContext()
+:mConnectionFactory(exa::onError) {}
 
 int exa::ConnectionContext::initConnection(const char *host, int port, const char* protocol) {
     CON_CONTEXT_STACK_PRINTER;

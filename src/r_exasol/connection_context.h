@@ -19,6 +19,7 @@ namespace exa {
     class ConnectionContext {
     public:
 
+        ConnectionContext();
         int initConnection(const char* host, int port, const char* protocol);
         SEXP copyHostName();
         SEXP copyHostPort();

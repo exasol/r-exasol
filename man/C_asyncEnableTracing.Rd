@@ -3,7 +3,7 @@
 \docType{data}
 \name{C_asyncEnableTracing}
 \alias{C_asyncEnableTracing}
-\title{TODO comment}
+\title{Activates debug logs in the C layer.}
 \format{
 An object of class \code{CallRoutine} (inherits from \code{NativeSymbolInfo}) of length 4.
 }
@@ -11,6 +11,6 @@ An object of class \code{CallRoutine} (inherits from \code{NativeSymbolInfo}) of
 C_asyncEnableTracing
 }
 \description{
-TODO comment
+Activates debug logs in the C layer.
 }
-\keyword{datasets}
+\keyword{internal}

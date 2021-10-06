@@ -8,10 +8,11 @@
 
 
 
-# Tries to extrapolate the schema name from the statement given. It looks for strings framed by 'from' and a dot (not case sensitive).
-#
-# @param stmt The statement used
-# @return a character vector containing all schemas found, or alt
+#' Tries to extrapolate the schema name from the statement given. It looks for strings framed by 'from' and a dot (not case sensitive).
+#'
+#' @param stmt The statement used
+#' @return A character vector containing all schemas found, or alt
+#' @keywords internal
 grep_schema <- function(stmt , statement = TRUE) {
   g1 <-   gregexpr("from(([\\s.]\"[^\"]+\")|([\\s.]\\w+))+?([;\\s)]|$)",  # grep all from stmts.
                    stmt, perl = TRUE, ignore.case = TRUE)
@@ -33,11 +34,10 @@ grep_schema <- function(stmt , statement = TRUE) {
 
 # Changes an identifier into uppercase, except for it is quoted.
 #
-# name EXAupper
 # param identifier A character vector containing one or many (table, schema, column,...) identifiers.
 # return A character vector containing one or many processed identifiers.
-# export
-EXAupper <- function(identifier) {
+# @keywords internal
+.EXAupper <- function(identifier) {
   for (i in 1:length(identifier)) {
     if (substr(identifier[i], 1, 1) == "\"" &
         substr(identifier[i], nchar(identifier[i]), nchar(identifier[i])) == "\"") {
@@ -49,16 +49,17 @@ EXAupper <- function(identifier) {
   identifier
 }
 
-# Takes an identifier, and transforms it into an EXASOL compatible identifier. In Detail: it
-#  - removes surrounding whitespaces
-#  - doubles quotes inside the string,
-#  - changes dots to underscores,
-#  - adds surrounding quotes.
-#  param id A character vector containing identifiers.
-#  param quotes The kind of quotes to be used: double-qoutes for identifiers with special chars, single
-#  quotes for strings.
-#  return A list of character vectors, each containing schema and table identifier. conversion
-#  via as.data.frame fails for the method strips escaped quotes.
+#' Takes an identifier, and transforms it into an EXASOL compatible identifier. In detail: it
+#'  - removes surrounding whitespaces
+#'  - doubles quotes inside the string,
+#'  - changes dots to underscores,
+#'  - adds surrounding quotes.
+#'  param id A character vector containing identifiers.
+#'  param quotes The kind of quotes to be used: double-qoutes for identifiers with special chars, single
+#'  quotes for strings.
+#'  return A list of character vectors, each containing schema and table identifier. conversion
+#'  via as.data.frame fails for the method strips escaped quotes.
+#' @keywords internal
 processIDs <- function(id, quotes = "\"") {
 
   if (length(id) < 1 ) return("")
@@ -96,7 +97,8 @@ processIDs <- function(id, quotes = "\"") {
 # are being converted to uppercase, except for they are quoted.
 # @param quotes The quotes to be used. (see method `processIDs()`)
 # @return A character vector containing schema & table identifiers.
-EXAGetIdentifier <-
+# @keywords internal
+.EXAGetIdentifier <-
   function (string, statement = FALSE, quoting_style = "R", quotes = "\"") {
 
     if (statement) {
@@ -135,7 +137,7 @@ EXAGetIdentifier <-
         # quoting according to style chosen
         schemas <- processIDs(schemas, quotes = quotes)
       } else {
-        schemas <- EXAupper(schemas)
+        schemas <- .EXAupper(schemas)
       }
 
       g3 <-
@@ -147,7 +149,7 @@ EXAGetIdentifier <-
         # quoting according to style chosen
         tables <- processIDs(tables, quotes = quotes)
       } else {
-        tables <- EXAupper(tables)
+        tables <- .EXAupper(tables)
       }
 
       c(ifelse(length(schemas) == 0, "", schemas), tables)
@@ -156,6 +158,3 @@ EXAGetIdentifier <-
 
     # as.data.frame(ds, stringsAsFactors = FALSE, optional = TRUE) # doesn't work as it strips quotes
   }
-
-
-

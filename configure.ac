@@ -25,7 +25,7 @@ fi
 
 ##Setup OpenSSL
 
-m4_include([./ax_check_openssl.m4])
+m4_include([./tools/ax_check_openssl.m4])
 #AX_CHECK_OPENSSL(, [AC_MSG_ERROR([Cannot find OpenSSL])])
 AX_CHECK_OPENSSL(, [
 
@@ -75,6 +75,12 @@ AC_PROG_CXX
 # substitute externalized source list
 PKG_SOURCES=$(cat src/sources.list)
 AC_SUBST(PKG_SOURCES)
+
+PKG_SOURCE_OBJ_FILES=$(sed  's/.cpp/.o/g' src/sources.list)
+PKG_SOURCE_OBJ_FILES+=" exasol.o"
+PKG_TEST_OBJ_FILES=$(sed 's/.cpp/.o/g' src/tests/sources.list)
+PKG_OBJ_FILES="$PKG_SOURCE_OBJ_FILES $PKG_TEST_OBJ_FILES"
+AC_SUBST(PKG_OBJ_FILES)
 
 # substitute unit test source list
 PKG_TEST_SOURCES=$(cat src/tests/sources.list)

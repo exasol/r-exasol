@@ -102,15 +102,18 @@ bool exa::ConnectionController::connect(exa::ProtocolType protocolType, const ch
     CON_CONTROLLER_STACK_PRINTER;
     bool success = false;
     if (isValidProtocol(protocolType)) {
-        std::shared_ptr<ConnectionEstablisher> conn_est = mConnectionFactory.createConnectionEstablisher(protocolType);
-        try {
-            mConnectionInfo = conn_est->connect(host, port);
-            success = true;
-        } catch(const ConnectionException& ex) {
-            mErrorHandler(ex.what());
-            if (mConnectionInfo.socket) {
-                mConnectionInfo.socket->shutdownRdWr();
-                mConnectionInfo.socket.reset();
+        std::shared_ptr<ConnectionEstablisher> conn_establisher
+            = mConnectionFactory.createConnectionEstablisher(protocolType);
+        if (conn_establisher) {
+            try {
+                mConnectionInfo = conn_establisher->connect(host, port);
+                success = true;
+            } catch(const ConnectionException& ex) {
+                mErrorHandler(ex.what());
+                if (mConnectionInfo.socket) {
+                    mConnectionInfo.socket->shutdownRdWr();
+                    mConnectionInfo.socket.reset();
+                }
             }
         }
     }

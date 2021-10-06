@@ -94,7 +94,8 @@
 #'   SELECT query. The query will be executed internally with the exa.readData
 #'   function.}
 #'
-#' @author EXASOL AG <support@@exasol.com>
+#' @author EXASOL AG <opensource@exasol.com>
+#' @family None-DBI-API
 #' @example examples/createScript.R
 #' @export
 #' @import assertthat

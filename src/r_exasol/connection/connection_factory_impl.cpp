@@ -6,6 +6,9 @@
 #include <cassert>
 
 
+exa::ConnectionFactoryImpl::ConnectionFactoryImpl(const tErrorFunction & errorHandler)
+: mErrorHandler(errorHandler) {}
+
 std::shared_ptr<exa::reader::Reader> exa::ConnectionFactoryImpl::createHttpReader(std::weak_ptr<Socket> socket) {
     return std::make_shared<exa::reader::HttpChunkReader>(socket, getChunk());
 }
@@ -24,7 +27,8 @@ std::shared_ptr<exa::ConnectionEstablisher> exa::ConnectionFactoryImpl::createCo
             conn_est = std::make_shared<HttpsConnectionEstablisher>(getCertificate());
             break;
         default:
-            assert(false);
+            mErrorHandler("Unknown protocol. Only Http and Https are supported");
+            break;
     }
     return conn_est;
 }

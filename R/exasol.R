@@ -5,6 +5,9 @@
 #' @exportPattern ^[[:alpha:]]+
 #' @import RODBC
 #' @import DBI
+#' @importFrom methods new .valueClassTest
+#' @importFrom stats rnorm
+#' @importFrom utils packageVersion read.csv write.table View
 #'
 #' @title R Interface & SDK for the EXASOL Database
 #'
@@ -16,7 +19,7 @@
 #'
 #' EXASOL is an InMemory RDBMS that runs in a MPP cluster (shared-nothing) environment. Leading the TPC-H
 #' benckmark, it is considered the fastest analytical data warehouse available. The community edition
-#' can be downloaded for free on \url{https://www.exasol.com/portal}.
+#' can be downloaded for free on \url{https://docs.exasol.com/get_started/communityedition.htm}.
 #'
 #'
 #'
@@ -42,7 +45,6 @@
 #' \item{\code{\link{dbDriver}}}{Load database drivers.}
 #' \item{\code{\link{dbUnloadDriver}}}{Unload a driver.}
 #' \item{\code{\link{dbConnect}}}{Creates a connection to an EXASOL Database.}
-#' \item{\code{\link{dbListConnections}}}{List currently open connections.}
 #' }
 #'}
 #'
@@ -87,7 +89,6 @@
 #' \item{\code{\link{exa.readData}}}{Execute a SQL query on an EXASolution database and read results fast.}
 #' \item{\code{\link{exa.writeData}}}{Write a data.frame into an EXASOL table fast.}
 #' \item{\code{\link{exa.createScript}}}{Deploys an R function as an UDF in the EXASolution database.}
-#' \item{\code{\link{EXAupper}}}{Changes an identifier into uppercase, except for it is quoted.}
 #' \item{\code{\link{dbCurrentSchema}}}{Fetches and outputs the current schema from an EXASOL DB.}
 #' }}
 #'
@@ -101,8 +102,7 @@
 #' \enumerate{
 #' \item The development version of the package is available on \url{https://github.com/EXASOL/r-exasol}
 #' \item Bugs and improvements may be noted on \url{https://github.com/EXASOL/r-exasol/issues}
-#' \item Downloads & manuals related to the EXASOL Database are at \url{https://www.exasol.com/portal}
-#' \item Q & A: \url{https://www.exasol.com/portal/questions}
+#' \item Downloads & manuals related to the EXASOL Database are at \url{https://docs.exasol.com/get_started/communityedition.htm}
 #'}
 #' @keywords sql
 #' @keywords distributed
@@ -127,64 +127,44 @@ ALLOWED_UDF_IN_TYPES <- c(SET, SCALAR)
 #' All output types of UDF scripts
 ALLOWED_UDF_OUT_TYPES <- c(EMITS, RETURNS)
 
-#' TODO comment
+#' Starts an asynchronous query using the highspeed data channel. Check the developer_guide for more information.
+#' @param chan An open Exasol connection
+#' @param query The SQL query describing the Export/Import
+#' @param protocol Http/Https
+#' @param writer Indicating if it's a Export or Import. If 0, it indicates an import (import from DB into R) query, otherwise an export (export from R to the DB) query.
+#' @keywords internal
 "C_asyncRODBCQueryStart"
 
-#' TODO comment
+#' Prepares the highspeed data channel. Check the developer_guide for more information.
+#' @param hostA Database host address
+#' @param portA Database port
+#' @param protocolA Http or Https
+#' @keywords internal
 "C_asyncRODBCIOStart"
 
-#' TODO comment
+#' Returns the Database proxy hostname. Check the developer_guide for more information.
+#' @keywords internal
 "C_asyncRODBCProxyHost"
 
-#' TODO comment
+#' Returns the Database proxy port. Check the developer_guide for more information.
+#' @keywords internal
 "C_asyncRODBCProxyPort"
 
-#' TODO comment
+#' Cleans up the high speed data channel. Check the developer_guide for more information.
+#' @param checkWasDone Indicating if the import/export has been finished.
+#' @keywords internal
 "C_asyncRODBCQueryFinish"
 
-#' TODO comment
+#' Activates debug logs in the C layer.
+#' @keywords internal
 "C_asyncEnableTracing"
+
+#' Run C++ tests.
+#' @keywords internal
+"C_run_testthat_tests"
 
 .onAttach <- function(libname, pkgname) {
   # show startup message
   message <- paste("EXASOL SDK", utils::packageVersion("exasol"), "loaded.")
   packageStartupMessage(message, appendLF = TRUE)
 }
-
-
-
-
-# require(RODBC); require(exasol)
-# cnx <- odbcDriverConnect("Driver=/var/Executables/bc/install/ok7500-e8/lib/libexaodbc-uo2214.so;UID=sys;PWD=exasol;EXAHOST=cmw72;EXAPORT=8563")
-# sqlQuery(cnx, "OPEN SCHEMA TEST")
-# require(RODBC); require(exasol); cnx <- odbcDriverConnect("Driver=/var/Executables/bc/install/ok7500-e8/lib/libexaodbc-uo2214.so;UID=sys;PWD=exasol;EXAHOST=cmw67;EXAPORT=8563"); sqlQuery(cnx, "OPEN SCHEMA TEST")
-
-#cnx <- odbcDriverConnect("Driver=/var/Executables/bc/install/ok7500-e8/lib/libexaodbc-uo2214.so;UID=sys;PWD=exasol;EXAHOST=cmw72;EXAPORT=8563")
-#testScript <- exa.createScript(cnx, testScript,
-#env = list(a = 1, b1 = 2, b2 = 2, b3 = 2, b4 = 2, b5 = 2, b6 = 2, b7 = 2, b8 = 2, b9 = 2, ba = 2, bo = 2, be = 2, bu = 2, bi = 2, bd = 2, bh = 2, bt = 2, bn = 2),
-#inArgs = { INT(a) },
-#outArgs = { INT(b); INT(c) },
-#outputAddress = c('192.168.5.61', 3000),
-#initCode = {
-#  require(RODBC); require(data.table)
-#  print(paste("initialize", exa$meta$vm_id));
-#},
-#func = function(data) {
-#  print("begin group")
-#  data$next_row(NA);
-#  data$emit(data$a, data$a + 3);
-#  print("end group")
-#})
-#
-#
-#res <- testScript(1, test)
-#res <- exa.readData(cnx, 'select testScript(1) from test')
-#exa.writeData(cnx, test)
-#
-#res <- sqlQuery(cnx, 'select testScript(1) from test')
-
-# print(testScript(int_index, table = enginetable, groupBy = mod(int_index, 4), returnSQL = TRUE))
-# print(summary(testScript(int_index, table = enginetable, groupBy = mod(int_index, 4))))
-
-# require(RODBC)
-# require(exasol); cnx <- odbcDriverConnect("DSN=EXA"); sqlQuery(cnx, "open schema test"); exa.readData(cnx, "select * from cat")

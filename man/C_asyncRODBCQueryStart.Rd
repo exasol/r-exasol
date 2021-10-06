@@ -3,14 +3,23 @@
 \docType{data}
 \name{C_asyncRODBCQueryStart}
 \alias{C_asyncRODBCQueryStart}
-\title{TODO comment}
+\title{Starts an asynchronous query using the highspeed data channel. Check the developer_guide for more information.}
 \format{
 An object of class \code{CallRoutine} (inherits from \code{NativeSymbolInfo}) of length 4.
 }
 \usage{
 C_asyncRODBCQueryStart
 }
-\description{
-TODO comment
+\arguments{
+\item{chan}{An open Exasol connection}
+
+\item{query}{The SQL query describing the Export/Import}
+
+\item{protocol}{Http/Https}
+
+\item{writer}{Indicating if it's a Export or Import. If 0, it indicates an import (import from DB into R) query, otherwise an export (export from R to the DB) query.}
 }
-\keyword{datasets}
+\description{
+Starts an asynchronous query using the highspeed data channel. Check the developer_guide for more information.
+}
+\keyword{internal}

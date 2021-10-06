@@ -9,6 +9,7 @@ DBItest::test_driver(skip = c("constructor_strict",
 ))
 DBItest::test_connection(skip = c("stress_load_connect_unload"))
 
+
 DBItest::test_result(skip = c("stale_result_warning",
                               "fetch_premature_close",
                               "data_logical_int",
@@ -153,6 +154,21 @@ test_that("dbWriteTable skips importing empty dataframe", {
   dbDisconnect(con)
 })
 
+test_that("dbReadTable", {
+  ctx <- DBItest::get_default_context()
+  con <- DBItest:::connect(ctx)
+  df <- data.frame(c(1, 2, 3), c("StringA", "StringB", "StringC"))
+  colnames(df) <- c("Id", "Val")
+  expect_true(dbWriteTable(con, "TESTTABLE_READ", df, "TESTSCHEMA"))
+  res <- dbReadTable(con, "TESTTABLE_READ", "TESTSCHEMA")
+
+  expect_equal(nrow(res), 3)
+  expect_equal(res$Id, df$Id)
+  expect_equal(res$Val, as.character(df$Val))
+  dbDisconnect(con)
+})
+
+
 test_that("dbWriteTable imports dataframe", {
   ctx <- DBItest::get_default_context()
   con <- DBItest:::connect(ctx)
@@ -205,3 +221,5 @@ for(schema in schemas[,1]) {
   q <- paste0("DROP SCHEMA IF EXISTS ", schema, " CASCADE")
   dbSendQuery(con, q)
 }
+dbDisconnect(con)
+

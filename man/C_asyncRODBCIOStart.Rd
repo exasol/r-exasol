@@ -3,14 +3,21 @@
 \docType{data}
 \name{C_asyncRODBCIOStart}
 \alias{C_asyncRODBCIOStart}
-\title{TODO comment}
+\title{Prepares the highspeed data channel. Check the developer_guide for more information.}
 \format{
 An object of class \code{CallRoutine} (inherits from \code{NativeSymbolInfo}) of length 4.
 }
 \usage{
 C_asyncRODBCIOStart
 }
-\description{
-TODO comment
+\arguments{
+\item{hostA}{Database host address}
+
+\item{portA}{Database port}
+
+\item{protocolA}{Http or Https}
 }
-\keyword{datasets}
+\description{
+Prepares the highspeed data channel. Check the developer_guide for more information.
+}
+\keyword{internal}

@@ -3,14 +3,17 @@
 \docType{data}
 \name{C_asyncRODBCQueryFinish}
 \alias{C_asyncRODBCQueryFinish}
-\title{TODO comment}
+\title{Cleans up the high speed data channel. Check the developer_guide for more information.}
 \format{
 An object of class \code{CallRoutine} (inherits from \code{NativeSymbolInfo}) of length 4.
 }
 \usage{
 C_asyncRODBCQueryFinish
 }
-\description{
-TODO comment
+\arguments{
+\item{checkWasDone}{Indicating if the import/export has been finished.}
 }
-\keyword{datasets}
+\description{
+Cleans up the high speed data channel. Check the developer_guide for more information.
+}
+\keyword{internal}

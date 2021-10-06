@@ -10,9 +10,8 @@ exa.writeData(
   tableName,
   tableColumns = NA,
   encoding = tryCatch(strsplit(Sys.getlocale("LC_CTYPE"), ".", fixed = TRUE)[[1]][2],
-    error = function(e)
-    stop(paste("Cannot get system encoding.\\n                                                                             Please set manually.\\n",
-    e))),
+    error = function(e) stop(paste("Cannot get system encoding." +
+    " Please set manually.\\n", e))),
   writer = function(data, conn, fileEncoding = encoding) {     write.table(data, file =
     conn, row.names = FALSE, col.names = FALSE, na = "", sep = ",", qmethod = "double",
     fileEncoding = fileEncoding) },
@@ -30,7 +29,8 @@ and types in the EXASolution table.}
 
 \item{tableColumns}{If your data frame contains only a subset of the columns you can specify these
 here. The columns and types have to be specified as a vector of strings like: \code{c("col1", "col2")}
-Please take a look at the documentation of the cols parameter in the EXASolution User Manual sec. 2.2.2 '\code{IMPORT}', for details.}
+Please take a look at the documentation of the cols parameter in the EXASolution
+User Manual sec. 2.2.2 '\code{IMPORT}', for details.}
 
 \item{encoding}{A string containing the source encoding (iconv format). By default, the encoding is being
 read from /code{Sys.getlocale("LC_CTYPE")}, which might fail on some OSes. In that case, an error
@@ -76,10 +76,19 @@ odbcQuery(C, "CREATE SCHEMA test")
 odbcQuery(C, "CREATE TABLE test.twogroups (groupid INT, val DOUBLE)")
 exa.writeData(C, twogroups, tableName = "test.twogroups")
 
-# setting the write encoding manually (See also EXASOL User Manual, Appendix D. "Supported Encodings")
+# setting the write encoding manually
+# (See also EXASOL User Manual, Appendix D. "Supported Encodings")
 exa.writeData(con, twogroups, "test.twogroups", encoding="1252")
 }
 }
-\author{
-EXASOL AG <support@exasol.com>
+\seealso{
+Other None-DBI-API: 
+\code{\link{dbCurrentSchema}()},
+\code{\link{dbEnd}()},
+\code{\link{exa.createScript}()},
+\code{\link{exa.readData}()}
 }
+\author{
+EXASOL AG <opensource@exasol.com>
+}
+\concept{None-DBI-API}

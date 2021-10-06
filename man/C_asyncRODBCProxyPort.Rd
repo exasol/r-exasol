@@ -3,7 +3,7 @@
 \docType{data}
 \name{C_asyncRODBCProxyPort}
 \alias{C_asyncRODBCProxyPort}
-\title{TODO comment}
+\title{Returns the Database proxy port. Check the developer_guide for more information.}
 \format{
 An object of class \code{CallRoutine} (inherits from \code{NativeSymbolInfo}) of length 4.
 }
@@ -11,6 +11,6 @@ An object of class \code{CallRoutine} (inherits from \code{NativeSymbolInfo}) of
 C_asyncRODBCProxyPort
 }
 \description{
-TODO comment
+Returns the Database proxy port. Check the developer_guide for more information.
 }
-\keyword{datasets}
+\keyword{internal}

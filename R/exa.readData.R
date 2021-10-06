@@ -41,8 +41,8 @@
 #'   default read.csv is used, the result will be a dataframe as it is returned
 #'   read.csv.
 #'
-#' @author EXASOL AG <support@@exasol.com>
-#'
+#' @author EXASOL AG <opensource@exasol.com>
+#' @family None-DBI-API
 #' @example examples/readData.R
 #' @export
 exa.readData <- function(channel, query, encoding = 'UTF-8',

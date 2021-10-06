@@ -162,6 +162,14 @@ testscript <- exa.createScript(
 testscript("groupid", "val", table = "test.twogroups" , groupBy = "groupid")
 }
 }
-\author{
-EXASOL AG <support@exasol.com>
+\seealso{
+Other None-DBI-API: 
+\code{\link{dbCurrentSchema}()},
+\code{\link{dbEnd}()},
+\code{\link{exa.readData}()},
+\code{\link{exa.writeData}()}
 }
+\author{
+EXASOL AG <opensource@exasol.com>
+}
+\concept{None-DBI-API}
