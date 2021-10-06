@@ -91,7 +91,7 @@ odbcListObjects <- function(connection, catalog = NULL, schema = NULL, name = NU
 
 .computeDisplayName <- function(connection) {
   connection_name <- connection@db_name
-  if (is.na(connection_name)) {
+  if (is.na(connection_name) | connection_name == "") {
     connection_name <- paste0(connection@db_host, ":", connection@db_port)
   }
   connection_name
@@ -173,10 +173,10 @@ odbcListObjects <- function(connection, catalog = NULL, schema = NULL, name = NU
   observer$connectionUpdated(type, host, hint = hint)
 }
 
-.build_code <- function() {
+.build_code <- function(connection) {
   code <-
-    c( paste("library(", packageName(), ")"),
-       paste("con <- dbConnect(\"exa\", exahost = \"<hostname>:8563\", uid = \"sys\", pwd = \"<password>\", encrypted = \"Y\")"))
+    c( paste0("library(", packageName(), ")"),
+       paste0("con <- dbConnect(\"exa\", connection_string = \"", connection@init_connection_string, "\")"))
   paste(code, collapse = "\n")
 }
 
@@ -202,7 +202,7 @@ odbcListObjects <- function(connection, catalog = NULL, schema = NULL, name = NU
       icon = icon,
 
       # connection code
-      connectCode = .build_code(),
+      connectCode = .build_code(connection),
 
       # disconnection code
       disconnect = function() {

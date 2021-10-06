@@ -261,7 +261,7 @@ dbCurrentSchema <- function(con, setSchema=NULL) {
   con <- odbcDriverConnect(con_str)
   exa_metadata <- odbcGetInfo(con)
 
-  new(
+  res <- new(
     "EXAConnection",init_connection_string = con_str,
     current_schema = exaschema,
     autocom_default = ifelse(autocommit == "Y",TRUE,FALSE),
@@ -285,6 +285,12 @@ dbCurrentSchema <- function(con, setSchema=NULL) {
     encrypted = ifelse(encryption == "Y",TRUE,FALSE),
     con
   )
+  tryCatch({
+    .on_connection_opened(res)
+  }, error = function(e) {
+    warning(paste0("Error opening connection pane:\n'", conditionMessage(e), "'"))
+  })
+  res
 }
 
 ## Opens a new connection with the same settings as an existing one.
@@ -388,6 +394,11 @@ dbCurrentSchema <- function(con, setSchema=NULL) {
 setMethod(
   "dbDisconnect",signature("EXAConnection"),
   definition = function(conn) {
+    tryCatch({
+      .on_connection_closed(conn)
+    }, error = function(e) {
+      warning(paste0("Error closing connection pane:\n'", conditionMessage(e), "'"))
+    })
     odbcClose(conn)
   }
 )
