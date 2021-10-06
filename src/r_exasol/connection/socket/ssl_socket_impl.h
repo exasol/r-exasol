@@ -22,6 +22,9 @@ namespace exa {
         void shutdownRdWr() override;
 
     private:
+        void closeSocket(const int how);
+
+    private:
         ObjectLifecycleLogger<SocketImpl> mLifecycleLogger;
         SSL_CTX * mCtx;
         SSL* mSsl;
