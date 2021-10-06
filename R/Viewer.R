@@ -174,9 +174,17 @@ odbcListObjects <- function(connection, catalog = NULL, schema = NULL, name = NU
 }
 
 .build_code <- function(connection) {
-  code <-
-    c( paste0("library(", packageName(), ")"),
-       paste0("con <- dbConnect(\"exa\", connection_string = \"", connection@init_connection_string, "\")"))
+  if (is.na(connection@db_name) | connection@db_name == "") {
+    code <-
+      c( paste0("library(", packageName(), ")"),
+         paste0("con <- dbConnect(\"exa\", exahost= \"", connection@db_host, ":",
+                connection@db_port, "\", uid=\"", connection@db_user, "\", pwd=<PASSWORD>, encryption=\"", ifelse(connection@encrypted, "Y", "N"),
+                "\", schema=\"", connection@current_schema, "\")"))
+  } else {
+    code <-
+      c( paste0("library(", packageName(), ")"),
+         paste0("con <- dbConnect(", connection@db_name, ")"))
+  }
   paste(code, collapse = "\n")
 }
 
