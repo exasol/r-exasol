@@ -117,7 +117,7 @@ setMethod(
                         logmode = "NONE",
                         encryption = "N",
                         sslcertificate = "",
-                        uselegacyencryption = "N",
+                        uselegacyencryption = "",
                         autocommit = "Y",
                         querytimeout = "0",
                         connectionlcctype = Sys.getlocale(category = "LC_CTYPE"),
