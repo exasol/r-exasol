@@ -54,7 +54,7 @@
   )
 }
 
-odbcListObjects <- function(connection, catalog = NULL, schema = NULL, name = NULL, type = NULL, ...) {
+.odbcListObjects <- function(connection, catalog = NULL, schema = NULL, name = NULL, type = NULL, ...) {
 
   res <- data.frame()
   # if no schema was supplied, return a list of schema
@@ -192,9 +192,6 @@ odbcListObjects <- function(connection, catalog = NULL, schema = NULL, name = NU
   # make sure we have an observer
   observer <- getOption("connectionObserver")
   if (!is.null(observer)) {
-    # find an icon for this DBMS
-    icon <- .exasol_icon()
-
     # let observer know that connection has opened
     observer$connectionOpened(
       # connection type
@@ -207,7 +204,7 @@ odbcListObjects <- function(connection, catalog = NULL, schema = NULL, name = NU
       host = .computeHostName(connection),
 
       # icon for connection
-      icon = icon,
+      icon = .exasol_icon(),
 
       # connection code
       connectCode = .build_code(connection),
@@ -223,7 +220,7 @@ odbcListObjects <- function(connection, catalog = NULL, schema = NULL, name = NU
 
       # table enumeration code
       listObjects = function(...) {
-        odbcListObjects(connection, ...)
+        .odbcListObjects(connection, ...)
       },
 
       # column enumeration code
