@@ -12,8 +12,12 @@ Following functions has been dropped:
 Important: The bundled ODBC driver for Linux/Mac was removed (as CRAN requires to remove any binary executables from the package); dbConnect("exa",...) now will look in some default folders for the driver, please check the [README](../../README.md) for more details.
 
 ## Features / Enhancements
+ - #77: Add more encryption options
+ - #70 rstudio connections pane
+ - #79 Prepare cran release
 
 ## Bug Fixes
+n/a
 
 ### Compile Dependency Updates
 

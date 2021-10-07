@@ -27,9 +27,9 @@ The result exa.readData, by default a data.frame containing the result set.
 \description{
 dbReadTable
 }
-\section{Methods (by class)}{
+\section{Functions}{
 \itemize{
-\item \code{conn = EXAConnection,name = character}: Reads a DB table.
+\item \code{dbReadTable,EXAConnection,character-method}: Reads a DB table.
 }}
 
 \seealso{

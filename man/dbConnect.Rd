@@ -15,6 +15,8 @@
   exalogfile = tempfile(pattern = "EXAODBC_", fileext = ".log"),
   logmode = "NONE",
   encryption = "N",
+  sslcertificate = "",
+  uselegacyencryption = "",
   autocommit = "Y",
   querytimeout = "0",
   connectionlcctype = Sys.getlocale(category = "LC_CTYPE"),
@@ -55,6 +57,12 @@ created. Log data may be accessed with 'EXAlog(EXAConnection)'.}
 }}
 
 \item{encryption}{ODBC encryption. By default off. Switch on with 'Y'.}
+
+\item{sslcertificate}{The name and path of the certificate file (cert.pem) used by SSL.
+You can use SSL_VERIFY_NONE to disable server verification and SSL_VERIFY_SERVER to enable it.
+By default the server certificate check is enabled.}
+
+\item{uselegacyencryption}{'Y' = ChaCha encryption instead of SSL.}
 
 \item{autocommit}{By default 'Y'. If 'Y' each SQL statement is committed. 'N'
 means that no commits are executed automatically. The transaction will be

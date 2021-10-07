@@ -7,7 +7,7 @@
 #' @import DBI
 #' @importFrom methods new .valueClassTest
 #' @importFrom stats rnorm
-#' @importFrom utils packageVersion read.csv write.table View
+#' @importFrom utils packageVersion read.csv write.table View packageName
 #'
 #' @title R Interface & SDK for the EXASOL Database
 #'

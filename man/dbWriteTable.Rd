@@ -47,9 +47,9 @@ A logical indicating success.
 \description{
 dbWriteTable
 }
-\section{Methods (by class)}{
+\section{Functions}{
 \itemize{
-\item \code{conn = EXAConnection,name = character,value = data.frame}: Writes a data.frame into a table. If the table does not exist, it is created.
+\item \code{dbWriteTable,EXAConnection,character,data.frame-method}: Writes a data.frame into a table. If the table does not exist, it is created.
 }}
 
 \seealso{
