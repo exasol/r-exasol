@@ -31,7 +31,7 @@ Suggests:
     DBItest,
     xml2
 LinkingTo: testthat
-SystemRequirements: EXASOL DB v5 onwards
+SystemRequirements: OpenSSL >= 1.0.1, EXASOL DB v5 onwards
 RoxygenNote: 7.1.2
 Encoding: UTF-8
 Collate:
