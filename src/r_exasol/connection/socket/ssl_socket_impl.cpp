@@ -32,16 +32,21 @@ ssize_t exa::SSLSocketImpl::send(const void *buf, size_t len) {
 
 void exa::SSLSocketImpl::shutdownWr() {
     SSL_SOCKET_STACK_PRINTER;
+    const std::lock_guard<std::mutex> lock(mShutdownMutex);
     ::SSL_shutdown(mSsl);
+    closeSocket(SHUT_WR);
 }
 
 void exa::SSLSocketImpl::shutdownRdWr() {
     SSL_SOCKET_STACK_PRINTER;
+    const std::lock_guard<std::mutex> lock(mShutdownMutex);
     ::SSL_shutdown(mSsl);
+    closeSocket(SHUT_RDWR);
 }
 
 exa::SSLSocketImpl::SSLSocketImpl(SocketImpl & socket, const ssl::Certificate & certificate)
-: mCertificate(certificate) {
+: mCertificate(certificate)
+, mSocketClosed(false) {
     ::SSL_load_error_strings();
     ::SSLeay_add_ssl_algorithms();
     mCtx = ::SSL_CTX_new(SSLv23_server_method());
@@ -54,7 +59,7 @@ exa::SSLSocketImpl::SSLSocketImpl(SocketImpl & socket, const ssl::Certificate & 
 }
 
 exa::SSLSocketImpl::~SSLSocketImpl() {
-    tSocket s = ::SSL_get_fd(mSsl);
+    const std::lock_guard<std::mutex> lock(mShutdownMutex);
     const int ret = ::SSL_shutdown(mSsl);
     if (0 == ret) {
         ::SSL_shutdown(mSsl);
@@ -62,7 +67,16 @@ exa::SSLSocketImpl::~SSLSocketImpl() {
     ::SSL_free(mSsl);
     ::SSL_CTX_free (mCtx);
     ERR_free_strings ();
+    closeSocket(SHUT_RDWR);
+}
 
-    ::shutdown(s, SHUT_RDWR);
+void exa::SSLSocketImpl::closeSocket(const int how) {
+    if (!mSocketClosed) {
+        tSocket s = ::SSL_get_fd(mSsl);
+        if (s >= 0) {
+            ::shutdown(s, how);
+        }
+    }
+    mSocketClosed = true;
 }
 

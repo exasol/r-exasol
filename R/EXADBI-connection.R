@@ -75,6 +75,10 @@ EXAConnection <- setClass(
 #'  tables}
 #' }
 #' @param encryption ODBC encryption. By default off. Switch on with 'Y'.
+#' @param sslcertificate The name and path of the certificate file (cert.pem) used by SSL.
+#'   You can use SSL_VERIFY_NONE to disable server verification and SSL_VERIFY_SERVER to enable it.
+#'   By default the server certificate check is enabled.
+#' @param uselegacyencryption 'Y' = ChaCha encryption instead of SSL.
 #' @param autocommit By default 'Y'. If 'Y' each SQL statement is committed. 'N'
 #'   means that no commits are executed automatically. The transaction will be
 #'   rolled back on disconnect, which causes the loss of all data written during
@@ -112,6 +116,8 @@ setMethod(
                         exalogfile = tempfile(pattern = "EXAODBC_", fileext = ".log"),
                         logmode = "NONE",
                         encryption = "N",
+                        sslcertificate = "",
+                        uselegacyencryption = "",
                         autocommit = "Y",
                         querytimeout = "0",
                         connectionlcctype = Sys.getlocale(category = "LC_CTYPE"),
@@ -129,6 +135,8 @@ setMethod(
       exalogfile = exalogfile,
       logmode = logmode,
       encryption = encryption,
+      sslcertificate = sslcertificate,
+      uselegacyencryption = uselegacyencryption,
       autocommit = autocommit,
       querytimeout = querytimeout,
       connectionlcctype = connectionlcctype,
@@ -191,6 +199,11 @@ dbCurrentSchema <- function(con, setSchema=NULL) {
   con
 }
 
+.parse_odbc_value <- function(att, pattern, key_size) {
+  odbc_key_value <- regmatches(att, gregexpr(pattern, att,perl = TRUE))[[1]]
+  substr(odbc_key_value, key_size, nchar(odbc_key_value) - 1)
+}
+
 .EXANewConnection <- function(# change defaults also above
   drv,
   exahost = "",
@@ -200,6 +213,8 @@ dbCurrentSchema <- function(con, setSchema=NULL) {
   exalogfile = tempfile(pattern = "EXAODBC_", fileext = ".log"),
   logmode = "NONE",
   encryption = "N",
+  sslcertificate = "",
+  uselegacyencryption = "",
   autocommit = "Y",
   querytimeout = "0",
   connectionlcctype = Sys.getlocale(category = "LC_CTYPE"),
@@ -248,8 +263,13 @@ dbCurrentSchema <- function(con, setSchema=NULL) {
 
     # autocommit
     con_str <- paste0(con_str,";autocommit=",autocommit)
-    con_str <- paste0(con_str, ";ENCRYPTION=", ifelse(encryption == "Y", "yes", "no"))
-
+    con_str <- paste0(con_str, ";ENCRYPTION=", ifelse(encryption == "Y", "Y", "N"))
+    if (sslcertificate != "") {
+      con_str <- paste0(con_str,";SSLCERTIFICATE=",sslcertificate)
+    }
+    if (uselegacyencryption != "") {
+      con_str <- paste0(con_str,";USELEGACYENCRYPTION=", ifelse(uselegacyencryption == "Y", "Y", "N" ))
+    }
     # dots
     d <- list(...)
     while (length(d) > 0) {
@@ -267,17 +287,7 @@ dbCurrentSchema <- function(con, setSchema=NULL) {
     autocom_default = ifelse(autocommit == "Y",TRUE,FALSE),
     db_host = strsplit(exa_metadata["Server_Name"],":")[[1]][1],
     db_port = as.numeric(strsplit(exa_metadata["Server_Name"],":")[[1]][2]),
-    db_user = substring(
-      regmatches(
-        attributes(con)$connection.string, gregexpr("UID=[\\w]+?;", attributes(con)$connection.string,perl =
-          TRUE)
-      )[[1]],
-      5,
-      nchar(regmatches(
-        attributes(con)$connection.string, gregexpr("UID=[\\w]+?;", attributes(con)$connection.string,perl =
-          TRUE)
-      )[[1]]) - 1
-    ),
+    db_user = .parse_odbc_value(attributes(con)$connection.string, "UID=[\\w]+?;", 5),
     db_name = exa_metadata["Data_Source_Name"],
     db_prod_name = exa_metadata["DBMS_Name"],
     db_version = exa_metadata["DBMS_Ver"],
@@ -362,17 +372,7 @@ dbCurrentSchema <- function(con, setSchema=NULL) {
       ),
       db_host = strsplit(exa_metadata["Server_Name"],":")[[1]][1],
       db_port = as.numeric(strsplit(exa_metadata["Server_Name"],":")[[1]][2]),
-      db_user = substring(
-        regmatches(
-          attributes(con)$connection.string, gregexpr("UID=[\\w]+?;", attributes(con)$connection.string,perl =
-            TRUE)
-        )[[1]],
-        5,
-        nchar(regmatches(
-          attributes(con)$connection.string, gregexpr("UID=[\\w]+?;", attributes(con)$connection.string,perl =
-            TRUE)
-        )[[1]]) - 1
-      ),
+      db_user = .parse_odbc_value(attributes(con)$connection.string, "UID=[\\w]+?;", 5),
       db_name = exa_metadata["Data_Source_Name"],
       db_prod_name = exa_metadata["DBMS_Name"],
       db_version = exa_metadata["DBMS_Ver"],

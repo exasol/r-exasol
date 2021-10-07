@@ -4,6 +4,7 @@
 #include <r_exasol/ssl/certificate.h>
 #include <r_exasol/connection/socket/socket.h>
 #include <r_exasol/debug_print/debug_printer.h>
+#include <mutex>
 
 #ifndef R_EXASOL_SSL_SOCKET_IMPL_H
 #define R_EXASOL_SSL_SOCKET_IMPL_H
@@ -22,10 +23,15 @@ namespace exa {
         void shutdownRdWr() override;
 
     private:
+        void closeSocket(const int how);
+
+    private:
         ObjectLifecycleLogger<SocketImpl> mLifecycleLogger;
         SSL_CTX * mCtx;
         SSL* mSsl;
         const ssl::Certificate & mCertificate;
+        bool mSocketClosed;
+        std::mutex mShutdownMutex;
     };
 }
 
