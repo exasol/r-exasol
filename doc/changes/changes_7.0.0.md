@@ -1,6 +1,6 @@
 # r-exasol 7.0.0, released 2021-10-07
 
-Code name: t.b.d.
+Code name: CRAN submission
 
 ## Summary 
 
@@ -10,6 +10,8 @@ Following functions has been dropped:
 * "dbListConnections" has been dropped as it is marked DEPRECATED in DBI package.
 
 Important: The bundled ODBC driver for Linux/Mac was removed (as CRAN requires to remove any binary executables from the package); dbConnect("exa",...) now will look in some default folders for the driver, please check the [README](../../README.md) for more details.
+
+Also this release now support the data visualization in the RStudio connection pane.
 
 ## Features / Enhancements
  - #77: Add more encryption options
