@@ -17,7 +17,7 @@
 #define SHUT_RDWR SD_BOTH
 #endif
 #ifndef SHUT_WR
-#define SHUT_WR SD_RECEIVE
+#define SHUT_WR SD_SEND
 #endif
 
 #endif
