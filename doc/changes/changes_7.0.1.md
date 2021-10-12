@@ -1,4 +1,4 @@
-# r-exasol 7.0.1, released t.b.d.
+# r-exasol 7.0.1, released 2021-10-12
 
 Code name: CRAN submission fixes
 
