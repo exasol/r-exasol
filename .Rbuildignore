@@ -12,3 +12,7 @@
 ^tests/Dockerfile$
 ^tests/run_test_within_docker\.sh$
 (^|/)autom4te\\.cache$
+^.RData$
+^.Rhistory$
+^config.log$
+^config.status$

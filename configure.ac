@@ -1,4 +1,4 @@
-AC_PREREQ(2.61)
+AC_PREREQ([2.69])
 
 
 AC_INIT(exasol, m4_esyscmd_s([awk '/^Version:/ {print $2}' DESCRIPTION]))
@@ -15,8 +15,7 @@ fi
 dnl Select if unit tests are enabled or not, from a configure option
 dnl or from an environment variable.
 AC_ARG_WITH([unit-tests],
-            AC_HELP_STRING([--with-unit-tests],
-                           [wether unit tests should be included]),
+            AS_HELP_STRING([--with-unit-tests],[wether unit tests should be included]),
             [with_unit_tests=$withval])
 UNIT_TESTFLAGS_CPPFLAGS=""
 if test [ -n "$with_unit_tests" ] ; then
