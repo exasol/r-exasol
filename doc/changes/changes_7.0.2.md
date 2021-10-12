@@ -1,4 +1,4 @@
-# r-exasol 7.0.2, released t.b.d.
+# r-exasol 7.0.2, released 2021-10-12
 
 Code name: Fix socket error under Windows.
 
