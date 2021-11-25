@@ -32,7 +32,7 @@ jobs:
           python-version: 3.6
       - uses: lukka/get-cmake@v3.21.1
       - name: Run CMake
-        uses: lukka/run-cmake@v3.21.1
+        uses: lukka/run-cmake@v3.4
         id: runcmake
         with:
           cmakeGenerator: 'Ninja'
