@@ -10,7 +10,7 @@ t.b.d.
 n/a
 
 ## Bug Fixes
-- #106: Can't install - OpenSSL already installed
+- #106: Fixed installation issue with OpenSSL already installed message
 
 ### Compile Dependency Updates
 
