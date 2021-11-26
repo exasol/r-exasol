@@ -1,7 +1,7 @@
 Package: exasol
 Type: Package
 Title: R Interface & SDK for the EXASOL Database
-Version: 7.0.2
+Version: 7.1.0
 Date: 2021-10-07
 Author: Ian Formanek, Marcel Boldt, Mathias Golombek, Muhammet Orazov, Pieterjan Spoelders, Sebastian Baer, Szilard Barany, Thomas Ubensee, Torsten Kilias, Valerie Wiedemann, Viliam Simko
 Maintainer: Thomas Ubensee <ext.Thomas.Uebensee@exasol.com>

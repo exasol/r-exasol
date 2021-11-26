@@ -8,5 +8,5 @@ if(!file.exists(sprintf("../windows/openssl-%s/include/openssl/ssl.h", VERSION))
   unzip("lib.zip", exdir = "../windows")
   unlink("lib.zip")
 } else {
-  warning("OpenSSL already installed")
+  message("OpenSSL already installed")
 }
