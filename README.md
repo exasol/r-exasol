@@ -40,7 +40,7 @@ Code coverage of tests:
 
 ### Known issues
 
-The latest ODBC driver (7.1.1) under MacOsX BigSur has a dependency issue. If you have problems under MacOsX and see an error message like ```...libexaodbc-io418sys.dylib not found```, please revert to the previous ODBC driver (7.0.11) which is know to work. 
+ODBC drivers 7.1.1 & 7.1.2 under MacOsX BigSur have a dependency issue. If you have problems under MacOsX and see an error message like ```...libexaodbc-io418sys.dylib not found```, please update to the latest ODBC driver, version 7.1.3 works fine. 
 
 ## Getting started
 
