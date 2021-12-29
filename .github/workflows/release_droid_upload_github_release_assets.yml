@@ -51,7 +51,7 @@ jobs:
       - name: Create output dir
         run: |
             out_put_dir="${{ runner.temp }}${{matrix.config.output_path}}"
-            out_put_dir= $(echo "$out_put_dir" | sed  -e 's/\\/\//g')
+            out_put_dir=$(echo "$out_put_dir" | sed  -e 's/\\/\//g')
             mkdir -p "${out_put_dir}"
             echo "output_dir=${out_put_dir}" >> $GITHUB_ENV
         shell: bash
