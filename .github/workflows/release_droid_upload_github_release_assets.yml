@@ -30,6 +30,15 @@ jobs:
         run: |
           brew install openssl
           BREW_PREFIX=`brew --prefix`
+      - name: Install Ubuntu package dependencies
+        if: matrix.config.os == 'ubuntu-latest'
+        run: |
+            apt-get -y update && \
+               apt-get -y install --no-install-recommends libcurl4-openssl-dev curl libxml2-dev  libssl-dev && \
+               locale-gen en_US.UTF-8 && \
+               update-locale LC_ALL=en_US.UTF-8 && \
+               apt-get -y clean && \
+               apt-get -y autoremove
       - name: Query dependencies
         run: |
           install.packages("RODBC")
