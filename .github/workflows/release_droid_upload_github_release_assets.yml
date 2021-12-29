@@ -33,12 +33,12 @@ jobs:
       - name: Install Ubuntu package dependencies
         if: matrix.config.os == 'ubuntu-latest'
         run: |
-            apt-get -y update && \
-               apt-get -y install --no-install-recommends libcurl4-openssl-dev curl libxml2-dev  libssl-dev && \
-               locale-gen en_US.UTF-8 && \
-               update-locale LC_ALL=en_US.UTF-8 && \
-               apt-get -y clean && \
-               apt-get -y autoremove
+            sudo apt-get -y update && \
+               sudo apt-get -y install --no-install-recommends libcurl4-openssl-dev curl libxml2-dev  libssl-dev && \
+               sudo locale-gen en_US.UTF-8 && \
+               sudo update-locale LC_ALL=en_US.UTF-8 && \
+               sudo apt-get -y clean && \
+               sudo apt-get -y autoremove
       - name: Query dependencies
         run: |
           install.packages("RODBC")
@@ -80,12 +80,12 @@ jobs:
           r-version: 'release'
       - name: Install package dependencies
         run: |
-          apt-get -y update && \
-             apt-get -y install --no-install-recommends libcurl4-openssl-dev curl libxml2-dev  libssl-dev && \
-             locale-gen en_US.UTF-8 && \
-             update-locale LC_ALL=en_US.UTF-8 && \
-             apt-get -y clean && \
-             apt-get -y autoremove
+          sudo apt-get -y update && \
+             sudo apt-get -y install --no-install-recommends libcurl4-openssl-dev curl libxml2-dev  libssl-dev && \
+             sudo locale-gen en_US.UTF-8 && \
+             sudo update-locale LC_ALL=en_US.UTF-8 && \
+             sudo apt-get -y clean && \
+             sudo apt-get -y autoremove
       - name: Query r-dependencies
         run: |
           install.packages("RODBC")
