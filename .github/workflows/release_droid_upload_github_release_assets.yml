@@ -48,12 +48,21 @@ jobs:
         shell: Rscript {0}
         env: # Set individual GH PAT
           GITHUB_PAT: ${{ secrets.PAT_FOR_DEVTOOLS }}
-      - name: Create output dir
-        id: step_one
+      - name: Create output dir env variable Linux
+        if: matrix.config.os == 'ubuntu-latest'
         run: |
-            out_put_dir="${{ runner.temp }}/bin/${{matrix.config.os}}"
-            mkdir -p "${out_put_dir}"
-            echo "output_dir=${out_put_dir}" >> $GITHUB_ENV
+            echo "output_dir=${{ runner.temp }}/bin/${{matrix.config.os}}" >> $GITHUB_ENV
+      - name: Create output dir env variable Windows
+        if: matrix.config.os == 'windows-latest'
+        run: |
+          echo "output_dir=${{ runner.temp }}\\bin\\${{matrix.config.os}}" >> $GITHUB_ENV
+      - name: Create output dir env variable MacOsX
+        if: matrix.config.os == 'macOS-latest'
+        run: |
+          echo "output_dir=${{ runner.temp }}/bin/${{matrix.config.os}}" >> $GITHUB_ENV
+      - name: Create output dir
+        run: |
+            mkdir -p "${{ env.output_dir }}"
         shell: bash
       - name: Build
         run: |
@@ -97,7 +106,6 @@ jobs:
         env: # Set individual GH PAT
           GITHUB_PAT: ${{ secrets.PAT_FOR_DEVTOOLS }}
       - name: Create output dir
-        id: step_one
         run: |
           out_put_dir="${{ runner.temp }}/bin/source"
           mkdir -p "${out_put_dir}"
