@@ -14,9 +14,9 @@ jobs:
       fail-fast: false
       matrix:
         config:
-          - { os: windows-latest, r: 'release', output_path: '\bin\windows'}
-          - { os: macOS-latest, r: 'release', output_path: '/bin/macosx' }
-          - { os: ubuntu-latest, r: 'release', output_path: '/bin/ubuntu' }
+          - { os: windows-latest, r: 'release'}
+          - { os: macOS-latest, r: 'release'}
+          - { os: ubuntu-latest, r: 'release'}
     environment: ci_build
     steps:
       - uses: actions/checkout@v2
@@ -50,8 +50,8 @@ jobs:
           GITHUB_PAT: ${{ secrets.PAT_FOR_DEVTOOLS }}
       - name: Create output dir
         run: |
-            out_put_dir="${{ runner.temp }}${{matrix.config.output_path}}"
-            out_put_dir=$(echo "$out_put_dir" | sed  -e 's/\\/\//g')
+            out_put_dir="${{ runner.temp }}/bin/${{ matrix.config.r }}"
+            out_put_dir=$(echo "$out_put_dir" | sed  -e 's/\\/\//g') #Needed on Windows
             mkdir -p "${out_put_dir}"
             echo "output_dir=${out_put_dir}" >> $GITHUB_ENV
         shell: bash
