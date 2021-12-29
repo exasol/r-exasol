@@ -18,6 +18,7 @@ jobs:
           - { os: macOS-latest, r: 'release' }
           - { os: ubuntu-latest, r: 'release' }
     environment: ci_build
+    env
     steps:
       - uses: actions/checkout@v2
 
@@ -56,6 +57,7 @@ jobs:
         if: matrix.config.os == 'windows-latest'
         run: |
           echo "output_dir=${{ runner.temp }}\\bin\\${{matrix.config.os}}" >> $GITHUB_ENV
+        shell: bash
       - name: Create output dir env variable MacOsX
         if: matrix.config.os == 'macOS-latest'
         run: |
