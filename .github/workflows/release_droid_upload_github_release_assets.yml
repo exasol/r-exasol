@@ -70,15 +70,17 @@ jobs:
         run: |
           pushd '${{ env.output_dir }}'
           ls .
-          for f in '*.tar.gz'; do mv "$f" "$(echo "$f" | sed s/\.tar\.gz/${{matrix.config.os}}\.tar\.gz/)"; done
+          for f in *.tgz; do mv "$f" "$(echo "$f" | sed s/\.tar\.gz/${{matrix.config.os}}\.tar\.gz/)"; done
           ls .
+        shell: bash
       - name: Check result
         if: matrix.config.os == 'windows-latest'
         run: |
           pushd '${{ env.output_dir }}'
           ls .
-          for f in '*.zip'; do mv "$f" "$(echo "$f" | sed s/\.zip/-${{matrix.config.os}}\.zip/)"; done
+          for f in *.zip; do mv "$f" "$(echo "$f" | sed s/\.zip/-${{matrix.config.os}}\.zip/)"; done
           ls .
+        shell: bash
 #      - name: Upload assets to the GitHub release draft
 #        uses: shogo82148/actions-upload-release-asset@v1
 #        with:
