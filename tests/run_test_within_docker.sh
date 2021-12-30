@@ -22,7 +22,7 @@ if [ $# -gt 1 ]; then
   case "$2" in
     valgrind)
       export DEBIAN_FRONTEND=noninteractive
-      apt install -y valgrind
+      apt-get update && apt install -y valgrind
       TST_CMD="R -d valgrind -f testthat.R"
       ;;
     asan)
