@@ -50,7 +50,7 @@ jobs:
           GITHUB_PAT: ${{ secrets.PAT_FOR_DEVTOOLS }}
       - name: Create output dir
         run: |
-            out_put_dir="${{ runner.temp }}/bin/${{ matrix.config.r }}"
+            out_put_dir="${{ runner.temp }}/bin/${{ matrix.config.os }}"
             out_put_dir=$(echo "$out_put_dir" | sed  -e 's/\\/\//g') #Needed on Windows
             mkdir -p "${out_put_dir}"
             echo "output_dir=${out_put_dir}" >> $GITHUB_ENV
@@ -64,12 +64,21 @@ jobs:
       - name: Check result
         run: |
           echo 'Target folder is ${{ env.output_dir }}'
+          ls '${{ env.output_dir }}'
+      - name: Check result
+        if: matrix.config.os == 'macOS-latest'
+        run: |
           pushd '${{ env.output_dir }}'
           ls .
           for f in '*.tar.gz'; do mv "$f" "$(echo "$f" | sed s/\.tar\.gz/${{matrix.config.os}}\.tar\.gz/)"; done
-          for f in '*.zip'; do mv "$f" "$(echo "$f" | sed s/\.zip/${{matrix.config.os}}\.zip/)"; done
           ls .
-        shell: bash
+      - name: Check result
+        if: matrix.config.os == 'windows-latest'
+        run: |
+          pushd '${{ env.output_dir }}'
+          ls .
+          for f in '*.zip'; do mv "$f" "$(echo "$f" | sed s/\.zip/-${{matrix.config.os}}\.zip/)"; done
+          ls .
 #      - name: Upload assets to the GitHub release draft
 #        uses: shogo82148/actions-upload-release-asset@v1
 #        with:
