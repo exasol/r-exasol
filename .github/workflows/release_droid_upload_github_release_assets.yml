@@ -70,7 +70,7 @@ jobs:
         run: |
           pushd '${{ env.output_dir }}'
           ls .
-          for f in *.tgz; do mv "$f" "$(echo "$f" | sed s/\.tar\.gz/${{matrix.config.os}}\.tar\.gz/)"; done
+          for f in *.tgz; do mv "$f" "$(echo "$f" | sed s/\.tgz/${{matrix.config.os}}\.tgz/)"; done
           ls .
         shell: bash
       - name: Check result
@@ -91,7 +91,7 @@ jobs:
     environment: ci_build
     steps:
       - uses: actions/checkout@v2
-      - uses: r-lib/actions/setup-r@v1
+      - uses: r-lib/actions/setup-r@v2
         with:
           r-version: 'release'
       - name: Install package dependencies
