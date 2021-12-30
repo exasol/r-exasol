@@ -70,7 +70,7 @@ jobs:
         run: |
           pushd '${{ env.output_dir }}'
           ls .
-          for f in *.tgz; do mv "$f" "$(echo "$f" | sed s/\.tgz/${{matrix.config.os}}\.tgz/)"; done
+          for f in *.tgz; do mv "$f" "$(echo "$f" | sed s/\.tgz/-${{matrix.config.os}}\.tgz/)"; done
           ls .
         shell: bash
       - name: Check result
@@ -81,11 +81,11 @@ jobs:
           for f in *.zip; do mv "$f" "$(echo "$f" | sed s/\.zip/-${{matrix.config.os}}\.zip/)"; done
           ls .
         shell: bash
-#      - name: Upload assets to the GitHub release draft
-#        uses: shogo82148/actions-upload-release-asset@v1
-#        with:
-#          upload_url: ${{ github.event.inputs.upload_url }}
-#          asset_path: ${{ runner.temp }}/bin/${{matrix.config.os}}/*
+      - name: Upload assets to the GitHub release draft
+        uses: shogo82148/actions-upload-release-asset@v1
+        with:
+          upload_url: ${{ github.event.inputs.upload_url }}
+          asset_path: ${{ runner.temp }}/bin/${{matrix.config.os}}/*
   build-source:
     runs-on: ubuntu-latest
     environment: ci_build
@@ -126,8 +126,8 @@ jobs:
         run: |
            echo "Target folder is ${{ env.output_dir }}"
            ls "${{ env.output_dir }}"
-#      - name: Upload assets to the GitHub release draft
-#        uses: shogo82148/actions-upload-release-asset@v1
-#        with:
-#          upload_url: ${{ github.event.inputs.upload_url }}
-#          asset_path: ${{ runner.temp }}/bin/source/*
+      - name: Upload assets to the GitHub release draft
+        uses: shogo82148/actions-upload-release-asset@v1
+        with:
+          upload_url: ${{ github.event.inputs.upload_url }}
+          asset_path: ${{ runner.temp }}/bin/source/*
