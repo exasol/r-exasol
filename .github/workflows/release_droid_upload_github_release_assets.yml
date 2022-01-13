@@ -85,11 +85,11 @@ jobs:
           echo 'Target folder is ${{ env.output_dir }}'
           ls -la '${{ env.output_dir }}'
         shell: bash
-#      - name: Upload assets to the GitHub release draft
-#        uses: shogo82148/actions-upload-release-asset@v1
-#        with:
-#          upload_url: ${{ github.event.inputs.upload_url }}
-#          asset_path: ${{ env.output_dir }}/*
+      - name: Upload assets to the GitHub release draft
+        uses: shogo82148/actions-upload-release-asset@v1
+        with:
+          upload_url: ${{ github.event.inputs.upload_url }}
+          asset_path: ${{ env.output_dir }}/*
   build-source:
     runs-on: ubuntu-latest
     environment: ci_build
@@ -133,8 +133,8 @@ jobs:
         run: |
            echo "Target folder is ${{ env.output_dir }}"
            ls -la "${{ env.output_dir }}"
-#      - name: Upload assets to the GitHub release draft
-#        uses: shogo82148/actions-upload-release-asset@v1
-#        with:
-#          upload_url: ${{ github.event.inputs.upload_url }}
-#          asset_path: ${{ env.output_dir }}/*
+      - name: Upload assets to the GitHub release draft
+        uses: shogo82148/actions-upload-release-asset@v1
+        with:
+          upload_url: ${{ github.event.inputs.upload_url }}
+          asset_path: ${{ env.output_dir }}/*
