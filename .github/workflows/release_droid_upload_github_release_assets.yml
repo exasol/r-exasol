@@ -29,12 +29,11 @@ jobs:
         if: matrix.config.os == 'macOS-latest'
         run: |
           brew install openssl
-          BREW_PREFIX=`brew --prefix`
       - name: Install Ubuntu package dependencies
         if: matrix.config.os == 'ubuntu-latest'
         run: |
             sudo apt-get -y update && \
-               sudo apt-get -y install --no-install-recommends libcurl4-openssl-dev curl libxml2-dev  libssl-dev && \
+               sudo apt-get -y install --no-install-recommends libcurl4-openssl-dev curl libxml2-dev libssl-dev && \
                sudo locale-gen en_US.UTF-8 && \
                sudo update-locale LC_ALL=en_US.UTF-8 && \
                sudo apt-get -y clean && \
@@ -61,11 +60,7 @@ jobs:
         shell: Rscript {0}
         env: # Set individual GH PAT
           GITHUB_PAT: ${{ secrets.PAT_FOR_DEVTOOLS }}
-      - name: Check result
-        run: |
-          echo 'Target folder is ${{ env.output_dir }}'
-          ls '${{ env.output_dir }}'
-      - name: Check result
+      - name: Rename MacOsX package
         if: matrix.config.os == 'macOS-latest'
         run: |
           pushd '${{ env.output_dir }}'
@@ -73,7 +68,7 @@ jobs:
           for f in *.tgz; do mv "$f" "$(echo "$f" | sed s/\.tgz/-${{matrix.config.os}}\.tgz/)"; done
           ls .
         shell: bash
-      - name: Check result
+      - name: Rename windows package
         if: matrix.config.os == 'windows-latest'
         run: |
           pushd '${{ env.output_dir }}'
@@ -81,11 +76,18 @@ jobs:
           for f in *.zip; do mv "$f" "$(echo "$f" | sed s/\.zip/-${{matrix.config.os}}\.zip/)"; done
           ls .
         shell: bash
-      - name: Upload assets to the GitHub release draft
-        uses: shogo82148/actions-upload-release-asset@v1
-        with:
-          upload_url: ${{ github.event.inputs.upload_url }}
-          asset_path: ${{ runner.temp }}/bin/${{matrix.config.os}}/*
+      - name: Generate sha256sum files
+        run: find '${{ env.output_dir }}' -maxdepth 1 -type f -exec bash -c 'sha256sum {} > {}.sha256' \;
+        shell: bash
+      - name: Check result
+        run: |
+          echo 'Target folder is ${{ env.output_dir }}'
+          ls '${{ env.output_dir }}'
+#      - name: Upload assets to the GitHub release draft
+#        uses: shogo82148/actions-upload-release-asset@v1
+#        with:
+#          upload_url: ${{ github.event.inputs.upload_url }}
+#          asset_path: ${{ env.output_dir }}/*
   build-source:
     runs-on: ubuntu-latest
     environment: ci_build
@@ -122,12 +124,15 @@ jobs:
         shell: Rscript {0}
         env: # Set individual GH PAT
           GITHUB_PAT: ${{ secrets.PAT_FOR_DEVTOOLS }}
+      - name: Generate sha256sum files
+        run: find ${{ runner.temp }}/bin/${{matrix.config.os}} -maxdepth 1 -type f -exec bash -c 'sha256sum {} > {}.sha256' \;
+        shell: bash
       - name: Check result
         run: |
            echo "Target folder is ${{ env.output_dir }}"
            ls "${{ env.output_dir }}"
-      - name: Upload assets to the GitHub release draft
-        uses: shogo82148/actions-upload-release-asset@v1
-        with:
-          upload_url: ${{ github.event.inputs.upload_url }}
-          asset_path: ${{ runner.temp }}/bin/source/*
+#      - name: Upload assets to the GitHub release draft
+#        uses: shogo82148/actions-upload-release-asset@v1
+#        with:
+#          upload_url: ${{ github.event.inputs.upload_url }}
+#          asset_path: ${{ env.output_dir }}/*

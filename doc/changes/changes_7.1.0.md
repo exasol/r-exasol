@@ -8,7 +8,7 @@ t.b.d.
 
 ## Features / Enhancements
 
- - #81: Remove dummy workflows and upload release artifacts
+ - #81: Removed dummy workflows and added upload release artifacts workflows
 
 ## Bug Fixes
 - #106: Fixed installation issue with OpenSSL already installed message
