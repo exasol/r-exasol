@@ -7,7 +7,8 @@ Code name: t.b.d.
 t.b.d.
 
 ## Features / Enhancements
-n/a
+
+ - #81: Removed dummy workflows and added upload release artifacts workflows
 
 ## Bug Fixes
 - #106: Fixed installation issue with OpenSSL already installed message
