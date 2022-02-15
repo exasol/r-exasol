@@ -11,6 +11,7 @@ n/a
 
 ## Bug Fixes
 - #106: Fixed installation issue with OpenSSL already installed message
+- #93: Fixed cloned connection
 
 ### Compile Dependency Updates
 
