@@ -307,7 +307,7 @@ dbCurrentSchema <- function(con, setSchema=NULL) {
 ## @family EXADriver related objects
 ## @family EXAConnection related objects
 ##
-## @param drv An EXAConnection object to be dublicated.
+## @param drv An EXAConnection object to be duplicated.
 ## @param autocommit A logical that if it is true, autocommit will be enabled for cloned connection.
 ## @param ... An additional connection string parameter that may override the old settings.
 ## @return A fresh EXAConnection
@@ -323,8 +323,8 @@ dbCurrentSchema <- function(con, setSchema=NULL) {
     con_str <- drv@init_connection_string
     s <- strsplit(con_str, ";")
     s <- sapply(s, strsplit, "=")
-    s <- lapply(s, function(x)
-      toupper(x))
+    capital_letter_exclude_list <- c("DRIVER", "CONNECTIONLCCTYPE", "EXALOGFILE", "UID", "PWD")
+    s <- lapply(s, function(x) if(toupper(x[[1]]) %in% capital_letter_exclude_list)  x else toupper(x))
 
     con_str <- ""
 
