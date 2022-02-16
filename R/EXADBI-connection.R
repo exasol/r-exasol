@@ -204,6 +204,11 @@ dbCurrentSchema <- function(con, setSchema=NULL) {
   substr(odbc_key_value, key_size, nchar(odbc_key_value) - 1)
 }
 
+.encode_password <- function(pwd) {
+  #pwd <- gsub("}", "}}", pwd, perl = TRUE) #Not yet supported by Exasol ODBC driver.
+  paste0("'{", pwd, "}'")
+}
+
 .EXANewConnection <- function(# change defaults also above
   drv,
   exahost = "",
@@ -243,7 +248,7 @@ dbCurrentSchema <- function(con, setSchema=NULL) {
     }
     # all additional parameters...
     if (uid != "") {
-      con_str <- paste0(con_str,";UID=",uid,";PWD=",pwd)
+      con_str <- paste0(con_str,";UID=",uid,";PWD=",.encode_password(pwd))
     }
     # EXASCHEMA
     if (exaschema != "SYS") {
