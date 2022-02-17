@@ -13,7 +13,7 @@ t.b.d.
 ## Bug Fixes
 - #106: Fixed installation issue with OpenSSL already installed message
 - #93: Fixed cloned connection
-- #91: Encode password correctly
+- #91: Fixed issue with encoding passwords correctly
 
 ### Compile Dependency Updates
 

@@ -205,8 +205,7 @@ dbCurrentSchema <- function(con, setSchema=NULL) {
 }
 
 .encode_password <- function(pwd) {
-  #pwd <- gsub("}", "}}", pwd, perl = TRUE) #Not yet supported by Exasol ODBC driver.
-  paste0("'{", pwd, "}'")
+  paste0("{", pwd, "}")
 }
 
 .EXANewConnection <- function(# change defaults also above
