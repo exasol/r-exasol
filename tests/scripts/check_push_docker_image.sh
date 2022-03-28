@@ -19,5 +19,5 @@ AVAILABLE_ON_DOCKER_HUB="$("$SCRIPT_DIR/list_tags.sh" "$IMAGE_NAME" "$TAG_NAME")
 
 echo "Available on dockerhub: $AVAILABLE_ON_DOCKER_HUB"
 if [[ -z $AVAILABLE_ON_DOCKER_HUB ]]; then
-  "$SCRIPT_DIR"/push_docker_image.sh "$R_VERSION"
+  "$SCRIPT_DIR"/push_docker_image.sh "$COMBINED_R_VERSION"
 fi

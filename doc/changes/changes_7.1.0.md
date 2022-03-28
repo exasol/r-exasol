@@ -11,10 +11,11 @@ t.b.d.
  - #81: Removed dummy workflows and added upload release artifacts workflows
 
 ## Bug Fixes
+ - #120: Added job name to remaining GH workflows
+ - #115: Added job-names to GH Workflows
+ - #106: Fixed installation issue with OpenSSL already installed message
+ - #93: Fixed cloned connection
 
-- #115: Added name to workflow files with matrix builds
-- #106: Fixed installation issue with OpenSSL already installed message
-- #93: Fixed cloned connection
 - #91: Fixed issue with encoding passwords correctly
 
 ### Compile Dependency Updates
