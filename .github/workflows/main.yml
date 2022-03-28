@@ -21,7 +21,7 @@ jobs:
   integration_tests:
     needs: prep-testbed
     environment: publish
-    name: Run integration tests for R=${{ matrix.r-version }}, with memory checker={{ matrix.memory_checker }}
+    name: Run integration tests for R=${{ matrix.r-version }}, with memory checker=${{ matrix.memory_checker }}
     strategy:
       fail-fast: false
       matrix:
@@ -53,7 +53,7 @@ jobs:
   publish-main:
     needs: [prep-testbed,integration_tests]
     if: github.ref == 'refs/heads/main'
-    name: Publish to docker hub for R={{ matrix.r-version }}
+    name: Publish to docker hub for R=${{ matrix.r-version }}
     strategy:
       fail-fast: false
       matrix:

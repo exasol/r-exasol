@@ -19,7 +19,7 @@ jobs:
 
   push-docker-image:
     needs: prep-env
-    name: Push docker image for R={{ matrix.r-version }}
+    name: Push docker image for R=${{ matrix.r-version }}
     strategy:
       fail-fast: false
       matrix:

@@ -10,7 +10,7 @@ on:
 jobs:
   build-binaries:
     runs-on: ${{ matrix.config.os }}
-    name: Build binaries on {{ matrix.config.os }}
+    name: Build binaries on ${{ matrix.config.os }}, R=${{ matrix.confg.r }}
     strategy:
       fail-fast: false
       matrix:
