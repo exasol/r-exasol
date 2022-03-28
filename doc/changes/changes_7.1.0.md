@@ -14,6 +14,9 @@ t.b.d.
 - #106: Fixed installation issue with OpenSSL already installed message
 - #93: Fixed cloned connection
 
+## Documentation
+ - #52: Cleaned up README
+
 ### Compile Dependency Updates
 
 #### Linux
