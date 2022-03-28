@@ -5,7 +5,7 @@ on: [push, pull_request]
 jobs:
   build:
     runs-on: ${{ matrix.config.os }}
-    name: Build for ${{ matrix.config.os }}, r=${{ matrix.os.r }}
+    name: Build for ${{ matrix.config.os }}, r=${{ matrix.config.r }}
     strategy:
       fail-fast: false
       matrix:
