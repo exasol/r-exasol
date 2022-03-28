@@ -6,6 +6,7 @@ on:
 jobs:
   prep-env:
     runs-on: ubuntu-18.04
+    name: Prepare environment
     steps:
       - uses: actions/checkout@v2
       - id: set-matrix
@@ -18,12 +19,12 @@ jobs:
 
   push-docker-image:
     needs: prep-env
+    name: Push docker image for R={{ matrix.r-version }}
     strategy:
       fail-fast: false
       matrix:
         r-version: ${{fromJson(needs.prep-env.outputs.matrix)}}
     runs-on: ubuntu-18.04
-
     environment: publish
     steps:
       - uses: actions/checkout@v2
