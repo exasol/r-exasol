@@ -21,7 +21,7 @@ jobs:
   integration_tests:
     needs: prep-testbed
     environment: publish
-    name: Run integration tests for R=${{ matrix.r-version }}, with memory checker={{ $matrix.memory_checker }}
+    name: Run integration tests for R=${{ matrix.r-version }}, with memory checker={{ matrix.memory_checker }}
     strategy:
       fail-fast: false
       matrix:
