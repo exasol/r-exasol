@@ -18,10 +18,8 @@ t.b.d.
 - #91: Fixed issue with encoding passwords correctly
 
 ## Documentation
+
  - #52: Cleaned up README
-
-## Documentation
-
  - #105: Changed install documentation for Linux
 
 ### Compile Dependency Updates
