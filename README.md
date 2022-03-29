@@ -1,7 +1,6 @@
 # R Interface & SDK for the EXASOL Database
 
 [![Build Status](https://github.com/exasol/r-exasol/actions/workflows/main.yml/badge.svg)](https://github.com/exasol/r-exasol)
-[![codecov.io](https://codecov.io/github/exasol/r-exasol/coverage.svg?branch=main)](https://codecov.io/github/exasol/r-exasol?branch=main)
 
 ###### Please note that this is an open source project which is officially supported by Exasol. For any question, you can contact our support team.
 
@@ -34,9 +33,6 @@ Following test were implemented:
 * Integration test (which require a local Exasol db running, and therefore are not activated by default). These leverage the DBItest package.
 
 `dplyr` methods have been moved to a [separate package](https://github.com/marcelboldt/r-exasol-dplyr).
-
-Code coverage of tests:
-[![codecov.io](https://codecov.io/github/exasol/r-exasol/coverage.svg?branch=main)](https://codecov.io/github/exasol/r-exasol?branch=main)
 
 ### Known issues
 

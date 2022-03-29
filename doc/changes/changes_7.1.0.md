@@ -17,6 +17,9 @@ t.b.d.
 - #93: Fixed cloned connection
 - #91: Fixed issue with encoding passwords correctly
 
+## Documentation
+ - #52: Cleaned up README
+
 ### Compile Dependency Updates
 
 #### Linux
