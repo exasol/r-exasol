@@ -10,6 +10,7 @@ on:
 jobs:
   build-binaries:
     runs-on: ${{ matrix.config.os }}
+    name: Build binaries on ${{ matrix.config.os }}, R=${{ matrix.confg.r }}
     strategy:
       fail-fast: false
       matrix:
@@ -92,6 +93,7 @@ jobs:
           asset_path: ${{ env.output_dir }}/*
   build-source:
     runs-on: ubuntu-latest
+    name: Build source for R=release
     environment: ci_build
     steps:
       - uses: actions/checkout@v2
