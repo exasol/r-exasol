@@ -32,6 +32,8 @@ if [ $# -gt 1 ]; then
       export ASAN_OPTIONS=detect_leaks=0 #disable leak detection because R itself has memory leaks. It would break
       export LD_PRELOAD=/usr/lib/gcc/x86_64-linux-gnu/7/libasan.so
     ;;
+    no_tests)
+      TST_CMD="echo Skipping tests..."
   esac
 fi
 
