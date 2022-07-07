@@ -15,8 +15,8 @@ t.b.d.
  - #115: Added job-names to GH Workflows
  - #106: Fixed installation issue with OpenSSL already installed message
  - #93: Fixed cloned connection
-
-- #91: Fixed issue with encoding passwords correctly
+ - #91: Fixed issue with encoding passwords correctly
+ - #125: Fixed linker error on windows with R4.2
 
 ## Documentation
 
