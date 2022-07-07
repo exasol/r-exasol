@@ -23,7 +23,7 @@ jobs:
       - name: Show include folder of RTools
         if: matrix.config.os == 'windows-latest'
         run: tree "c:\rtools42\x86_64-w64-mingw32.static.posix\include" /f
-      - name Show content of openssl
+      - name: Show content of openssl
         if: matrix.config.os == 'windows-latest'
         run: Rscript.exe -e "list.files(\"c:\\\\rtools42\\\\x86_64-w64-mingw32.static.posix\\\\include\\\\openssl\")"
       - name: Install openssl MacOsX
