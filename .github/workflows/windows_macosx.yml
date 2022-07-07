@@ -23,7 +23,7 @@ jobs:
       - name: Show include folder of RTools
         if: matrix.config.os == 'windows-latest'
         run: |
-          tree c:\rtools42\x86_64-w64-mingw32.static.posix\include /f
+          tree c:/rtools42/x86_64-w64-mingw32.static.posix/include /f
       - name: Install openssl MacOsX
         if: matrix.config.os == 'macOS-latest'
         run: |
