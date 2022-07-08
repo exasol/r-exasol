@@ -12,6 +12,8 @@ jobs:
         config:
           - { os: windows-latest, r: 'release' , r_tools: "42"}
           - { os: macOS-latest, r: 'release' , r_tools: "42"}
+          - { os: windows-latest, r: '4.1.0' , r_tools: "40"}
+          - { os: macOS-latest, r: '4.1.0' , r_tools: "40"}
     environment: ci_build
     steps:
       - uses: actions/checkout@v2
