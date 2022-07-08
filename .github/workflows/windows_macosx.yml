@@ -10,8 +10,8 @@ jobs:
       fail-fast: false
       matrix:
         config:
-          - { os: windows-latest, r: 'release' }
-          - { os: macOS-latest, r: 'release' }
+          - { os: windows-latest, r: 'release' , r_tools: "42"}
+          - { os: macOS-latest, r: 'release' , r_tools: "42"}
     environment: ci_build
     steps:
       - uses: actions/checkout@v2
@@ -19,13 +19,14 @@ jobs:
       - uses: r-lib/actions/setup-r@v2
         with:
           r-version: ${{ matrix.config.r }}
+          rtools-version: ${{ matrix.config.r_tools }}
 
+      - name: Show dir of C:\
+        if: matrix.config.os == 'windows-latest'
+        run: dir c:\
       - name: Show include folder of RTools
         if: matrix.config.os == 'windows-latest'
         run: tree "c:\rtools42\x86_64-w64-mingw32.static.posix\include" /f
-      - name: Show content of openssl
-        if: matrix.config.os == 'windows-latest'
-        run: Rscript.exe -e "list.files(\"c:\\\\rtools42\\\\x86_64-w64-mingw32.static.posix\\\\include\\\\openssl\")"
       - name: Install openssl MacOsX
         if: matrix.config.os == 'macOS-latest'
         run: |
