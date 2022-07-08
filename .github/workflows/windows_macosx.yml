@@ -21,12 +21,6 @@ jobs:
           r-version: ${{ matrix.config.r }}
           rtools-version: ${{ matrix.config.r_tools }}
 
-      - name: Show dir of C:\
-        if: matrix.config.os == 'windows-latest'
-        run: dir c:\
-      - name: Show include folder of RTools
-        if: matrix.config.os == 'windows-latest'
-        run: tree "c:\rtools42\x86_64-w64-mingw32.static.posix\include" /f
       - name: Install openssl MacOsX
         if: matrix.config.os == 'macOS-latest'
         run: |
