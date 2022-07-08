@@ -17,6 +17,7 @@ t.b.d.
  - #93: Fixed cloned connection
  - #91: Fixed issue with encoding passwords correctly
  - #125: Fixed linker error on windows with R4.2
+ - #123: Fixed nightly builds
 
 ## Documentation
 

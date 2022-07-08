@@ -25,6 +25,8 @@ The package gets tested in Github against R 3.5, 3.6, 4.0 and 4.1, but it also w
 - https://github.com/marcelboldt/DBI
 - https://github.com/marcelboldt/DBItest
 
+For Windows only: As this package uses C++14 code, it needs at least RTools >= 4.0.0. Hence, it works only on R >= 4.0.0.
+
 The low-level methods such as regards `exa.readData`, `exa.writeData` and `exa.createScript` may work as expected, so
 should the DBI connection methods (`dbConnect`, etc.; all tests passed). DBI querying methods also get close to being production ready.
 
@@ -44,7 +46,7 @@ ODBC drivers 7.1.1 & 7.1.2 under MacOsX BigSur have a dependency issue. If you h
 
 1. Install developer extensions for R to be able to build from sources
 
-   For Windows: Install `Rtools` matching your version of R from [here](https://cran.r-project.org/bin/windows/Rtools/).
+   For Windows: Install `Rtools` matching your version of R from [here](https://cran.r-project.org/bin/windows/Rtools/), but at least version 4.0.0.
    
    For Linux: Install the `R-base-devel` (RPM) or `r-base-dev` (Debian) package.
    
