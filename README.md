@@ -25,7 +25,9 @@ The package gets tested in Github against 4.0, 4.1 and 4.2 (and 3.5/3.6 for Linu
 - https://github.com/marcelboldt/DBI
 - https://github.com/marcelboldt/DBItest
 
-For Windows only: As this package uses C++14 code, it needs at least RTools >= 4.0.0. Hence, it works only on R >= 4.0.0.
+For Windows only: 
+  * As this package uses C++14 code, it needs at least RTools >= 4.0.0. Hence, it works only on R >= 4.0.0.
+  * Please note that the version of RTools must match the installed version of R (RTools 4.2 for R >= 4.2, RTools 4.0 for R4.0/4.1), check https://cran.r-project.org/bin/windows/Rtools/ for further information
 
 The low-level methods such as regards `exa.readData`, `exa.writeData` and `exa.createScript` may work as expected, so
 should the DBI connection methods (`dbConnect`, etc.; all tests passed). DBI querying methods also get close to being production ready.
