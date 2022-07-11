@@ -9,7 +9,7 @@ Contact: Exasol <opensource@exasol.com>
 BugReports: https://github.com/exasol/r-exasol/issues
 URL: https://github.com/EXASOL/r-exasol https://www.exasol.com
 Depends:
-    R (>= 3.3.0),
+    R (>= 4.0.0),
     DBI (>= 0.3.1)
 Imports:
     methods,
