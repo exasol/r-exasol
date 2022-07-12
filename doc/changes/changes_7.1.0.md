@@ -1,4 +1,4 @@
-# r-exasol 7.1.0, released 2022-07-11
+# r-exasol 7.1.0, released 2022-07-12
 
 Code name: Fix for R4.2 on Windows
 
