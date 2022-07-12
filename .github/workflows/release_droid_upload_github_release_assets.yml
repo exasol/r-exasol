@@ -20,7 +20,7 @@ jobs:
           - { os: ubuntu-latest, r: '4.2.1' , r_tools: "42" }
           - { os: windows-latest, r: '4.1.3' , r_tools: "40" }
           - { os: macOS-latest, r: '4.1.3' , r_tools: "40" }
-          - { os: ubuntu-latest, r: '4.2.1' , r_tools: "42" }
+          - { os: ubuntu-latest, r: '4.1.3' , r_tools: "40" }
 
     environment: ci_build
     steps:
