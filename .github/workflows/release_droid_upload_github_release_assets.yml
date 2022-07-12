@@ -15,16 +15,19 @@ jobs:
       fail-fast: false
       matrix:
         config:
-          - { os: windows-latest, r: 'release'}
-          - { os: macOS-latest, r: 'release'}
-          - { os: ubuntu-latest, r: 'release'}
+          - { os: windows-latest, r: '4.2.1' , r_tools: "42" }
+          - { os: macOS-latest, r: '4.2.1' , r_tools: "42" }
+          - { os: windows-latest, r: '4.1.3' , r_tools: "40" }
+          - { os: macOS-latest, r: '4.1.3' , r_tools: "40" }
+
     environment: ci_build
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
       - uses: r-lib/actions/setup-r@v2
         with:
           r-version: ${{ matrix.config.r }}
+          rtools-version: ${{ matrix.config.r_tools }}
 
       - name: Install openssl MacOsX
         if: matrix.config.os == 'macOS-latest'
@@ -67,7 +70,7 @@ jobs:
         run: |
           pushd '${{ env.output_dir }}'
           ls .
-          for f in *.tgz; do mv "$f" "$(echo "$f" | sed s/\.tgz/-${{matrix.config.os}}\.tgz/)"; done
+          for f in *.tgz; do mv "$f" "$(echo "$f" | sed s/\.tgz/-${{matrix.config.os}}-r${{matrix.config.r}}\.tgz/)"; done
           ls .
         shell: bash
       - name: Rename windows package
@@ -75,7 +78,7 @@ jobs:
         run: |
           pushd '${{ env.output_dir }}'
           ls .
-          for f in *.zip; do mv "$f" "$(echo "$f" | sed s/\.zip/-${{matrix.config.os}}\.zip/)"; done
+          for f in *.zip; do mv "$f" "$(echo "$f" | sed s/\.zip/-${{matrix.config.os}}-r${{matrix.config.r}}\.zip/)"; done
           ls .
         shell: bash
       - name: Generate sha256sum files
@@ -96,7 +99,7 @@ jobs:
     name: Build source for R=release
     environment: ci_build
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - uses: r-lib/actions/setup-r@v2
         with:
           r-version: 'release'

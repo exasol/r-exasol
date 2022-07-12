@@ -18,6 +18,7 @@ This release fixes several bugs, mainly a linker error which occurred on R 4.2 u
  - #91: Fixed issue with encoding passwords correctly
  - #125: Fixed linker error on windows with R4.2
  - #123: Fixed nightly builds
+ - #129: Fixed release droid job
 
 ## Documentation
 
