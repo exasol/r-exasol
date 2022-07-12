@@ -1,10 +1,10 @@
-# r-exasol 7.1.0, released t.b.d.
+# r-exasol 7.1.0, released 2022-07-12
 
-Code name: t.b.d.
+Code name: Fix for R4.2 on Windows
 
 ## Summary 
 
-t.b.d.
+This release fixes several bugs, mainly a linker error which occurred on R 4.2 under Windows. Also, there were some improvements in the documentation and the Github action for the release job was changed, so that the binary R packages for all supported platforms (Windows/Linux/MacOsX) is now stored in the Github release. 
 
 ## Features / Enhancements
 
@@ -23,6 +23,7 @@ t.b.d.
 
  - #52: Cleaned up README
  - #105: Changed install documentation for Linux
+ - #127: Prepared release 7.1.0
 
 ### Compile Dependency Updates
 
