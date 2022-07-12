@@ -17,8 +17,10 @@ jobs:
         config:
           - { os: windows-latest, r: '4.2.1' , r_tools: "42" }
           - { os: macOS-latest, r: '4.2.1' , r_tools: "42" }
+          - { os: ubuntu-latest, r: '4.2.1' , r_tools: "42" }
           - { os: windows-latest, r: '4.1.3' , r_tools: "40" }
           - { os: macOS-latest, r: '4.1.3' , r_tools: "40" }
+          - { os: ubuntu-latest, r: '4.2.1' , r_tools: "42" }
 
     environment: ci_build
     steps:
@@ -71,6 +73,14 @@ jobs:
           pushd '${{ env.output_dir }}'
           ls .
           for f in *.tgz; do mv "$f" "$(echo "$f" | sed s/\.tgz/-${{matrix.config.os}}-r${{matrix.config.r}}\.tgz/)"; done
+          ls .
+        shell: bash
+      - name: Rename Ubuntu package
+        if: matrix.config.os == 'ubuntu-latest'
+        run: |
+          pushd '${{ env.output_dir }}'
+          ls .
+          for f in *.tar.gz; do mv "$f" "$(echo "$f" | sed s/\.tar.gz/-r${{matrix.config.r}}\.tar.gz/)"; done
           ls .
         shell: bash
       - name: Rename windows package
