@@ -40,7 +40,8 @@ Following test were implemented:
 
 ### Known issues
 
-ODBC drivers 7.1.1 & 7.1.2 under MacOsX BigSur have a dependency issue. If you have problems under MacOsX and see an error message like ```...libexaodbc-io418sys.dylib not found```, please update to the latest ODBC driver, version 7.1.3 works fine. 
+1. ODBC drivers 7.1.1 & 7.1.2 under MacOsX BigSur have a dependency issue. If you have problems under MacOsX and see an error message like ```...libexaodbc-io418sys.dylib not found```, please update to the latest ODBC driver, version 7.1.3 works fine. 
+2. The Exasol ODBC driver does not support encoding of curly braces for passwords in the connection string: You can use curly braces to encode semicolons in passwords in the connection string, like `...,PWD={he;llo},...`. However, passwords like `he{{;o` are currently not supported.
 
 ## Getting started
 
