@@ -17,6 +17,7 @@ t.b.d.
 ## Documentation
 
  - #114: Comment password encoding limitations
+ - #131: Fixed dependencies of devtools for CI Builds
 
 ### Compile Dependency Updates
 
