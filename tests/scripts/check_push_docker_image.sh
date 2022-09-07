@@ -14,8 +14,10 @@ SCRIPT_DIR="$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")"
 IMAGE_NAME="$("$SCRIPT_DIR/construct_docker_image_name.sh")"
 TAG_NAME="$("$SCRIPT_DIR"/construct_docker_tag_name.sh "$COMBINED_R_VERSION")"
 
+echo image name is: $IMAGE_NAME
+echo tag name is: $TAG_NAME
 
-AVAILABLE_ON_DOCKER_HUB="$("$SCRIPT_DIR/list_tags.sh" "$IMAGE_NAME" "$TAG_NAME")"
+AVAILABLE_ON_DOCKER_HUB="$("$SCRIPT_DIR/check_if_tag_exists.sh" "$IMAGE_NAME" "$TAG_NAME")"
 
 echo "Available on dockerhub: $AVAILABLE_ON_DOCKER_HUB"
 if [[ -z $AVAILABLE_ON_DOCKER_HUB ]]; then
