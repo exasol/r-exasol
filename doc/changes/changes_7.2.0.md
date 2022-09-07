@@ -12,7 +12,7 @@ t.b.d.
 
 ## Bug Fixes
 
- n/a
+ - #135: Fixed UpdateDockerImages GH action
 
 ## Documentation
 
