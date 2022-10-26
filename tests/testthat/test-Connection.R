@@ -53,7 +53,7 @@ test_that("connection_no_attributes", {
     exaconn <- get_connection()
     new_conn <- dbConnect(exaconn)
     sample_data <- exa.readData(new_conn, "SELECT 0 AS I FROM DUAL")
-    expect_eq(sample_data$I[1], 0)
+    expect_equal(sample_data$I[1], 0)
 
     dbDisconnect(new_conn)
     dbDisconnect(exaconn)
