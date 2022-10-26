@@ -41,7 +41,7 @@ jobs:
         env: # Set individual GH PAT
           GITHUB_PAT: ${{ secrets.PAT_FOR_DEVTOOLS }}
       - name: Query dependencies (windows)
-        if: matrix.config.os == 'windows-latest,'
+        if: matrix.config.os == 'windows-latest'
         run: |
           options(pkgType = "win.binary")
           install.packages("RODBC")
