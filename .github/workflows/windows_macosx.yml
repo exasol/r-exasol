@@ -31,8 +31,19 @@ jobs:
         run: |
           brew install openssl
           BREW_PREFIX=`brew --prefix`
-      - name: Query dependencies
+      - name: Query dependencies (macOS)
+        if: matrix.config.os == 'macOS-latest'
         run: |
+          install.packages("RODBC")
+          install.packages("DBI")
+          install.packages("devtools")
+        shell: Rscript {0}
+        env: # Set individual GH PAT
+          GITHUB_PAT: ${{ secrets.PAT_FOR_DEVTOOLS }}
+      - name: Query dependencies (windows)
+        if: matrix.config.os == 'windows-latest,'
+        run: |
+          options(pkgType = "win.binary")
           install.packages("RODBC")
           install.packages("DBI")
           install.packages("devtools")
