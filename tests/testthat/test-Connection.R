@@ -52,8 +52,8 @@ test_that("connection_no_attributes", {
   test_that("cloned_connection", {
     exaconn <- get_connection()
     new_conn <- dbConnect(exaconn)
-    sample_data <- exa.readData(new_conn, "SELECT * FROM SYS.EXA_ALL_COLUMNS")
-    expect_gt(dim(sample_data)[[1]], 0, "length of rows from SYS.EXA_ALL_COLUMNS", "0")
+    sample_data <- exa.readData(new_conn, "SELECT 0 AS I FROM DUAL")
+    expect_equal(sample_data$I[1], 0)
 
     dbDisconnect(new_conn)
     dbDisconnect(exaconn)
