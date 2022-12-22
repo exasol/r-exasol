@@ -30,7 +30,7 @@ jobs:
       - name: Setup Python 3.6 for cpp_tests
         uses: actions/setup-python@v2
         with:
-          python-version: 3.6
+          python-version: 3.8
       - uses: lukka/get-cmake@v3.21.1
       - name: Run CMake
         uses: lukka/run-cmake@v3.4
