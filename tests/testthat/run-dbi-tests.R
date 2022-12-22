@@ -212,6 +212,72 @@ test_that("dbWriteTable imports dataframe with mixed characters", {
   dbDisconnect(con)
 })
 
+
+test_that("exa.write works with a vector of column names", {
+  ctx <- DBItest::get_default_context()
+  con <- DBItest:::connect(ctx)
+
+  valsMean0  <- rnorm(10, 0)
+  valsMean50 <- rnorm(10, 50)
+  twogroups <- data.frame(group = rep(1:2, each = 10),
+                          value = c(valsMean0, valsMean50))
+
+  schema=toupper("test_exawrite_with_two_columns")
+  drop_schema=paste0("DROP SCHEMA IF EXISTS ",schema," CASCADE")
+  rs=dbSendQuery(con, drop_schema)
+  dbClearResult(rs)
+
+  create_schema=paste0("CREATE SCHEMA ",schema)
+  rs=dbSendQuery(con, create_schema)
+  dbClearResult(rs)
+
+  schema_table=paste0(schema, ".", toupper("test"))
+  create_table_schema=paste0("CREATE TABLE ",schema_table, " (groupid INT, val DOUBLE)")
+  rs=dbSendQuery(con, create_table_schema)
+  dbClearResult(rs)
+
+  res <- exa.writeData(con, twogroups, tableName = schema_table, tableColumns = c("groupid", "val"))
+  expect_true(res)
+
+  result <- dbGetQuery(con, paste0("select * from ", schema_table)
+  expect_equal(result[,1], twogroups[,1])
+
+  dbDisconnect(con)
+})
+
+
+test_that("exa.write works without column names", {
+  ctx <- DBItest::get_default_context()
+  con <- DBItest:::connect(ctx)
+
+  valsMean0  <- rnorm(10, 0)
+  valsMean50 <- rnorm(10, 50)
+  twogroups <- data.frame(group = rep(1:2, each = 10),
+                          value = c(valsMean0, valsMean50))
+
+  schema=toupper("test_exawrite_with_two_columns")
+  drop_schema=paste0("DROP SCHEMA IF EXISTS ",schema," CASCADE")
+  rs=dbSendQuery(con, drop_schema)
+  dbClearResult(rs)
+
+  create_schema=paste0("CREATE SCHEMA ",schema)
+  rs=dbSendQuery(con, create_schema)
+  dbClearResult(rs)
+
+  schema_table=paste0(schema, ".", toupper("test"))
+  create_table_schema=paste0("CREATE TABLE ",schema_table, " (groupid INT, val DOUBLE)")
+  rs=dbSendQuery(con, create_table_schema)
+  dbClearResult(rs)
+
+  res <- exa.writeData(con, twogroups, tableName = schema_table)
+  expect_true(res)
+
+  result <- dbGetQuery(con, paste0("select * from ", schema_table)
+  expect_equal(result[,1], twogroups[,1])
+
+  dbDisconnect(con)
+})
+
 #CLEANUP
 ctx <- DBItest::get_default_context()
 con <- DBItest:::connect(ctx)
