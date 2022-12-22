@@ -39,7 +39,7 @@ RUN  Rscript -e 'devtools::install_github("jimhester/lintr")'
 RUN  Rscript -e 'devtools::install_github("marcelboldt/DBI")'
 RUN  Rscript -e 'devtools::install_github("marcelboldt/DBItest")'
 
-RUN curl -L -o EXASOL_ODBC.tar.gz https://www.exasol.com/support/secure/attachment/119101/EXASOL_ODBC-7.0.4.tar.gz && \
+RUN curl -L -o EXASOL_ODBC.tar.gz https://exasol-script-languages-dependencies.s3.eu-central-1.amazonaws.com/EXASOL_ODBC-7.0.11.tar.gz && \
     mkdir -p /opt/exasol && \
     tar -xzf EXASOL_ODBC.tar.gz -C /opt/exasol --strip-components 1 && \
     touch /etc/odbcinst.ini && \

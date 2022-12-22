@@ -13,6 +13,7 @@ t.b.d.
 ## Bug Fixes
 
  - #135: Fixed UpdateDockerImages GH action
+ - #139: Updated ODBC driver source for integration test
 
 ## Documentation
 
