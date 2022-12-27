@@ -49,6 +49,8 @@ jobs:
         run: |
           ./tests/scripts/pull_docker_image.sh ${{ matrix.r-version }}
           ./tests/scripts/execute_docker_test_env.sh ${{ matrix.r-version }} ${{ matrix.memory_checker }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   publish-main:
     needs: [prep-testbed,integration_tests]
