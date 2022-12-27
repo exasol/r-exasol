@@ -217,10 +217,9 @@ test_that("exa.write works with a vector of column names", {
   ctx <- DBItest::get_default_context()
   con <- DBItest:::connect(ctx)
 
-  valsMean0  <- rnorm(10, 0)
-  valsMean50 <- rnorm(10, 50)
-  twogroups <- data.frame(group = rep(1:2, each = 10),
-                          value = c(valsMean0, valsMean50))
+  vals  <- sample.int(100, 20)
+  twogroups <- data.frame(GROUPID = rep(1:2, each = 10),
+                          VALS =vals)
 
   schema=toupper("test_exawrite_with_two_columns")
   drop_schema=paste0("DROP SCHEMA IF EXISTS ",schema," CASCADE")
@@ -232,15 +231,45 @@ test_that("exa.write works with a vector of column names", {
   dbClearResult(rs)
 
   schema_table=paste0(schema, ".", toupper("test"))
-  create_table_schema=paste0("CREATE TABLE ",schema_table, " (groupid INT, val DOUBLE)")
+  create_table_schema=paste0("CREATE TABLE ",schema_table, " (groupid INT, val INT)")
   rs=dbSendQuery(con, create_table_schema)
   dbClearResult(rs)
 
   res <- exa.writeData(con, twogroups, tableName = schema_table, tableColumns = c("groupid", "val"))
   expect_true(res)
 
-  result <- dbGetQuery(con, paste0("select * from ", schema_table)
-  expect_equal(result[,1], twogroups[,1])
+  result <- exa.readData(con, paste0("select * from ", schema_table))
+  expect_equal(result, twogroups)
+
+  dbDisconnect(con)
+})
+
+
+test_that("exa.write works with a vector of one single name", {
+  ctx <- DBItest::get_default_context()
+  con <- DBItest:::connect(ctx)
+
+  vals  <- data.frame(VALS = sample.int(100, 20))
+
+  schema=toupper("test_exawrite_with_one_single_columns")
+  drop_schema=paste0("DROP SCHEMA IF EXISTS ",schema," CASCADE")
+  rs=dbSendQuery(con, drop_schema)
+  dbClearResult(rs)
+
+  create_schema=paste0("CREATE SCHEMA ",schema)
+  rs=dbSendQuery(con, create_schema)
+  dbClearResult(rs)
+
+  schema_table=paste0(schema, ".", toupper("test"))
+  create_table_schema=paste0("CREATE TABLE ",schema_table, " (val INT)")
+  rs=dbSendQuery(con, create_table_schema)
+  dbClearResult(rs)
+
+  res <- exa.writeData(con, vals, tableName = schema_table, tableColumns = c("val"))
+  expect_true(res)
+
+  result <- exa.readData(con, paste0("select * from ", schema_table))
+  expect_equal(result, vals)
 
   dbDisconnect(con)
 })
@@ -250,30 +279,30 @@ test_that("exa.write works without column names", {
   ctx <- DBItest::get_default_context()
   con <- DBItest:::connect(ctx)
 
-  valsMean0  <- rnorm(10, 0)
-  valsMean50 <- rnorm(10, 50)
-  twogroups <- data.frame(group = rep(1:2, each = 10),
-                          value = c(valsMean0, valsMean50))
 
-  schema=toupper("test_exawrite_with_two_columns")
-  drop_schema=paste0("DROP SCHEMA IF EXISTS ",schema," CASCADE")
-  rs=dbSendQuery(con, drop_schema)
-  dbClearResult(rs)
+    vals  <- sample.int(100, 20)
+    twogroups <- data.frame(GROUPID = rep(1:2, each = 10),
+                          VAL = vals)
 
-  create_schema=paste0("CREATE SCHEMA ",schema)
-  rs=dbSendQuery(con, create_schema)
-  dbClearResult(rs)
+    schema=toupper("test_exawrite_with_two_columns")
+    drop_schema=paste0("DROP SCHEMA IF EXISTS ",schema," CASCADE")
+    rs=dbSendQuery(con, drop_schema)
+    dbClearResult(rs)
 
-  schema_table=paste0(schema, ".", toupper("test"))
-  create_table_schema=paste0("CREATE TABLE ",schema_table, " (groupid INT, val DOUBLE)")
-  rs=dbSendQuery(con, create_table_schema)
-  dbClearResult(rs)
+    create_schema=paste0("CREATE SCHEMA ",schema)
+    rs=dbSendQuery(con, create_schema)
+    dbClearResult(rs)
 
-  res <- exa.writeData(con, twogroups, tableName = schema_table)
-  expect_true(res)
+    schema_table=paste0(schema, ".", toupper("test"))
+    create_table_schema=paste0("CREATE TABLE ",schema_table, " (groupid INT, val INT)")
+    rs=dbSendQuery(con, create_table_schema)
+    dbClearResult(rs)
 
-  result <- dbGetQuery(con, paste0("select * from ", schema_table)
-  expect_equal(result[,1], twogroups[,1])
+    res <- exa.writeData(con, twogroups, tableName = schema_table)
+    expect_true(res)
+
+    result <- exa.readData(con, paste0("select * from ", schema_table))
+    expect_equal(result, twogroups)
 
   dbDisconnect(con)
 })
