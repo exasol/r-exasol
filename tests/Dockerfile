@@ -4,6 +4,7 @@ FROM ubuntu:18.04
 ARG DEBIAN_FRONTEND=noninteractive
 ARG R_VERSION
 ARG CRAN_REPO
+ARG GH_TOKEN
 
 RUN apt-get update && \
     apt-get install -y dirmngr software-properties-common && \
@@ -29,7 +30,8 @@ RUN apt-get update && \
                         libfontconfig1-dev libssh2-1-dev libxml2-dev zlib1g-dev unixodbc-dev \
                         libfreetype6-dev libpng-dev libtiff5-dev libjpeg-dev \
                         libharfbuzz-dev  libfribidi-dev && \
-                        apt-get -y clean && apt-get -y autoremove
+                        apt-get -y clean && apt-get -y autoremove \
+ENV GITHUB_TOKEN $GH_TOKEN
 RUN Rscript -e 'install.packages("testthat")'
 RUN  Rscript -e 'install.packages("devtools", dependencies = TRUE)'
 RUN  Rscript -e 'install.packages("remotes")'
