@@ -14,6 +14,7 @@ t.b.d.
 
  - #135: Fixed UpdateDockerImages GH action
  - #139: Updated ODBC driver source for integration test
+ - #138: Fixed bug in exa.write
 
 ## Documentation
 
