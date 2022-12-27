@@ -219,7 +219,7 @@ test_that("exa.write works with a vector of column names", {
 
   vals  <- sample.int(100, 20)
   twogroups <- data.frame(GROUPID = rep(1:2, each = 10),
-                          VALS =vals)
+                          VAL =vals)
 
   schema=toupper("test_exawrite_with_two_columns")
   drop_schema=paste0("DROP SCHEMA IF EXISTS ",schema," CASCADE")
@@ -249,7 +249,7 @@ test_that("exa.write works with a vector of one single name", {
   ctx <- DBItest::get_default_context()
   con <- DBItest:::connect(ctx)
 
-  vals  <- data.frame(VALS = sample.int(100, 20))
+  vals  <- data.frame(VAL = sample.int(100, 20))
 
   schema=toupper("test_exawrite_with_one_single_columns")
   drop_schema=paste0("DROP SCHEMA IF EXISTS ",schema," CASCADE")
