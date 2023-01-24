@@ -30,6 +30,8 @@ jobs:
       - uses: actions/checkout@v2
       - name: Build new Docker image
         run: bash "tests/scripts/execute_docker_test_env.sh" "${{ matrix.r-version }}" no_tests
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Docker login
         run: echo "$SECRET_DOCKER_TOKEN" | docker login --username "$SECRET_DOCKER_USER_NAME" --password-stdin
         env: # Set the secret as an input
@@ -37,3 +39,5 @@ jobs:
           SECRET_DOCKER_TOKEN: ${{ secrets.DOCKER_TOKEN }}
       - name: Push new Docker images
         run: "bash tests/scripts/check_push_docker_image.sh ${{ matrix.r-version }}"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
