@@ -17,7 +17,6 @@ jobs:
           - { os: macOS-latest, r: 'release' , r_tools: "42"}
           - { os: windows-latest, r: '4.1.0' , r_tools: "40"}
           - { os: macOS-latest, r: '4.1.0' , r_tools: "40"}
-    environment: ci_build
     steps:
       - uses: actions/checkout@v2
 
@@ -38,8 +37,8 @@ jobs:
           install.packages("DBI")
           install.packages("devtools")
         shell: Rscript {0}
-        env: # Set individual GH PAT
-          GITHUB_PAT: ${{ secrets.PAT_FOR_DEVTOOLS }}
+        env:
+          GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
       - name: Query dependencies (windows)
         if: matrix.config.os == 'windows-latest'
         run: |
@@ -48,11 +47,11 @@ jobs:
           install.packages("DBI")
           install.packages("devtools")
         shell: Rscript {0}
-        env: # Set individual GH PAT
-          GITHUB_PAT: ${{ secrets.PAT_FOR_DEVTOOLS }}
+        env:
+          GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
       - name: Build
         run: |
           devtools::install()
         shell: Rscript {0}
-        env: # Set individual GH PAT
-          GITHUB_PAT: ${{ secrets.PAT_FOR_DEVTOOLS }}
+        env:
+          GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
