@@ -20,7 +20,7 @@ Leading the TPC-H benchmark, it is considered the fastest analytical data wareho
 
 ## Status
 
-The package gets tested in Github against 4.0, 4.1 and 4.2 (and 3.5/3.6 for Linux!). For R 3.6 and earlier, an older RODBC package is necessary, the newer versions (1.3-17 and upwards) only support R 4.0. You can use the [remotes package](https://remotes.r-lib.org/) to install specific versions of RODBC. The packages DBI 0.3.1 and a fork of DBItest 1.0-1 are not the current versions. The Exasol R package may however work with DBI 0.4.1, but until this is resolved the fitting older packages can be loaded from here:
+Github CI build validates the package r-exasol against R versions 4.0, 4.1, 4.2, and 4.3. You can use the [remotes package](https://remotes.r-lib.org/) to install specific versions of RODBC. Please note that packages DBI 0.3.1 and a fork of DBItest 1.0-1 are not the latest versions. The Exasol R package may however work with DBI 0.4.1, but until this is resolved appropriate and compatible older packages can be loaded from here:
 
 - https://github.com/marcelboldt/DBI
 - https://github.com/marcelboldt/DBItest
