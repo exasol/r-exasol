@@ -13,10 +13,12 @@ jobs:
       fail-fast: false
       matrix:
         config:
-          - { os: windows-latest, r: 'release' , r_tools: "42"}
-          - { os: macOS-latest, r: 'release' , r_tools: "42"}
-          - { os: windows-latest, r: '4.1.0' , r_tools: "40"}
-          - { os: macOS-latest, r: '4.1.0' , r_tools: "40"}
+          - { os: windows-latest, r: 'release' , r_tools: "44"}
+          - { os: macOS-latest, r: 'release' , r_tools: "44"}
+          - { os: windows-latest, r: '4.3.0' , r_tools: "43"}
+          - { os: macOS-latest, r: '4.3.0' , r_tools: "43"}
+          - { os: windows-latest, r: '4.2.0' , r_tools: "42"}
+          - { os: macOS-latest, r: '4.2.0' , r_tools: "42"}
     steps:
       - uses: actions/checkout@v2
 
