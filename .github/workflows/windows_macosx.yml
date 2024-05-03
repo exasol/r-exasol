@@ -28,18 +28,18 @@ jobs:
           rtools-version: ${{ matrix.config.r_tools }}
 
       - name: Install openssl MacOsX
-        if: matrix.config.os == 'macOS-latest'
+        if: matrix.config.os == 'macos-latest-large'
         run: |
           brew install unixodbc
           BREW_PREFIX=`brew --prefix`
       - name: Check clang
-        if: matrix.config.os == 'macOS-latest'
+        if: matrix.config.os == 'macos-latest-large'
         run: |
           which clang++
           clang++ -std=gnu++14 -v  -c r_exasol/test.cpp -o r_exasol/test.o
         working-directory: ./src
       - name: Query dependencies (macOS)
-        if: matrix.config.os == 'macOS-latest'
+        if: matrix.config.os == 'macos-latest-large'
         run: |
           install.packages("RODBC")
           install.packages("DBI")
