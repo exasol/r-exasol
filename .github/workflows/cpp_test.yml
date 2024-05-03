@@ -15,7 +15,7 @@ jobs:
           - { os: ubuntu-latest }
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
 
 
       - name: Install openssl MacOsX
@@ -27,10 +27,10 @@ jobs:
       - name: Install openssl Windows
         if: matrix.config.os == 'windows-latest'
         run: choco install openssl
-      - name: Setup Python 3.6 for cpp_tests
+      - name: Setup Python 3.12 for cpp_tests
         uses: actions/setup-python@v2
         with:
-          python-version: 3.8
+          python-version: 3.12
       - uses: lukka/get-cmake@v3.21.1
       - name: Run CMake
         uses: lukka/run-cmake@v3.4

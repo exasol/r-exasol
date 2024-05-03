@@ -20,13 +20,18 @@ jobs:
           - { os: windows-latest, r: '4.2.0' , r_tools: "42"}
           - { os: macOS-latest, r: '4.2.0' , r_tools: "42"}
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
 
       - uses: r-lib/actions/setup-r@v2
         with:
           r-version: ${{ matrix.config.r }}
           rtools-version: ${{ matrix.config.r_tools }}
 
+      - name: Install openssl MacOsX
+        if: matrix.config.os == 'macOS-latest'
+        run: |
+          brew install unixodbc
+          BREW_PREFIX=`brew --prefix`
       - name: Query dependencies (macOS)
         if: matrix.config.os == 'macOS-latest'
         run: |
