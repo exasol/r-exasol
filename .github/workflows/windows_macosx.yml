@@ -27,12 +27,6 @@ jobs:
           r-version: ${{ matrix.config.r }}
           rtools-version: ${{ matrix.config.r_tools }}
 
-      - name: Install openssl MacOsX
-        if: matrix.config.os == 'macOS-latest'
-        run: |
-          brew install openssl
-          brew install unixodbc
-          BREW_PREFIX=`brew --prefix`
       - name: Query dependencies (macOS)
         if: matrix.config.os == 'macOS-latest'
         run: |
