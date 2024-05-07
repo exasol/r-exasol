@@ -23,7 +23,6 @@ if test [ -n "$with_unit_tests" ] ; then
 fi
 
 ##Setup OpenSSL
-
 m4_include([./tools/ax_check_openssl.m4])
 #AX_CHECK_OPENSSL(, [AC_MSG_ERROR([Cannot find OpenSSL])])
 AX_CHECK_OPENSSL(, [
@@ -46,6 +45,13 @@ fi
 
 echo "OpenSSL: ${OPENSSL_INCLUDES}"
 
+## Setup ODBC
+PKG_CHECK_MODULES([ODBC], [odbc], [
+ODBC_CFLAGS=""
+ODBC_LIBS="-lodbc"
+])
+
+
 ## Setup RBin
 RBIN="${R_HOME}/bin/R"
 
@@ -58,11 +64,11 @@ CPPFLAGS=`"${RBIN}" CMD config CPPFLAGS`
 CXXFLAGS=`"${RBIN}" CMD config CXX14FLAGS`
 CXX="${CXX14} ${CXX14STD}"
 echo "CPPFLAGS:${CPPFLAGS}"
-CPPFLAGS="${CPPFLAGS} -I. ${UNIT_TESTFLAGS_CPPFLAGS} ${OPENSSL_INCLUDES}"
+CPPFLAGS="${CPPFLAGS} -I. ${UNIT_TESTFLAGS_CPPFLAGS} ${OPENSSL_INCLUDES} ${ODBC_CFLAGS}"
 echo "CPPFLAGS:${CPPFLAGS}"
 
 # honor PKG_xx overrides
-LIBS="-lodbc ${LIBS} ${PKG_LIBS} ${OPENSSL_LDFLAGS} ${OPENSSL_LIBS}"
+LIBS="${ODBC_LIBS} ${LIBS} ${PKG_LIBS} ${OPENSSL_LDFLAGS} ${OPENSSL_LIBS}"
 
 ## We are using C++
 AC_LANG(C++)
