@@ -48,11 +48,11 @@ echo "OpenSSL: ${OPENSSL_INCLUDES}"
 ## Setup ODBC
 AC_CHECK_PROG(ODBC,odbc_config,yes)
 if test x"${ODBC}" == x"yes" ; then
-    ODBC_CFLAGS = `odbc_config --cflags`
-    ODBC_LIBS = `odbc_config --libs`
+    ODBC_CFLAGS=`odbc_config --cflags`
+    ODBC_LIBS=`odbc_config --libs`
 else
-    ODBC_CFLAGS = ""
-    ODBC_LIBS = "-lodbc"
+    ODBC_CFLAGS=""
+    ODBC_LIBS="-lodbc"
 fi
 
 
