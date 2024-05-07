@@ -46,10 +46,14 @@ fi
 echo "OpenSSL: ${OPENSSL_INCLUDES}"
 
 ## Setup ODBC
-PKG_CHECK_MODULES([ODBC], [odbc], [
-ODBC_CFLAGS=""
-ODBC_LIBS="-lodbc"
-])
+AC_CHECK_PROG(ODBC,odbc_config,yes)
+if test x"${ODBC}" == x"yes" ; then
+    ODBC_CFLAGS = `odbc_config --cflags`
+    ODBC_LIBS = `odbc_config --libs`
+else
+    ODBC_CFLAGS = ""
+    ODBC_LIBS = "-lodbc"
+fi
 
 
 ## Setup RBin
