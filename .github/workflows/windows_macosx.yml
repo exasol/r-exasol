@@ -14,11 +14,14 @@ jobs:
       matrix:
         config:
           - { os: windows-latest, r: 'release' , r_tools: "44"}
-          - { os: macos-latest-large, r: 'release' , r_tools: "44"}
+          - { os: macos-latest-large, r: 'release' , r_tools: "44"} #MacOs Intel
+          - { os: macos-latest, r: 'release' , r_tools: "44"} #MacOs Arm64
           - { os: windows-latest, r: '4.3.0' , r_tools: "43"}
-          - { os: macos-latest-large, r: '4.3.0' , r_tools: "43"}
+          - { os: macos-latest-large, r: '4.3.0' , r_tools: "43"} #MacOs Intel
+          - { os: macos-latest, r: '4.3.0', r_tools: "43"} #MacOs Arm64
           - { os: windows-latest, r: '4.2.0' , r_tools: "42"}
-          - { os: macos-latest-large, r: '4.2.0' , r_tools: "42"}
+          - { os: macos-latest-large, r: '4.2.0' , r_tools: "42"} #MacOs Intel
+          - { os: macos-latest, r: '4.2.0', r_tools: "42"} #MacOs Arm64
     steps:
       - uses: actions/checkout@v4
 
@@ -28,18 +31,12 @@ jobs:
           rtools-version: ${{ matrix.config.r_tools }}
 
       - name: Install openssl MacOsX
-        if: matrix.config.os == 'macos-latest-large'
+        if: contains(matrix.config.os, 'macos-latest')
         run: |
           brew install unixodbc
           BREW_PREFIX=`brew --prefix`
-      - name: Check clang
-        if: matrix.config.os == 'macos-latest-large'
-        run: |
-          which clang++
-          clang++ -std=gnu++14 -v  -c r_exasol/test.cpp -o r_exasol/test.o
-        working-directory: ./src
       - name: Query dependencies (macOS)
-        if: matrix.config.os == 'macos-latest-large'
+        if: contains(matrix.config.os, 'macos-latest')
         run: |
           install.packages("RODBC")
           install.packages("DBI")
