@@ -19,9 +19,6 @@ jobs:
           - { os: windows-latest, r: '4.3.0' , r_tools: "43"}
           - { os: macos-latest-large, r: '4.3.0' , r_tools: "43"} #MacOs Intel
           - { os: macos-latest, r: '4.3.0', r_tools: "43"} #MacOs Arm64
-          - { os: windows-latest, r: '4.2.0' , r_tools: "42"}
-          - { os: macos-latest-large, r: '4.2.0' , r_tools: "42"} #MacOs Intel
-          - { os: macos-latest, r: '4.2.0', r_tools: "42"} #MacOs Arm64
     steps:
       - uses: actions/checkout@v4
 
