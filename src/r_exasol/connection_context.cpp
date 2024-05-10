@@ -11,7 +11,7 @@
 
 namespace exa {
     void onError(std::string e) {
-        ::error(e.c_str());
+        ::error("%s\n", e.c_str());
     }
 }
 
