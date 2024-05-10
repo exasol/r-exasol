@@ -27,7 +27,7 @@ jobs:
           r-version: ${{ matrix.config.r }}
           rtools-version: ${{ matrix.config.r_tools }}
 
-      - name: Install openssl MacOsX
+      - name: Install unixodbc MacOsX
         if: contains(matrix.config.os, 'macos-latest')
         run: |
           brew install unixodbc
