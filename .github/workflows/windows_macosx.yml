@@ -58,6 +58,9 @@ jobs:
         env:
           GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Echo event name
+        run: echo "${{ github.event_name }}"
+
       - name: Report failure Status to Slack channel
         id: report-failure-status-slack
         # Also run this step in case of failures
