@@ -61,7 +61,7 @@ jobs:
       - name: Report failure Status to Slack channel
         id: report-failure-status-slack
         # Also run this step in case of failures
-        if: ${{ always() }}
+        if: ${{ github.event_name == 'schedule' && always() }}
         uses: ravsamhq/notify-slack-action@v2
         with:
           status: ${{ job.status }}
