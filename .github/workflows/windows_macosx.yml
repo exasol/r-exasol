@@ -3,7 +3,7 @@ name: CI-BuildOnly
 on:
   push:
   schedule:
-    - cron: '0 0 * * *'
+    - cron: '0 0 * * 1'
 
 jobs:
   build:
@@ -57,3 +57,16 @@ jobs:
         shell: Rscript {0}
         env:
           GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
+      - name: Report failure Status to Slack channel
+        id: report-failure-status-slack
+        # Also run this step in case of failures
+        if: ${{ github.event_name == 'schedule' && always() }}
+        uses: ravsamhq/notify-slack-action@v2
+        with:
+          status: ${{ job.status }}
+          token: ${{ github.token }}
+          notification_title: "Nightly build for  ${{ matrix.config.os }} /  ${{ matrix.config.r }} in {repo} has {status_message}"
+          message_format: "{emoji} *{workflow}* {status_message} in <{repo_url}|{repo}>"
+          notify_when: "failure,cancelled,warnings,skipped"
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.INTEGRATION_TEAM_SLACK_NOTIFICATION_WEBHOOK }}
