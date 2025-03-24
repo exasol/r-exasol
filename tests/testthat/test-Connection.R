@@ -1,7 +1,7 @@
 if (Sys.getenv("HAS_LOCAL_EXASOL_TEST_DB") == "true") {
 
 get_connection <- function(...) {
-  dbConnect("exa", exahost="localhost/NOCERTCHECK:8888", uid = "sys", pwd = "exasol", ...)
+  dbConnect("exa", exahost="exasol-test-database:8888", uid = "sys", pwd = "exasol", sslcertificate="/certificate/rootCA.crt", ...)
 }
 
 test_that("encryption_true", {
@@ -16,10 +16,10 @@ test_that("encryption_true", {
 })
 
 test_that("connection_attributes", {
-  exaconn <- get_connection(encryption = "Y", sslcertificate = "ABC")
-  #expect_true(exaconn@encrypted)
-  #sslcert <- grepl("SSLCERTIFICATE=ABC;", exaconn@init_connection_string, fixed = TRUE)
-  #expect_true(sslcert)
+  exaconn <- get_connection()
+  expect_true(exaconn@encrypted)
+  sslcert <- grepl("SSLCERTIFICATE=/certificate/rootCA.crt;", exaconn@init_connection_string, fixed = TRUE)
+  expect_true(sslcert)
 
   dbDisconnect(exaconn)
 })
