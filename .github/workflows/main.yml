@@ -35,7 +35,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Checkout test environment
-        run: git clone --branch 1.1.0 --depth 1 https://github.com/exasol/integration-test-docker-environment.git
+        run: git clone --branch 4.0.1 --depth 1 https://github.com/exasol/integration-test-docker-environment.git
         working-directory: ..
       - name: Spawn EXASOL environemnt
         run: ./start-test-env spawn-test-environment --environment-name test --database-port-forward 8888 --bucketfs-port-forward 6666 --db-mem-size 4GB

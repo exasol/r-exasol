@@ -78,7 +78,6 @@ EXAConnection <- setClass(
 #' @param sslcertificate The name and path of the certificate file (cert.pem) used by SSL.
 #'   You can use SSL_VERIFY_NONE to disable server verification and SSL_VERIFY_SERVER to enable it.
 #'   By default the server certificate check is enabled.
-#' @param uselegacyencryption 'Y' = ChaCha encryption instead of SSL.
 #' @param autocommit By default 'Y'. If 'Y' each SQL statement is committed. 'N'
 #'   means that no commits are executed automatically. The transaction will be
 #'   rolled back on disconnect, which causes the loss of all data written during
@@ -115,9 +114,8 @@ setMethod(
                         schema = "SYS",
                         exalogfile = tempfile(pattern = "EXAODBC_", fileext = ".log"),
                         logmode = "NONE",
-                        encryption = "N",
+                        encryption = "Y",
                         sslcertificate = "",
-                        uselegacyencryption = "",
                         autocommit = "Y",
                         querytimeout = "0",
                         connectionlcctype = Sys.getlocale(category = "LC_CTYPE"),
@@ -136,7 +134,6 @@ setMethod(
       logmode = logmode,
       encryption = encryption,
       sslcertificate = sslcertificate,
-      uselegacyencryption = uselegacyencryption,
       autocommit = autocommit,
       querytimeout = querytimeout,
       connectionlcctype = connectionlcctype,
@@ -216,9 +213,8 @@ dbCurrentSchema <- function(con, setSchema=NULL) {
   schema = "SYS",
   exalogfile = tempfile(pattern = "EXAODBC_", fileext = ".log"),
   logmode = "NONE",
-  encryption = "N",
+  encryption = "Y",
   sslcertificate = "",
-  uselegacyencryption = "",
   autocommit = "Y",
   querytimeout = "0",
   connectionlcctype = Sys.getlocale(category = "LC_CTYPE"),
@@ -270,9 +266,6 @@ dbCurrentSchema <- function(con, setSchema=NULL) {
     con_str <- paste0(con_str, ";ENCRYPTION=", ifelse(encryption == "Y", "Y", "N"))
     if (sslcertificate != "") {
       con_str <- paste0(con_str,";SSLCERTIFICATE=",sslcertificate)
-    }
-    if (uselegacyencryption != "") {
-      con_str <- paste0(con_str,";USELEGACYENCRYPTION=", ifelse(uselegacyencryption == "Y", "Y", "N" ))
     }
     # dots
     d <- list(...)

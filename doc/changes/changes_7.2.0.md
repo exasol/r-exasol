@@ -8,7 +8,7 @@ t.b.d.
 
 ## Features / Enhancements
 
- n/a
+ - #154: Enable encryption by default
 
 ## Bug Fixes
 
