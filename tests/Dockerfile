@@ -31,7 +31,7 @@ RUN apt-get update && \
                         libfreetype6-dev libpng-dev libtiff5-dev libjpeg-dev \
                         libharfbuzz-dev  libfribidi-dev && \
                         apt-get -y clean && apt-get -y autoremove
-ENV GITHUB_PAT $GH_TOKEN
+ENV GITHUB_PAT=$GH_TOKEN
 RUN Rscript -e 'install.packages("testthat")'
 RUN  Rscript -e 'install.packages("devtools", dependencies = TRUE)'
 RUN  Rscript -e 'install.packages("remotes")'
