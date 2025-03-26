@@ -320,7 +320,7 @@ dbCurrentSchema <- function(con, setSchema=NULL) {
     con_str <- drv@init_connection_string
     s <- strsplit(con_str, ";")
     s <- sapply(s, strsplit, "=")
-    capital_letter_exclude_list <- c("DRIVER", "CONNECTIONLCCTYPE", "EXALOGFILE", "UID", "PWD")
+    capital_letter_exclude_list <- c("DRIVER", "CONNECTIONLCCTYPE", "EXALOGFILE", "UID", "PWD", "SSLCERTIFICATE")
     s <- lapply(s, function(x) if(toupper(x[[1]]) %in% capital_letter_exclude_list)  x else toupper(x))
 
     con_str <- ""
