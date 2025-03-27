@@ -35,11 +35,13 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Checkout test environment
-        run: git clone --branch 1.1.0 --depth 1 https://github.com/exasol/integration-test-docker-environment.git
+        run: git clone --branch 4.0.1 --depth 1 https://github.com/exasol/integration-test-docker-environment.git
         working-directory: ..
       - name: Spawn EXASOL environemnt
-        run: ./start-test-env spawn-test-environment --environment-name test --database-port-forward 8888 --bucketfs-port-forward 6666 --db-mem-size 4GB
+        run: ./start-test-env spawn-test-environment --environment-name test --database-port-forward 8888 --bucketfs-port-forward 6666 --db-mem-size 4GB --create-certificates
         working-directory: ../integration-test-docker-environment
+      - name: Copy certificate
+        run: mkdir /tmp/certificate && docker cp db_container_test:/certificates/rootCA.crt /tmp/certificate/rootCA.crt
       - name: Docker login
         run: echo "$SECRET_DOCKER_TOKEN" | docker login --username "$SECRET_DOCKER_USER_NAME" --password-stdin
         env: # Set the secret as an input
