@@ -8,7 +8,7 @@ t.b.d.
 
 ## Features / Enhancements
 
- n/a
+ - #154: Enable encryption by default
 
 ## Bug Fixes
 
@@ -17,6 +17,7 @@ t.b.d.
  - #138: Fixed bug in exa.write
  - #143: Fixed Github actions
  - #146: Update cran repo used in CI to focal-cran40 and with that removes tests for Ubuntu 18.04 and R3.5/6, because they are end of life.
+ - #157: Fixed clone connection with ssl certificate
 
 ## Refactorings
 
