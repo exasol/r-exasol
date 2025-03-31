@@ -51,7 +51,7 @@ jobs:
         shell: Rscript {0}
         env:
           GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
-      - name: Update deps
+      - name: Update deps #devtools::install() is unstable under windows. workaround is to run 'devtools::install_deps()' beforehand.
         run: |
           devtools::install_deps()
         shell: Rscript {0}
