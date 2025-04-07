@@ -28,6 +28,10 @@ t.b.d.
  - #114: Comment password encoding limitations
  - #131: Fixed dependencies of devtools for CI Builds
 
+## Security
+
+ - #158: Updated CI to newer Ubuntu version
+
 ### Compile Dependency Updates
 
 #### Linux
