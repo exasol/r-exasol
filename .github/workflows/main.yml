@@ -4,7 +4,7 @@ on: push
 
 jobs:
   prep-testbed:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-24.04
     name: Prepare test bed
     steps:
       - uses: actions/checkout@v2
@@ -30,7 +30,7 @@ jobs:
           - valgrind
           - asan_no_leak
         r-version: ${{fromJson(needs.prep-testbed.outputs.matrix)}}
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-24.04
 
     steps:
       - uses: actions/checkout@v2
@@ -62,7 +62,7 @@ jobs:
       fail-fast: false
       matrix:
         r-version: ${{fromJson(needs.prep-testbed.outputs.matrix)}}
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-24.04
 
     environment: publish
     steps:
