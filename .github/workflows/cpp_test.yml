@@ -26,8 +26,10 @@ jobs:
 
       - name: Install openssl Windows
         if: matrix.config.os == 'windows-latest'
+        shell: bash
         run: |
           choco install openssl
+          echo 'OPENSSL_ROOT_DIR="C:/Program Files/OpenSSL-Win64"' >> $GITHUB_ENV
 
       - name: Setup Python 3.12 for cpp_tests
         uses: actions/setup-python@v5
