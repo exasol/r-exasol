@@ -37,7 +37,7 @@ jobs:
         shell: bash
       - name: Ls include dir
         if: matrix.config.os == 'windows-latest'
-        run: ls 'C:\Program Files\OpenSSL-Win64\'
+        run: ls 'C:\Program Files\'
         shell: powershell
       - name: Ls crypto lib
         if: matrix.config.os == 'windows-latest'
