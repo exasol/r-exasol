@@ -2,7 +2,10 @@ name: CI
 
 on: push
 
+disable:
+
 jobs:
+
   prep-testbed:
     runs-on: ubuntu-24.04
     name: Prepare test bed

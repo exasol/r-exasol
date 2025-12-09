@@ -1,5 +1,7 @@
 name: UpdateDockerImages
 
+disable:
+
 on:
   schedule:
     - cron:  '0 0 * * *'
