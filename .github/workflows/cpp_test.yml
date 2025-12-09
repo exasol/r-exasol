@@ -31,9 +31,9 @@ jobs:
         uses: actions/setup-python@v2
         with:
           python-version: 3.12
-      - uses: lukka/get-cmake@v4.2.1
+      - uses: lukka/get-cmake@v4
       - name: Run CMake
-        uses: lukka/run-cmake@v10.8
+        uses: lukka/run-cmake@v3
         id: runcmake
         with:
           cmakeGenerator: 'Ninja'
