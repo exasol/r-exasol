@@ -30,9 +30,9 @@ jobs:
       - name: Set OPENSSL_ROOT_DIR env
         if: matrix.config.os == 'windows-latest'
         run: |
-          echo 'OPENSSL_ROOT_DIR="C:/Program Files/OpenSSL-Win64"' >> $GITHUB_ENV
-          echo 'OPENSSL_CRYPTO_LIBRARY="C:/Program Files/OpenSSL-Win64/lib/libcrypto.lib"' >> $GITHUB_ENV
-          echo 'OPENSSL_INCLUDE_DIR="C:/Program Files/OpenSSL-Win64/include"' >> $GITHUB_ENV
+          echo 'OPENSSL_ROOT_DIR=C:\Program Files\OpenSSL-Win64' >> $GITHUB_ENV
+          echo 'OPENSSL_CRYPTO_LIBRARY=C:\Program Files\OpenSSL-Win64\lib\libcrypto.lib' >> $GITHUB_ENV
+          echo 'OPENSSL_INCLUDE_DIR=C:\Program Files\OpenSSL-Win64\include' >> $GITHUB_ENV
         shell: bash
       - name: Setup Python 3.12 for cpp_tests
         uses: actions/setup-python@v2
