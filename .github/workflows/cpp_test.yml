@@ -24,15 +24,25 @@ jobs:
             BREW_PREFIX=`brew --prefix`
             echo "OPENSSL_ROOT_DIR=$BREW_PREFIX/opt/openssl" >> $GITHUB_ENV
 
-      - name: Install openssl Windows
+#      - name: Install openssl Windows
+#        if: matrix.config.os == 'windows-latest'
+#        shell: bash
+#        run: |
+#          choco install openssl
+#          echo 'OPENSSL_ROOT_DIR="C:/Program Files/OpenSSL-Win64"' >> $GITHUB_ENV
+#          echo 'OPENSSL_CRYPTO_LIBRARY="C:\Program Files\OpenSSL-Win64\bin\libcrypto-3-x64.dll"' >> $GITHUB_ENV
+#          echo 'OPENSSL_INCLUDE_DIR="C:\Program Files\OpenSSL-Win64\include"' >> $GITHUB_ENV
+      - name: Install OpenSSL with vcpkg
         if: matrix.config.os == 'windows-latest'
-        shell: bash
+        shell: powershell
         run: |
-          choco install openssl
-          echo 'OPENSSL_ROOT_DIR="C:/Program Files/OpenSSL-Win64"' >> $GITHUB_ENV
-          echo 'OPENSSL_CRYPTO_LIBRARY="C:\Program Files\OpenSSL-Win64\bin\libcrypto-3-x64.dll"' >> $GITHUB_ENV
-          echo 'OPENSSL_INCLUDE_DIR="C:\Program Files\OpenSSL-Win64\include"' >> $GITHUB_ENV
-
+          # Set VCPKG_ROOT environment variable (adjust path if needed)
+          echo "VCPKG_ROOT=$env:VCPKG_INSTALLATION_ROOT" | Out-File -FilePath $env:GITHUB_ENV -Append
+          vcpkg install openssl:x64-windows-static-md # or openssl:x64-windows for dynamic
+      - name: Verify OpenSSL installation
+        shell: powershell
+        run: |
+          openssl version
       - name: Setup Python 3.12 for cpp_tests
         uses: actions/setup-python@v5
         with:
@@ -48,7 +58,7 @@ jobs:
           cmakeListsOrSettingsJson: 'CMakeListsTxtBasic'
           cmakeListsTxtPath: '${{ github.workspace }}/tests/cpp/CMakeLists.txt'
           useVcpkgToolchainFile: true
-          buildWithCMakeArgs: -DOPENSSL_ROOT_DIR="C:/Program Files/OpenSSL-Win64" -DOPENSSL_CRYPTO_LIBRARY="C:\Program Files\OpenSSL-Win64\bin\libcrypto-3-x64.dll" -DOPENSSL_INCLUDE_DIR="C:\Program Files\OpenSSL-Win64\include"
+          buildWithCMakeArgs: '-DOPENSSL_ROOT_DIR="C:/Program Files/OpenSSL-Win64" -DOPENSSL_CRYPTO_LIBRARY="C:\Program Files\OpenSSL-Win64\bin\libcrypto-3-x64.dll" -DOPENSSL_INCLUDE_DIR="C:\Program Files\OpenSSL-Win64\include"'
           buildDirectory: '${{ runner.workspace }}/b/'
 
       - name: Run Cpp tests
