@@ -27,6 +27,14 @@ jobs:
       - name: Install openssl Windows
         if: matrix.config.os == 'windows-latest'
         run: choco install openssl
+      - name: Check OpenSSL
+        if: matrix.config.os == 'windows-latest'
+        run: |
+          echo ls  "C:\Program Files\OpenSSL-Win64\"
+          ls  "C:\Program Files\OpenSSL-Win64\"
+          echo ls  "C:\Program Files\OpenSSL-Win64\include"
+          ls  "C:\Program Files\OpenSSL-Win64\include"
+        shell: bash
       - name: Setup Python 3.12 for cpp_tests
         uses: actions/setup-python@v2
         with:
