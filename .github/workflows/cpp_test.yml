@@ -30,6 +30,8 @@ jobs:
         run: |
           choco install openssl
           echo 'OPENSSL_ROOT_DIR="C:/Program Files/OpenSSL-Win64"' >> $GITHUB_ENV
+          echo 'OPENSSL_CRYPTO_LIBRARY="C:\Program Files\OpenSSL-Win64\bin\libcrypto-3-x64.dll"' >> $GITHUB_ENV
+          echo 'OPENSSL_INCLUDE_DIR="C:\Program Files\OpenSSL-Win64\include"' >> $GITHUB_ENV
 
       - name: Setup Python 3.12 for cpp_tests
         uses: actions/setup-python@v5
