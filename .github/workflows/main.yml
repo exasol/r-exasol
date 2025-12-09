@@ -44,7 +44,7 @@ jobs:
           python -m pip install --upgrade pip
           pip install exasol-integration-test-docker-environment
       - name: Start ITDE
-        run: itde spawn-test-environment --environment-name test --database-port-forward 8888 --bucketfs-port-forward 6666 --db-mem-size 4GB --create-certificates --additional-db-parameter="-etlCheckCertsDefault=0"
+        run: itde spawn-test-environment --environment-name test --database-port-forward 8888 --bucketfs-port-forward 6666 --db-mem-size 4GB --create-certificates
         working-directory: /tmp
       - name: Copy certificate
         run: mkdir /tmp/certificate && docker cp db_container_test:/certificates/rootCA.crt /tmp/certificate/rootCA.crt

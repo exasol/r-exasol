@@ -82,7 +82,7 @@ exa.writeData <- function(channel, data, tableName, tableColumns = NA,
   query <- paste0("IMPORT INTO ", tableName,
                  columns,
                  " FROM CSV AT '" , protocol, "://", proxyHost, ":",
-                 proxyPort, "' FILE 'importData.csv' ENCODING = '", encoding, "'")
+                 proxyPort, "' FILE 'importData.csv' ENCODING = '", encoding, "' IGNORE CERTIFICATE")
   on.exit(.Call(C_asyncRODBCQueryFinish, 0))
 
   fd <- .Call(C_asyncRODBCQueryStart, attr(channel, "handle_ptr"),
