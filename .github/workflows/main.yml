@@ -39,6 +39,7 @@ jobs:
           curl -L -H "Accept: application/octet-stream" \
                       https://github.com/exasol/integration-test-docker-environment/releases/download/5.0.0/itde_linux_x86-64 \
                       -o itde_linux_x86-64
+          chmod +x ./itde_linux_x86-64
       - name: Spawn EXASOL environemnt
         run: ./itde_linux_x86-64 spawn-test-environment --environment-name test --database-port-forward 8888 --bucketfs-port-forward 6666 --db-mem-size 4GB --create-certificates
       - name: Copy certificate
