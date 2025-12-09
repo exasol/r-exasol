@@ -52,7 +52,7 @@ jobs:
       - name: Run CMake (Windows)
         if: matrix.config.os == 'windows-latest'
         uses: lukka/run-cmake@v3.4
-        id: runcmake
+        id: runcmake_windows
         with:
           cmakeGenerator: 'Ninja'
           cmakeListsOrSettingsJson: 'CMakeListsTxtBasic'
