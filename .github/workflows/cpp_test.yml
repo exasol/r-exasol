@@ -33,7 +33,16 @@ jobs:
           echo 'OPENSSL_ROOT_DIR=C:\Program Files\OpenSSL-Win64' >> $GITHUB_ENV
           echo 'OPENSSL_CRYPTO_LIBRARY=C:\Program Files\OpenSSL-Win64\lib\libcrypto.lib' >> $GITHUB_ENV
           echo 'OPENSSL_INCLUDE_DIR=C:\Program Files\OpenSSL-Win64\include' >> $GITHUB_ENV
+
         shell: bash
+      - name: Ls include dir
+        if: matrix.config.os == 'windows-latest'
+        run: ls "C:\Program Files\OpenSSL-Win64\include"
+        shell: powershell
+      - name: Ls crypto lib
+        if: matrix.config.os == 'windows-latest'
+        run: ls "C:\Program Files\OpenSSL-Win64\lib\libcrypto.lib"
+        shell: powershell
       - name: Setup Python 3.12 for cpp_tests
         uses: actions/setup-python@v2
         with:
