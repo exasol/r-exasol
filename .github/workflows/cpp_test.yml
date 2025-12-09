@@ -58,7 +58,7 @@ jobs:
           cmakeListsOrSettingsJson: 'CMakeListsTxtBasic'
           cmakeListsTxtPath: '${{ github.workspace }}/tests/cpp/CMakeLists.txt'
           useVcpkgToolchainFile: true
-          buildWithCMakeArgs: '-DOPENSSL_ROOT_DIR="C:/Program Files/OpenSSL-Win64" -DOPENSSL_CRYPTO_LIBRARY="C:\Program Files\OpenSSL-Win64\bin\libcrypto-3-x64.dll" -DOPENSSL_INCLUDE_DIR="C:\Program Files\OpenSSL-Win64\include"'
+          buildWithCMakeArgs: '-- -v'
           buildDirectory: '${{ runner.workspace }}/b/'
 
       - name: Run Cpp tests
