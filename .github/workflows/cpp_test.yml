@@ -17,21 +17,26 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-
       - name: Install openssl MacOsX
         if: matrix.config.os == 'macOS-latest'
         run: |
             brew install openssl
             BREW_PREFIX=`brew --prefix`
             echo "OPENSSL_ROOT_DIR=$BREW_PREFIX/opt/openssl" >> $GITHUB_ENV
+
       - name: Install openssl Windows
         if: matrix.config.os == 'windows-latest'
-        run: choco install openssl
+        run: |
+          choco install openssl
+          echo "OPENSSL_ROOT_DIR=C:/Program Files/OpenSSL-Win64" >> $GITHUB_ENV
+
       - name: Setup Python 3.12 for cpp_tests
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v5
         with:
           python-version: 3.12
+
       - uses: lukka/get-cmake@v4.2.1
+
       - name: Run CMake
         uses: lukka/run-cmake@v3.4
         id: runcmake
@@ -42,6 +47,7 @@ jobs:
           useVcpkgToolchainFile: true
           buildWithCMakeArgs: '-- -v'
           buildDirectory: '${{ runner.workspace }}/b/'
+
       - name: Run Cpp tests
         run: 'python3 ${{ github.workspace }}/tests/cpp/python/python_client_tests.py'
         working-directory: '${{ runner.workspace }}/b/'
