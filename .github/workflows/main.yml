@@ -7,7 +7,7 @@ jobs:
     runs-on: ubuntu-24.04
     name: Prepare test bed
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v5
       - id: set-matrix
         run: |
           sudo apt-get install jq
@@ -33,13 +33,14 @@ jobs:
     runs-on: ubuntu-24.04
 
     steps:
-      - uses: actions/checkout@v2
-      - name: Checkout test environment
-        run: git clone --branch 5.0.0 --depth 1 https://github.com/exasol/integration-test-docker-environment.git
-        working-directory: ..
+      - uses: actions/checkout@v5
+      - name: Get test environment
+        run: |
+          curl -L -H "Accept: application/octet-stream" \
+                      https://github.com/exasol/integration-test-docker-environment/releases/download/5.0.0/itde_linux_x86-64 \
+                      -o itde_linux_x86-64
       - name: Spawn EXASOL environemnt
-        run: ./start-test-env spawn-test-environment --environment-name test --database-port-forward 8888 --bucketfs-port-forward 6666 --db-mem-size 4GB --create-certificates
-        working-directory: ../integration-test-docker-environment
+        run: ./itde_linux_x86-64 spawn-test-environment --environment-name test --database-port-forward 8888 --bucketfs-port-forward 6666 --db-mem-size 4GB --create-certificates
       - name: Copy certificate
         run: mkdir /tmp/certificate && docker cp db_container_test:/certificates/rootCA.crt /tmp/certificate/rootCA.crt
       - name: Docker login
@@ -66,7 +67,7 @@ jobs:
 
     environment: publish
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v5
       - name: Build new Docker image
         run: "bash tests/scripts/build_docker_test_env.sh ${{ matrix.r-version }}"
         env:
