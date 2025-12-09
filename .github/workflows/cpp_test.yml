@@ -26,7 +26,9 @@ jobs:
             echo "OPENSSL_ROOT_DIR=$BREW_PREFIX/opt/openssl" >> $GITHUB_ENV
       - name: Install openssl Windows
         if: matrix.config.os == 'windows-latest'
-        run: choco install openssl --version 3.1.1 -y
+        run: |
+          choco install openssl --version 3.1.1 -y
+          echo "OPENSSL_ROOT_DIR=C:/Program Files/OpenSSL-Win64" >> $GITHUB_ENV
       - name: Setup Python 3.12 for cpp_tests
         uses: actions/setup-python@v2
         with:
