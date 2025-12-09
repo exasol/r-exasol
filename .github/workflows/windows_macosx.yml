@@ -1,7 +1,5 @@
 name: CI-BuildOnly
 
-disable:
-
 on:
   push:
   schedule:
