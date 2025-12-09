@@ -45,8 +45,8 @@ jobs:
       - name: Docker login
         run: echo "$SECRET_DOCKER_TOKEN" | docker login --username "$SECRET_DOCKER_USER_NAME" --password-stdin
         env: # Set the secret as an input
-          SECRET_DOCKER_USER_NAME: ${{ secrets.DOCKER_USER_NAME }}
-          SECRET_DOCKER_TOKEN: ${{ secrets.DOCKER_TOKEN }}
+          SECRET_DOCKER_USER_NAME: ${{ secrets.CI4_DOCKERHUB_USERNAME }}
+          SECRET_DOCKER_TOKEN: ${{ secrets.CI4_DOCKERHUB_TOKEN }}
       - name: Run all tests
         run: |
           ./tests/scripts/pull_docker_image.sh ${{ matrix.r-version }}
@@ -74,8 +74,8 @@ jobs:
       - name: Docker login
         run: echo "$SECRET_DOCKER_TOKEN" | docker login --username "$SECRET_DOCKER_USER_NAME" --password-stdin
         env: # Set the secret as an input
-          SECRET_DOCKER_USER_NAME: ${{ secrets.DOCKER_USER_NAME }}
-          SECRET_DOCKER_TOKEN: ${{ secrets.DOCKER_TOKEN }}
+          SECRET_DOCKER_USER_NAME: ${{ secrets.CI4_DOCKERHUB_USERNAME }}
+          SECRET_DOCKER_TOKEN: ${{ secrets.CI4_DOCKERHUB_TOKEN }}
       - name: Push new Docker images
         run: "bash tests/scripts/push_docker_image.sh ${{ matrix.r-version }}"
         env:

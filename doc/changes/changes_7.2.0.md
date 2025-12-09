@@ -22,6 +22,7 @@ t.b.d.
 ## Refactorings
 
  - #151: Changed iteration of nightly job
+ - #160: Update Github secrets for Docker credentials
 
 ## Documentation
 
