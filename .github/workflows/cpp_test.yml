@@ -29,7 +29,10 @@ jobs:
         run: choco install openssl --version 3.1.1 -y
       - name: Set OPENSSL_ROOT_DIR env
         if: matrix.config.os == 'windows-latest'
-        run: echo 'OPENSSL_ROOT_DIR="C:/Program Files/OpenSSL-Win64"' >> $GITHUB_ENV
+        run: |
+          echo 'OPENSSL_ROOT_DIR="C:/Program Files/OpenSSL-Win64"' >> $GITHUB_ENV
+          echo 'OPENSSL_CRYPTO_LIBRARY="C:/Program Files/OpenSSL-Win64/lib/libcrypto.lib"' >> $GITHUB_ENV
+          echo 'OPENSSL_INCLUDE_DIR="C:/Program Files/OpenSSL-Win64/include"' >> $GITHUB_ENV
         shell: bash
       - name: Setup Python 3.12 for cpp_tests
         uses: actions/setup-python@v2
@@ -44,7 +47,7 @@ jobs:
           cmakeListsOrSettingsJson: 'CMakeListsTxtBasic'
           cmakeListsTxtPath: '${{ github.workspace }}/tests/cpp/CMakeLists.txt'
           useVcpkgToolchainFile: true
-          buildWithCMakeArgs: '-DOPENSSL_ROOT_DIR="C:/Program Files/OpenSSL-Win64" -- -v'
+          buildWithCMakeArgs: '-- -v'
           buildDirectory: '${{ runner.workspace }}/b/'
       - name: Run Cpp tests
         run: 'python3 ${{ github.workspace }}/tests/cpp/python/python_client_tests.py'
