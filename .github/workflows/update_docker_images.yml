@@ -9,7 +9,7 @@ jobs:
     runs-on: ubuntu-24.04
     name: Prepare environment
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v5
       - id: set-matrix
         run: |
           sudo apt-get install jq
@@ -28,7 +28,7 @@ jobs:
     runs-on: ubuntu-24.04
     environment: publish
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v5
       - name: Build new Docker image
         run: bash "tests/scripts/execute_docker_test_env.sh" "${{ matrix.r-version }}" no_tests
         env:
@@ -36,8 +36,8 @@ jobs:
       - name: Docker login
         run: echo "$SECRET_DOCKER_TOKEN" | docker login --username "$SECRET_DOCKER_USER_NAME" --password-stdin
         env: # Set the secret as an input
-          SECRET_DOCKER_USER_NAME: ${{ secrets.DOCKER_USER_NAME }}
-          SECRET_DOCKER_TOKEN: ${{ secrets.DOCKER_TOKEN }}
+          SECRET_DOCKER_USER_NAME: ${{ secrets.CI4_DOCKERHUB_USERNAME }}
+          SECRET_DOCKER_TOKEN: ${{ secrets.CI4_DOCKERHUB_TOKEN }}
       - name: Push new Docker images
         run: "bash tests/scripts/check_push_docker_image.sh ${{ matrix.r-version }}"
         env:

@@ -3,11 +3,12 @@ name: CI
 on: push
 
 jobs:
+
   prep-testbed:
     runs-on: ubuntu-24.04
     name: Prepare test bed
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v5
       - id: set-matrix
         run: |
           sudo apt-get install jq
@@ -33,20 +34,26 @@ jobs:
     runs-on: ubuntu-24.04
 
     steps:
-      - uses: actions/checkout@v2
-      - name: Checkout test environment
-        run: git clone --branch 4.0.1 --depth 1 https://github.com/exasol/integration-test-docker-environment.git
-        working-directory: ..
-      - name: Spawn EXASOL environemnt
-        run: ./start-test-env spawn-test-environment --environment-name test --database-port-forward 8888 --bucketfs-port-forward 6666 --db-mem-size 4GB --create-certificates
-        working-directory: ../integration-test-docker-environment
+      - uses: actions/checkout@v5
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install exasol-integration-test-docker-environment
+      - name: Start ITDE
+        run: itde spawn-test-environment --environment-name test --database-port-forward 8888 --bucketfs-port-forward 6666 --db-mem-size 4GB --create-certificates
+        working-directory: /tmp
       - name: Copy certificate
         run: mkdir /tmp/certificate && docker cp db_container_test:/certificates/rootCA.crt /tmp/certificate/rootCA.crt
       - name: Docker login
         run: echo "$SECRET_DOCKER_TOKEN" | docker login --username "$SECRET_DOCKER_USER_NAME" --password-stdin
         env: # Set the secret as an input
-          SECRET_DOCKER_USER_NAME: ${{ secrets.DOCKER_USER_NAME }}
-          SECRET_DOCKER_TOKEN: ${{ secrets.DOCKER_TOKEN }}
+          SECRET_DOCKER_USER_NAME: ${{ secrets.CI4_DOCKERHUB_USERNAME }}
+          SECRET_DOCKER_TOKEN: ${{ secrets.CI4_DOCKERHUB_TOKEN }}
       - name: Run all tests
         run: |
           ./tests/scripts/pull_docker_image.sh ${{ matrix.r-version }}
@@ -66,7 +73,7 @@ jobs:
 
     environment: publish
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v5
       - name: Build new Docker image
         run: "bash tests/scripts/build_docker_test_env.sh ${{ matrix.r-version }}"
         env:
@@ -74,8 +81,8 @@ jobs:
       - name: Docker login
         run: echo "$SECRET_DOCKER_TOKEN" | docker login --username "$SECRET_DOCKER_USER_NAME" --password-stdin
         env: # Set the secret as an input
-          SECRET_DOCKER_USER_NAME: ${{ secrets.DOCKER_USER_NAME }}
-          SECRET_DOCKER_TOKEN: ${{ secrets.DOCKER_TOKEN }}
+          SECRET_DOCKER_USER_NAME: ${{ secrets.CI4_DOCKERHUB_USERNAME }}
+          SECRET_DOCKER_TOKEN: ${{ secrets.CI4_DOCKERHUB_TOKEN }}
       - name: Push new Docker images
         run: "bash tests/scripts/push_docker_image.sh ${{ matrix.r-version }}"
         env:

@@ -26,12 +26,17 @@ jobs:
             echo "OPENSSL_ROOT_DIR=$BREW_PREFIX/opt/openssl" >> $GITHUB_ENV
       - name: Install openssl Windows
         if: matrix.config.os == 'windows-latest'
-        run: choco install openssl
+        run: choco install openssl --version 3.1.1 -y
+      - name: Set OPENSSL_ROOT_DIR env
+        if: matrix.config.os == 'windows-latest'
+        run: |
+          echo 'OPENSSL_ROOT_DIR=C:\Program Files\OpenSSL' >> $GITHUB_ENV
+        shell: bash
       - name: Setup Python 3.12 for cpp_tests
         uses: actions/setup-python@v2
         with:
           python-version: 3.12
-      - uses: lukka/get-cmake@v3.21.1
+      - uses: lukka/get-cmake@v4.2.1
       - name: Run CMake
         uses: lukka/run-cmake@v3.4
         id: runcmake
