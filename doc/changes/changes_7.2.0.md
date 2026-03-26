@@ -19,6 +19,7 @@ t.b.d.
  - #146: Update cran repo used in CI to focal-cran40 and with that removes tests for Ubuntu 18.04 and R3.5/6, because they are end of life.
  - #157: Fixed clone connection with ssl certificate
  - #162: Ignore certificate in EXPORT/IMPORT statements
+ - #163: Fixed nightly tests
 
 ## Refactorings
 
