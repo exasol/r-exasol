@@ -29,7 +29,7 @@ RUN apt-get update && \
                         libcurl4-openssl-dev libssl-dev \
                         libfontconfig1-dev libssh2-1-dev libxml2-dev zlib1g-dev unixodbc-dev \
                         libfreetype6-dev libpng-dev libtiff5-dev libjpeg-dev \
-                        libharfbuzz-dev  libfribidi-dev && \
+                        libharfbuzz-dev  libfribidi-dev cmake && \
                         apt-get -y clean && apt-get -y autoremove
 ENV GITHUB_PAT=$GH_TOKEN
 RUN Rscript -e 'install.packages("testthat")'

@@ -37,7 +37,7 @@ jobs:
         run: |
           install.packages("RODBC")
           install.packages("DBI")
-          install.packages("devtools")
+          install.packages("pak")
         shell: Rscript {0}
         env:
           GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
@@ -47,7 +47,7 @@ jobs:
           options(pkgType = "win.binary")
           install.packages("RODBC")
           install.packages("DBI")
-          install.packages("devtools")
+          install.packages("pak")
         shell: Rscript {0}
         env:
           GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
