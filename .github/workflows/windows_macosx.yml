@@ -13,14 +13,14 @@ jobs:
       fail-fast: false
       matrix:
         config:
-          - { os: windows-latest, r: 'release' , r_tools: "44"}
-          - { os: macos-latest-large, r: 'release' , r_tools: "44"} #MacOs Intel
-          - { os: macos-latest, r: 'release' , r_tools: "44"} #MacOs Arm64
-          - { os: windows-latest, r: '4.3.0' , r_tools: "43"}
-          - { os: macos-latest-large, r: '4.3.0' , r_tools: "43"} #MacOs Intel
-          - { os: macos-latest, r: '4.3.0', r_tools: "43"} #MacOs Arm64
+          - { os: windows-latest, r: 'release' , r_tools: "45"}
+          - { os: macos-latest-large, r: 'release' , r_tools: "45"} #MacOs Intel
+          - { os: macos-latest, r: 'release' , r_tools: "45"} #MacOs Arm64
+          - { os: windows-latest, r: '4.4.3' , r_tools: "44"}
+          - { os: macos-latest-large, r: '4.4.3' , r_tools: "44"} #MacOs Intel
+          - { os: macos-latest, r: '4.4.3', r_tools: "44"} #MacOs Arm64
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - uses: r-lib/actions/setup-r@v2
         with:
