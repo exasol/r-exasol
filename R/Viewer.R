@@ -1,10 +1,21 @@
 .exa_tables <- function(connection, schema = NULL, types = c("VIEW", "TABLE")) {
-  tables <- RODBC::sqlTables(connection)
-  tables <- tables[tables$TABLE_TYPE %in% types,]
+  type_list <- paste0("'", types, "'", collapse = ", ")
+  sql <- paste0("SELECT TABLE_SCHEMA, TABLE_NAME, TABLE_TYPE FROM SYS.EXA_ALL_TABLES WHERE TABLE_TYPE IN (", type_list, ")")
   if (!is.null(schema)) {
-    tables <- tables[tables$TABLE_SCHEM %in% c(schema),]
+    schema_list <- paste0("'", schema, "'", collapse = ", ")
+    sql <- paste0(sql, " AND TABLE_SCHEMA IN (", schema_list, ")")
   }
-  tables
+  res <- .Call(C_exaWsExecute, connection@ws_handle, sql)
+  if (is.null(res$data) || length(res$data) == 0) {
+    return(data.frame(TABLE_SCHEMA = character(0), TABLE_NAME = character(0), TABLE_TYPE = character(0), stringsAsFactors = FALSE))
+  }
+  df <- data.frame(
+    TABLE_SCHEMA = res$data[[1]],
+    TABLE_NAME = res$data[[2]],
+    TABLE_TYPE = res$data[[3]],
+    stringsAsFactors = FALSE
+  )
+  df
 }
 
 .odbcListObjectTypes <- function(connection) {
@@ -60,7 +71,7 @@
   # if no schema was supplied, return a list of schema
   if (is.null(schema)) {
     tables <- .exa_tables(connection)
-    schemas <- unique(tables$TABLE_SCHEM)
+    schemas <- unique(tables$TABLE_SCHEMA)
     if (length(schemas) > 0) {
       res <-
         data.frame(
@@ -121,11 +132,15 @@
   }
   name <- .validateObjectName(table, view)
 
-  columns <- RODBC::sqlColumns(channel = connection, sqtable = name, schema = schema)
-
+  sql <- paste0("SELECT COLUMN_NAME, COLUMN_TYPE FROM SYS.EXA_ALL_COLUMNS WHERE COLUMN_SCHEMA = '",
+                 schema, "' AND COLUMN_TABLE = '", name, "' ORDER BY COLUMN_ORDINAL_POSITION")
+  ws_res <- .Call(C_exaWsExecute, connection@ws_handle, sql)
+  if (is.null(ws_res$data) || length(ws_res$data) == 0) {
+    return(data.frame(name = character(0), type = character(0), stringsAsFactors = FALSE))
+  }
   res <- data.frame(
-    name = columns$COLUMN_NAME,
-    type = columns$TYPE_NAME,
+    name = ws_res$data[[1]],
+    type = ws_res$data[[2]],
     stringsAsFactors = FALSE)
   res
 }

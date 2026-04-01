@@ -12,7 +12,7 @@ NULL
 
 ## These are the DBI related classes and methods, which work as an abstraction layer over the basic
 ## exa functions and provide compabibility to the DBI package. The structure may also serve as a
-## foundation for a later implemntation of a proprietary CLI interface that does not depend on RODBC.
+## foundation for a later implemntation of a proprietary CLI interface.
 ##
 ## First version written in 2015 by Marcel Boldt <marcel.boldt@exasol.com>
 ## as part of the EXASOL R interface & SDK package. It may be used, changed and distributed freely

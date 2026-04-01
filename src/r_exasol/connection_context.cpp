@@ -7,7 +7,7 @@
 
 #include <r_exasol/rconnection/r_reader_connection.h>
 #include <r_exasol/rconnection/r_writer_connection.h>
-#include <r_exasol/odbc/odbc_session_info_impl.h>
+#include <r_exasol/websocket/ws_session_info_impl.h>
 
 namespace exa {
     void onError(std::string e) {
@@ -67,12 +67,12 @@ int exa::ConnectionContext::destroyConnection(bool checkDone) {
     return wasDone ? 0 : -1;
 }
 
-SEXP exa::ConnectionContext::createReadConnection(::pRODBCHandle handle, ::SQLCHAR *query, const char* protocol) {
+SEXP exa::ConnectionContext::createReadConnectionWs(exa::ExasolCommands* cmds, const char* query, const char* protocol) {
     CON_CONTEXT_STACK_PRINTER;
     SEXP retVal = nullptr;
     if (mConnectionController) {
         std::weak_ptr<exa::reader::Reader> reader =
-                mConnectionController->startReading(exa::OdbcSessionInfoImpl(handle, query));
+                mConnectionController->startReading(exa::WsSessionInfoImpl(cmds, std::string(query)));
         if (!reader.expired()) {
             auto readerConnection = std::make_unique<exa::rconnection::RReaderConnection>(reader);
             retVal = readerConnection->create();
@@ -82,12 +82,12 @@ SEXP exa::ConnectionContext::createReadConnection(::pRODBCHandle handle, ::SQLCH
     return retVal;
 }
 
-SEXP exa::ConnectionContext::createWriteConnection(::pRODBCHandle handle, ::SQLCHAR *query, const char* protocol) {
+SEXP exa::ConnectionContext::createWriteConnectionWs(exa::ExasolCommands* cmds, const char* query, const char* protocol) {
     CON_CONTEXT_STACK_PRINTER;
     SEXP retVal = nullptr;
     if (mConnectionController) {
         std::weak_ptr<exa::writer::Writer> writer =
-                mConnectionController->startWriting(exa::OdbcSessionInfoImpl(handle, query));
+                mConnectionController->startWriting(exa::WsSessionInfoImpl(cmds, std::string(query)));
         if (!writer.expired()) {
             auto writeConnection = std::make_unique<exa::rconnection::RWriterConnection>(writer);
             retVal = writeConnection->create();

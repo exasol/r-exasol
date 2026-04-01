@@ -45,17 +45,6 @@ fi
 
 echo "OpenSSL: ${OPENSSL_INCLUDES}"
 
-## Setup ODBC
-AC_CHECK_PROG(ODBC,odbc_config,yes)
-if test x"${ODBC}" == x"yes" ; then
-    ODBC_CFLAGS=`odbc_config --cflags`
-    ODBC_LIBS=`odbc_config --libs`
-else
-    ODBC_CFLAGS=""
-    ODBC_LIBS="-lodbc"
-fi
-
-
 ## Setup RBin
 RBIN="${R_HOME}/bin/R"
 
@@ -68,11 +57,11 @@ CPPFLAGS=`"${RBIN}" CMD config CPPFLAGS`
 CXXFLAGS=`"${RBIN}" CMD config CXX14FLAGS`
 CXX="${CXX14} ${CXX14STD}"
 echo "CPPFLAGS:${CPPFLAGS}"
-CPPFLAGS="${CPPFLAGS} -I. ${UNIT_TESTFLAGS_CPPFLAGS} ${OPENSSL_INCLUDES} ${ODBC_CFLAGS}"
+CPPFLAGS="${CPPFLAGS} -I. -I./r_exasol/external ${UNIT_TESTFLAGS_CPPFLAGS} ${OPENSSL_INCLUDES} -DIXWEBSOCKET_USE_TLS -DIXWEBSOCKET_USE_OPEN_SSL"
 echo "CPPFLAGS:${CPPFLAGS}"
 
 # honor PKG_xx overrides
-LIBS="${ODBC_LIBS} ${LIBS} ${PKG_LIBS} ${OPENSSL_LDFLAGS} ${OPENSSL_LIBS}"
+LIBS="${LIBS} ${PKG_LIBS} ${OPENSSL_LDFLAGS} ${OPENSSL_LIBS} -lpthread"
 
 ## We are using C++
 AC_LANG(C++)

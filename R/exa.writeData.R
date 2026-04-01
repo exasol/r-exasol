@@ -9,7 +9,7 @@
 #' connection, streaming the data to the database. You can also use arbitrary
 #' writers, processing the data frame according to your needs.
 #'
-#' @param channel The RODBC connection channel, typically created via odbcConnect.
+#' @param channel An EXAConnection object (WebSocket-based connection to Exasol).
 #' @param data The data frame to be written to the table specified in tableName.
 #' Please make sure that the column names and types of the data frame are consistent with the names
 #' and types in the EXASolution table.
@@ -27,7 +27,7 @@
 #' @param writer This parameter is for the rare cases where you want to customize the writer receiving
 #' the data frame and writing the data to the communication channel.
 #' @param server This parameter is only relevant in rare cases where you want to customize the address
-#' of the data channel. Per default, the data channel uses the same host and port as the RODBC connection.
+#' of the data channel. Per default, the data channel uses the same host and port as the database connection.
 #'
 #' @return The function returns the value returned by the writer, or TRUE if there is none.
 #'
@@ -62,7 +62,7 @@ exa.writeData <- function(channel, data, tableName, tableColumns = NA,
   try(.Call(C_asyncRODBCQueryFinish, 0))
 
   if (missing(server)) {
-    server <- odbcGetInfo(channel)[["Server_Name"]]
+    server <- paste0(channel@db_host, ":", as.integer(channel@db_port))
   }
 
   serverAddress <- strsplit(server, ":")[[1]]
@@ -85,7 +85,7 @@ exa.writeData <- function(channel, data, tableName, tableColumns = NA,
                  proxyPort, "' FILE 'importData.csv' ENCODING = '", encoding, "' IGNORE CERTIFICATE")
   on.exit(.Call(C_asyncRODBCQueryFinish, 0))
 
-  fd <- .Call(C_asyncRODBCQueryStart, attr(channel, "handle_ptr"),
+  fd <- .Call(C_asyncRODBCQueryStart, channel@ws_handle,
               query, protocol, 1)
 
   res <- writer(data, fd)

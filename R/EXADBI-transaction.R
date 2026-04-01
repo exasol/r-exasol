@@ -17,18 +17,9 @@ NULL
 #' @export
 setMethod("dbCommit", signature("EXAConnection"),
           function(conn, silent = FALSE) {
-            switch(as.character(odbcEndTran(conn,commit = TRUE)),
-              "-1" = {
-                stop(paste0("Commit failed:\n",odbcGetErrMsg(conn)));return(FALSE)
-              },
-              "0" = {
-                if (!silent) message("Transaction committed.");return(TRUE)
-              },
-            {
-              print("Commit failed.")
-              stop(odbcGetErrMsg(conn))
-              return(FALSE)
-            })
+            .Call(C_exaWsExecute, conn@ws_handle, "COMMIT")
+            if (!silent) message("Transaction committed.")
+            return(TRUE)
           })
 
 #' @title dbRollback
@@ -45,20 +36,9 @@ setMethod("dbCommit", signature("EXAConnection"),
 #' @export
 setMethod("dbRollback", signature("EXAConnection"),
           function(conn) {
-            switch(as.character(odbcEndTran(conn,commit = FALSE)),
-              "-1" = {
-                stop(paste0("Rollback failed:\n", odbcGetErrMsg(conn)))
-                return(FALSE)
-              },
-              "0" = {
-                message("Transaction rolled back.")
-                return(TRUE)
-              },
-            {
-              print("Rollback failed.")
-              stop(odbcGetErrMsg(conn))
-              return(FALSE) # this line gets never executed
-            })
+            .Call(C_exaWsExecute, conn@ws_handle, "ROLLBACK")
+            message("Transaction rolled back.")
+            return(TRUE)
           })
 
 #' @title dbBegin
@@ -74,8 +54,7 @@ setMethod("dbRollback", signature("EXAConnection"),
 #' @export
 setMethod("dbBegin", signature("EXAConnection"),
           function(conn) {
-            odbcSetAutoCommit(conn, autoCommit = FALSE)
-            #message("Transaction started.")
+            .Call(C_exaWsSetAttributes, conn@ws_handle, '{"autocommit":false}')
             return(TRUE)
           })
 
@@ -110,9 +89,11 @@ setGeneric(
 #' @author EXASOL AG <opensource@exasol.com>
 #' @export
 setMethod("dbEnd", signature("EXAConnection"),
-          function(conn,commit = TRUE, silent = FALSE) {
+          function(conn, commit = TRUE, silent = FALSE) {
             ifelse(commit, dbCommit(conn, silent = silent), dbRollback(conn))
-            odbcSetAutoCommit(conn, autoCommit = conn@autocom_default)
-            # message("Transaction completed.")
+            autocommit_json <- ifelse(conn@autocom_default,
+                                      '{"autocommit":true}',
+                                      '{"autocommit":false}')
+            .Call(C_exaWsSetAttributes, conn@ws_handle, autocommit_json)
             return(TRUE)
           })

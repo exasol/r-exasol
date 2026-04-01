@@ -7,8 +7,6 @@
 #define R_EXASOL_CONNECTION_H
 
 #include <r_exasol/external/r.h>
-#include <r_exasol/external/sql.h>
-#include <r_exasol/external/r_odbc_fwd.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -19,8 +17,8 @@ extern "C" {
     extern SEXP copyHostName();
     extern SEXP copyHostPort();
     extern int destroyConnection(int closeFd);
-    extern SEXP createReadConnection(pRODBCHandle handle, SQLCHAR *query, const char * protocol);
-    extern SEXP createWriteConnection(pRODBCHandle handle, SQLCHAR *query, const char * protocol);
+    extern SEXP createReadConnectionWs(void *wsSession, const char *query, const char *protocol);
+    extern SEXP createWriteConnectionWs(void *wsSession, const char *query, const char *protocol);
 
 #ifdef __cplusplus
 }
