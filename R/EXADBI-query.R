@@ -7,7 +7,7 @@ NULL
 ## On error, raises an R error (if errors=TRUE) or returns -1 (if errors=FALSE).
 .wsExecuteQuery <- function(con, sql, errors = TRUE) {
   tryCatch({
-    .Call(C_exaWsExecute, con@ws_handle, sql)
+    exaWsExecute(con@ws_handle, sql)
   }, error = function(e) {
     if (errors) stop(e)
     return(-1)

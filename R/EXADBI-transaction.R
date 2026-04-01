@@ -17,7 +17,7 @@ NULL
 #' @export
 setMethod("dbCommit", signature("EXAConnection"),
           function(conn, silent = FALSE) {
-            .Call(C_exaWsExecute, conn@ws_handle, "COMMIT")
+            exaWsExecute(conn@ws_handle, "COMMIT")
             if (!silent) message("Transaction committed.")
             return(TRUE)
           })
@@ -36,7 +36,7 @@ setMethod("dbCommit", signature("EXAConnection"),
 #' @export
 setMethod("dbRollback", signature("EXAConnection"),
           function(conn) {
-            .Call(C_exaWsExecute, conn@ws_handle, "ROLLBACK")
+            exaWsExecute(conn@ws_handle, "ROLLBACK")
             message("Transaction rolled back.")
             return(TRUE)
           })
@@ -54,7 +54,7 @@ setMethod("dbRollback", signature("EXAConnection"),
 #' @export
 setMethod("dbBegin", signature("EXAConnection"),
           function(conn) {
-            .Call(C_exaWsSetAttributes, conn@ws_handle, '{"autocommit":false}')
+            exaWsSetAttributes(conn@ws_handle, '{"autocommit":false}')
             return(TRUE)
           })
 
@@ -94,6 +94,6 @@ setMethod("dbEnd", signature("EXAConnection"),
             autocommit_json <- ifelse(conn@autocom_default,
                                       '{"autocommit":true}',
                                       '{"autocommit":false}')
-            .Call(C_exaWsSetAttributes, conn@ws_handle, autocommit_json)
+            exaWsSetAttributes(conn@ws_handle, autocommit_json)
             return(TRUE)
           })

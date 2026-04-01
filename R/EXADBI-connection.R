@@ -140,10 +140,10 @@ setMethod(
 #' @export
 dbCurrentSchema <- function(con, setSchema=NULL) {
   if(!missing(setSchema)) {
-    .Call(C_exaWsExecute, con@ws_handle, paste("open schema", processIDs(setSchema)))
+    exaWsExecute(con@ws_handle, paste("open schema", processIDs(setSchema)))
     con@current_schema <- setSchema
   } else {
-    res <- .Call(C_exaWsExecute, con@ws_handle, "select current_schema")
+    res <- exaWsExecute(con@ws_handle, "select current_schema")
     if (!is.null(res$data) && length(res$data) > 0 && length(res$data[[1]]) > 0) {
       con@current_schema <- as.character(res$data[[1]][1])
     }
@@ -171,16 +171,16 @@ dbCurrentSchema <- function(con, setSchema=NULL) {
 
   useTls <- (encryption == "Y")
 
-  result <- .Call(C_exaWsConnect, host, port, useTls, uid, pwd, 3L)
+  result <- exaWsConnect(host, port, useTls, uid, pwd, 3L)
 
   if (!is.na(schema) && nchar(schema) > 0 && schema != "SYS") {
-    .Call(C_exaWsExecute, result$handle, paste("OPEN SCHEMA", processIDs(schema)))
+    exaWsExecute(result$handle, paste("OPEN SCHEMA", processIDs(schema)))
   }
 
   autocommit_json <- ifelse(autocommit == "Y",
                             '{"autocommit":true}',
                             '{"autocommit":false}')
-  .Call(C_exaWsSetAttributes, result$handle, autocommit_json)
+  exaWsSetAttributes(result$handle, autocommit_json)
 
   res <- new("EXAConnection",
     ws_handle = result$handle,
@@ -241,7 +241,7 @@ setMethod(
     }, error = function(e) {
       warning(paste0("Error closing connection pane:\n'", conditionMessage(e), "'"))
     })
-    .Call(C_exaWsDisconnect, conn@ws_handle)
+    exaWsDisconnect(conn@ws_handle)
     invisible(TRUE)
   }
 )

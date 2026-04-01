@@ -104,4 +104,4 @@ r_exasol/external/ixwebsocket/IXWebSocketPerMessageDeflateOptions.o \
 r_exasol/external/ixwebsocket/IXWebSocketProxyServer.o \
 r_exasol/external/ixwebsocket/IXWebSocketServer.o \
 r_exasol/external/ixwebsocket/IXWebSocketTransport.o \
-connection.o exasol.o tests/test_reader_writer.o  tests/test_runner.o tests/test_websocket.o
+connection.o exasol.o rcpp_bridge.o RcppExports.o tests/test_reader_writer.o  tests/test_runner.o tests/test_websocket.o

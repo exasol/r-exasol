@@ -22,7 +22,7 @@ test_that("encryption_true", {
 test_that("connection_attributes", {
   exaconn <- get_connection_with_certificate()
   expect_true(exaconn@encrypted)
-  expect_true(.Call(C_exaWsIsConnected, exaconn@ws_handle))
+  expect_true(exaWsIsConnected(exaconn@ws_handle))
   dbDisconnect(exaconn)
 })
 

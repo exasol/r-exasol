@@ -5,7 +5,7 @@
     schema_list <- paste0("'", schema, "'", collapse = ", ")
     sql <- paste0(sql, " AND TABLE_SCHEMA IN (", schema_list, ")")
   }
-  res <- .Call(C_exaWsExecute, connection@ws_handle, sql)
+  res <- exaWsExecute(connection@ws_handle, sql)
   if (is.null(res$data) || length(res$data) == 0) {
     return(data.frame(TABLE_SCHEMA = character(0), TABLE_NAME = character(0), TABLE_TYPE = character(0), stringsAsFactors = FALSE))
   }
@@ -134,7 +134,7 @@
 
   sql <- paste0("SELECT COLUMN_NAME, COLUMN_TYPE FROM SYS.EXA_ALL_COLUMNS WHERE COLUMN_SCHEMA = '",
                  schema, "' AND COLUMN_TABLE = '", name, "' ORDER BY COLUMN_ORDINAL_POSITION")
-  ws_res <- .Call(C_exaWsExecute, connection@ws_handle, sql)
+  ws_res <- exaWsExecute(connection@ws_handle, sql)
   if (is.null(ws_res$data) || length(ws_res$data) == 0) {
     return(data.frame(name = character(0), type = character(0), stringsAsFactors = FALSE))
   }

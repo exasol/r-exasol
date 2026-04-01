@@ -10,7 +10,7 @@ Replace the RODBC/ODBC dependency with Exasol's native WebSocket API (JSON-over-
 
 The current architecture requires an Exasol ODBC driver and the RODBC R package for all database communication. This creates a heavy system-level dependency that complicates installation across platforms. Exasol provides a documented WebSocket API that enables direct JSON-over-WebSocket communication, which other drivers (PyExasol, Go driver) already use successfully.
 
-- **Goals** — Remove ODBC/RODBC dependency; connect directly via WebSocket protocol; maintain DBI compliance; keep high-speed bulk transfer performance
+- **Goals** — Remove ODBC/RODBC dependency; connect directly via WebSocket protocol; maintain DBI compliance; keep high-speed bulk transfer performance; use Rcpp for the R-to-C++ bridge (replacing raw `.Call`/`SEXP` interfaces)
 - **Non-Goals** — Replacing the C++ HTTP/HTTPS bulk transfer with WebSocket subconnections; supporting ODBC as a fallback; implementing WebSocket API v4 features (only negotiate v4 if server offers it)
 
 ### Decision

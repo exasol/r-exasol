@@ -13,7 +13,8 @@ Depends:
     DBI (>= 0.3.1)
 Imports:
     methods,
-    assertthat
+    assertthat,
+    Rcpp
 Description: The EXASOL R Package offers interface functionality such as
     connecting to, querying and writing into an EXASOL Database (version 7.1
     onwards) via a native WebSocket protocol. It is optimised for massively
@@ -33,11 +34,12 @@ Suggests:
     testthat,
     DBItest,
     xml2
-LinkingTo: testthat
+LinkingTo: testthat, Rcpp
 SystemRequirements: OpenSSL >= 1.0.1, EXASOL DB v7.1 onwards
 RoxygenNote: 7.1.2
 Encoding: UTF-8
 Collate:
+    'RcppExports.R'
     'EXADBI-object.R'
     'EXADBI-driver.R'
     'EXADBI-connection.R'

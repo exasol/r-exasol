@@ -33,10 +33,18 @@
 - [x] 6.2 Write integration tests for changed connection, query, transaction, metadata, bulk transfer
 - [x] 6.3 Update documentation and examples
 
-## Phase 7: Verification
-- [ ] 7.1 Run build (devtools::build())
-- [ ] 7.2 Run tests (devtools::test())
-- [ ] 7.3 Run R CMD check
-- [ ] 7.4 Run C++ tests
-- [x] 7.5 Scenario coverage audit
-- [x] 7.6 Code review (14 findings, 3 critical fixed)
+## Phase 7: Rcpp Migration (Group G)
+- [x] 7.1 Add Rcpp to DESCRIPTION (LinkingTo, Imports) and NAMESPACE (importFrom/useDynLib)
+- [x] 7.2 Convert WebSocket bridge (r_websocket_bridge.cpp) to Rcpp: XPtr<WsSession>, Rcpp::List returns, Rcpp::stop errors, [[Rcpp::export]]
+- [x] 7.3 Convert bulk transfer wrappers (exasol.c) to Rcpp
+- [x] 7.4 Run Rcpp::compileAttributes() to generate RcppExports.cpp/.R
+- [x] 7.5 Update all R .Call() invocations to use Rcpp-generated wrappers
+- [x] 7.6 Remove manual R_CallMethodDef registration; clean up exasol.c
+- [x] 7.7 Update Makevars/Makevars.win/Makevars.ucrt for Rcpp include paths
+
+## Phase 8: Verification
+- [x] 8.1 Run build (R CMD INSTALL)
+- [x] 8.2 Run tests (devtools::test()) with EXAHOST
+- [ ] 8.3 Run R CMD check
+- [x] 8.4 Scenario coverage audit
+- [x] 8.5 Code review (14 findings, 3 critical fixed)

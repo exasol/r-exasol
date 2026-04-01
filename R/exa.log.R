@@ -27,6 +27,6 @@ EXATrace <- function (tracefile) {
   if (tracefileAsString == "") {
     warning("Tracefile is empty.")
   } else {
-    .Call(C_asyncEnableTracing, tracefile)
+    asyncEnableTracing(tracefile)
   }
 }

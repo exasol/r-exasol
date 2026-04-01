@@ -15,7 +15,7 @@ test_that("dbConnect creates connection via WebSocket", {
   con <- dbConnect("exa", exahost = host, uid = uid, pwd = pwd)
   withr::defer(dbDisconnect(con))
   expect_s4_class(con, "EXAConnection")
-  expect_true(.Call(C_exaWsIsConnected, con@ws_handle))
+  expect_true(exaWsIsConnected(con@ws_handle))
   expect_true(con@session_id > 0L)
   expect_true(nchar(con@db_version) > 0)
 })
@@ -35,7 +35,7 @@ test_that("dbConnect clones connection with new WebSocket session", {
   withr::defer(dbDisconnect(cloned))
 
   expect_s4_class(cloned, "EXAConnection")
-  expect_true(.Call(C_exaWsIsConnected, cloned@ws_handle))
+  expect_true(exaWsIsConnected(cloned@ws_handle))
   # Cloned connection should have a different session ID
   expect_true(cloned@session_id > 0L)
 })
@@ -56,5 +56,5 @@ test_that("dbDisconnect sends disconnect and closes WebSocket", {
   con <- dbConnect("exa", exahost = host, uid = uid, pwd = pwd)
   result <- dbDisconnect(con)
   expect_true(result)
-  expect_false(.Call(C_exaWsIsConnected, con@ws_handle))
+  expect_false(exaWsIsConnected(con@ws_handle))
 })

@@ -16,7 +16,7 @@ test_that("WebSocket connection is established", {
   con <- dbConnect("exa", exahost = host, uid = uid, pwd = pwd)
   withr::defer(dbDisconnect(con))
   expect_s4_class(con, "EXAConnection")
-  expect_true(.Call(C_exaWsIsConnected, con@ws_handle))
+  expect_true(exaWsIsConnected(con@ws_handle))
 })
 
 test_that("authentication succeeds with valid credentials", {
@@ -35,7 +35,7 @@ test_that("authentication fails with invalid credentials", {
 test_that("execute command returns response", {
   con <- dbConnect("exa", exahost = host, uid = uid, pwd = pwd)
   withr::defer(dbDisconnect(con))
-  result <- .Call(C_exaWsExecute, con@ws_handle, "SELECT 1 AS x")
+  result <- exaWsExecute(con@ws_handle, "SELECT 1 AS x")
   expect_true(is.list(result))
   expect_equal(result$numResults, 1)
 })
@@ -43,7 +43,7 @@ test_that("execute command returns response", {
 test_that("error response raises R error for invalid SQL", {
   con <- dbConnect("exa", exahost = host, uid = uid, pwd = pwd)
   withr::defer(dbDisconnect(con))
-  expect_error(.Call(C_exaWsExecute, con@ws_handle, "SELECT FROM nonexistent_table_xyz"))
+  expect_error(exaWsExecute(con@ws_handle, "SELECT FROM nonexistent_table_xyz"))
 })
 
 test_that("protocol version is negotiated and session ID is valid", {
@@ -57,5 +57,5 @@ test_that("protocol version is negotiated and session ID is valid", {
 test_that("disconnect closes WebSocket cleanly", {
   con <- dbConnect("exa", exahost = host, uid = uid, pwd = pwd)
   dbDisconnect(con)
-  expect_false(.Call(C_exaWsIsConnected, con@ws_handle))
+  expect_false(exaWsIsConnected(con@ws_handle))
 })
