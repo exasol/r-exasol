@@ -1,108 +1,76 @@
 #include <r_exasol/websocket/websocket_client.h>
 #include <r_exasol/websocket/exasol_error.h>
-#include <r_exasol/external/ixwebsocket/IXWebSocket.h>
-#include <r_exasol/external/ixwebsocket/IXNetSystem.h>
-#include <sstream>
-#include <chrono>
 
 namespace exa {
 
+    using namespace ws_detail;
+
+    static constexpr int kIdleTimeoutSecs = 300;
+
     WebSocketClient::WebSocketClient()
-        : mWebSocket(std::make_unique<ix::WebSocket>())
-        , mResponseReady(false)
-        , mConnectDone(false)
+        : mConnected(false)
     {
-        ix::initNetSystem();
     }
 
     WebSocketClient::~WebSocketClient() {
         close();
-        ix::uninitNetSystem();
     }
 
     void WebSocketClient::connect(const std::string& host, int port, bool useTls,
                                    int timeoutSecs) {
-        std::string scheme = useTls ? "wss" : "ws";
-        std::ostringstream url;
-        url << scheme << "://" << host << ":" << port;
-        mWebSocket->setUrl(url.str());
+        try {
+            tcp::resolver resolver(mIoc);
+            auto const results = resolver.resolve(host, std::to_string(port));
 
-        if (useTls) {
-            ix::SocketTLSOptions tlsOptions;
-            tlsOptions.tls = true;
-            // Exasol docker/self-signed certs: disable peer verification
-            tlsOptions.caFile = "NONE";
-            mWebSocket->setTLSOptions(tlsOptions);
-        }
+            if (useTls) {
+                ssl::context sslCtx(ssl::context::tlsv12_client);
+                sslCtx.set_verify_mode(ssl::verify_none);
 
-        mWebSocket->disableAutomaticReconnection();
-        mWebSocket->setHandshakeTimeout(timeoutSecs);
+                mStream.emplace<SslStream>(mIoc, sslCtx);
+                auto& ws = std::get<SslStream>(mStream);
 
-        mWebSocket->setOnMessageCallback(
-            [this](const ix::WebSocketMessagePtr& msg) {
-                if (msg->type == ix::WebSocketMessageType::Message) {
-                    std::lock_guard<std::mutex> lock(mResponseMutex);
-                    mResponse = msg->str;
-                    mResponseReady = true;
-                    mResponseCv.notify_one();
-                } else if (msg->type == ix::WebSocketMessageType::Open) {
-                    std::lock_guard<std::mutex> lock(mResponseMutex);
-                    mConnectDone = true;
-                    mConnectCv.notify_one();
-                } else if (msg->type == ix::WebSocketMessageType::Error) {
-                    std::lock_guard<std::mutex> lock(mResponseMutex);
-                    std::string reason = msg->errorInfo.reason;
-                    if (msg->errorInfo.http_status != 0) {
-                        reason += " (HTTP " + std::to_string(msg->errorInfo.http_status) + ")";
-                    }
-                    if (reason.empty()) {
-                        reason = "unknown error";
-                    }
-                    mConnectionError = reason;
-                    mResponseReady = true;
-                    mResponseCv.notify_one();
-                    mConnectDone = true;
-                    mConnectCv.notify_one();
-                } else if (msg->type == ix::WebSocketMessageType::Close) {
-                    std::lock_guard<std::mutex> lock(mResponseMutex);
-                    mConnectionError = "Connection closed by server: " +
-                                       std::to_string(msg->closeInfo.code) +
-                                       " " + msg->closeInfo.reason;
-                    mResponseReady = true;
-                    mResponseCv.notify_one();
-                    mConnectDone = true;
-                    mConnectCv.notify_one();
-                }
-            }
-        );
+                beast::get_lowest_layer(ws).expires_after(
+                    std::chrono::seconds(timeoutSecs));
+                beast::get_lowest_layer(ws).connect(results);
 
-        mWebSocket->start();
+                beast::get_lowest_layer(ws).expires_after(
+                    std::chrono::seconds(timeoutSecs));
+                ws.next_layer().handshake(ssl::stream_base::client);
 
-        // Wait for Open or Error/Close callback, with timeout.
-        {
-            std::unique_lock<std::mutex> lock(mResponseMutex);
-            bool gotSignal = mConnectCv.wait_for(
-                lock,
-                std::chrono::seconds(timeoutSecs),
-                [this]() { return mConnectDone; }
-            );
+                websocket::stream_base::timeout wsTimeout =
+                    websocket::stream_base::timeout::suggested(
+                        beast::role_type::client);
+                wsTimeout.idle_timeout = std::chrono::seconds(kIdleTimeoutSecs);
+                ws.set_option(wsTimeout);
 
-            if (!gotSignal) {
-                mWebSocket->stop();
-                throw ExasolException(
-                    "WebSocket connection timed out to " + url.str(),
-                    "08001"
-                );
+                beast::get_lowest_layer(ws).expires_never();
+                ws.handshake(host + ":" + std::to_string(port), "/");
+
+            } else {
+                mStream.emplace<PlainStream>(mIoc);
+                auto& ws = std::get<PlainStream>(mStream);
+
+                beast::get_lowest_layer(ws).expires_after(
+                    std::chrono::seconds(timeoutSecs));
+                beast::get_lowest_layer(ws).connect(results);
+
+                websocket::stream_base::timeout wsTimeout =
+                    websocket::stream_base::timeout::suggested(
+                        beast::role_type::client);
+                wsTimeout.idle_timeout = std::chrono::seconds(kIdleTimeoutSecs);
+                ws.set_option(wsTimeout);
+
+                beast::get_lowest_layer(ws).expires_never();
+                ws.handshake(host + ":" + std::to_string(port), "/");
             }
 
-            if (!mConnectionError.empty()) {
-                std::string error = mConnectionError;
-                mWebSocket->stop();
-                throw ExasolException(
-                    "WebSocket connection failed: " + error,
-                    "08001"
-                );
-            }
+            mConnected = true;
+
+        } catch (const std::exception& e) {
+            mStream = std::monostate{};
+            throw ExasolException(
+                std::string("WebSocket connection failed: ") + e.what(),
+                "08001");
         }
     }
 
@@ -111,50 +79,53 @@ namespace exa {
             throw ExasolException("WebSocket is not connected", "08003");
         }
 
-        {
-            std::lock_guard<std::mutex> lock(mResponseMutex);
-            mResponseReady = false;
-            mResponse.clear();
-            mConnectionError.clear();
-        }
-
-        auto sendInfo = mWebSocket->sendText(jsonMessage);
-        if (!sendInfo.success) {
-            throw ExasolException("Failed to send WebSocket message", "08S01");
-        }
-
-        std::unique_lock<std::mutex> lock(mResponseMutex);
-        if (!mResponseCv.wait_for(lock, std::chrono::seconds(300),
-                                   [this]() { return mResponseReady; })) {
-            throw ExasolException("WebSocket response timed out after 300 seconds", "08S01");
-        }
-
-        if (!mConnectionError.empty()) {
+        try {
+            return visitStream([&](auto& ws) -> std::string {
+                ws.write(net::buffer(jsonMessage));
+                beast::flat_buffer buffer;
+                ws.read(buffer);
+                return beast::buffers_to_string(buffer.data());
+            });
+        } catch (const ExasolException&) {
+            throw;
+        } catch (const std::exception& e) {
+            mConnected = false;
             throw ExasolException(
-                "WebSocket error during receive: " + mConnectionError,
-                "08S01"
-            );
+                std::string("WebSocket communication error: ") + e.what(),
+                "08S01");
         }
-
-        return mResponse;
     }
 
     void WebSocketClient::sendOnly(const std::string& jsonMessage) {
         if (!isConnected()) {
             return;
         }
-        mWebSocket->sendText(jsonMessage);
-    }
 
-    void WebSocketClient::close() {
-        if (mWebSocket) {
-            mWebSocket->stop();
+        try {
+            visitStream([&](auto& ws) {
+                ws.write(net::buffer(jsonMessage));
+            });
+        } catch (...) {
         }
     }
 
+    void WebSocketClient::close() {
+        if (!mConnected) {
+            return;
+        }
+
+        try {
+            visitStream([](auto& ws) {
+                ws.close(websocket::close_code::normal);
+            });
+        } catch (...) {
+        }
+
+        mConnected = false;
+    }
+
     bool WebSocketClient::isConnected() const {
-        return mWebSocket &&
-               mWebSocket->getReadyState() == ix::ReadyState::Open;
+        return mConnected;
     }
 
 } // namespace exa

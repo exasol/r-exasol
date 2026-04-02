@@ -48,16 +48,16 @@ echo "OpenSSL: ${OPENSSL_INCLUDES}"
 ## Setup RBin
 RBIN="${R_HOME}/bin/R"
 
-CXX14=`"${RBIN}" CMD config CXX14`
-if test -z "$CXX14"; then
-  AC_MSG_ERROR([No C++14 compiler is available])
+CXX17=`"${RBIN}" CMD config CXX17`
+if test -z "$CXX17"; then
+  AC_MSG_ERROR([No C++17 compiler is available])
 fi
-CXX14STD=`"${RBIN}" CMD config CXX14STD`
+CXX17STD=`"${RBIN}" CMD config CXX17STD`
 CPPFLAGS=`"${RBIN}" CMD config CPPFLAGS`
-CXXFLAGS=`"${RBIN}" CMD config CXX14FLAGS`
-CXX="${CXX14} ${CXX14STD}"
+CXXFLAGS=`"${RBIN}" CMD config CXX17FLAGS`
+CXX="${CXX17} ${CXX17STD}"
 echo "CPPFLAGS:${CPPFLAGS}"
-CPPFLAGS="${CPPFLAGS} -I. -I./r_exasol/external ${UNIT_TESTFLAGS_CPPFLAGS} ${OPENSSL_INCLUDES} -DIXWEBSOCKET_USE_TLS -DIXWEBSOCKET_USE_OPEN_SSL"
+CPPFLAGS="${CPPFLAGS} -I. -I./r_exasol/external ${UNIT_TESTFLAGS_CPPFLAGS} ${OPENSSL_INCLUDES}"
 echo "CPPFLAGS:${CPPFLAGS}"
 
 # honor PKG_xx overrides

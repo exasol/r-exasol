@@ -2,17 +2,29 @@
 #define R_EXASOL_WEBSOCKET_WEBSOCKET_CLIENT_H
 
 #include <string>
-#include <mutex>
-#include <condition_variable>
-#include <memory>
+#include <variant>
 
-namespace ix {
-    class WebSocket;
-}
+#include <r_exasol/websocket/exasol_error.h>
+
+#include <boost/beast/core.hpp>
+#include <boost/beast/websocket.hpp>
+#include <boost/beast/ssl.hpp>
+#include <boost/asio/ip/tcp.hpp>
+#include <boost/asio/ssl.hpp>
 
 namespace exa {
+namespace ws_detail {
+    namespace net = boost::asio;
+    namespace beast = boost::beast;
+    namespace websocket = beast::websocket;
+    namespace ssl = net::ssl;
+    using tcp = net::ip::tcp;
+} // namespace ws_detail
 
-    /// Synchronous WebSocket client wrapping ixwebsocket's async API.
+    using PlainStream = ws_detail::websocket::stream<ws_detail::beast::tcp_stream>;
+    using SslStream = ws_detail::websocket::stream<ws_detail::beast::ssl_stream<ws_detail::beast::tcp_stream>>;
+
+    /// Synchronous WebSocket client using Boost.Beast.
     class WebSocketClient {
     public:
         WebSocketClient();
@@ -35,16 +47,21 @@ namespace exa {
         bool isConnected() const;
 
     private:
-        std::unique_ptr<ix::WebSocket> mWebSocket;
+        using StreamVariant = std::variant<std::monostate, PlainStream, SslStream>;
 
-        std::mutex mResponseMutex;
-        std::condition_variable mResponseCv;
-        bool mResponseReady;
-        std::string mResponse;
-        std::string mConnectionError;
+        template<typename F>
+        auto visitStream(F&& f) -> decltype(f(std::declval<PlainStream&>())) {
+            return std::visit([&](auto& s) -> decltype(f(std::declval<PlainStream&>())) {
+                if constexpr (std::is_same_v<std::decay_t<decltype(s)>, std::monostate>)
+                    throw ExasolException("WebSocket is not connected", "08003");
+                else
+                    return f(s);
+            }, mStream);
+        }
 
-        std::condition_variable mConnectCv;
-        bool mConnectDone;
+        ws_detail::net::io_context mIoc;
+        StreamVariant mStream;
+        bool mConnected;
     };
 
 } // namespace exa

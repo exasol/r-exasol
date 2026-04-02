@@ -34,7 +34,7 @@ Suggests:
     testthat,
     DBItest,
     xml2
-LinkingTo: testthat, Rcpp
+LinkingTo: testthat, Rcpp, BH (>= 1.84.0)
 SystemRequirements: OpenSSL >= 1.0.1, EXASOL DB v7.1 onwards
 RoxygenNote: 7.1.2
 Encoding: UTF-8

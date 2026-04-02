@@ -11,41 +11,4 @@ r_exasol/websocket/exasol_error.cpp r_exasol/websocket/websocket_client.cpp \
 r_exasol/websocket/exasol_auth.cpp r_exasol/websocket/exasol_commands.cpp \
 r_exasol/websocket/r_websocket_bridge.cpp \
 r_exasol/websocket/ws_query_executor.cpp r_exasol/websocket/ws_session_info_impl.cpp \
-r_exasol/external/ixwebsocket/IXBench.cpp \
-r_exasol/external/ixwebsocket/IXCancellationRequest.cpp \
-r_exasol/external/ixwebsocket/IXConnectionState.cpp \
-r_exasol/external/ixwebsocket/IXDNSLookup.cpp \
-r_exasol/external/ixwebsocket/IXExponentialBackoff.cpp \
-r_exasol/external/ixwebsocket/IXGetFreePort.cpp \
-r_exasol/external/ixwebsocket/IXGzipCodec.cpp \
-r_exasol/external/ixwebsocket/IXHttp.cpp \
-r_exasol/external/ixwebsocket/IXHttpClient.cpp \
-r_exasol/external/ixwebsocket/IXHttpServer.cpp \
-r_exasol/external/ixwebsocket/IXNetSystem.cpp \
-r_exasol/external/ixwebsocket/IXSelectInterrupt.cpp \
-r_exasol/external/ixwebsocket/IXSelectInterruptEvent.cpp \
-r_exasol/external/ixwebsocket/IXSelectInterruptFactory.cpp \
-r_exasol/external/ixwebsocket/IXSelectInterruptPipe.cpp \
-r_exasol/external/ixwebsocket/IXSetThreadName.cpp \
-r_exasol/external/ixwebsocket/IXSocket.cpp \
-r_exasol/external/ixwebsocket/IXSocketConnect.cpp \
-r_exasol/external/ixwebsocket/IXSocketFactory.cpp \
-r_exasol/external/ixwebsocket/IXSocketOpenSSL.cpp \
-r_exasol/external/ixwebsocket/IXSocketServer.cpp \
-r_exasol/external/ixwebsocket/IXSocketTLSOptions.cpp \
-r_exasol/external/ixwebsocket/IXStrCaseCompare.cpp \
-r_exasol/external/ixwebsocket/IXUdpSocket.cpp \
-r_exasol/external/ixwebsocket/IXUrlParser.cpp \
-r_exasol/external/ixwebsocket/IXUserAgent.cpp \
-r_exasol/external/ixwebsocket/IXUuid.cpp \
-r_exasol/external/ixwebsocket/IXWebSocket.cpp \
-r_exasol/external/ixwebsocket/IXWebSocketCloseConstants.cpp \
-r_exasol/external/ixwebsocket/IXWebSocketHandshake.cpp \
-r_exasol/external/ixwebsocket/IXWebSocketHttpHeaders.cpp \
-r_exasol/external/ixwebsocket/IXWebSocketPerMessageDeflate.cpp \
-r_exasol/external/ixwebsocket/IXWebSocketPerMessageDeflateCodec.cpp \
-r_exasol/external/ixwebsocket/IXWebSocketPerMessageDeflateOptions.cpp \
-r_exasol/external/ixwebsocket/IXWebSocketProxyServer.cpp \
-r_exasol/external/ixwebsocket/IXWebSocketServer.cpp \
-r_exasol/external/ixwebsocket/IXWebSocketTransport.cpp \
 connection.cpp

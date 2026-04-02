@@ -5,7 +5,6 @@
 #include <r_exasol/websocket/exasol_auth.h>
 #include <r_exasol/websocket/exasol_error.h>
 #include <r_exasol/external/nlohmann/json.hpp>
-#include <r_exasol/external/ixwebsocket/IXBase64.h>
 
 #include <openssl/bn.h>
 #include <openssl/evp.h>
@@ -120,8 +119,10 @@ namespace exa {
         EVP_PKEY_CTX_free(ctx);
         EVP_PKEY_free(pkey);
 
-        std::string binaryData(reinterpret_cast<const char*>(encrypted.data()), outLen);
-        return macaron::Base64::Encode(binaryData);
+        std::vector<unsigned char> base64Out(4 * ((outLen + 2) / 3) + 1);
+        int base64Len = EVP_EncodeBlock(base64Out.data(), encrypted.data(),
+                                        static_cast<int>(outLen));
+        return std::string(reinterpret_cast<const char*>(base64Out.data()), base64Len);
 
 #else
         // OpenSSL 1.x: use RSA_public_encrypt directly
@@ -156,8 +157,10 @@ namespace exa {
             throw ExasolException("RSA encryption failed", "08004");
         }
 
-        std::string binaryData(reinterpret_cast<const char*>(encrypted.data()), encryptedLen);
-        return macaron::Base64::Encode(binaryData);
+        std::vector<unsigned char> base64Out(4 * ((encryptedLen + 2) / 3) + 1);
+        int base64Len = EVP_EncodeBlock(base64Out.data(), encrypted.data(),
+                                        encryptedLen);
+        return std::string(reinterpret_cast<const char*>(base64Out.data()), base64Len);
 #endif
     }
 
