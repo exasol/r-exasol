@@ -1,12 +1,14 @@
 #include <r_exasol/websocket/exasol_error.h>
 
+#include <utility>
+
 using json = nlohmann::json;
 
 namespace exa {
 
-    ExasolException::ExasolException(const std::string& message, const std::string& sqlCode)
+    ExasolException::ExasolException(const std::string& message, std::string sqlCode)
         : std::runtime_error(message)
-        , mSqlCode(sqlCode)
+        , mSqlCode(std::move(sqlCode))
     {
     }
 

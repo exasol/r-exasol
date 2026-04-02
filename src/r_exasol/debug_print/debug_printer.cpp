@@ -2,13 +2,12 @@
 #include <r_exasol/debug_print/date.h>
 #include <mutex>
 #include <iostream>
+#include <utility>
 
 
-namespace exa {
-    namespace debug {
-        tLogFunction gLogFunction;
-        std::mutex gMutex;
-    }
+namespace exa::debug {
+    tLogFunction gLogFunction;
+    std::mutex gMutex;
 }
 
 bool exa::debug::isLoggingEnabled() {
@@ -16,16 +15,16 @@ bool exa::debug::isLoggingEnabled() {
 }
 
 void exa::debug::setLogger(exa::debug::tLogFunction logFunction) {
-    gLogFunction = logFunction;
+    gLogFunction = std::move(logFunction);
 }
 
 void exa::debug::logImpl(const char* caller, const std::string && msg) {
     if (gLogFunction) {
         using namespace std::chrono;
         auto now = time_point_cast<milliseconds>(system_clock::now());
-        std::ostringstream o;
-        o << "([" << caller << "] " << date::format("%T", now) << "): " << msg << std::endl;
+        std::ostringstream oss;
+        oss << "([" << caller << "] " << date::format("%T", now) << "): " << msg << '\n';
         const std::lock_guard<std::mutex> lock(exa::debug::gMutex);
-        gLogFunction(o.str().c_str());
+        gLogFunction(oss.str().c_str());
     }
 }

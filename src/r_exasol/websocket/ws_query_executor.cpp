@@ -2,7 +2,7 @@
 #include <r_exasol/websocket/exasol_commands.h>
 #include <r_exasol/debug_print/debug_printer.h>
 
-typedef exa::DebugPrinter<exa::WsQueryExecutor> ws_debug_printer;
+using ws_debug_printer = exa::DebugPrinter<exa::WsQueryExecutor>;
 #define WQE_STACK_PRINTER STACK_PRINTER(exa::WsQueryExecutor);
 
 exa::WsQueryExecutor::WsQueryExecutor(WsSessionInfoImpl sessionInfo)

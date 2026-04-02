@@ -9,8 +9,7 @@
 //https://opensource.apple.com/source/OpenSSL/OpenSSL-22/openssl/demos/x509/mkcert.c
 
 
-namespace exa {
-    namespace ssl {
+namespace exa::ssl {
 
         struct CertExtension {
             CertExtension(int nid, const char* value) :
@@ -35,7 +34,7 @@ namespace exa {
          */
 
         CertExtensionBuilder &CertExtensionBuilder::operator<<(const CertExtension &&certExtension) {
-            X509_EXTENSION *ex;
+            X509_EXTENSION *extension;
             X509V3_CTX ctx;
             /* This sets the 'context' of the extensions. */
             /* No configuration database */
@@ -44,12 +43,12 @@ namespace exa {
              * no request and no CRL
              */
             X509V3_set_ctx(&ctx, mCert, mCert, nullptr, nullptr, 0);
-            ex = X509V3_EXT_conf_nid(nullptr, &ctx, certExtension.mNid, certExtension.mValue);
-            if (!ex) {
+            extension = X509V3_EXT_conf_nid(nullptr, &ctx, certExtension.mNid, certExtension.mValue);
+            if (extension == nullptr) {
                 throw CertificateException("Cannot add extension to certificate.");
             }
-            X509_add_ext(mCert,ex,-1);
-            X509_EXTENSION_free(ex);
+            X509_add_ext(mCert,extension,-1);
+            X509_EXTENSION_free(extension);
             return *this;
         }
 
@@ -74,7 +73,7 @@ namespace exa {
         };
 
         CertNameBuilder &CertNameBuilder::operator<<(const CertName &&certName) {
-            const unsigned char* bytes = reinterpret_cast<const unsigned char *>(certName.mBytes);
+            const auto* bytes = reinterpret_cast<const unsigned char *>(certName.mBytes);
             int ret = X509_NAME_add_entry_by_txt(mName, certName.mField,
                                                  certName.mType, bytes, -1, -1, 0);
             if (1 != ret) {
@@ -82,43 +81,46 @@ namespace exa {
             }
             return *this;
         }
-    }
 }
 
 void exa::ssl::Certificate::mkcert(int bits, int serial, int days) {
-    X509 *x = nullptr;
-    EVP_PKEY *pk = nullptr;
+    constexpr long kSecondsPerMinute = 60;
+    constexpr long kMinutesPerHour = 60;
+    constexpr long kHoursPerDay = 24;
+
+    X509 *cert = nullptr;
+    EVP_PKEY *pkey = nullptr;
     RSA *rsa = nullptr;
     X509_NAME *name=nullptr;
 
-    pk=EVP_PKEY_new();
-    x=X509_new();
+    pkey=EVP_PKEY_new();
+    cert=X509_new();
 
     rsa = RSA_new();
 
-    BIGNUM* bn = 0;
-    bn = BN_new();
-    BN_set_word(bn, RSA_F4);
-    int ret = RSA_generate_key_ex(rsa, bits, bn, nullptr);
-    BN_free(bn);
-    if (!ret) {
+    BIGNUM* bignum = nullptr;
+    bignum = BN_new();
+    BN_set_word(bignum, RSA_F4);
+    int ret = RSA_generate_key_ex(rsa, bits, bignum, nullptr);
+    BN_free(bignum);
+    if (ret == 0) {
         throw CertificateException("Error generating RSA key.");
     }
-    if (!EVP_PKEY_assign_RSA(pk,rsa))
+    if (!EVP_PKEY_assign_RSA(pkey,rsa))
     {
         throw CertificateException("Error assigning RSA key.");
     }
     //According to https://www.openssl.org/docs/man1.1.1/man3/EVP_PKEY_assign_RSA.html
-    //pk is associated with rsa, and OpenSSL will release the memory of rsa together with pk.
+    //pkey is associated with rsa, and OpenSSL will release the memory of rsa together with pkey.
     rsa=nullptr;
 
-    X509_set_version(x,2);
-    ASN1_INTEGER_set(X509_get_serialNumber(x),serial);
-    X509_gmtime_adj(X509_get_notBefore(x),0);
-    X509_gmtime_adj(X509_get_notAfter(x),(long)60*60*24*days);
-    X509_set_pubkey(x,pk);
+    X509_set_version(cert,2);
+    ASN1_INTEGER_set(X509_get_serialNumber(cert),serial);
+    X509_gmtime_adj(X509_get_notBefore(cert),0);
+    X509_gmtime_adj(X509_get_notAfter(cert),static_cast<long>(kSecondsPerMinute*kMinutesPerHour*kHoursPerDay*days));
+    X509_set_pubkey(cert,pkey);
 
-    name=X509_get_subject_name(x);
+    name=X509_get_subject_name(cert);
 
     /* This function creates and adds the entry, working out the
 	 * correct string type and performing checks on its length.
@@ -131,10 +133,10 @@ void exa::ssl::Certificate::mkcert(int bits, int serial, int days) {
     /* Its self signed so set the issuer name to be the same as the
  	 * subject.
 	 */
-    X509_set_issuer_name(x,name);
+    X509_set_issuer_name(cert,name);
 
     /* Add various extensions: standard extensions */
-    CertExtensionBuilder(x) <<
+    CertExtensionBuilder(cert) <<
         CertExtension(NID_basic_constraints, "critical,CA:TRUE") <<
         CertExtension(NID_key_usage, "critical,keyCertSign,cRLSign") <<
         CertExtension(NID_subject_key_identifier, "hash") <<
@@ -143,11 +145,11 @@ void exa::ssl::Certificate::mkcert(int bits, int serial, int days) {
         CertExtension(NID_netscape_comment, "Temporary certificate for r-exasol.");
 
 
-    if (!X509_sign(x,pk,EVP_md5())) {
+    if (X509_sign(cert, pkey, EVP_md5()) == 0) {
         throw CertificateException("Cannot create X509 signature.");
     }
-    mX509p = x;
-    mPkeyp = pk;
+    mX509p = cert;
+    mPkeyp = pkey;
 }
 
 exa::ssl::Certificate::~Certificate() {

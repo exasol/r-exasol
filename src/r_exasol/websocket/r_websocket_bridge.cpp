@@ -15,7 +15,7 @@
 extern "C" {
 
 void* exaWsGetCommandsPtr(SEXP connPtr) {
-    WsSession *sess = static_cast<WsSession*>(R_ExternalPtrAddr(connPtr));
+    auto *sess = static_cast<WsSession*>(R_ExternalPtrAddr(connPtr));
     if (sess == nullptr) {
         return nullptr;
     }

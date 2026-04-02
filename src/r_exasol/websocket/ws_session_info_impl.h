@@ -9,7 +9,7 @@ namespace exa {
 
     /// AsyncExecutorSessionInfo implementation backed by a WebSocket session.
     struct WsSessionInfoImpl : public AsyncExecutorSessionInfo {
-        WsSessionInfoImpl(ExasolCommands* cmds, const std::string& query);
+        WsSessionInfoImpl(ExasolCommands* cmds, std::string query);
 
         std::unique_ptr<AsyncExecutor> createAsyncExecutor() const override;
 

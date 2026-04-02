@@ -5,8 +5,8 @@ using json = nlohmann::json;
 
 namespace exa {
 
-    ExasolCommands::ExasolCommands(WebSocketClient& ws)
-        : mWs(ws)
+    ExasolCommands::ExasolCommands(WebSocketClient& client)
+        : mWs(client)
     {
     }
 
@@ -50,7 +50,7 @@ namespace exa {
                             result.columnTypes.push_back(
                                 col.at("dataType").value("type", ""));
                         } else {
-                            result.columnTypes.push_back("");
+                            result.columnTypes.emplace_back("");
                         }
                     }
                 }

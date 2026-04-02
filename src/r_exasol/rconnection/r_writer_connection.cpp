@@ -6,6 +6,10 @@
 #include <cstdlib>
 #include <utility>
 
+namespace {
+    constexpr int kConnectionSaveDefault = -1000;
+}
+
 
 namespace rcon = exa::rconnection;
 
@@ -13,11 +17,11 @@ extern "C" {
 
 
 extern void Rf_set_iconv(::Rconnection con);
-extern int dummy_vfprintf(::Rconnection con, const char *format, va_list ap);
+extern int dummy_vfprintf(::Rconnection con, const char *format, va_list argptr);
 
 
-static int pipe_vfprintf(const ::Rconnection con, const char *format, va_list ap) {
-    return dummy_vfprintf(con, format, ap);
+static int pipe_vfprintf(const ::Rconnection con, const char *format, va_list argptr) {
+    return dummy_vfprintf(con, format, argptr);
 }
 
 static size_t pipe_write(const void *ptr, size_t size, size_t nitems,
@@ -25,7 +29,7 @@ static size_t pipe_write(const void *ptr, size_t size, size_t nitems,
     size_t  retVal = 0;
     std::weak_ptr<exa::writer::Writer>* writer =
             rcon::getConnectionHook<exa::writer::Writer>(con);
-    if(writer) {
+    if(writer != nullptr) {
         auto writerLocked = writer->lock();
         if (writerLocked) {
             retVal = writerLocked->pipe_write(ptr, size, nitems);
@@ -38,7 +42,7 @@ static int pipe_fflush(::Rconnection con) {
     int retVal = 0;
     std::weak_ptr<exa::writer::Writer>* writer =
             rcon::getConnectionHook<exa::writer::Writer>(con);
-    if(writer) {
+    if(writer != nullptr) {
         auto writerLocked = writer->lock();
         if (writerLocked) {
             retVal = writerLocked->pipe_fflush();
@@ -64,7 +68,7 @@ SEXP rcon::RWriterConnection::create() {
     mConn->vfprintf = &pipe_vfprintf;
     mConn->write = &pipe_write;
     mConn->fflush = &pipe_fflush;
-    mConn->save = -1000;
+    mConn->save = kConnectionSaveDefault;
     //Reserve memory on the heap for storing the connection hook.
     //R_ext will delete this memory later (see https://github.com/wch/r-source/blob/68251d4dd24b6bd970e5a6a92d5d07a3cf8a383d/src/main/connections.c#L405)
     mConn->priv = allocConnectionHook<exa::writer::Writer>();

@@ -10,8 +10,8 @@
 #include <r_exasol/websocket/ws_session_info_impl.h>
 
 namespace exa {
-    void onError(std::string e) {
-        ::error("%s\n", e.c_str());
+    void onError(const std::string& errorMsg) {
+        ::error("%s\n", errorMsg.c_str());
     }
 }
 

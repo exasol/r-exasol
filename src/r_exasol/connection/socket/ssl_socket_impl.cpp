@@ -14,8 +14,7 @@ ssize_t exa::SSLSocketImpl::recv(void *buf, size_t len) {
     if (len <= static_cast<size_t>(std::numeric_limits<ssize_t>::max())) {
         //SSL works with packets of length 16KB. So we might need to call SSL_read several time to read the whole buffer.
         char* buffer = static_cast<char*>(buf);
-        using namespace std::placeholders;
-        auto sslRead = std::bind(::SSL_read, mSsl,  _1, _2);
+        auto sslRead = [this](char* dest, int length) { return ::SSL_read(mSsl, dest, length); };
         bool success =
                 exa::algo::repeatingBufferFill<char*>(buffer, buffer + len, sslRead);
         retVal = success ? static_cast<ssize_t>(len) : -1;
@@ -27,7 +26,7 @@ ssize_t exa::SSLSocketImpl::send(const void *buf, size_t len) {
     SSL_SOCKET_STACK_PRINTER;
     //::SSL_write will return only after whole chunk was written
     //unless SSL_MODE_ENABLE_PARTIAL_WRITE has been set. However, per default this mode is disabled.
-    return ::SSL_write(mSsl, buf, len);
+    return ::SSL_write(mSsl, buf, static_cast<int>(len));
 }
 
 void exa::SSLSocketImpl::shutdownWr() {
@@ -72,9 +71,9 @@ exa::SSLSocketImpl::~SSLSocketImpl() {
 
 void exa::SSLSocketImpl::closeSocket(const int how) {
     if (!mSocketClosed) {
-        tSocket s = ::SSL_get_fd(mSsl);
-        if (s >= 0) {
-            ::shutdown(s, how);
+        tSocket socketFd = ::SSL_get_fd(mSsl);
+        if (socketFd >= 0) {
+            ::shutdown(socketFd, how);
         }
     }
     mSocketClosed = true;

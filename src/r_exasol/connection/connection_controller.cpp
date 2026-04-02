@@ -3,13 +3,14 @@
 #include <r_exasol/connection/async_executor/async_executor_exception.h>
 #include <r_exasol/debug_print/debug_printer.h>
 #include <r_exasol/connection/connection_establisher.h>
+#include <utility>
 
-typedef exa::DebugPrinter<exa::ConnectionController> conn_debug_printer;
+using conn_debug_printer = exa::DebugPrinter<exa::ConnectionController>;
 #define CON_CONTROLLER_STACK_PRINTER STACK_PRINTER( exa::ConnectionController);
 
-exa::ConnectionController::ConnectionController(ConnectionFactory &connectionFactory, const tErrorFunction & errorHandler)
+exa::ConnectionController::ConnectionController(ConnectionFactory &connectionFactory, tErrorFunction errorHandler)
 : mConnectionFactory(connectionFactory)
-, mErrorHandler(errorHandler) {}
+, mErrorHandler(std::move(errorHandler)) {}
 
 std::weak_ptr<exa::reader::Reader> exa::ConnectionController::startReading(const AsyncExecutorSessionInfo& odbcSessionInfo) {
     CON_CONTROLLER_STACK_PRINTER;

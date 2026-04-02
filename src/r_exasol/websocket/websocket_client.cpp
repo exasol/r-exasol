@@ -27,41 +27,41 @@ namespace exa {
                 sslCtx.set_verify_mode(ssl::verify_none);
 
                 mStream.emplace<SslStream>(mIoc, sslCtx);
-                auto& ws = std::get<SslStream>(mStream);
+                auto& wss = std::get<SslStream>(mStream);
 
-                beast::get_lowest_layer(ws).expires_after(
+                beast::get_lowest_layer(wss).expires_after(
                     std::chrono::seconds(timeoutSecs));
-                beast::get_lowest_layer(ws).connect(results);
+                beast::get_lowest_layer(wss).connect(results);
 
-                beast::get_lowest_layer(ws).expires_after(
+                beast::get_lowest_layer(wss).expires_after(
                     std::chrono::seconds(timeoutSecs));
-                ws.next_layer().handshake(ssl::stream_base::client);
+                wss.next_layer().handshake(ssl::stream_base::client);
 
                 websocket::stream_base::timeout wsTimeout =
                     websocket::stream_base::timeout::suggested(
                         beast::role_type::client);
                 wsTimeout.idle_timeout = std::chrono::seconds(kIdleTimeoutSecs);
-                ws.set_option(wsTimeout);
+                wss.set_option(wsTimeout);
 
-                beast::get_lowest_layer(ws).expires_never();
-                ws.handshake(host + ":" + std::to_string(port), "/");
+                beast::get_lowest_layer(wss).expires_never();
+                wss.handshake(host + ":" + std::to_string(port), "/");
 
             } else {
                 mStream.emplace<PlainStream>(mIoc);
-                auto& ws = std::get<PlainStream>(mStream);
+                auto& wsp = std::get<PlainStream>(mStream);
 
-                beast::get_lowest_layer(ws).expires_after(
+                beast::get_lowest_layer(wsp).expires_after(
                     std::chrono::seconds(timeoutSecs));
-                beast::get_lowest_layer(ws).connect(results);
+                beast::get_lowest_layer(wsp).connect(results);
 
                 websocket::stream_base::timeout wsTimeout =
                     websocket::stream_base::timeout::suggested(
                         beast::role_type::client);
                 wsTimeout.idle_timeout = std::chrono::seconds(kIdleTimeoutSecs);
-                ws.set_option(wsTimeout);
+                wsp.set_option(wsTimeout);
 
-                beast::get_lowest_layer(ws).expires_never();
-                ws.handshake(host + ":" + std::to_string(port), "/");
+                beast::get_lowest_layer(wsp).expires_never();
+                wsp.handshake(host + ":" + std::to_string(port), "/");
             }
 
             mConnected = true;
@@ -80,10 +80,10 @@ namespace exa {
         }
 
         try {
-            return visitStream([&](auto& ws) -> std::string {
-                ws.write(net::buffer(jsonMessage));
+            return visitStream([&](auto& stream) -> std::string {
+                stream.write(net::buffer(jsonMessage));
                 beast::flat_buffer buffer;
-                ws.read(buffer);
+                stream.read(buffer);
                 return beast::buffers_to_string(buffer.data());
             });
         } catch (const ExasolException&) {
@@ -102,10 +102,10 @@ namespace exa {
         }
 
         try {
-            visitStream([&](auto& ws) {
-                ws.write(net::buffer(jsonMessage));
+            visitStream([&](auto& stream) {
+                stream.write(net::buffer(jsonMessage));
             });
-        } catch (...) {
+        } catch (...) { // NOLINT(bugprone-empty-catch)
         }
     }
 
@@ -115,10 +115,10 @@ namespace exa {
         }
 
         try {
-            visitStream([](auto& ws) {
-                ws.close(websocket::close_code::normal);
+            visitStream([](auto& stream) {
+                stream.close(websocket::close_code::normal);
             });
-        } catch (...) {
+        } catch (...) { // NOLINT(bugprone-empty-catch)
         }
 
         mConnected = false;

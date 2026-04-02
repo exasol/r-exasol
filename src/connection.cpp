@@ -39,12 +39,12 @@ SEXP copyHostPort() {
 }
 
 SEXP createReadConnectionWs(void *wsSession, const char *query, const char *protocol) {
-    exa::ExasolCommands *cmds = static_cast<exa::ExasolCommands*>(wsSession);
+    auto *cmds = static_cast<exa::ExasolCommands*>(wsSession);
     return exa::getConnectionContext().createReadConnectionWs(cmds, query, protocol);
 }
 
 SEXP createWriteConnectionWs(void *wsSession, const char *query, const char *protocol) {
-    exa::ExasolCommands *cmds = static_cast<exa::ExasolCommands*>(wsSession);
+    auto *cmds = static_cast<exa::ExasolCommands*>(wsSession);
     return exa::getConnectionContext().createWriteConnectionWs(cmds, query, protocol);
 }
 

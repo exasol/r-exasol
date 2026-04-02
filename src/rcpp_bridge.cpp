@@ -83,18 +83,17 @@ static Rcpp::List jsonDataToRList(const nlohmann::json& data,
 /* ================================================================== */
 
 // [[Rcpp::export]]
-Rcpp::List exaWsConnect(std::string host, int port, bool useTls,
-                        std::string username, std::string password,
+Rcpp::List exaWsConnect(const std::string& host, int port, bool useTls,
+                        const std::string& username, const std::string& password,
                         int protocolVersion) {
     try {
-        WsSession *sess = new WsSession();
-        sess->ws = std::unique_ptr<exa::WebSocketClient>(new exa::WebSocketClient());
+        auto *sess = new WsSession();
+        sess->ws = std::make_unique<exa::WebSocketClient>();
         sess->ws->connect(host, port, useTls);
 
         sess->loginInfo = exa::ExasolAuth::login(*(sess->ws), username, password, protocolVersion);
 
-        sess->cmds = std::unique_ptr<exa::ExasolCommands>(
-            new exa::ExasolCommands(*(sess->ws)));
+        sess->cmds = std::make_unique<exa::ExasolCommands>(*(sess->ws));
 
         Rcpp::XPtr<WsSession> xptr(sess, true);
 
@@ -115,42 +114,42 @@ Rcpp::List exaWsConnect(std::string host, int port, bool useTls,
     } catch (const std::exception& ex) {
         Rcpp::stop("WebSocket connect failed: %s", ex.what());
     }
-    return Rcpp::List(); /* unreachable */
+    return {}; /* unreachable */
 }
 
 
 // [[Rcpp::export]]
-Rcpp::List exaWsExecute(SEXP connPtr, std::string sql) {
+Rcpp::List exaWsExecute(SEXP connPtr, const std::string& sql) {
     try {
         WsSession *sess = unwrapSession(connPtr);
 
-        exa::ExecuteResult er = sess->cmds->execute(sql);
+        exa::ExecuteResult execResult = sess->cmds->execute(sql);
 
-        Rcpp::CharacterVector colNames(er.columnNames.size());
-        for (size_t i = 0; i < er.columnNames.size(); ++i) {
-            colNames[i] = er.columnNames[i];
+        Rcpp::CharacterVector colNames(static_cast<R_xlen_t>(execResult.columnNames.size()));
+        for (R_xlen_t i = 0; i < static_cast<R_xlen_t>(execResult.columnNames.size()); ++i) {
+            colNames[i] = execResult.columnNames[static_cast<size_t>(i)];
         }
 
-        Rcpp::CharacterVector colTypes(er.columnTypes.size());
-        for (size_t i = 0; i < er.columnTypes.size(); ++i) {
-            colTypes[i] = er.columnTypes[i];
+        Rcpp::CharacterVector colTypes(static_cast<R_xlen_t>(execResult.columnTypes.size()));
+        for (R_xlen_t i = 0; i < static_cast<R_xlen_t>(execResult.columnTypes.size()); ++i) {
+            colTypes[i] = execResult.columnTypes[static_cast<size_t>(i)];
         }
 
         SEXP dataVal;
-        if (!er.data.is_null() && er.data.is_array() && er.numColumns > 0) {
-            int nRows = static_cast<int>(er.numRowsInMessage);
-            dataVal = Rcpp::wrap(jsonDataToRList(er.data, er.columnTypes, er.numColumns, nRows));
+        if (!execResult.data.is_null() && execResult.data.is_array() && execResult.numColumns > 0) {
+            int nRows = static_cast<int>(execResult.numRowsInMessage);
+            dataVal = Rcpp::wrap(jsonDataToRList(execResult.data, execResult.columnTypes, execResult.numColumns, nRows));
         } else {
             dataVal = R_NilValue;
         }
 
         return Rcpp::List::create(
-            Rcpp::Named("numResults") = er.numResults,
-            Rcpp::Named("rowCount") = static_cast<double>(er.rowCount),
-            Rcpp::Named("resultSetHandle") = er.resultSetHandle,
-            Rcpp::Named("numColumns") = er.numColumns,
-            Rcpp::Named("numRows") = static_cast<double>(er.numRows),
-            Rcpp::Named("numRowsInMessage") = static_cast<double>(er.numRowsInMessage),
+            Rcpp::Named("numResults") = execResult.numResults,
+            Rcpp::Named("rowCount") = static_cast<double>(execResult.rowCount),
+            Rcpp::Named("resultSetHandle") = execResult.resultSetHandle,
+            Rcpp::Named("numColumns") = execResult.numColumns,
+            Rcpp::Named("numRows") = static_cast<double>(execResult.numRows),
+            Rcpp::Named("numRowsInMessage") = static_cast<double>(execResult.numRowsInMessage),
             Rcpp::Named("columnNames") = colNames,
             Rcpp::Named("columnTypes") = colTypes,
             Rcpp::Named("data") = dataVal
@@ -162,7 +161,7 @@ Rcpp::List exaWsExecute(SEXP connPtr, std::string sql) {
     } catch (const std::exception& ex) {
         Rcpp::stop("Execute failed: %s", ex.what());
     }
-    return Rcpp::List(); /* unreachable */
+    return {}; /* unreachable */
 }
 
 
@@ -203,18 +202,18 @@ bool exaWsCloseResultSet(SEXP connPtr, int resultSetHandle) {
 
 // [[Rcpp::export]]
 bool exaWsDisconnect(SEXP connPtr) {
-    WsSession *sess = static_cast<WsSession*>(R_ExternalPtrAddr(connPtr));
+    auto *sess = static_cast<WsSession*>(R_ExternalPtrAddr(connPtr));
     if (sess != nullptr) {
         try {
             if (sess->ws && sess->ws->isConnected()) {
                 sess->cmds->disconnect();
             }
-        } catch (...) { /* swallow */ }
+        } catch (...) { /* swallow */ } // NOLINT(bugprone-empty-catch)
         try {
             if (sess->ws) {
                 sess->ws->close();
             }
-        } catch (...) { /* swallow */ }
+        } catch (...) { /* swallow */ } // NOLINT(bugprone-empty-catch)
         delete sess;
         R_ClearExternalPtr(connPtr);
     }
@@ -223,7 +222,7 @@ bool exaWsDisconnect(SEXP connPtr) {
 
 
 // [[Rcpp::export]]
-bool exaWsSetAttributes(SEXP connPtr, std::string attrJson) {
+bool exaWsSetAttributes(SEXP connPtr, const std::string& attrJson) {
     try {
         WsSession *sess = unwrapSession(connPtr);
         nlohmann::json attrs = nlohmann::json::parse(attrJson);
@@ -259,7 +258,7 @@ std::string exaWsGetAttributes(SEXP connPtr) {
 
 // [[Rcpp::export]]
 bool exaWsIsConnected(SEXP connPtr) {
-    WsSession *sess = static_cast<WsSession*>(R_ExternalPtrAddr(connPtr));
+    auto *sess = static_cast<WsSession*>(R_ExternalPtrAddr(connPtr));
     if (sess == nullptr || !sess->ws) {
         return false;
     }
@@ -272,7 +271,7 @@ bool exaWsIsConnected(SEXP connPtr) {
 /* ================================================================== */
 
 // [[Rcpp::export]]
-int asyncRODBCIOStart(std::string host, int port, std::string protocol) {
+int asyncRODBCIOStart(const std::string& host, int port, const std::string& protocol) {
     return initConnection(host.c_str(), port, protocol.c_str());
 }
 
@@ -287,17 +286,15 @@ SEXP asyncRODBCProxyPort() {
 }
 
 // [[Rcpp::export]]
-SEXP asyncRODBCQueryStart(SEXP chan, std::string query, std::string protocol, int writer) {
+SEXP asyncRODBCQueryStart(SEXP chan, const std::string& query, const std::string& protocol, int writer) {
     void *cmdsPtr = exaWsGetCommandsPtr(chan);
-    if (cmdsPtr != NULL && query.size() > 0) {
-        if (writer) {
+    if (cmdsPtr != nullptr && !query.empty()) {
+        if (writer != 0) {
             return createWriteConnectionWs(cmdsPtr, query.c_str(), protocol.c_str());
-        } else {
-            return createReadConnectionWs(cmdsPtr, query.c_str(), protocol.c_str());
         }
-    } else {
-        Rcpp::stop("Could not get WebSocket session from channel");
+        return createReadConnectionWs(cmdsPtr, query.c_str(), protocol.c_str());
     }
+    Rcpp::stop("Could not get WebSocket session from channel");
     return R_NilValue; /* unreachable */
 }
 
@@ -307,6 +304,6 @@ int asyncRODBCQueryFinish(int checkWasDone) {
 }
 
 // [[Rcpp::export]]
-int asyncEnableTracing(std::string tracefile) {
+int asyncEnableTracing(const std::string& tracefile) {
     return enableTracing(tracefile.c_str());
 }

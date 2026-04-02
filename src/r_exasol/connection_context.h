@@ -27,7 +27,7 @@ namespace exa {
         SEXP createWriteConnectionWs(ExasolCommands* cmds, const char* query, const char* protocol);
         int enableTracing(const char* tracefile);
     private:
-        exa::ProtocolType convertProtocol(const char*);
+        static exa::ProtocolType convertProtocol(const char*);
 
 
     private:

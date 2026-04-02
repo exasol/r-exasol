@@ -22,7 +22,7 @@ namespace exa {
      */
     class ConnectionController {
     public:
-        explicit ConnectionController(ConnectionFactory & connectionFactory, const tErrorFunction & errorHandler);
+        explicit ConnectionController(ConnectionFactory & connectionFactory, tErrorFunction errorHandler);
 
         /**
          * Established connection: Opens sockets and read meta data.
@@ -58,7 +58,7 @@ namespace exa {
         uint16_t getProxyPort() const { return mConnectionInfo.proxyPort; }
 
     private:
-        bool isValidProtocol(ProtocolType protocolType);
+        static bool isValidProtocol(ProtocolType protocolType);
 
     private:
         ObjectLifecycleLogger<ConnectionController> mLifecycleLogger;

@@ -31,7 +31,7 @@ namespace exa {
 
         /// Perform the full Exasol login sequence over WebSocket.
         static LoginResponse login(
-            WebSocketClient& ws,
+            WebSocketClient& client,
             const std::string& username,
             const std::string& password,
             int protocolVersion = 3);

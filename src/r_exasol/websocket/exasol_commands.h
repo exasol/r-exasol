@@ -23,7 +23,7 @@ namespace exa {
 
     class ExasolCommands {
     public:
-        explicit ExasolCommands(WebSocketClient& ws);
+        explicit ExasolCommands(WebSocketClient& client);
 
         ExecuteResult execute(const std::string& sql);
         nlohmann::json fetch(int resultSetHandle, int startPosition, int numBytes);

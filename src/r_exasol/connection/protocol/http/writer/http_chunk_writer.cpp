@@ -78,8 +78,9 @@ size_t wri::HttpChunkWriter::pipe_write(const void *ptr, size_t size, size_t nit
             len = len - cur_rest;
         }
 
-        if (write_next_chunk() < 0)
+        if (write_next_chunk() < 0) {
             return -1;
+        }
 
         cur_rest = MAX_HTTP_CHUNK_SIZE - mChunk.chunk_len;
     }
@@ -88,9 +89,10 @@ size_t wri::HttpChunkWriter::pipe_write(const void *ptr, size_t size, size_t nit
 
 int wri::HttpChunkWriter::pipe_fflush() {
     if (mChunk.chunk_len > 0) {
-        if (write_next_chunk() < 0)
+        if (write_next_chunk() < 0) {
             return -1;
-        else return 0;
+        }
+        return 0;
     }
     return 0;
 }

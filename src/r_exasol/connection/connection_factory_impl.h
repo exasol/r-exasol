@@ -17,14 +17,14 @@ namespace exa {
      */
     class ConnectionFactoryImpl : public ConnectionFactory {
     public:
-        ConnectionFactoryImpl(const tErrorFunction & errorHandler);
+        explicit ConnectionFactoryImpl(tErrorFunction errorHandler);
         std::shared_ptr<reader::Reader> createHttpReader(std::weak_ptr<Socket>) override;
         std::shared_ptr<writer::Writer> createHttpWriter(std::weak_ptr<Socket>) override;
         std::shared_ptr<ConnectionEstablisher> createConnectionEstablisher(ProtocolType protocolType) override;
 
     private:
-        Chunk & getChunk();
-        const exa::ssl::Certificate& getCertificate();
+        static Chunk & getChunk();
+        static const exa::ssl::Certificate& getCertificate();
         tErrorFunction mErrorHandler;
     };
 }

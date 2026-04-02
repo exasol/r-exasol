@@ -6,11 +6,12 @@
 
 namespace re = exa::reader;
 
-namespace exa {
-    namespace reader {
+namespace exa::reader {
     class ConnectionFinished : public std::exception {};
-    }
 }
+
+static constexpr size_t kMaxChunkHexDigits = 20;
+static constexpr size_t kMaxChunkHexPos = kMaxChunkHexDigits - 1;
 
 re::HttpChunkReader::HttpChunkReader(std::weak_ptr<Socket> socket, Chunk &chunk)
         : mSocket(std::move(socket)), mChunk(chunk) {
@@ -30,7 +31,7 @@ ssize_t re::HttpChunkReader::read_next_chunk() {
             throw ConnectionException("socket invalid");
         }
 
-        for (pos = 0; pos < 20; pos++) {
+        for (pos = 0; pos < kMaxChunkHexDigits; pos++) {
             mChunk.chunk_buf[pos] = mChunk.chunk_buf[pos + 1] = '\0';
             //carefully: recv returns an unsigned, but nevertheless -1 if an error occurs!
             if (socket->recv(&(mChunk.chunk_buf[pos]), 1) < 1) {
@@ -48,7 +49,7 @@ ssize_t re::HttpChunkReader::read_next_chunk() {
             }
         }
 
-        if (pos > 19) {
+        if (pos > kMaxChunkHexPos) {
             throw exa::ConnectionException("buffer length exceed size");
         }
         mChunk.chunk_buf[pos] = '\0';
@@ -83,7 +84,7 @@ ssize_t re::HttpChunkReader::read_next_chunk() {
             mChunk.chunk_pos = 0;
             mChunk.chunk_buf[receivedBuffer - 2] = '\0';
             mChunk.chunk_num++;
-            retVal = mChunk.chunk_len;
+            retVal = static_cast<ssize_t>(mChunk.chunk_len);
         }
     } catch (const ConnectionFinished & ex) {
         closeSocketWithError();
@@ -96,19 +97,20 @@ ssize_t re::HttpChunkReader::read_next_chunk() {
 ssize_t re::HttpChunkReader::read_next(char *buffer, size_t buflen) {
 
     size_t rest_chunk = mChunk.chunk_len - mChunk.chunk_pos;
-    ssize_t readlen = 0, retlen = 0;
+    ssize_t readlen = 0;
+    ssize_t retlen = 0;
     char *buf = buffer;
 
     for (;;) {
         if (buflen <= rest_chunk) {
             ::memcpy(buf, &(mChunk.chunk_buf[mChunk.chunk_pos]), buflen);
             mChunk.chunk_pos += buflen;
-            retlen += buflen;
+            retlen += static_cast<ssize_t>(buflen);
             return retlen;
         }
 
         ::memcpy(buf, &(mChunk.chunk_buf[mChunk.chunk_pos]), rest_chunk);
-        retlen += rest_chunk;
+        retlen += static_cast<ssize_t>(rest_chunk);
 
         readlen = read_next_chunk();
         if (readlen == 0) {
@@ -128,7 +130,7 @@ ssize_t re::HttpChunkReader::read_next(char *buffer, size_t buflen) {
 
 size_t re::HttpChunkReader::pipe_read(void *ptr, const size_t size, const size_t nitems) {
 
-    const ssize_t len = size * nitems;
+    const auto len = static_cast<ssize_t>(size * nitems);
     const ssize_t rlen = read_next(static_cast<char *>(ptr), len);
     if (rlen > 0) {
         return rlen / size;

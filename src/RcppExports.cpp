@@ -11,29 +11,29 @@ Rcpp::Rostream<false>& Rcpp::Rcerr = Rcpp::Rcpp_cerr_get();
 #endif
 
 // exaWsConnect
-Rcpp::List exaWsConnect(std::string host, int port, bool useTls, std::string username, std::string password, int protocolVersion);
+Rcpp::List exaWsConnect(const std::string& host, int port, bool useTls, const std::string& username, const std::string& password, int protocolVersion);
 RcppExport SEXP _exasol_exaWsConnect(SEXP hostSEXP, SEXP portSEXP, SEXP useTlsSEXP, SEXP usernameSEXP, SEXP passwordSEXP, SEXP protocolVersionSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< std::string >::type host(hostSEXP);
+    Rcpp::traits::input_parameter< const std::string& >::type host(hostSEXP);
     Rcpp::traits::input_parameter< int >::type port(portSEXP);
     Rcpp::traits::input_parameter< bool >::type useTls(useTlsSEXP);
-    Rcpp::traits::input_parameter< std::string >::type username(usernameSEXP);
-    Rcpp::traits::input_parameter< std::string >::type password(passwordSEXP);
+    Rcpp::traits::input_parameter< const std::string& >::type username(usernameSEXP);
+    Rcpp::traits::input_parameter< const std::string& >::type password(passwordSEXP);
     Rcpp::traits::input_parameter< int >::type protocolVersion(protocolVersionSEXP);
     rcpp_result_gen = Rcpp::wrap(exaWsConnect(host, port, useTls, username, password, protocolVersion));
     return rcpp_result_gen;
 END_RCPP
 }
 // exaWsExecute
-Rcpp::List exaWsExecute(SEXP connPtr, std::string sql);
+Rcpp::List exaWsExecute(SEXP connPtr, const std::string& sql);
 RcppExport SEXP _exasol_exaWsExecute(SEXP connPtrSEXP, SEXP sqlSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< SEXP >::type connPtr(connPtrSEXP);
-    Rcpp::traits::input_parameter< std::string >::type sql(sqlSEXP);
+    Rcpp::traits::input_parameter< const std::string& >::type sql(sqlSEXP);
     rcpp_result_gen = Rcpp::wrap(exaWsExecute(connPtr, sql));
     return rcpp_result_gen;
 END_RCPP
@@ -76,13 +76,13 @@ BEGIN_RCPP
 END_RCPP
 }
 // exaWsSetAttributes
-bool exaWsSetAttributes(SEXP connPtr, std::string attrJson);
+bool exaWsSetAttributes(SEXP connPtr, const std::string& attrJson);
 RcppExport SEXP _exasol_exaWsSetAttributes(SEXP connPtrSEXP, SEXP attrJsonSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< SEXP >::type connPtr(connPtrSEXP);
-    Rcpp::traits::input_parameter< std::string >::type attrJson(attrJsonSEXP);
+    Rcpp::traits::input_parameter< const std::string& >::type attrJson(attrJsonSEXP);
     rcpp_result_gen = Rcpp::wrap(exaWsSetAttributes(connPtr, attrJson));
     return rcpp_result_gen;
 END_RCPP
@@ -110,14 +110,14 @@ BEGIN_RCPP
 END_RCPP
 }
 // asyncRODBCIOStart
-int asyncRODBCIOStart(std::string host, int port, std::string protocol);
+int asyncRODBCIOStart(const std::string& host, int port, const std::string& protocol);
 RcppExport SEXP _exasol_asyncRODBCIOStart(SEXP hostSEXP, SEXP portSEXP, SEXP protocolSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< std::string >::type host(hostSEXP);
+    Rcpp::traits::input_parameter< const std::string& >::type host(hostSEXP);
     Rcpp::traits::input_parameter< int >::type port(portSEXP);
-    Rcpp::traits::input_parameter< std::string >::type protocol(protocolSEXP);
+    Rcpp::traits::input_parameter< const std::string& >::type protocol(protocolSEXP);
     rcpp_result_gen = Rcpp::wrap(asyncRODBCIOStart(host, port, protocol));
     return rcpp_result_gen;
 END_RCPP
@@ -143,14 +143,14 @@ BEGIN_RCPP
 END_RCPP
 }
 // asyncRODBCQueryStart
-SEXP asyncRODBCQueryStart(SEXP chan, std::string query, std::string protocol, int writer);
+SEXP asyncRODBCQueryStart(SEXP chan, const std::string& query, const std::string& protocol, int writer);
 RcppExport SEXP _exasol_asyncRODBCQueryStart(SEXP chanSEXP, SEXP querySEXP, SEXP protocolSEXP, SEXP writerSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< SEXP >::type chan(chanSEXP);
-    Rcpp::traits::input_parameter< std::string >::type query(querySEXP);
-    Rcpp::traits::input_parameter< std::string >::type protocol(protocolSEXP);
+    Rcpp::traits::input_parameter< const std::string& >::type query(querySEXP);
+    Rcpp::traits::input_parameter< const std::string& >::type protocol(protocolSEXP);
     Rcpp::traits::input_parameter< int >::type writer(writerSEXP);
     rcpp_result_gen = Rcpp::wrap(asyncRODBCQueryStart(chan, query, protocol, writer));
     return rcpp_result_gen;
@@ -168,12 +168,12 @@ BEGIN_RCPP
 END_RCPP
 }
 // asyncEnableTracing
-int asyncEnableTracing(std::string tracefile);
+int asyncEnableTracing(const std::string& tracefile);
 RcppExport SEXP _exasol_asyncEnableTracing(SEXP tracefileSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< std::string >::type tracefile(tracefileSEXP);
+    Rcpp::traits::input_parameter< const std::string& >::type tracefile(tracefileSEXP);
     rcpp_result_gen = Rcpp::wrap(asyncEnableTracing(tracefile));
     return rcpp_result_gen;
 END_RCPP

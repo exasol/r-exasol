@@ -4,6 +4,10 @@
 #include <r_exasol/external/r_conn.h>
 #include <utility>
 
+namespace {
+    constexpr int kConnectionSaveDefault = -1000;
+}
+
 
 namespace rcon = exa::rconnection;
 
@@ -19,7 +23,7 @@ static size_t pipe_read(void *ptr, const size_t size, const size_t nitems,
     std::weak_ptr<exa::reader::Reader>* reader =
             rcon::getConnectionHook<exa::reader::Reader>(con);
 
-    if(reader) {
+    if(reader != nullptr) {
         auto readerLocked = reader->lock();
         if (readerLocked) {
             retVal = readerLocked->pipe_read(ptr, size, nitems);
@@ -32,7 +36,7 @@ static int file_fgetc_internal(const ::Rconnection con) {
     int retVal = 0;
     std::weak_ptr<exa::reader::Reader>* reader =
             rcon::getConnectionHook<exa::reader::Reader>(con);
-    if(reader) {
+    if(reader != nullptr) {
         auto readerLocked = reader->lock();
         if (readerLocked) {
             retVal = readerLocked->fgetc();
@@ -62,7 +66,7 @@ SEXP rcon::RReaderConnection::create() {
     //R_ext will delete this memory later (see https://github.com/wch/r-source/blob/68251d4dd24b6bd970e5a6a92d5d07a3cf8a383d/src/main/connections.c#L405)
     mConn->priv = allocConnectionHook<exa::reader::Reader>();
     storeConnectionHook(mConn, &mReader);
-    mConn->save = -1000;
+    mConn->save = kConnectionSaveDefault;
     Rf_set_iconv(mConn);
     UNPROTECT(1);
     return r_custom_connection;

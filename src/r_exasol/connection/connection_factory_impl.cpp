@@ -4,10 +4,11 @@
 #include <r_exasol/connection/protocol/http/conn/http_connection_establisher.h>
 #include <r_exasol/connection/protocol/https/conn/https_connection_establisher.h>
 #include <cassert>
+#include <utility>
 
 
-exa::ConnectionFactoryImpl::ConnectionFactoryImpl(const tErrorFunction & errorHandler)
-: mErrorHandler(errorHandler) {}
+exa::ConnectionFactoryImpl::ConnectionFactoryImpl(tErrorFunction errorHandler)
+: mErrorHandler(std::move(errorHandler)) {}
 
 std::shared_ptr<exa::reader::Reader> exa::ConnectionFactoryImpl::createHttpReader(std::weak_ptr<Socket> socket) {
     return std::make_shared<exa::reader::HttpChunkReader>(socket, getChunk());

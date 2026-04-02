@@ -9,7 +9,7 @@ namespace exa {
 
     class ExasolException : public std::runtime_error {
     public:
-        ExasolException(const std::string& message, const std::string& sqlCode);
+        ExasolException(const std::string& message, std::string sqlCode);
         const std::string& sqlCode() const;
     private:
         std::string mSqlCode;
