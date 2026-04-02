@@ -49,9 +49,10 @@ test_that("error response raises R error for invalid SQL", {
 test_that("protocol version is negotiated and session ID is valid", {
   con <- dbConnect("exa", exahost = host, uid = uid, pwd = pwd)
   withr::defer(dbDisconnect(con))
-  # Session ID should be a positive integer assigned by the server
-  expect_true(is.integer(con@session_id))
-  expect_true(con@session_id > 0L)
+  # Session ID is a positive whole number (numeric, not integer, because Exasol uses 64-bit IDs)
+  expect_true(is.numeric(con@session_id))
+  expect_true(con@session_id > 0)
+  expect_equal(con@session_id, floor(con@session_id))
 })
 
 test_that("disconnect closes WebSocket cleanly", {
