@@ -1,7 +1,5 @@
 #include <r_exasol/websocket/exasol_error.h>
 
-using json = nlohmann::json;
-
 namespace exa {
 
     ExasolException::ExasolException(const std::string& message, const std::string& sqlCode)
@@ -14,23 +12,27 @@ namespace exa {
         return mSqlCode;
     }
 
-    json parseResponse(const std::string& responseStr) {
-        json response;
+    boost::json::value parseResponse(const std::string& responseStr) {
+        boost::json::value response;
         try {
-            response = json::parse(responseStr);
-        } catch (const json::parse_error& e) {
+            response = boost::json::parse(responseStr);
+        } catch (const boost::system::system_error& e) {
             throw ExasolException(
                 std::string("Failed to parse JSON response: ") + e.what(),
                 "00000"
             );
         }
 
-        auto statusIt = response.find("status");
-        if (statusIt == response.end()) {
+        if (!response.is_object()) {
+            throw ExasolException("JSON response is not an object", "00000");
+        }
+        auto& obj = response.as_object();
+        auto statusIt = obj.find("status");
+        if (statusIt == obj.end()) {
             throw ExasolException("Response missing 'status' field", "00000");
         }
 
-        const std::string status = statusIt->get<std::string>();
+        const std::string status(statusIt->value().as_string());
         if (status == "ok") {
             return response;
         }
@@ -38,15 +40,16 @@ namespace exa {
         std::string errorText = "Unknown error";
         std::string errorSqlCode = "00000";
 
-        auto exceptionIt = response.find("exception");
-        if (exceptionIt != response.end()) {
-            auto textIt = exceptionIt->find("text");
-            if (textIt != exceptionIt->end()) {
-                errorText = textIt->get<std::string>();
+        auto exceptionIt = obj.find("exception");
+        if (exceptionIt != obj.end()) {
+            auto& exObj = exceptionIt->value().as_object();
+            auto textIt = exObj.find("text");
+            if (textIt != exObj.end()) {
+                errorText = std::string(textIt->value().as_string());
             }
-            auto codeIt = exceptionIt->find("sqlCode");
-            if (codeIt != exceptionIt->end()) {
-                errorSqlCode = codeIt->get<std::string>();
+            auto codeIt = exObj.find("sqlCode");
+            if (codeIt != exObj.end()) {
+                errorSqlCode = std::string(codeIt->value().as_string());
             }
         }
 

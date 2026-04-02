@@ -11,4 +11,5 @@ r_exasol/websocket/exasol_error.cpp r_exasol/websocket/websocket_client.cpp \
 r_exasol/websocket/exasol_auth.cpp r_exasol/websocket/exasol_commands.cpp \
 r_exasol/websocket/r_websocket_bridge.cpp \
 r_exasol/websocket/ws_query_executor.cpp r_exasol/websocket/ws_session_info_impl.cpp \
-connection.cpp
+connection.cpp \
+boost_json_src.cpp

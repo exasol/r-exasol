@@ -13,7 +13,7 @@
 
 #include <r_exasol/websocket/ws_session.h>
 #include <r_exasol/websocket/exasol_error.h>
-#include <r_exasol/external/nlohmann/json.hpp>
+#include <boost/json.hpp>
 #include <r_exasol/websocket/r_websocket_bridge.h>
 #include <connection.h>
 
@@ -34,17 +34,18 @@ static WsSession* unwrapSession(SEXP connPtr) {
 }
 
 /* ------------------------------------------------------------------ */
-/*  Helper: convert a nlohmann::json column-major data array to an    */
-/*  R list of vectors (one vector per column).                        */
+/*  Helper: convert a boost::json::value column-major data array to   */
+/*  an R list of vectors (one vector per column).                     */
 /* ------------------------------------------------------------------ */
 
-static Rcpp::List jsonDataToRList(const nlohmann::json& data,
+static Rcpp::List jsonDataToRList(const boost::json::value& data,
                                    const std::vector<std::string>& colTypes,
                                    int numColumns, int numRows) {
     Rcpp::List result(numColumns);
+    const boost::json::array& dataArr = data.as_array();
 
     for (int col = 0; col < numColumns; ++col) {
-        const nlohmann::json& colData = data[col];
+        const boost::json::array& colData = dataArr[col].as_array();
         const std::string& ctype = (col < static_cast<int>(colTypes.size()))
                                        ? colTypes[col] : std::string("VARCHAR");
 
@@ -57,7 +58,7 @@ static Rcpp::List jsonDataToRList(const nlohmann::json& data,
             Rcpp::NumericVector vec(numRows);
             for (int row = 0; row < numRows; ++row) {
                 if (row < static_cast<int>(colData.size()) && !colData[row].is_null()) {
-                    vec[row] = colData[row].get<double>();
+                    vec[row] = colData[row].to_number<double>();
                 } else {
                     vec[row] = NA_REAL;
                 }
@@ -67,7 +68,7 @@ static Rcpp::List jsonDataToRList(const nlohmann::json& data,
             Rcpp::CharacterVector vec(numRows);
             for (int row = 0; row < numRows; ++row) {
                 if (row < static_cast<int>(colData.size()) && !colData[row].is_null()) {
-                    vec[row] = colData[row].get<std::string>();
+                    vec[row] = std::string(colData[row].as_string());
                 } else {
                     vec[row] = NA_STRING;
                 }
@@ -171,8 +172,8 @@ std::string exaWsFetch(SEXP connPtr, int resultSetHandle,
                        int startPosition, int numBytes) {
     try {
         WsSession *sess = unwrapSession(connPtr);
-        nlohmann::json fetchResult = sess->cmds->fetch(resultSetHandle, startPosition, numBytes);
-        return fetchResult.dump();
+        boost::json::value fetchResult = sess->cmds->fetch(resultSetHandle, startPosition, numBytes);
+        return boost::json::serialize(fetchResult);
 
     } catch (const exa::ExasolException& ex) {
         Rcpp::stop("Exasol fetch failed [%s]: %s",
@@ -226,7 +227,7 @@ bool exaWsDisconnect(SEXP connPtr) {
 bool exaWsSetAttributes(SEXP connPtr, std::string attrJson) {
     try {
         WsSession *sess = unwrapSession(connPtr);
-        nlohmann::json attrs = nlohmann::json::parse(attrJson);
+        boost::json::value attrs = boost::json::parse(attrJson);
         sess->cmds->setAttributes(attrs);
         return true;
 
@@ -244,8 +245,8 @@ bool exaWsSetAttributes(SEXP connPtr, std::string attrJson) {
 std::string exaWsGetAttributes(SEXP connPtr) {
     try {
         WsSession *sess = unwrapSession(connPtr);
-        nlohmann::json attrs = sess->cmds->getAttributes();
-        return attrs.dump();
+        boost::json::value attrs = sess->cmds->getAttributes();
+        return boost::json::serialize(attrs);
 
     } catch (const exa::ExasolException& ex) {
         Rcpp::stop("Exasol getAttributes failed [%s]: %s",

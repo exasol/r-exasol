@@ -2,32 +2,34 @@
 
 #include <testthat.h>
 #include <r_exasol/websocket/exasol_error.h>
-#include <r_exasol/external/nlohmann/json.hpp>
+#include <boost/json.hpp>
 #include <string>
-
-using json = nlohmann::json;
 
 context("parseResponse") {
 
     test_that("parseResponse returns json on status ok") {
-        json okResponse;
+        boost::json::object okResponse;
         okResponse["status"] = "ok";
-        okResponse["responseData"] = {{"sessionId", 42}};
+        boost::json::object respData;
+        respData["sessionId"] = 42;
+        okResponse["responseData"] = respData;
 
-        json result = exa::parseResponse(okResponse.dump());
-        expect_true(result["status"] == "ok");
-        expect_true(result["responseData"]["sessionId"] == 42);
+        boost::json::value result = exa::parseResponse(boost::json::serialize(okResponse));
+        expect_true(result.as_object().at("status").as_string() == "ok");
+        expect_true(result.as_object().at("responseData").as_object().at("sessionId").as_int64() == 42);
     }
 
     test_that("parseResponse throws ExasolException on status error") {
-        json errResponse;
+        boost::json::object errResponse;
         errResponse["status"] = "error";
-        errResponse["exception"]["text"] = "table not found";
-        errResponse["exception"]["sqlCode"] = "42000";
+        boost::json::object exception;
+        exception["text"] = "table not found";
+        exception["sqlCode"] = "42000";
+        errResponse["exception"] = exception;
 
         bool caught = false;
         try {
-            exa::parseResponse(errResponse.dump());
+            exa::parseResponse(boost::json::serialize(errResponse));
         } catch (const exa::ExasolException& e) {
             caught = true;
             expect_true(std::string(e.what()) == "table not found");
@@ -48,12 +50,12 @@ context("parseResponse") {
     }
 
     test_that("parseResponse throws on missing status field") {
-        json noStatus;
+        boost::json::object noStatus;
         noStatus["data"] = "something";
 
         bool caught = false;
         try {
-            exa::parseResponse(noStatus.dump());
+            exa::parseResponse(boost::json::serialize(noStatus));
         } catch (const exa::ExasolException& e) {
             caught = true;
             expect_true(std::string(e.what()) == "Response missing 'status' field");
@@ -62,12 +64,12 @@ context("parseResponse") {
     }
 
     test_that("parseResponse handles error with missing exception details") {
-        json errResponse;
+        boost::json::object errResponse;
         errResponse["status"] = "error";
 
         bool caught = false;
         try {
-            exa::parseResponse(errResponse.dump());
+            exa::parseResponse(boost::json::serialize(errResponse));
         } catch (const exa::ExasolException& e) {
             caught = true;
             expect_true(std::string(e.what()) == "Unknown error");

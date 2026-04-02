@@ -4,7 +4,7 @@
 #include <string>
 #include <vector>
 #include <cstdint>
-#include <r_exasol/external/nlohmann/json.hpp>
+#include <boost/json.hpp>
 #include <r_exasol/websocket/websocket_client.h>
 
 namespace exa {
@@ -18,7 +18,7 @@ namespace exa {
         int64_t numRowsInMessage;
         std::vector<std::string> columnNames;
         std::vector<std::string> columnTypes;
-        nlohmann::json data;
+        boost::json::value data;
     };
 
     class ExasolCommands {
@@ -26,11 +26,11 @@ namespace exa {
         explicit ExasolCommands(WebSocketClient& ws);
 
         ExecuteResult execute(const std::string& sql);
-        nlohmann::json fetch(int resultSetHandle, int startPosition, int numBytes);
+        boost::json::value fetch(int resultSetHandle, int startPosition, int numBytes);
         void closeResultSet(int resultSetHandle);
         void disconnect();
-        void setAttributes(const nlohmann::json& attributes);
-        nlohmann::json getAttributes();
+        void setAttributes(const boost::json::value& attributes);
+        boost::json::value getAttributes();
 
     private:
         WebSocketClient& mWs;

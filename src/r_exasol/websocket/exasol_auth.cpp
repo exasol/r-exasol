@@ -4,7 +4,7 @@
 
 #include <r_exasol/websocket/exasol_auth.h>
 #include <r_exasol/websocket/exasol_error.h>
-#include <r_exasol/external/nlohmann/json.hpp>
+#include <boost/json.hpp>
 
 #include <openssl/bn.h>
 #include <openssl/evp.h>
@@ -13,8 +13,6 @@
 
 #include <vector>
 #include <stdexcept>
-
-using json = nlohmann::json;
 
 namespace {
 
@@ -171,23 +169,23 @@ namespace exa {
         int protocolVersion)
     {
         // Step 1: Send login command
-        json loginCmd;
+        boost::json::object loginCmd;
         loginCmd["command"] = "login";
         loginCmd["protocolVersion"] = protocolVersion;
 
-        std::string rawResponse = ws.sendAndReceive(loginCmd.dump());
-        json response = parseResponse(rawResponse);
+        std::string rawResponse = ws.sendAndReceive(boost::json::serialize(loginCmd));
+        boost::json::value response = parseResponse(rawResponse);
 
         // Step 2: Extract public key from response
-        const auto& responseData = response.at("responseData");
-        std::string pubKeyModulus = responseData.at("publicKeyModulus").get<std::string>();
-        std::string pubKeyExponent = responseData.at("publicKeyExponent").get<std::string>();
+        const auto& responseData = response.as_object().at("responseData").as_object();
+        std::string pubKeyModulus = std::string(responseData.at("publicKeyModulus").as_string());
+        std::string pubKeyExponent = std::string(responseData.at("publicKeyExponent").as_string());
 
         // Step 3: Encrypt password
         std::string encryptedPassword = encryptPassword(password, pubKeyModulus, pubKeyExponent);
 
         // Step 4: Send credentials
-        json authCmd;
+        boost::json::object authCmd;
         authCmd["username"] = username;
         authCmd["password"] = encryptedPassword;
         authCmd["useCompression"] = false;
@@ -195,25 +193,25 @@ namespace exa {
         authCmd["driverName"] = "r-exasol";
         authCmd["clientOs"] = "R";
         authCmd["clientVersion"] = "1.0.0";
-        authCmd["attributes"] = json::object();
+        authCmd["attributes"] = boost::json::object{};
 
-        rawResponse = ws.sendAndReceive(authCmd.dump());
+        rawResponse = ws.sendAndReceive(boost::json::serialize(authCmd));
         response = parseResponse(rawResponse);
 
         // Step 5: Parse session info
-        const auto& sessionData = response.at("responseData");
+        const auto& sessionData = response.as_object().at("responseData").as_object();
         LoginResponse result;
-        result.sessionId = sessionData.value("sessionId", int64_t(0));
-        result.protocolVersion = sessionData.value("protocolVersion", 0);
-        result.releaseVersion = sessionData.value("releaseVersion", "");
-        result.databaseName = sessionData.value("databaseName", "");
-        result.productName = sessionData.value("productName", "");
-        result.maxDataMessageSize = sessionData.value("maxDataMessageSize", 0);
-        result.maxIdentifierLength = sessionData.value("maxIdentifierLength", 0);
-        result.maxVarcharLength = sessionData.value("maxVarcharLength", 0);
-        result.identifierQuoteString = sessionData.value("identifierQuoteString", "\"");
-        result.timeZone = sessionData.value("timeZone", "");
-        result.timeZoneBehavior = sessionData.value("timeZoneBehavior", "");
+        result.sessionId = jsonValueOr(sessionData, "sessionId", int64_t(0));
+        result.protocolVersion = jsonValueOr(sessionData, "protocolVersion", 0);
+        result.releaseVersion = jsonValueOr(sessionData, "releaseVersion", std::string(""));
+        result.databaseName = jsonValueOr(sessionData, "databaseName", std::string(""));
+        result.productName = jsonValueOr(sessionData, "productName", std::string(""));
+        result.maxDataMessageSize = jsonValueOr(sessionData, "maxDataMessageSize", 0);
+        result.maxIdentifierLength = jsonValueOr(sessionData, "maxIdentifierLength", 0);
+        result.maxVarcharLength = jsonValueOr(sessionData, "maxVarcharLength", 0);
+        result.identifierQuoteString = jsonValueOr(sessionData, "identifierQuoteString", std::string("\""));
+        result.timeZone = jsonValueOr(sessionData, "timeZone", std::string(""));
+        result.timeZoneBehavior = jsonValueOr(sessionData, "timeZoneBehavior", std::string(""));
 
         return result;
     }
