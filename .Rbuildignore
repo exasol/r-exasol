@@ -16,3 +16,5 @@
 ^.Rhistory$
 ^config.log$
 ^config.status$
+^\.claude$
+^specs$

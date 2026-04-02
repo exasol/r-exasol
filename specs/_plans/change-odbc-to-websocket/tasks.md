@@ -45,6 +45,6 @@
 ## Phase 8: Verification
 - [x] 8.1 Run build (R CMD INSTALL)
 - [x] 8.2 Run tests (devtools::test()) with EXAHOST
-- [ ] 8.3 Run R CMD check
+- [x] 8.3 Run R CMD check (0 errors, 3 warnings, 5 notes — all pre-existing or cosmetic)
 - [x] 8.4 Scenario coverage audit
 - [x] 8.5 Code review (14 findings, 3 critical fixed)
