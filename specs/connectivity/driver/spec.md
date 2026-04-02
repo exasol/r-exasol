@@ -1,21 +1,16 @@
 # Feature: Driver
 
-Enables R users to create Exasol ODBC driver instances for establishing database connections.
+The EXADriver object represents the Exasol database driver. No ODBC driver configuration is required on the system since connections use the WebSocket API protocol.
 
 ## Background
 
-The default driver name is "EXASolution Driver". The driver must be configured on the system via ODBC.
+The default driver name is "EXASolution Driver". The driver is a lightweight object that does not require system-level ODBC configuration.
 
 ## Scenarios
 
-### Scenario: Create driver with system ODBC driver
+### Scenario: Create driver without system ODBC driver
 
-* *GIVEN* the Exasol ODBC driver is configured on the system
-* *WHEN* the user calls `exasol_driver()` or `exa()` without specifying a driver path
-* *THEN* an EXADriver object SHALL be returned using the system "EXASolution Driver"
-
-### Scenario: Create driver with explicit driver path
-
-* *GIVEN* a valid Exasol ODBC driver file exists at a known path
-* *WHEN* the user calls `exasol_driver(driver = "/path/to/driver.so")`
-* *THEN* an EXADriver object SHALL be returned referencing the specified driver file
+* *GIVEN* the system does not require an Exasol ODBC driver
+* *WHEN* the user calls exasol() or new("EXADriver")
+* *THEN* an EXADriver object SHALL be returned
+* *AND* no ODBC driver configuration SHALL be required
