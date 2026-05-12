@@ -2,9 +2,8 @@
 
 ## Build & Test
 
-- **Build:** `limactl shell r bash -c "R CMD INSTALL --no-multiarch --with-keep.source ."`
-- **Test:** `limactl shell r bash -c "EXAHOST=localhost:8888 EXAUID=sys EXAPWD=exasol Rscript -e 'devtools::test()'"`
-- All R commands (build, test, check) must run inside the Lima VM named "r" via `limactl shell r bash -c "..."`.
+- **Build:** `R CMD INSTALL --no-multiarch --with-keep.source .`
+- **Test:** `EXAHOST=localhost:8888 EXAUID=sys EXAPWD=exasol Rscript -e 'devtools::test()'`
 - Exasol docker-db: `EXAHOST=localhost:8888`, user `sys`, password `exasol`.
 
 ## Code Review
@@ -12,7 +11,6 @@
 When reviewing C++ code, run clang-tidy on changed `.cpp` files and include findings in the review. Only run on files that were changed, not the entire codebase.
 
 ```bash
-limactl shell r bash -c '
 RCPP_INC=$(Rscript -e "cat(system.file(\"include\", package=\"Rcpp\"))" 2>/dev/null)
 BH_INC=$(Rscript -e "cat(system.file(\"include\", package=\"BH\"))" 2>/dev/null)
 TT_INC=$(Rscript -e "cat(system.file(\"include\", package=\"testthat\"))" 2>/dev/null)
@@ -26,7 +24,6 @@ cd /home/tu/Work/r-exasol/src && clang-tidy \
   --extra-arg="-I${TT_INC}" \
   --extra-arg="-I/usr/share/R/include" \
   <file.cpp> 2>&1
-'
+
 ```
 
-Install clang-tidy in the VM first if missing: `limactl shell r bash -c "sudo apt-get install -y clang-tidy"`.
