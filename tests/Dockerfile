@@ -35,19 +35,10 @@ ENV GITHUB_PAT=$GH_TOKEN
 RUN Rscript -e 'install.packages("testthat")'
 RUN  Rscript -e 'install.packages("devtools", dependencies = TRUE)'
 RUN  Rscript -e 'install.packages("remotes")'
-RUN  Rscript -e 'install.packages("RODBC")'
 RUN  Rscript -e 'remotes::install_github("jimhester/covr")'
 RUN  Rscript -e 'remotes::install_github("jimhester/lintr")'
 RUN  Rscript -e 'remotes::install_github("marcelboldt/DBI")'
 RUN  Rscript -e 'remotes::install_github("marcelboldt/DBItest")'
-
-
-RUN curl -L -o EXASOL_ODBC.tar.gz https://x-up.s3.amazonaws.com/7.x/25.2.1/Exasol_ODBC-25.2.1-Linux_x86_64.tar.gz && \
-    mkdir -p /opt/exasol && \
-    tar -xzf EXASOL_ODBC.tar.gz -C /opt/exasol --strip-components 1 && \
-    touch /etc/odbcinst.ini && \
-    echo "[EXASolution Driver]" >> /etc/odbcinst.ini && \
-    echo "Driver=/opt/exasol/Exasol_ODBC-25.2.1-Linux_x86_64/lib/libexaodbc.so" >> /etc/odbcinst.ini
 
 COPY run_test_within_docker.sh /run_test_within_docker.sh
 
