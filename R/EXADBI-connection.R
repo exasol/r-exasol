@@ -236,6 +236,9 @@ dbCurrentSchema <- function(con, setSchema=NULL) {
 setMethod(
   "dbDisconnect",signature("EXAConnection"),
   definition = function(conn) {
+    if (!exaWsIsConnected(conn@ws_handle)) {
+      stop("Connection is already closed.")
+    }
     tryCatch({
       .on_connection_closed(conn)
     }, error = function(e) {
