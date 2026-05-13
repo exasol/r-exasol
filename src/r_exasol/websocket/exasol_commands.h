@@ -19,6 +19,14 @@ namespace exa {
         std::vector<std::string> columnNames;
         std::vector<std::string> columnTypes;
         boost::json::value data;
+
+        ExecuteResult()
+            : numResults(0),
+              rowCount(0),
+              resultSetHandle(-1),
+              numColumns(0),
+              numRows(0),
+              numRowsInMessage(0) {}
     };
 
     class ExasolCommands {

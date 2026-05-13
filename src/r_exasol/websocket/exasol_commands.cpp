@@ -17,12 +17,6 @@ namespace exa {
         boost::json::value response = parseResponse(rawResponse);
 
         ExecuteResult result;
-        result.numResults = 0;
-        result.rowCount = 0;
-        result.resultSetHandle = -1;
-        result.numColumns = 0;
-        result.numRows = 0;
-        result.numRowsInMessage = 0;
 
         try {
             const auto& responseData = response.as_object().at("responseData").as_object();
