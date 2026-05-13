@@ -9,9 +9,10 @@ skip_if_not(
 host <- Sys.getenv("EXAHOST")
 uid <- Sys.getenv("EXAUID", "sys")
 pwd <- Sys.getenv("EXAPWD", "exasol")
+sslcert <- Sys.getenv("EXASSLCERTIFICATE", "SSL_VERIFY_NONE")
 
 test_that("non-SELECT executes via WebSocket", {
-  con <- dbConnect("exa", exahost = host, uid = uid, pwd = pwd)
+  con <- dbConnect("exa", exahost = host, uid = uid, pwd = pwd, sslcertificate = sslcert)
   withr::defer({
     tryCatch(dbGetQuery(con, "DROP SCHEMA IF EXISTS TEST_QUERY_NS CASCADE"), error = function(e) NULL)
     dbDisconnect(con)
@@ -24,7 +25,7 @@ test_that("non-SELECT executes via WebSocket", {
 })
 
 test_that("dbGetQuery returns data for SELECT", {
-  con <- dbConnect("exa", exahost = host, uid = uid, pwd = pwd)
+  con <- dbConnect("exa", exahost = host, uid = uid, pwd = pwd, sslcertificate = sslcert)
   withr::defer(dbDisconnect(con))
 
   result <- dbGetQuery(con, "SELECT 42 AS val")
@@ -33,7 +34,7 @@ test_that("dbGetQuery returns data for SELECT", {
 })
 
 test_that("dbSendQuery + dbFetch works for SELECT", {
-  con <- dbConnect("exa", exahost = host, uid = uid, pwd = pwd)
+  con <- dbConnect("exa", exahost = host, uid = uid, pwd = pwd, sslcertificate = sslcert)
   withr::defer(dbDisconnect(con))
 
   rs <- dbSendQuery(con, "SELECT 1 AS x FROM DUAL")

@@ -10,9 +10,10 @@ host <- Sys.getenv("EXAHOST")
 uid <- Sys.getenv("EXAUID", "sys")
 pwd <- Sys.getenv("EXAPWD", "exasol")
 schema <- Sys.getenv("EXASCHEMA", "TEST_SCHEMA")
+sslcert <- Sys.getenv("EXASSLCERTIFICATE", "SSL_VERIFY_NONE")
 
 test_that("dbConnect creates connection via WebSocket", {
-  con <- dbConnect("exa", exahost = host, uid = uid, pwd = pwd)
+  con <- dbConnect("exa", exahost = host, uid = uid, pwd = pwd, sslcertificate = sslcert)
   withr::defer(dbDisconnect(con))
   expect_s4_class(con, "EXAConnection")
   expect_true(exaWsIsConnected(con@ws_handle))
@@ -21,7 +22,7 @@ test_that("dbConnect creates connection via WebSocket", {
 })
 
 test_that("dbConnect with string driver works without ODBC", {
-  con <- dbConnect("exa", exahost = host, uid = uid, pwd = pwd)
+  con <- dbConnect("exa", exahost = host, uid = uid, pwd = pwd, sslcertificate = sslcert)
   withr::defer(dbDisconnect(con))
   expect_s4_class(con, "EXAConnection")
   # No RODBC dependency needed
@@ -29,7 +30,7 @@ test_that("dbConnect with string driver works without ODBC", {
 })
 
 test_that("dbConnect clones connection with new WebSocket session", {
-  con <- dbConnect("exa", exahost = host, uid = uid, pwd = pwd)
+  con <- dbConnect("exa", exahost = host, uid = uid, pwd = pwd, sslcertificate = sslcert)
   withr::defer(dbDisconnect(con))
   cloned <- dbConnect(con)
   withr::defer(dbDisconnect(cloned))
@@ -43,7 +44,8 @@ test_that("dbConnect clones connection with new WebSocket session", {
 test_that("dbConnect with encryption=N uses unencrypted connection", {
   # This test may fail if the server requires TLS. Skip if so.
   tryCatch({
-    con <- dbConnect("exa", exahost = host, uid = uid, pwd = pwd, encryption = "N")
+    con <- dbConnect("exa", exahost = host, uid = uid, pwd = pwd, encryption = "N",
+                     sslcertificate = sslcert)
     withr::defer(dbDisconnect(con))
     expect_s4_class(con, "EXAConnection")
     expect_false(con@encrypted)
@@ -53,7 +55,7 @@ test_that("dbConnect with encryption=N uses unencrypted connection", {
 })
 
 test_that("dbDisconnect sends disconnect and closes WebSocket", {
-  con <- dbConnect("exa", exahost = host, uid = uid, pwd = pwd)
+  con <- dbConnect("exa", exahost = host, uid = uid, pwd = pwd, sslcertificate = sslcert)
   result <- dbDisconnect(con)
   expect_true(result)
   expect_false(exaWsIsConnected(con@ws_handle))

@@ -37,6 +37,34 @@ An Exasol database must be running and reachable. The WebSocket protocol v3 is u
 * *WHEN* the user calls dbConnect with encryption=FALSE
 * *THEN* an EXAConnection object SHALL be returned using ws:// (unencrypted WebSocket)
 
+### Scenario: Connect with default TLS certificate verification
+
+* *GIVEN* an Exasol database with a valid TLS certificate is running and reachable
+* *WHEN* the user calls dbConnect with encryption="Y" and omits sslcertificate (or passes "" or "SSL_VERIFY_SERVER")
+* *THEN* the server certificate SHALL be verified against the system trust store
+* *AND* the connection SHALL fail if the certificate is invalid
+
+### Scenario: Connect with TLS certificate verification disabled
+
+* *GIVEN* an Exasol database with a self-signed TLS certificate is running and reachable
+* *WHEN* the user calls dbConnect with sslcertificate="SSL_VERIFY_NONE"
+* *THEN* the server certificate SHALL NOT be verified
+* *AND* the connection SHALL succeed regardless of certificate validity
+
+### Scenario: Connect with custom TLS trust anchor
+
+* *GIVEN* an Exasol database whose TLS certificate is signed by a non-system CA
+* *WHEN* the user calls dbConnect with sslcertificate set to the path of a PEM trust file
+* *THEN* the server certificate SHALL be verified against that PEM file
+* *AND* the connection SHALL succeed if the certificate chains to the provided trust anchor
+
+### Scenario: Apply query timeout to the session
+
+* *GIVEN* an active connection has just been established
+* *WHEN* the user calls dbConnect with querytimeout set to a non-negative integer (seconds)
+* *THEN* the queryTimeout session attribute SHALL be set via the WebSocket setAttributes command
+* *AND* a value of "0" SHALL disable the timeout (queries run until finished)
+
 ### Scenario: Password with semicolons
 
 * *GIVEN* a user password contains semicolons

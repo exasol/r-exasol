@@ -9,9 +9,10 @@ skip_if_not(
 host <- Sys.getenv("EXAHOST")
 uid <- Sys.getenv("EXAUID", "sys")
 pwd <- Sys.getenv("EXAPWD", "exasol")
+sslcert <- Sys.getenv("EXASSLCERTIFICATE", "SSL_VERIFY_NONE")
 
 test_that("dbBegin disables autocommit via WebSocket", {
-  con <- dbConnect("exa", exahost = host, uid = uid, pwd = pwd)
+  con <- dbConnect("exa", exahost = host, uid = uid, pwd = pwd, sslcertificate = sslcert)
   withr::defer(dbDisconnect(con))
 
   result <- dbBegin(con)
@@ -21,7 +22,7 @@ test_that("dbBegin disables autocommit via WebSocket", {
 })
 
 test_that("dbCommit sends COMMIT via WebSocket", {
-  con <- dbConnect("exa", exahost = host, uid = uid, pwd = pwd)
+  con <- dbConnect("exa", exahost = host, uid = uid, pwd = pwd, sslcertificate = sslcert)
   withr::defer(dbDisconnect(con))
 
   dbBegin(con)
@@ -30,7 +31,7 @@ test_that("dbCommit sends COMMIT via WebSocket", {
 })
 
 test_that("dbRollback sends ROLLBACK via WebSocket", {
-  con <- dbConnect("exa", exahost = host, uid = uid, pwd = pwd)
+  con <- dbConnect("exa", exahost = host, uid = uid, pwd = pwd, sslcertificate = sslcert)
   withr::defer(dbDisconnect(con))
 
   dbBegin(con)
@@ -39,7 +40,7 @@ test_that("dbRollback sends ROLLBACK via WebSocket", {
 })
 
 test_that("dbEnd with commit restores autocommit", {
-  con <- dbConnect("exa", exahost = host, uid = uid, pwd = pwd)
+  con <- dbConnect("exa", exahost = host, uid = uid, pwd = pwd, sslcertificate = sslcert)
   withr::defer(dbDisconnect(con))
 
   dbBegin(con)
@@ -49,7 +50,7 @@ test_that("dbEnd with commit restores autocommit", {
 })
 
 test_that("dbEnd with rollback restores autocommit", {
-  con <- dbConnect("exa", exahost = host, uid = uid, pwd = pwd)
+  con <- dbConnect("exa", exahost = host, uid = uid, pwd = pwd, sslcertificate = sslcert)
   withr::defer(dbDisconnect(con))
 
   dbBegin(con)

@@ -17,6 +17,7 @@ namespace exa {
     }
 
     void WebSocketClient::connect(const std::string& host, int port, bool useTls,
+                                   const std::string& sslCertificate,
                                    int timeoutSecs) {
         try {
             tcp::resolver resolver(mIoc);
@@ -24,7 +25,15 @@ namespace exa {
 
             if (useTls) {
                 ssl::context sslCtx(ssl::context::tlsv12_client);
-                sslCtx.set_verify_mode(ssl::verify_none);
+                if (sslCertificate == "SSL_VERIFY_NONE") {
+                    sslCtx.set_verify_mode(ssl::verify_none);
+                } else if (sslCertificate.empty() || sslCertificate == "SSL_VERIFY_SERVER") {
+                    sslCtx.set_verify_mode(ssl::verify_peer);
+                    sslCtx.set_default_verify_paths();
+                } else {
+                    sslCtx.set_verify_mode(ssl::verify_peer);
+                    sslCtx.load_verify_file(sslCertificate);
+                }
 
                 mStream.emplace<SslStream>(mIoc, sslCtx);
                 auto& ws = std::get<SslStream>(mStream);

@@ -21,6 +21,10 @@ NULL
 #' @slot db_version A string containing the database version.
 #' @slot drv_name A string containing the connection driver version.
 #' @slot encrypted A logical indicating if connection should be encrypted.
+#' @slot sslcertificate The TLS verification setting used at connect time
+#'   (\code{""}, \code{"SSL_VERIFY_NONE"}, \code{"SSL_VERIFY_SERVER"} or a path
+#'   to a PEM trust file). Used to reproduce the original TLS behavior when the
+#'   connection is cloned.
 #' @author EXASOL AG <opensource@exasol.com>
 #' @export
 EXAConnection <- setClass(
@@ -38,7 +42,8 @@ EXAConnection <- setClass(
     db_prod_name = "character",
     db_version = "character",
     drv_name = "character",
-    encrypted = "logical"
+    encrypted = "logical",
+    sslcertificate = "character"
   ),
   contains = c("DBIConnection", "EXAObject")
 )
@@ -61,10 +66,18 @@ EXAConnection <- setClass(
 #' @param schema Schema in EXASOL db which is opened directly after the
 #'   connection.
 #' @param encryption Whether to use TLS encryption. 'Y' (default) enables TLS.
+#' @param sslcertificate Controls server certificate verification when
+#'   \code{encryption == 'Y'}. Use \code{"SSL_VERIFY_NONE"} to disable server
+#'   verification, \code{"SSL_VERIFY_SERVER"} (or the default empty string) to
+#'   verify against the system trust store, or pass the path to a PEM
+#'   certificate file to verify against a specific trust anchor.
 #' @param autocommit By default 'Y'. If 'Y' each SQL statement is committed. 'N'
 #'   means that no commits are executed automatically. The transaction will be
 #'   rolled back on disconnect, which causes the loss of all data written during
 #'   the transaction.
+#' @param querytimeout Time in seconds the Exasol DB computes a query before it
+#'   is aborted. The default \code{'0'} (zero) means no timeout, i.e. queries
+#'   run until finished. Applied via the WebSocket \code{setAttributes} command.
 #' @param ... Additional parameters (currently unused).
 #' @return A fresh EXAConnection object.
 #' @examples \dontrun{
@@ -83,7 +96,9 @@ setMethod(
                         pwd = "",
                         schema = "SYS",
                         encryption = "Y",
+                        sslcertificate = "",
                         autocommit = "Y",
+                        querytimeout = "0",
                         ...)
   {
     .EXANewConnection(
@@ -93,7 +108,9 @@ setMethod(
       pwd = pwd,
       schema = schema,
       encryption = encryption,
+      sslcertificate = sslcertificate,
       autocommit = autocommit,
+      querytimeout = querytimeout,
       ... = ...
     )
   },
@@ -158,7 +175,9 @@ dbCurrentSchema <- function(con, setSchema=NULL) {
                               pwd = "",
                               schema = "SYS",
                               encryption = "Y",
+                              sslcertificate = "",
                               autocommit = "Y",
+                              querytimeout = "0",
                               ...) {
   if (exahost == "" || uid == "") {
     stop("Connect failed. Host (exahost) and username (uid) are required.")
@@ -171,16 +190,19 @@ dbCurrentSchema <- function(con, setSchema=NULL) {
 
   useTls <- (encryption == "Y")
 
-  result <- exaWsConnect(host, port, useTls, uid, pwd, 3L)
+  result <- exaWsConnect(host, port, useTls, uid, pwd, 3L, sslcertificate)
 
   if (!is.na(schema) && nchar(schema) > 0 && schema != "SYS") {
     exaWsExecute(result$handle, paste("OPEN SCHEMA", processIDs(schema)))
   }
 
-  autocommit_json <- ifelse(autocommit == "Y",
-                            '{"autocommit":true}',
-                            '{"autocommit":false}')
-  exaWsSetAttributes(result$handle, autocommit_json)
+  attrEntries <- c(paste0('"autocommit":', ifelse(autocommit == "Y", "true", "false")))
+  qt <- suppressWarnings(as.integer(querytimeout))
+  if (!is.na(qt) && qt >= 0) {
+    attrEntries <- c(attrEntries, paste0('"queryTimeout":', qt))
+  }
+  exaWsSetAttributes(result$handle,
+                     paste0("{", paste(attrEntries, collapse = ","), "}"))
 
   res <- new("EXAConnection",
     ws_handle = result$handle,
@@ -195,7 +217,8 @@ dbCurrentSchema <- function(con, setSchema=NULL) {
     db_prod_name = result$prodName,
     db_version = result$dbVersion,
     drv_name = "r-exasol",
-    encrypted = useTls
+    encrypted = useTls,
+    sslcertificate = sslcertificate
   )
 
   tryCatch({
@@ -219,6 +242,7 @@ dbCurrentSchema <- function(con, setSchema=NULL) {
       pwd = drv@db_pwd,
       schema = drv@current_schema,
       encryption = ifelse(drv@encrypted, "Y", "N"),
+      sslcertificate = drv@sslcertificate,
       autocommit = ifelse(autocom, "Y", "N"),
       ...
     )

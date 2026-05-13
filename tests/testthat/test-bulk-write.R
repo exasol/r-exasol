@@ -9,9 +9,10 @@ skip_if_not(
 host <- Sys.getenv("EXAHOST")
 uid <- Sys.getenv("EXAUID", "sys")
 pwd <- Sys.getenv("EXAPWD", "exasol")
+sslcert <- Sys.getenv("EXASSLCERTIFICATE", "SSL_VERIFY_NONE")
 
 test_that("exa.writeData triggers IMPORT via WebSocket", {
-  con <- dbConnect("exa", exahost = host, uid = uid, pwd = pwd)
+  con <- dbConnect("exa", exahost = host, uid = uid, pwd = pwd, sslcertificate = sslcert)
   test_schema <- "TEST_BULK_WRITE"
   withr::defer({
     tryCatch(dbGetQuery(con, paste0("DROP SCHEMA IF EXISTS ", test_schema, " CASCADE")), error = function(e) NULL)

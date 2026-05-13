@@ -9,6 +9,7 @@ skip_if_not(
 host <- Sys.getenv("EXAHOST")
 uid <- Sys.getenv("EXAUID", "sys")
 pwd <- Sys.getenv("EXAPWD", "exasol")
+sslcert <- Sys.getenv("EXASSLCERTIFICATE", "SSL_VERIFY_NONE")
 
 test_that("dbGetInfo on driver has no RODBC.version", {
   drv <- exasol_driver(silent = TRUE)
@@ -20,7 +21,7 @@ test_that("dbGetInfo on driver has no RODBC.version", {
 })
 
 test_that("dbGetInfo on connection returns correct info", {
-  con <- dbConnect("exa", exahost = host, uid = uid, pwd = pwd)
+  con <- dbConnect("exa", exahost = host, uid = uid, pwd = pwd, sslcertificate = sslcert)
   withr::defer(dbDisconnect(con))
 
   info <- dbGetInfo(con)
@@ -35,7 +36,7 @@ test_that("dbGetInfo on connection returns correct info", {
 })
 
 test_that("dbListTables returns table names", {
-  con <- dbConnect("exa", exahost = host, uid = uid, pwd = pwd)
+  con <- dbConnect("exa", exahost = host, uid = uid, pwd = pwd, sslcertificate = sslcert)
   withr::defer(dbDisconnect(con))
 
   tables <- dbListTables(con)
@@ -45,7 +46,7 @@ test_that("dbListTables returns table names", {
 })
 
 test_that("dbListFields returns column names", {
-  con <- dbConnect("exa", exahost = host, uid = uid, pwd = pwd)
+  con <- dbConnect("exa", exahost = host, uid = uid, pwd = pwd, sslcertificate = sslcert)
   withr::defer({
     tryCatch(dbGetQuery(con, "DROP SCHEMA IF EXISTS TEST_METADATA_FIELDS CASCADE"), error = function(e) NULL)
     dbDisconnect(con)

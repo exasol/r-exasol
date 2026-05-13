@@ -11,8 +11,8 @@ Rcpp::Rostream<false>& Rcpp::Rcerr = Rcpp::Rcpp_cerr_get();
 #endif
 
 // exaWsConnect
-Rcpp::List exaWsConnect(std::string host, int port, bool useTls, std::string username, std::string password, int protocolVersion);
-RcppExport SEXP _exasol_exaWsConnect(SEXP hostSEXP, SEXP portSEXP, SEXP useTlsSEXP, SEXP usernameSEXP, SEXP passwordSEXP, SEXP protocolVersionSEXP) {
+Rcpp::List exaWsConnect(std::string host, int port, bool useTls, std::string username, std::string password, int protocolVersion, std::string sslCertificate);
+RcppExport SEXP _exasol_exaWsConnect(SEXP hostSEXP, SEXP portSEXP, SEXP useTlsSEXP, SEXP usernameSEXP, SEXP passwordSEXP, SEXP protocolVersionSEXP, SEXP sslCertificateSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -22,7 +22,8 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< std::string >::type username(usernameSEXP);
     Rcpp::traits::input_parameter< std::string >::type password(passwordSEXP);
     Rcpp::traits::input_parameter< int >::type protocolVersion(protocolVersionSEXP);
-    rcpp_result_gen = Rcpp::wrap(exaWsConnect(host, port, useTls, username, password, protocolVersion));
+    Rcpp::traits::input_parameter< std::string >::type sslCertificate(sslCertificateSEXP);
+    rcpp_result_gen = Rcpp::wrap(exaWsConnect(host, port, useTls, username, password, protocolVersion, sslCertificate));
     return rcpp_result_gen;
 END_RCPP
 }

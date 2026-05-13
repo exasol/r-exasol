@@ -86,11 +86,12 @@ static Rcpp::List jsonDataToRList(const boost::json::value& data,
 // [[Rcpp::export]]
 Rcpp::List exaWsConnect(std::string host, int port, bool useTls,
                         std::string username, std::string password,
-                        int protocolVersion) {
+                        int protocolVersion,
+                        std::string sslCertificate = "") {
     try {
         WsSession *sess = new WsSession();
         sess->ws = std::unique_ptr<exa::WebSocketClient>(new exa::WebSocketClient());
-        sess->ws->connect(host, port, useTls);
+        sess->ws->connect(host, port, useTls, sslCertificate);
 
         sess->loginInfo = exa::ExasolAuth::login(*(sess->ws), username, password, protocolVersion);
 

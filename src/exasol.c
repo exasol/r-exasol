@@ -10,7 +10,7 @@
 extern SEXP run_testthat_tests(SEXP);
 
 /* Rcpp-generated wrappers (defined in RcppExports.cpp) */
-extern SEXP _exasol_exaWsConnect(SEXP, SEXP, SEXP, SEXP, SEXP, SEXP);
+extern SEXP _exasol_exaWsConnect(SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP);
 extern SEXP _exasol_exaWsExecute(SEXP, SEXP);
 extern SEXP _exasol_exaWsFetch(SEXP, SEXP, SEXP, SEXP);
 extern SEXP _exasol_exaWsCloseResultSet(SEXP, SEXP);
@@ -27,7 +27,7 @@ extern SEXP _exasol_asyncEnableTracing(SEXP);
 
 static R_CallMethodDef CallEntries[] = {
     {"run_testthat_tests",            (DL_FUNC) &run_testthat_tests,            1},
-    {"_exasol_exaWsConnect",          (DL_FUNC) &_exasol_exaWsConnect,          6},
+    {"_exasol_exaWsConnect",          (DL_FUNC) &_exasol_exaWsConnect,          7},
     {"_exasol_exaWsExecute",          (DL_FUNC) &_exasol_exaWsExecute,          2},
     {"_exasol_exaWsFetch",            (DL_FUNC) &_exasol_exaWsFetch,            4},
     {"_exasol_exaWsCloseResultSet",   (DL_FUNC) &_exasol_exaWsCloseResultSet,   2},

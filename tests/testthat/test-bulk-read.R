@@ -9,9 +9,10 @@ skip_if_not(
 host <- Sys.getenv("EXAHOST")
 uid <- Sys.getenv("EXAUID", "sys")
 pwd <- Sys.getenv("EXAPWD", "exasol")
+sslcert <- Sys.getenv("EXASSLCERTIFICATE", "SSL_VERIFY_NONE")
 
 test_that("exa.readData triggers EXPORT via WebSocket", {
-  con <- dbConnect("exa", exahost = host, uid = uid, pwd = pwd)
+  con <- dbConnect("exa", exahost = host, uid = uid, pwd = pwd, sslcertificate = sslcert)
   withr::defer(dbDisconnect(con))
 
   # exa.readData uses the high-speed HTTP channel triggered by a WebSocket EXPORT command
@@ -23,7 +24,7 @@ test_that("exa.readData triggers EXPORT via WebSocket", {
 })
 
 test_that("exa.readData reads multiple rows", {
-  con <- dbConnect("exa", exahost = host, uid = uid, pwd = pwd)
+  con <- dbConnect("exa", exahost = host, uid = uid, pwd = pwd, sslcertificate = sslcert)
   withr::defer(dbDisconnect(con))
 
   result <- exa.readData(con, "SELECT COLUMN_VALUE AS val FROM VALUES 1, 2, 3, 4, 5 AS t(COLUMN_VALUE)")

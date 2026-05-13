@@ -31,7 +31,14 @@ namespace ws_detail {
         ~WebSocketClient();
 
         /// Connect to an Exasol WebSocket endpoint.
+        ///
+        /// `sslCertificate` controls TLS verification:
+        ///   * empty string or "SSL_VERIFY_SERVER" — verify the server certificate against
+        ///     the system trust store (default).
+        ///   * "SSL_VERIFY_NONE" — disable certificate verification.
+        ///   * any other value — treated as a filesystem path to a PEM trust file.
         void connect(const std::string& host, int port, bool useTls,
+                     const std::string& sslCertificate = "",
                      int timeoutSecs = 10);
 
         /// Send a JSON message and wait for the response.
