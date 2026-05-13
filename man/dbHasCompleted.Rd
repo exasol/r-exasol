@@ -14,9 +14,9 @@ dbHasCompleted
 }
 \section{Methods (by class)}{
 \itemize{
-\item \code{EXAResult}: Returns if the operation has completed.
-}}
+\item \code{dbHasCompleted(EXAResult)}: Returns if the operation has completed.
 
+}}
 \seealso{
 \code{\link[DBI:dbHasCompleted]{DBI::dbHasCompleted()}}
 }

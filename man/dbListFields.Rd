@@ -28,21 +28,21 @@ dbListFields
 }
 \section{Methods (by class)}{
 \itemize{
-\item \code{conn = EXAConnection,name = character}: Lists all fields of a table.
+\item \code{dbListFields(conn = EXAConnection, name = character)}: Lists all fields of a table.
 
-\item \code{conn = EXAResult,name = ANY}: Lists all fields of a result.
+\item \code{dbListFields(conn = EXAResult, name = ANY)}: Lists all fields of a result.
+
 }}
-
 \seealso{
 \code{\link[DBI:dbListFields]{DBI::dbListFields()}}
 
-Other EXAConnection related objects: 
+Other EXAConnection related objects:
 \code{\link{EXAConnection-class}},
 \code{\link{dbBegin,EXAConnection-method}},
 \code{\link{dbCommit,EXAConnection-method}},
 \code{\link{dbConnect,EXADriver-method}},
-\code{\link{dbCurrentSchema}()},
-\code{\link{dbEnd}()},
+\code{\link[=dbCurrentSchema]{dbCurrentSchema()}},
+\code{\link[=dbEnd]{dbEnd()}},
 \code{\link{dbExistsTable,EXAConnection,character-method}},
 \code{\link{dbGetQuery,EXAConnection,character-method}},
 \code{\link{dbListTables,EXAConnection-method}},
@@ -52,7 +52,7 @@ Other EXAConnection related objects:
 \code{\link{dbSendQuery,EXAConnection,character-method}},
 \code{\link{dbWriteTable,EXAConnection,character,data.frame-method}}
 
-Other DQL functions: 
+Other DQL functions:
 \code{\link{dbClearResult,EXAResult-method}},
 \code{\link{dbExistsTable,EXAConnection,character-method}},
 \code{\link{dbGetQuery,EXAConnection,character-method}},
@@ -61,18 +61,9 @@ Other DQL functions:
 \code{\link{dbSendQuery,EXAConnection,character-method}},
 \code{\link{fetch,EXAResult,numeric-method}}
 
-Other EXAResult related objects: 
+Other EXAResult related objects:
 \code{\link{EXAResult-class}},
 \code{\link{dbClearResult,EXAResult-method}},
-\code{\link{fetch,EXAResult,numeric-method}}
-
-Other DQL functions: 
-\code{\link{dbClearResult,EXAResult-method}},
-\code{\link{dbExistsTable,EXAConnection,character-method}},
-\code{\link{dbGetQuery,EXAConnection,character-method}},
-\code{\link{dbListTables,EXAConnection-method}},
-\code{\link{dbReadTable,EXAConnection,character-method}},
-\code{\link{dbSendQuery,EXAConnection,character-method}},
 \code{\link{fetch,EXAResult,numeric-method}}
 }
 \concept{DQL functions}

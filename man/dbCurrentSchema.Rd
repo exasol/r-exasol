@@ -18,12 +18,12 @@ an updated EXAConnection
 Fetches and outputs the current schema from an EXASOL DB. Also updates EXAConnection metadata.
 }
 \seealso{
-Other EXAConnection related objects: 
+Other EXAConnection related objects:
 \code{\link{EXAConnection-class}},
 \code{\link{dbBegin,EXAConnection-method}},
 \code{\link{dbCommit,EXAConnection-method}},
 \code{\link{dbConnect,EXADriver-method}},
-\code{\link{dbEnd}()},
+\code{\link[=dbEnd]{dbEnd()}},
 \code{\link{dbExistsTable,EXAConnection,character-method}},
 \code{\link{dbGetQuery,EXAConnection,character-method}},
 \code{\link{dbListFields,EXAConnection,character-method}},
@@ -34,11 +34,11 @@ Other EXAConnection related objects:
 \code{\link{dbSendQuery,EXAConnection,character-method}},
 \code{\link{dbWriteTable,EXAConnection,character,data.frame-method}}
 
-Other None-DBI-API: 
-\code{\link{dbEnd}()},
-\code{\link{exa.createScript}()},
-\code{\link{exa.readData}()},
-\code{\link{exa.writeData}()}
+Other None-DBI-API:
+\code{\link[=dbEnd]{dbEnd()}},
+\code{\link[=exa.createScript]{exa.createScript()}},
+\code{\link[=exa.readData]{exa.readData()}},
+\code{\link[=exa.writeData]{exa.writeData()}}
 }
 \concept{EXAConnection related objects}
 \concept{None-DBI-API}

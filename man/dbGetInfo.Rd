@@ -26,24 +26,18 @@ dbGetInfo
 }
 \section{Methods (by class)}{
 \itemize{
-\item \code{EXAObject}: Returns metadata on a given EXAObject.
+\item \code{dbGetInfo(EXAObject)}: Returns metadata on a given EXAObject.
 
-\item \code{EXADriver}: Returns metadata on a given EXADriver.
+\item \code{dbGetInfo(EXADriver)}: Returns metadata on a given EXADriver.
 
-\item \code{EXAConnection}: Returns metadata on a given EXAConnection.
+\item \code{dbGetInfo(EXAConnection)}: Returns metadata on a given EXAConnection.
 
-\item \code{EXAResult}: Returns metadata on a given EXAResult.
+\item \code{dbGetInfo(EXAResult)}: Returns metadata on a given EXAResult.
+
 }}
-
 \seealso{
 \code{\link[DBI:dbGetInfo]{DBI::dbGetInfo()}}
 }
 \author{
-EXASOL AG <opensource@exasol.com>
-
-EXASOL AG <opensource@exasol.com>
-
-EXASOL AG <opensource@exasol.com>
-
 EXASOL AG <opensource@exasol.com>
 }

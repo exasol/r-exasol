@@ -10,7 +10,7 @@ The virtual object constituting a basis to all other EXA DBI Objects.
 \seealso{
 \code{\link{DBIObject-class}}
 
-Other DBI classes: 
+Other DBI classes:
 \code{\link{EXAConnection-class}},
 \code{\link{EXADriver-class}},
 \code{\link{EXAResult-class}}

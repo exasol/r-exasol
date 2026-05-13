@@ -32,16 +32,16 @@ This is an EXASOL specific addition to the DBI interface and may not work with o
 }
 \section{Methods (by class)}{
 \itemize{
-\item \code{EXAConnection}: Ends a DB transaction.
-}}
+\item \code{dbEnd(EXAConnection)}: Ends a DB transaction.
 
+}}
 \seealso{
-Other EXAConnection related objects: 
+Other EXAConnection related objects:
 \code{\link{EXAConnection-class}},
 \code{\link{dbBegin,EXAConnection-method}},
 \code{\link{dbCommit,EXAConnection-method}},
 \code{\link{dbConnect,EXADriver-method}},
-\code{\link{dbCurrentSchema}()},
+\code{\link[=dbCurrentSchema]{dbCurrentSchema()}},
 \code{\link{dbExistsTable,EXAConnection,character-method}},
 \code{\link{dbGetQuery,EXAConnection,character-method}},
 \code{\link{dbListFields,EXAConnection,character-method}},
@@ -52,41 +52,23 @@ Other EXAConnection related objects:
 \code{\link{dbSendQuery,EXAConnection,character-method}},
 \code{\link{dbWriteTable,EXAConnection,character,data.frame-method}}
 
-Other transaction management functions: 
+Other transaction management functions:
 \code{\link{dbBegin,EXAConnection-method}},
 \code{\link{dbCommit,EXAConnection-method}},
 \code{\link{dbRollback,EXAConnection-method}}
 
-Other None-DBI-API: 
-\code{\link{dbCurrentSchema}()},
-\code{\link{exa.createScript}()},
-\code{\link{exa.readData}()},
-\code{\link{exa.writeData}()}
+Other None-DBI-API:
+\code{\link[=dbCurrentSchema]{dbCurrentSchema()}},
+\code{\link[=exa.createScript]{exa.createScript()}},
+\code{\link[=exa.readData]{exa.readData()}},
+\code{\link[=exa.writeData]{exa.writeData()}}
 
-Other EXADriver related objects: 
+Other EXADriver related objects:
 \code{\link{EXADriver-class}},
 \code{\link{dbConnect,EXADriver-method}},
-\code{\link{exasol_driver}()}
-
-Other EXAConnection related objects: 
-\code{\link{EXAConnection-class}},
-\code{\link{dbBegin,EXAConnection-method}},
-\code{\link{dbCommit,EXAConnection-method}},
-\code{\link{dbConnect,EXADriver-method}},
-\code{\link{dbCurrentSchema}()},
-\code{\link{dbExistsTable,EXAConnection,character-method}},
-\code{\link{dbGetQuery,EXAConnection,character-method}},
-\code{\link{dbListFields,EXAConnection,character-method}},
-\code{\link{dbListTables,EXAConnection-method}},
-\code{\link{dbReadTable,EXAConnection,character-method}},
-\code{\link{dbRemoveTable,EXAConnection,character-method}},
-\code{\link{dbRollback,EXAConnection-method}},
-\code{\link{dbSendQuery,EXAConnection,character-method}},
-\code{\link{dbWriteTable,EXAConnection,character,data.frame-method}}
+\code{\link[=exasol_driver]{exasol_driver()}}
 }
 \author{
-EXASOL AG <opensource@exasol.com>
-
 EXASOL AG <opensource@exasol.com>
 }
 \concept{EXAConnection related objects}

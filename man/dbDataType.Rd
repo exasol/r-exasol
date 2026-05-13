@@ -19,9 +19,9 @@ dbDataType
 }
 \section{Methods (by class)}{
 \itemize{
-\item \code{dbObj = EXAObject,obj = ANY}: Determines the EXASOL data type of an object.
-}}
+\item \code{dbDataType(dbObj = EXAObject, obj = ANY)}: Determines the EXASOL data type of an object.
 
+}}
 \seealso{
 \code{\link{dbDataType,DBIObject-method}}
 }

@@ -34,21 +34,15 @@ summary
 }
 \section{Methods (by class)}{
 \itemize{
-\item \code{EXAObject}: Summary info for EXASOL object
+\item \code{summary(EXAObject)}: Summary info for EXASOL object
 
-\item \code{EXAResult}: Summary info for EXASOL EXAResult
+\item \code{summary(EXAResult)}: Summary info for EXASOL EXAResult
 
-\item \code{EXADriver}: Summary info for EXASOL EXADriver
+\item \code{summary(EXADriver)}: Summary info for EXASOL EXADriver
 
-\item \code{EXAConnection}: Info for EXASOL EXAConnection.
+\item \code{summary(EXAConnection)}: Info for EXASOL EXAConnection.
+
 }}
-
 \author{
-EXASOL AG <opensource@exasol.com>
-
-EXASOL AG <opensource@exasol.com>
-
-EXASOL AG <opensource@exasol.com>
-
 EXASOL AG <opensource@exasol.com>
 }

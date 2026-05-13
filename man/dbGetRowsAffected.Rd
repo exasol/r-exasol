@@ -14,9 +14,9 @@ dbGetRowsAffected
 }
 \section{Methods (by class)}{
 \itemize{
-\item \code{EXAResult}: Get rows affected in result.
-}}
+\item \code{dbGetRowsAffected(EXAResult)}: Get rows affected in result.
 
+}}
 \seealso{
 \code{\link[DBI:dbGetRowsAffected]{DBI::dbGetRowsAffected()}}
 }

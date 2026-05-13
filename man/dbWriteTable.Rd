@@ -49,19 +49,19 @@ dbWriteTable
 }
 \section{Functions}{
 \itemize{
-\item \code{dbWriteTable,EXAConnection,character,data.frame-method}: Writes a data.frame into a table. If the table does not exist, it is created.
-}}
+\item \code{dbWriteTable(conn = EXAConnection, name = character, value = data.frame)}: Writes a data.frame into a table. If the table does not exist, it is created.
 
+}}
 \seealso{
 \code{\link[DBI:dbWriteTable]{DBI::dbWriteTable()}}
 
-Other EXAConnection related objects: 
+Other EXAConnection related objects:
 \code{\link{EXAConnection-class}},
 \code{\link{dbBegin,EXAConnection-method}},
 \code{\link{dbCommit,EXAConnection-method}},
 \code{\link{dbConnect,EXADriver-method}},
-\code{\link{dbCurrentSchema}()},
-\code{\link{dbEnd}()},
+\code{\link[=dbCurrentSchema]{dbCurrentSchema()}},
+\code{\link[=dbEnd]{dbEnd()}},
 \code{\link{dbExistsTable,EXAConnection,character-method}},
 \code{\link{dbGetQuery,EXAConnection,character-method}},
 \code{\link{dbListFields,EXAConnection,character-method}},
@@ -71,7 +71,7 @@ Other EXAConnection related objects:
 \code{\link{dbRollback,EXAConnection-method}},
 \code{\link{dbSendQuery,EXAConnection,character-method}}
 
-Other DML functions: 
+Other DML functions:
 \code{\link{dbRemoveTable,EXAConnection,character-method}}
 }
 \concept{DML functions}

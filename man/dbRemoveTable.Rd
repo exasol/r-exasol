@@ -26,19 +26,19 @@ dbRemoveTable
 }
 \section{Methods (by class)}{
 \itemize{
-\item \code{conn = EXAConnection,name = character}: Removes a table.
-}}
+\item \code{dbRemoveTable(conn = EXAConnection, name = character)}: Removes a table.
 
+}}
 \seealso{
 \code{\link[DBI:dbRemoveTable]{DBI::dbRemoveTable()}}
 
-Other EXAConnection related objects: 
+Other EXAConnection related objects:
 \code{\link{EXAConnection-class}},
 \code{\link{dbBegin,EXAConnection-method}},
 \code{\link{dbCommit,EXAConnection-method}},
 \code{\link{dbConnect,EXADriver-method}},
-\code{\link{dbCurrentSchema}()},
-\code{\link{dbEnd}()},
+\code{\link[=dbCurrentSchema]{dbCurrentSchema()}},
+\code{\link[=dbEnd]{dbEnd()}},
 \code{\link{dbExistsTable,EXAConnection,character-method}},
 \code{\link{dbGetQuery,EXAConnection,character-method}},
 \code{\link{dbListFields,EXAConnection,character-method}},
@@ -48,7 +48,7 @@ Other EXAConnection related objects:
 \code{\link{dbSendQuery,EXAConnection,character-method}},
 \code{\link{dbWriteTable,EXAConnection,character,data.frame-method}}
 
-Other DML functions: 
+Other DML functions:
 \code{\link{dbWriteTable,EXAConnection,character,data.frame-method}}
 }
 \author{

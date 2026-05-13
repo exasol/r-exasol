@@ -19,18 +19,18 @@ dbClearResult
 }
 \section{Methods (by class)}{
 \itemize{
-\item \code{EXAResult}: Frees all resources associated with an \code{EXAResult}.
-}}
+\item \code{dbClearResult(EXAResult)}: Frees all resources associated with an \code{EXAResult}.
 
+}}
 \seealso{
 \code{\link[DBI:dbClearResult]{DBI::dbClearResult()}}
 
-Other EXAResult related objects: 
+Other EXAResult related objects:
 \code{\link{EXAResult-class}},
 \code{\link{dbListFields,EXAConnection,character-method}},
 \code{\link{fetch,EXAResult,numeric-method}}
 
-Other DQL functions: 
+Other DQL functions:
 \code{\link{dbExistsTable,EXAConnection,character-method}},
 \code{\link{dbGetQuery,EXAConnection,character-method}},
 \code{\link{dbListFields,EXAConnection,character-method}},

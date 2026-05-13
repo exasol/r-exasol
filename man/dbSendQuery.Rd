@@ -37,19 +37,19 @@ dbSendQuery
 }
 \section{Methods (by class)}{
 \itemize{
-\item \code{conn = EXAConnection,statement = character}: Sends an SQL statement to an EXASOL DB, prepares for result fetching.
-}}
+\item \code{dbSendQuery(conn = EXAConnection, statement = character)}: Sends an SQL statement to an EXASOL DB, prepares for result fetching.
 
+}}
 \seealso{
 \code{\link[DBI:dbSendQuery]{DBI::dbSendQuery()}}
 
-Other EXAConnection related objects: 
+Other EXAConnection related objects:
 \code{\link{EXAConnection-class}},
 \code{\link{dbBegin,EXAConnection-method}},
 \code{\link{dbCommit,EXAConnection-method}},
 \code{\link{dbConnect,EXADriver-method}},
-\code{\link{dbCurrentSchema}()},
-\code{\link{dbEnd}()},
+\code{\link[=dbCurrentSchema]{dbCurrentSchema()}},
+\code{\link[=dbEnd]{dbEnd()}},
 \code{\link{dbExistsTable,EXAConnection,character-method}},
 \code{\link{dbGetQuery,EXAConnection,character-method}},
 \code{\link{dbListFields,EXAConnection,character-method}},
@@ -59,7 +59,7 @@ Other EXAConnection related objects:
 \code{\link{dbRollback,EXAConnection-method}},
 \code{\link{dbWriteTable,EXAConnection,character,data.frame-method}}
 
-Other DQL functions: 
+Other DQL functions:
 \code{\link{dbClearResult,EXAResult-method}},
 \code{\link{dbExistsTable,EXAConnection,character-method}},
 \code{\link{dbGetQuery,EXAConnection,character-method}},

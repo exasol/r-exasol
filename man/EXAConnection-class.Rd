@@ -11,8 +11,9 @@ An Object holding a connection to an EXASOL Database.
 \section{Slots}{
 
 \describe{
-\item{\code{init_connection_string}}{A string containing the ODBC connection sting used to
-initialise the connection.}
+\item{\code{ws_handle}}{An external pointer to the C++ WebSocket session.}
+
+\item{\code{session_id}}{An integer containing the Exasol session ID.}
 
 \item{\code{current_schema}}{A string reflecting the current schema.}
 
@@ -33,22 +34,27 @@ initialise the connection.}
 \item{\code{drv_name}}{A string containing the connection driver version.}
 
 \item{\code{encrypted}}{A logical indicating if connection should be encrypted.}
+
+\item{\code{sslcertificate}}{The TLS verification setting used at connect time
+(\code{""}, \code{"SSL_VERIFY_NONE"}, \code{"SSL_VERIFY_SERVER"} or a path
+to a PEM trust file). Used to reproduce the original TLS behavior when the
+connection is cloned.}
 }}
 
 \seealso{
 \code{\link{DBIConnection-class}}
 
-Other DBI classes: 
+Other DBI classes:
 \code{\link{EXADriver-class}},
 \code{\link{EXAObject-class}},
 \code{\link{EXAResult-class}}
 
-Other EXAConnection related objects: 
+Other EXAConnection related objects:
 \code{\link{dbBegin,EXAConnection-method}},
 \code{\link{dbCommit,EXAConnection-method}},
 \code{\link{dbConnect,EXADriver-method}},
-\code{\link{dbCurrentSchema}()},
-\code{\link{dbEnd}()},
+\code{\link[=dbCurrentSchema]{dbCurrentSchema()}},
+\code{\link[=dbEnd]{dbEnd()}},
 \code{\link{dbExistsTable,EXAConnection,character-method}},
 \code{\link{dbGetQuery,EXAConnection,character-method}},
 \code{\link{dbListFields,EXAConnection,character-method}},

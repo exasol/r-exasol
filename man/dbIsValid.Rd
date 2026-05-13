@@ -17,9 +17,9 @@ dbIsValid
 }
 \section{Methods (by class)}{
 \itemize{
-\item \code{EXAObject}: Checks if an EXAObject is still valid.
-}}
+\item \code{dbIsValid(EXAObject)}: Checks if an EXAObject is still valid.
 
+}}
 \seealso{
 \code{\link[DBI:dbIsValid]{DBI::dbIsValid()}}
 }

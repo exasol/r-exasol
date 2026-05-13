@@ -17,18 +17,18 @@ dbBegin
 }
 \section{Methods (by class)}{
 \itemize{
-\item \code{EXAConnection}: Starts a DB transaction. In EXASOL, it disables autocommit.
-}}
+\item \code{dbBegin(EXAConnection)}: Starts a DB transaction. In EXASOL, it disables autocommit.
 
+}}
 \seealso{
 \code{\link[DBI:dbBegin]{DBI::dbBegin()}}
 
-Other EXAConnection related objects: 
+Other EXAConnection related objects:
 \code{\link{EXAConnection-class}},
 \code{\link{dbCommit,EXAConnection-method}},
 \code{\link{dbConnect,EXADriver-method}},
-\code{\link{dbCurrentSchema}()},
-\code{\link{dbEnd}()},
+\code{\link[=dbCurrentSchema]{dbCurrentSchema()}},
+\code{\link[=dbEnd]{dbEnd()}},
 \code{\link{dbExistsTable,EXAConnection,character-method}},
 \code{\link{dbGetQuery,EXAConnection,character-method}},
 \code{\link{dbListFields,EXAConnection,character-method}},
@@ -39,9 +39,9 @@ Other EXAConnection related objects:
 \code{\link{dbSendQuery,EXAConnection,character-method}},
 \code{\link{dbWriteTable,EXAConnection,character,data.frame-method}}
 
-Other transaction management functions: 
+Other transaction management functions:
 \code{\link{dbCommit,EXAConnection-method}},
-\code{\link{dbEnd}()},
+\code{\link[=dbEnd]{dbEnd()}},
 \code{\link{dbRollback,EXAConnection-method}}
 }
 \author{

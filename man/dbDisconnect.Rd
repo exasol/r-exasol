@@ -17,9 +17,9 @@ dbDisconnect
 }
 \section{Methods (by class)}{
 \itemize{
-\item \code{EXAConnection}: Disconnects the connection.
-}}
+\item \code{dbDisconnect(EXAConnection)}: Disconnects the connection.
 
+}}
 \seealso{
 \code{\link[DBI:dbDisconnect]{DBI::dbDisconnect()}}
 }

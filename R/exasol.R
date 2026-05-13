@@ -1,7 +1,8 @@
 #' @docType package
 #' @name exasol-package
 #' @aliases exasol
-#' @useDynLib exasol, .registration = TRUE, .fixes = "C_"
+#' @useDynLib exasol, .registration = TRUE
+#' @importFrom Rcpp evalCpp
 #' @exportPattern ^[[:alpha:]]+
 #' @import DBI
 #' @importFrom methods new .valueClassTest
@@ -127,74 +128,6 @@ ALLOWED_UDF_IN_TYPES <- c(SET, SCALAR)
 
 #' All output types of UDF scripts
 ALLOWED_UDF_OUT_TYPES <- c(EMITS, RETURNS)
-
-#' Starts an asynchronous query using the highspeed data channel. Check the developer_guide for more information.
-#' @param chan An open Exasol connection
-#' @param query The SQL query describing the Export/Import
-#' @param protocol Http/Https
-#' @param writer Indicating if it's a Export or Import. If 0, it indicates an import (import from DB into R) query, otherwise an export (export from R to the DB) query.
-#' @keywords internal
-"C_asyncRODBCQueryStart"
-
-#' Prepares the highspeed data channel. Check the developer_guide for more information.
-#' @param hostA Database host address
-#' @param portA Database port
-#' @param protocolA Http or Https
-#' @keywords internal
-"C_asyncRODBCIOStart"
-
-#' Returns the Database proxy hostname. Check the developer_guide for more information.
-#' @keywords internal
-"C_asyncRODBCProxyHost"
-
-#' Returns the Database proxy port. Check the developer_guide for more information.
-#' @keywords internal
-"C_asyncRODBCProxyPort"
-
-#' Cleans up the high speed data channel. Check the developer_guide for more information.
-#' @param checkWasDone Indicating if the import/export has been finished.
-#' @keywords internal
-"C_asyncRODBCQueryFinish"
-
-#' Activates debug logs in the C layer.
-#' @keywords internal
-"C_asyncEnableTracing"
-
-#' Run C++ tests.
-#' @keywords internal
-"C_run_testthat_tests"
-
-#' Connect to Exasol via WebSocket and authenticate.
-#' @keywords internal
-"C_exaWsConnect"
-
-#' Execute SQL via WebSocket.
-#' @keywords internal
-"C_exaWsExecute"
-
-#' Fetch rows from a result set via WebSocket.
-#' @keywords internal
-"C_exaWsFetch"
-
-#' Close a result set via WebSocket.
-#' @keywords internal
-"C_exaWsCloseResultSet"
-
-#' Disconnect WebSocket session.
-#' @keywords internal
-"C_exaWsDisconnect"
-
-#' Set session attributes via WebSocket.
-#' @keywords internal
-"C_exaWsSetAttributes"
-
-#' Get session attributes via WebSocket.
-#' @keywords internal
-"C_exaWsGetAttributes"
-
-#' Check if WebSocket is connected.
-#' @keywords internal
-"C_exaWsIsConnected"
 
 .onAttach <- function(libname, pkgname) {
   # show startup message
