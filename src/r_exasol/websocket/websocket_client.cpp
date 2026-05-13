@@ -1,5 +1,5 @@
 #include <r_exasol/websocket/websocket_client.h>
-#include <r_exasol/websocket/exasol_error.h>
+#include <r_exasol/websocket/exasol_exception.h>
 
 namespace exa {
 

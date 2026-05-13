@@ -1,16 +1,7 @@
-#include <r_exasol/websocket/exasol_error.h>
+#include <r_exasol/websocket/exasol_response.h>
+#include <r_exasol/websocket/exasol_exception.h>
 
 namespace exa {
-
-    ExasolException::ExasolException(const std::string& message, const std::string& sqlCode)
-        : std::runtime_error(message)
-        , mSqlCode(sqlCode)
-    {
-    }
-
-    const std::string& ExasolException::sqlCode() const {
-        return mSqlCode;
-    }
 
     boost::json::value parseResponse(const std::string& responseStr) {
         boost::json::value response;

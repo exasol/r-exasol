@@ -1,7 +1,8 @@
 #ifdef WITH_UNIT_TESTS
 
 #include <testthat.h>
-#include <r_exasol/websocket/exasol_error.h>
+#include <r_exasol/websocket/exasol_exception.h>
+#include <r_exasol/websocket/exasol_response.h>
 #include <boost/json.hpp>
 #include <string>
 

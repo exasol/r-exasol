@@ -4,7 +4,7 @@
 #include <string>
 #include <variant>
 
-#include <r_exasol/websocket/exasol_error.h>
+#include <r_exasol/websocket/exasol_exception.h>
 
 #include <boost/beast/core.hpp>
 #include <boost/beast/websocket.hpp>

@@ -1,20 +1,11 @@
-#ifndef R_EXASOL_WEBSOCKET_EXASOL_ERROR_H
-#define R_EXASOL_WEBSOCKET_EXASOL_ERROR_H
+#ifndef R_EXASOL_WEBSOCKET_EXASOL_RESPONSE_H
+#define R_EXASOL_WEBSOCKET_EXASOL_RESPONSE_H
 
-#include <stdexcept>
 #include <string>
 #include <cstdint>
 #include <boost/json.hpp>
 
 namespace exa {
-
-    class ExasolException : public std::runtime_error {
-    public:
-        ExasolException(const std::string& message, const std::string& sqlCode);
-        const std::string& sqlCode() const;
-    private:
-        std::string mSqlCode;
-    };
 
     /// Parse a JSON response string from Exasol.
     /// Throws ExasolException if the response status is "error".
@@ -54,4 +45,4 @@ namespace exa {
 
 } // namespace exa
 
-#endif // R_EXASOL_WEBSOCKET_EXASOL_ERROR_H
+#endif // R_EXASOL_WEBSOCKET_EXASOL_RESPONSE_H

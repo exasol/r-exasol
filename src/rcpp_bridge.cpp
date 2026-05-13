@@ -12,7 +12,7 @@
 #undef Free
 
 #include <r_exasol/websocket/ws_session.h>
-#include <r_exasol/websocket/exasol_error.h>
+#include <r_exasol/websocket/exasol_exception.h>
 #include <boost/json.hpp>
 #include <r_exasol/websocket/r_websocket_bridge.h>
 #include <connection.h>

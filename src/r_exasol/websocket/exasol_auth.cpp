@@ -3,7 +3,8 @@
 #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
 
 #include <r_exasol/websocket/exasol_auth.h>
-#include <r_exasol/websocket/exasol_error.h>
+#include <r_exasol/websocket/exasol_exception.h>
+#include <r_exasol/websocket/exasol_response.h>
 #include <boost/json.hpp>
 
 #include <openssl/bn.h>
