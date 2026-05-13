@@ -12,7 +12,7 @@ NULL
 #' @param conn An EXAConnection object
 #' @param name A fully qualified table name in the form schema.table.
 #' @param schema Filter on DB schema
-#' @param ... Further parameters passed on to `exa.readData()`
+#' @param ... Unused.
 #' @return A character vector. If no tables present, a character vector of length 0.
 #' @export
 #' @seealso \code{\link[DBI:dbListFields]{DBI::dbListFields()}}
@@ -23,15 +23,11 @@ setMethod(
 
     if (missing(schema)) {
       ids <- .EXAGetIdentifier(name, statement = FALSE)
-      # try to grep schema from stmt
       if (length(ids)>0) {
         schema <- ids[[length(ids)]][1]
         name <- ids[[length(ids)]][2]
       }
-      if (schema != "" & schema != "\"\"") {
-        # message(paste("Using Schema from statement:", schema))
-      } else {
-        # message(paste("Using connection schema: ", con@current_schema))
+      if (!(schema != "" & schema != "\"\"")) {
         schema <- conn@current_schema
       }
     }
@@ -40,8 +36,9 @@ setMethod(
 
     qstr <- paste0("select column_name from exa_all_columns where column_schema = ", schema, " and
                    column_table = ", name, " order by column_ordinal_position")
-    res <- exa.readData(conn, qstr, ...)
-    return(res$COLUMN_NAME)
+    res <- .wsExecuteQuery(conn, qstr)
+    if (is.null(res$data) || length(res$data) == 0) return(character(0))
+    as.character(res$data[[1]])
   })
 
 #' @describeIn dbListFields Lists all fields of a result.
@@ -65,7 +62,7 @@ setMethod("dbListFields", signature("EXAResult"),
 #'
 #' @param conn An EXAConnection object
 #' @param schema Filter on DB schema
-#' @param ... Further parameters passed on to `exa.readData()`
+#' @param ... Unused.
 #' @return A character vector. If no tables present, a character vector of length 0.
 #' @export
 #' @seealso \code{\link[DBI:dbListTables]{DBI::dbListTables()}}
@@ -76,8 +73,9 @@ setMethod(
     qstr <-
       paste0("select table_schema, table_name from exa_all_tables ", ifelse(!missing(schema), paste("where table_schema =",
                                                                                                     processIDs(schema,"'")), ""), " order by 1,2" )
-    res <- exa.readData(conn, qstr, ...)
-    return(paste0(res$TABLE_SCHEMA, ".", res$TABLE_NAME))
+    res <- .wsExecuteQuery(conn, qstr)
+    if (is.null(res$data) || length(res$data) < 2) return(character(0))
+    paste0(as.character(res$data[[1]]), ".", as.character(res$data[[2]]))
   })
 
 #' @title dbReadTable
@@ -158,17 +156,17 @@ setMethod(
   }
 
   qstr <-
-    paste0("select * from exa_all_tables where table_schema = ",
+    paste0("select 1 from exa_all_tables where table_schema = ",
            schema, " and table_name=", name)
-  res <- exa.readData(conn, qstr)
-  if (nrow(res) == 0) {
+  res <- .wsExecuteQuery(conn, qstr)
+  n <- if (is.null(res$data) || length(res$data) == 0) 0L else length(res$data[[1]])
+  if (n == 0) {
     return(FALSE)
-  } else if (nrow(res) == 1) {
+  } else if (n == 1) {
     return(TRUE)
-  } else if (nrow(res) > 1) {
-    warning("Identifier ambiguous. Multiple matches.")
   } else {
-    stop("Unknown error.")
+    warning("Identifier ambiguous. Multiple matches.")
+    return(TRUE)
   }
 }
 
@@ -240,29 +238,18 @@ setMethod(
 
       col_names <- names(data)
       if (is.null(col_names)) {
-        for (i in 1:ncol(data)) {
-          col_names <- append(col_names, paste0("col_", i))
-        }
+        col_names <- paste0("col_", seq_len(ncol(data)))
       }
 
       tryCatch({
+        .wsExecuteQuery(con, paste("create schema if not exists", schema))
         .wsExecuteQuery(con, paste("open schema", schema))
-        message(paste("Schema", schema, "found."))
       }, error = function(e) {
-        tryCatch({
-          .wsExecuteQuery(con, paste("create schema", schema))
-          message(paste("Schema", schema, "successfully created."))
-        }, error = function(e2) {
-          stop(paste("failed. Couldn't create schema:", schema))
-        })
+        stop(paste("failed. Couldn't open or create schema:", schema, "-", conditionMessage(e)))
       })
 
-      ddl_str <- paste0("create table ", schema, ".", tbl_name, "( ")
-      for (i in 1:length(col_names)) {
-        ddl_str <- paste0(ddl_str, processIDs(col_names[i]), " ", field_types[i], ", ")
-      }
-      ddl_str <- substr(ddl_str, 1, nchar(ddl_str) - 2)
-      ddl_str <- paste0(ddl_str, " )")
+      col_defs <- paste(processIDs(col_names), field_types, collapse = ", ")
+      ddl_str <- paste0("create table ", schema, ".", tbl_name, "( ", col_defs, " )")
 
       tryCatch({
         .wsExecuteQuery(con, ddl_str)
@@ -272,6 +259,9 @@ setMethod(
       })
     }
 
+    # Normalize writeCols: FALSE (or NA) means match by column order — pass NA
+    # down so exa.writeData skips the column list. TRUE means use the data.frame
+    # column names. Any other value (a character vector) is passed through.
     if (!is.na(writeCols)) {
       if (writeCols[1] == FALSE) {
         writeCols <- NA
