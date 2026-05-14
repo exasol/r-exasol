@@ -27,15 +27,9 @@ jobs:
           r-version: ${{ matrix.config.r }}
           rtools-version: ${{ matrix.config.r_tools }}
 
-      - name: Install unixodbc MacOsX
-        if: contains(matrix.config.os, 'macos-latest')
-        run: |
-          brew install unixodbc
-          BREW_PREFIX=`brew --prefix`
       - name: Query dependencies (macOS)
         if: contains(matrix.config.os, 'macos-latest')
         run: |
-          install.packages("RODBC")
           install.packages("DBI")
           install.packages("pak")
         shell: Rscript {0}
@@ -45,7 +39,6 @@ jobs:
         if: matrix.config.os == 'windows-latest'
         run: |
           options(pkgType = "win.binary")
-          install.packages("RODBC")
           install.packages("DBI")
           install.packages("pak")
         shell: Rscript {0}

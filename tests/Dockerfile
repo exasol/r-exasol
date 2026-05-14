@@ -27,7 +27,7 @@ RUN add-apt-repository -y ppa:deadsnakes/ppa
 RUN apt-get update && \
     apt-get install -y --no-install-recommends "r-base-core=$R_VERSION" "r-base-dev=$R_VERSION" curl \
                         libcurl4-openssl-dev libssl-dev libuv1-dev \
-                        libfontconfig1-dev libssh2-1-dev libxml2-dev zlib1g-dev unixodbc-dev \
+                        libfontconfig1-dev libssh2-1-dev libxml2-dev zlib1g-dev \
                         libfreetype6-dev libpng-dev libtiff5-dev libjpeg-dev \
                         libharfbuzz-dev  libfribidi-dev cmake && \
                         apt-get -y clean && apt-get -y autoremove

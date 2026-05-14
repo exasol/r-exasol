@@ -46,7 +46,6 @@ jobs:
                sudo apt-get -y autoremove
       - name: Query dependencies
         run: |
-          install.packages("RODBC")
           install.packages("DBI")
           install.packages("devtools", dependencies=TRUE)
           devtools::install_deps()
@@ -121,7 +120,6 @@ jobs:
              sudo apt-get -y autoremove
       - name: Query r-dependencies
         run: |
-          install.packages("RODBC")
           install.packages("DBI")
           install.packages("devtools", dependencies=TRUE)
           devtools::install_deps()
