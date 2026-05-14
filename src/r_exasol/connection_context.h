@@ -2,8 +2,6 @@
 #define R_EXASOL_CONNECTION_CONTEXT_H
 
 #include <r_exasol/external/r.h>
-#include <r_exasol/external/sql.h>
-#include <r_exasol/external/r_odbc_fwd.h>
 #include <memory>
 #include <r_exasol/rconnection/r_connection.h>
 #include <r_exasol/connection/connection_controller.h>
@@ -11,6 +9,7 @@
 #include <r_exasol/debug_print/file_logger.h>
 
 namespace exa {
+    class ExasolCommands;
 
     /**
      * This class provides the same interface as the interface C <-> R, on the C++ level.
@@ -24,8 +23,8 @@ namespace exa {
         SEXP copyHostName();
         SEXP copyHostPort();
         int destroyConnection(bool checkDone);
-        SEXP createReadConnection(::pRODBCHandle handle, ::SQLCHAR *query, const char* protocol);
-        SEXP createWriteConnection(::pRODBCHandle handle, ::SQLCHAR *query, const char* protocol);
+        SEXP createReadConnectionWs(ExasolCommands* cmds, const char* query, const char* protocol);
+        SEXP createWriteConnectionWs(ExasolCommands* cmds, const char* query, const char* protocol);
         int enableTracing(const char* tracefile);
     private:
         exa::ProtocolType convertProtocol(const char*);

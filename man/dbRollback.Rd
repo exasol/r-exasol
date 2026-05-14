@@ -17,19 +17,19 @@ dbRollback
 }
 \section{Methods (by class)}{
 \itemize{
-\item \code{EXAConnection}: Rolls the current DB transaction back.
-}}
+\item \code{dbRollback(EXAConnection)}: Rolls the current DB transaction back.
 
+}}
 \seealso{
 \code{\link[DBI:dbRollback]{DBI::dbRollback()}}
 
-Other EXAConnection related objects: 
+Other EXAConnection related objects:
 \code{\link{EXAConnection-class}},
 \code{\link{dbBegin,EXAConnection-method}},
 \code{\link{dbCommit,EXAConnection-method}},
 \code{\link{dbConnect,EXADriver-method}},
-\code{\link{dbCurrentSchema}()},
-\code{\link{dbEnd}()},
+\code{\link[=dbCurrentSchema]{dbCurrentSchema()}},
+\code{\link[=dbEnd]{dbEnd()}},
 \code{\link{dbExistsTable,EXAConnection,character-method}},
 \code{\link{dbGetQuery,EXAConnection,character-method}},
 \code{\link{dbListFields,EXAConnection,character-method}},
@@ -39,10 +39,10 @@ Other EXAConnection related objects:
 \code{\link{dbSendQuery,EXAConnection,character-method}},
 \code{\link{dbWriteTable,EXAConnection,character,data.frame-method}}
 
-Other transaction management functions: 
+Other transaction management functions:
 \code{\link{dbBegin,EXAConnection-method}},
 \code{\link{dbCommit,EXAConnection-method}},
-\code{\link{dbEnd}()}
+\code{\link[=dbEnd]{dbEnd()}}
 }
 \author{
 EXASOL AG <opensource@exasol.com>

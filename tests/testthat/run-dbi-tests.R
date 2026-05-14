@@ -15,6 +15,9 @@ DBItest::test_result(skip = c("stale_result_warning",
                               "data_logical_int",
                               "data_logical_int_null_below",
                               "data_logical_int_null_above",
+                              # Exasol requires an open writable schema for unqualified CREATE TABLE;
+                              # the test does not set one up and SYS is not modifiable.
+                              "data_type_connection",
                               # following tests are TODOs
                               "data_64_bit",
                               "data_64_bit_null_below",

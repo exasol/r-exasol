@@ -1,9 +1,9 @@
 #' @docType package
 #' @name exasol-package
 #' @aliases exasol
-#' @useDynLib exasol, .registration = TRUE, .fixes = "C_"
+#' @useDynLib exasol, .registration = TRUE
+#' @importFrom Rcpp evalCpp
 #' @exportPattern ^[[:alpha:]]+
-#' @import RODBC
 #' @import DBI
 #' @importFrom methods new .valueClassTest
 #' @importFrom stats rnorm
@@ -12,13 +12,15 @@
 #' @title R Interface & SDK for the EXASOL Database
 #'
 #' @description The EXASOL R Package offers interface functionality such as connecting to, querying
-#' and writing into an EXASOL Database (version 5 onwards). It is optimised for massively parallel
-#' reading & writing from and to a multinode cluster. Implemented are DBI compliant methods for database
-#' access, querying and modiifcation. The package integrates with EXASOL's InDB R UDF capabilities, which
-#' allows to deploy and execute R code dynamically from an R application running on a client.
+#' and writing into an EXASOL Database (version 7.1 onwards) via a native WebSocket protocol.
+#' No ODBC driver installation is required. It is optimised for massively parallel reading & writing
+#' from and to a multinode cluster using HTTP/HTTPS bulk transfer channels. Implemented are DBI
+#' compliant methods for database access, querying and modification. The package integrates with
+#' EXASOL's InDB R UDF capabilities, which allows to deploy and execute R code dynamically from an
+#' R application running on a client.
 #'
 #' EXASOL is an InMemory RDBMS that runs in a MPP cluster (shared-nothing) environment. Leading the TPC-H
-#' benckmark, it is considered the fastest analytical data warehouse available. The community edition
+#' benchmark, it is considered the fastest analytical data warehouse available. The community edition
 #' can be downloaded for free on \url{https://docs.exasol.com/get_started/communityedition.htm}.
 #'
 #'
@@ -126,42 +128,6 @@ ALLOWED_UDF_IN_TYPES <- c(SET, SCALAR)
 
 #' All output types of UDF scripts
 ALLOWED_UDF_OUT_TYPES <- c(EMITS, RETURNS)
-
-#' Starts an asynchronous query using the highspeed data channel. Check the developer_guide for more information.
-#' @param chan An open Exasol connection
-#' @param query The SQL query describing the Export/Import
-#' @param protocol Http/Https
-#' @param writer Indicating if it's a Export or Import. If 0, it indicates an import (import from DB into R) query, otherwise an export (export from R to the DB) query.
-#' @keywords internal
-"C_asyncRODBCQueryStart"
-
-#' Prepares the highspeed data channel. Check the developer_guide for more information.
-#' @param hostA Database host address
-#' @param portA Database port
-#' @param protocolA Http or Https
-#' @keywords internal
-"C_asyncRODBCIOStart"
-
-#' Returns the Database proxy hostname. Check the developer_guide for more information.
-#' @keywords internal
-"C_asyncRODBCProxyHost"
-
-#' Returns the Database proxy port. Check the developer_guide for more information.
-#' @keywords internal
-"C_asyncRODBCProxyPort"
-
-#' Cleans up the high speed data channel. Check the developer_guide for more information.
-#' @param checkWasDone Indicating if the import/export has been finished.
-#' @keywords internal
-"C_asyncRODBCQueryFinish"
-
-#' Activates debug logs in the C layer.
-#' @keywords internal
-"C_asyncEnableTracing"
-
-#' Run C++ tests.
-#' @keywords internal
-"C_run_testthat_tests"
 
 .onAttach <- function(libname, pkgname) {
   # show startup message

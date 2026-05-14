@@ -2,69 +2,45 @@
 #define _GNU_SOURCE
 #endif
 
-#ifdef ERROR
-#undef ERROR
-#endif
-#include <Rdefines.h>
-
-#include <stdio.h>
-#include <connection.h>
-
-
-extern SEXP run_testthat_tests(SEXP);
-
-
-SEXP asyncRODBCIOStart(SEXP hostA, SEXP portA, SEXP protocolA) {
-    const int port = asInteger(portA);
-    const char *host = CHAR(STRING_ELT(hostA, 0));
-    const char *protocol = CHAR(STRING_ELT(protocolA, 0));
-    int retVal = initConnection(host, port, protocol);
-    return ScalarInteger(retVal);
-}
-
-SEXP asyncRODBCProxyHost() {
-    return copyHostName();
-}
-
-SEXP asyncRODBCProxyPort() {
-    return copyHostPort();
-}
-
-SEXP asyncRODBCQueryStart(SEXP chan, SEXP query, SEXP protocol, SEXP writerA) {
-    SEXP retVal = ScalarInteger(-1);
-    const int writer = asInteger(writerA);
-    pRODBCHandle rodbc = R_ExternalPtrAddr(chan);
-    SQLCHAR *q = (SQLCHAR *) translateChar(STRING_ELT(query, 0));
-    const char *protocol_native = (const char *) translateChar(STRING_ELT(protocol, 0));
-    if (rodbc != NULL && q != NULL) {
-        retVal = writer ? createWriteConnection(rodbc, q, protocol_native) : createReadConnection(rodbc, q, protocol_native);
-    } else {
-        error("Could not get RODBC structure from channel");
-    }
-    return retVal;
-}
-
-SEXP asyncRODBCQueryFinish(SEXP checkWasDone) {
-    const int checkWasDoneNative = asInteger(checkWasDone);
-    const int retVal = destroyConnection(checkWasDoneNative);
-    return ScalarInteger(retVal);
-}
-
-SEXP asyncEnableTracing(SEXP tracefile) {
-    const char *tracefileNative = CHAR(STRING_ELT(tracefile, 0));
-    return ScalarInteger(enableTracing(tracefileNative));
-}
-
+#include <R.h>
+#include <Rinternals.h>
 #include <R_ext/Rdynload.h>
 
-R_CallMethodDef CallEntries[] = {
-    {"asyncRODBCIOStart", (DL_FUNC) &asyncRODBCIOStart, 3},
-    {"asyncRODBCProxyHost", (DL_FUNC) &asyncRODBCProxyHost, 0},
-    {"asyncRODBCQueryStart", (DL_FUNC) &asyncRODBCQueryStart, 4},
-    {"asyncRODBCProxyPort", (DL_FUNC) &asyncRODBCProxyPort, 0},
-    {"asyncRODBCQueryFinish", (DL_FUNC) &asyncRODBCQueryFinish, 1},
-    {"asyncEnableTracing", (DL_FUNC) &asyncEnableTracing, 1},
-    {"run_testthat_tests", (DL_FUNC) &run_testthat_tests, 1},
+/* Testthat C++ test runner (defined in tests/test_runner.cpp via testthat.h) */
+extern SEXP run_testthat_tests(SEXP);
+
+/* Rcpp-generated wrappers (defined in RcppExports.cpp) */
+extern SEXP _exasol_exaWsConnect(SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP);
+extern SEXP _exasol_exaWsExecute(SEXP, SEXP);
+extern SEXP _exasol_exaWsFetch(SEXP, SEXP, SEXP, SEXP);
+extern SEXP _exasol_exaWsCloseResultSet(SEXP, SEXP);
+extern SEXP _exasol_exaWsDisconnect(SEXP);
+extern SEXP _exasol_exaWsSetAttributes(SEXP, SEXP);
+extern SEXP _exasol_exaWsGetAttributes(SEXP);
+extern SEXP _exasol_exaWsIsConnected(SEXP);
+extern SEXP _exasol_asyncWSIOStart(SEXP, SEXP, SEXP);
+extern SEXP _exasol_asyncWSProxyHost(void);
+extern SEXP _exasol_asyncWSProxyPort(void);
+extern SEXP _exasol_asyncWSQueryStart(SEXP, SEXP, SEXP, SEXP);
+extern SEXP _exasol_asyncWSQueryFinish(SEXP);
+extern SEXP _exasol_asyncEnableTracing(SEXP);
+
+static R_CallMethodDef CallEntries[] = {
+    {"run_testthat_tests",            (DL_FUNC) &run_testthat_tests,            1},
+    {"_exasol_exaWsConnect",          (DL_FUNC) &_exasol_exaWsConnect,          7},
+    {"_exasol_exaWsExecute",          (DL_FUNC) &_exasol_exaWsExecute,          2},
+    {"_exasol_exaWsFetch",            (DL_FUNC) &_exasol_exaWsFetch,            4},
+    {"_exasol_exaWsCloseResultSet",   (DL_FUNC) &_exasol_exaWsCloseResultSet,   2},
+    {"_exasol_exaWsDisconnect",       (DL_FUNC) &_exasol_exaWsDisconnect,       1},
+    {"_exasol_exaWsSetAttributes",    (DL_FUNC) &_exasol_exaWsSetAttributes,    2},
+    {"_exasol_exaWsGetAttributes",    (DL_FUNC) &_exasol_exaWsGetAttributes,    1},
+    {"_exasol_exaWsIsConnected",      (DL_FUNC) &_exasol_exaWsIsConnected,      1},
+    {"_exasol_asyncWSIOStart",     (DL_FUNC) &_exasol_asyncWSIOStart,     3},
+    {"_exasol_asyncWSProxyHost",   (DL_FUNC) &_exasol_asyncWSProxyHost,   0},
+    {"_exasol_asyncWSProxyPort",   (DL_FUNC) &_exasol_asyncWSProxyPort,   0},
+    {"_exasol_asyncWSQueryStart",  (DL_FUNC) &_exasol_asyncWSQueryStart,  4},
+    {"_exasol_asyncWSQueryFinish", (DL_FUNC) &_exasol_asyncWSQueryFinish, 1},
+    {"_exasol_asyncEnableTracing",    (DL_FUNC) &_exasol_asyncEnableTracing,    1},
     {NULL, NULL, 0}
 };
 

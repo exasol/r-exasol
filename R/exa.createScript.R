@@ -8,8 +8,8 @@
 #' We recommend to read the EXASolution manual about UDF scripts for a better
 #' understanding.
 #'
-#' @param channel The RODBC connection channel, typically created via
-#'   odbcConnect.
+#' @param channel An EXAConnection object, typically created via
+#'   dbConnect.
 #' @param name The script will be created in the database with this name.
 #' @param func The R function to be created as a UDF R script in the database.
 #' @param env A list of values which will be available in the UDF function under
@@ -54,7 +54,7 @@
 #'   already exists. Either \code{TRUE} or \code{FALSE}.
 #'
 #' @param mockOnly Boolean, default FALSE. This parameter is useful for
-#'   unit-testing if the ODBC connection is not available. Setting mockOnly=TRUE
+#'   unit-testing if the database connection is not available. Setting mockOnly=TRUE
 #'   will not install the UDF function to the EXASOL database.
 #'
 #' @return This function returns a function that, when called, will execute the
@@ -177,9 +177,7 @@ exa.createScript <- function(channel, name, func = NA,
   sql <- paste(sql, "", sep = "\n")
 
   if (!mockOnly) {
-    if (odbcQuery(channel, sql) == -1) {
-      stop(odbcGetErrMsg(channel)[[1]])
-    }
+    .wsExecuteQuery(channel, sql)
   }
 
   # This function will be returned as a proxy to the R script

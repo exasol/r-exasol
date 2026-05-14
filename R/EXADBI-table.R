@@ -12,7 +12,7 @@ NULL
 #' @param conn An EXAConnection object
 #' @param name A fully qualified table name in the form schema.table.
 #' @param schema Filter on DB schema
-#' @param ... Further parameters passed on to `exa.readData()`
+#' @param ... Unused.
 #' @return A character vector. If no tables present, a character vector of length 0.
 #' @export
 #' @seealso \code{\link[DBI:dbListFields]{DBI::dbListFields()}}
@@ -23,15 +23,11 @@ setMethod(
 
     if (missing(schema)) {
       ids <- .EXAGetIdentifier(name, statement = FALSE)
-      # try to grep schema from stmt
       if (length(ids)>0) {
         schema <- ids[[length(ids)]][1]
         name <- ids[[length(ids)]][2]
       }
-      if (schema != "" & schema != "\"\"") {
-        # message(paste("Using Schema from statement:", schema))
-      } else {
-        # message(paste("Using connection schema: ", con@current_schema))
+      if (!(schema != "" & schema != "\"\"")) {
         schema <- conn@current_schema
       }
     }
@@ -40,8 +36,9 @@ setMethod(
 
     qstr <- paste0("select column_name from exa_all_columns where column_schema = ", schema, " and
                    column_table = ", name, " order by column_ordinal_position")
-    res <- exa.readData(conn, qstr, ...)
-    return(res$COLUMN_NAME)
+    res <- .wsExecuteQuery(conn, qstr)
+    if (is.null(res$data) || length(res$data) == 0) return(character(0))
+    as.character(res$data[[1]])
   })
 
 #' @describeIn dbListFields Lists all fields of a result.
@@ -65,7 +62,7 @@ setMethod("dbListFields", signature("EXAResult"),
 #'
 #' @param conn An EXAConnection object
 #' @param schema Filter on DB schema
-#' @param ... Further parameters passed on to `exa.readData()`
+#' @param ... Unused.
 #' @return A character vector. If no tables present, a character vector of length 0.
 #' @export
 #' @seealso \code{\link[DBI:dbListTables]{DBI::dbListTables()}}
@@ -76,8 +73,9 @@ setMethod(
     qstr <-
       paste0("select table_schema, table_name from exa_all_tables ", ifelse(!missing(schema), paste("where table_schema =",
                                                                                                     processIDs(schema,"'")), ""), " order by 1,2" )
-    res <- exa.readData(conn, qstr, ...)
-    return(paste0(res$TABLE_SCHEMA, ".", res$TABLE_NAME))
+    res <- .wsExecuteQuery(conn, qstr)
+    if (is.null(res$data) || length(res$data) < 2) return(character(0))
+    paste0(as.character(res$data[[1]]), ".", as.character(res$data[[2]]))
   })
 
 #' @title dbReadTable
@@ -150,7 +148,7 @@ setMethod(
 .EXAExistsTable <- function(conn, name, schema) {
   if (schema == "") {
     ids <- .EXAGetIdentifier(name, quotes = "'")
-    schema <- ifelse(ids[[1]][1] != "\'\'", ids[[1]][1], processIDs(conn@current_schema, quotes="'"))
+    schema <- ifelse(ids[[1]][1] != "\'\'", ids[[1]][1], processIDs(conn@current_schema, quotes = "'"))
     name <- ids[[1]][2]
   } else {
     schema <- processIDs(schema, quotes = "'")
@@ -158,17 +156,17 @@ setMethod(
   }
 
   qstr <-
-    paste0("select * from exa_all_tables where table_schema = ",
+    paste0("select 1 from exa_all_tables where table_schema = ",
            schema, " and table_name=", name)
-  res <- sqlQuery(conn, qstr)
-  if (nrow(res) == 0) {
+  res <- .wsExecuteQuery(conn, qstr)
+  n <- if (is.null(res$data) || length(res$data) == 0) 0L else length(res$data[[1]])
+  if (n == 0) {
     return(FALSE)
-  } else if (nrow(res) == 1) {
+  } else if (n == 1) {
     return(TRUE)
-  } else if (nrow(res) > 1) {
-    warning("Identifier ambiguous. Multiple matches.")
   } else {
-    stop("Unknown error.")
+    warning("Identifier ambiguous. Multiple matches.")
+    return(TRUE)
   }
 }
 
@@ -216,32 +214,18 @@ setMethod(
     }
 
     dbBegin(con)
-    on.exit(dbEnd(con,FALSE))
+    on.exit(dbEnd(con, FALSE))
 
-    if (dbExistsTable(con,paste0(schema,".",tbl_name))) {
-      # if the table exists
+    if (dbExistsTable(con, paste0(schema, ".", tbl_name))) {
       if (overwrite) {
-        switch(as.character(sqlQuery(
-          con, paste0("truncate table ",schema,".",tbl_name),errors = FALSE
-        )),
-          "-1" = stop(
-            paste(
-              "Error. Couldn't truncate table:",tbl_name,"\n",odbcGetErrMsg(con)
-            )
-          ),
-          "-2" = message(paste(
-            "Table",tbl_name,"successfully truncated."
-          )),
-        {
-          print("Truncate failed.")
-          stop(odbcGetErrMsg(con))
+        tryCatch({
+          .wsExecuteQuery(con, paste0("truncate table ", schema, ".", tbl_name))
+          message(paste("Table", tbl_name, "successfully truncated."))
+        }, error = function(e) {
+          stop(paste("Error. Couldn't truncate table:", tbl_name, "\n", conditionMessage(e)))
         })
       }
     } else {
-      # tbl does not exist, create...
-      ## DDL - table definition
-
-      # field types
       if (missing(field_types)) {
         field_types <- dbDataType(con, data)
       } else {
@@ -252,80 +236,42 @@ setMethod(
           )
       }
 
-      # column names
       col_names <- names(data)
       if (is.null(col_names)) {
-        ## todo
-        for (i in 1:ncol(data)) {
-          col_names <- append(col_names, paste0("col_",i))
-        }
+        col_names <- paste0("col_", seq_len(ncol(data)))
       }
 
-      # create the table definition
-      # first check if the schema exists, otherwise create
       tryCatch({
-        switch(as.character(sqlQuery(
-          con, paste("open schema",schema),errors = FALSE
-        )),
-          "-1" = warning(
-            paste("Cannot open schema",schema,". Trying to create...")
-          ),
-          "-2" = message(paste("Schema",schema, "found.")),
-        {
-          warning(odbcGetErrMsg(con))
-        })
-      },
-        warning = function(war) {
-          switch(as.character(sqlQuery(
-            con, paste("create schema",schema),errors = FALSE
-          )),
-            "-1" = stop(paste(
-              "failed. Couldn't create schema:",schema
-            )),
-            "-2" = message(paste(
-              "Schema",schema,"successfully created."
-            )),
-          {
-            print("failed.")
-            stop(odbcGetErrMsg(con))
-          })
-        })
-      # setting up the table definition string
-      ddl_str <- paste0("create table ",schema,".",tbl_name, "( ")
-      for (i in 1:length(col_names)) {
-        ddl_str <-
-          paste0(ddl_str, processIDs(col_names[i])," ", field_types[i], ", ")
-      }
-      ddl_str <-
-        substr(ddl_str,1,nchar(ddl_str) - 2) # remove the final comma & space
-      ddl_str <- paste0(ddl_str, " )")
-
-      switch(as.character(sqlQuery(con,ddl_str,errors = FALSE)),
-        "-1" = {
-          stop(paste0(
-            "Couldn't create table: ",schema,".",tbl_name,":\n",odbcGetErrMsg(con)
-          ))
-        },
-        "-2" = {
-          message(paste0("Table ",schema,".",tbl_name," created:\n",ddl_str))
-        },
-      {
-        print("failed.")
-        stop(odbcGetErrMsg(con))
+        .wsExecuteQuery(con, paste("create schema if not exists", schema))
+        .wsExecuteQuery(con, paste("open schema", schema))
+      }, error = function(e) {
+        stop(paste("failed. Couldn't open or create schema:", schema, "-", conditionMessage(e)))
       })
-    } # end of else (table creation)
 
+      col_defs <- paste(processIDs(col_names), field_types, collapse = ", ")
+      ddl_str <- paste0("create table ", schema, ".", tbl_name, "( ", col_defs, " )")
+
+      tryCatch({
+        .wsExecuteQuery(con, ddl_str)
+        message(paste0("Table ", schema, ".", tbl_name, " created:\n", ddl_str))
+      }, error = function(e) {
+        stop(paste0("Couldn't create table: ", schema, ".", tbl_name, ":\n", conditionMessage(e)))
+      })
+    }
+
+    # Normalize writeCols: FALSE (or NA) means match by column order — pass NA
+    # down so exa.writeData skips the column list. TRUE means use the data.frame
+    # column names. Any other value (a character vector) is passed through.
     if (!is.na(writeCols)) {
       if (writeCols[1] == FALSE) {
         writeCols <- NA
-      } # if write cols are missing or NA, write w/o specifying col names.
-      else if (writeCols[1] == TRUE) {
+      } else if (writeCols[1] == TRUE) {
         writeCols <- names(data)
-      } # if TRUE, use the data.frame colnames, else use whatever is in it
+      }
     }
     message("Writing into table...")
-    if (exa.writeData(con, data, paste0(schema,".",tbl_name),
-                      tableColumns = processIDs(writeCols),...)) {
+    if (exa.writeData(con, data, paste0(schema, ".", tbl_name),
+                      tableColumns = processIDs(writeCols), ...)) {
       on.exit(dbEnd(con))
       return(TRUE)
     }
@@ -366,22 +312,18 @@ setMethod(
   }
 
   dbBegin(con)
-  on.exit(dbEnd(con,FALSE))
+  on.exit(dbEnd(con, FALSE))
 
-  ddl_str <- paste0("DROP TABLE ",schema,".",tbl_name)
+  ddl_str <- paste0("DROP TABLE ", schema, ".", tbl_name)
   if (cascade)
-    ddl_str <- paste(ddl_str,"CASCADE CONSTRAINTS")
-  switch(as.character(sqlQuery(con,ddl_str,errors = FALSE)),
-    # "-1" = {stop(paste0("Couldn't remove table: ",schema,".",tbl_name,":\n",odbcGetErrMsg(con)))},
-    "-2" = {
-      message(paste0("Table ",schema,".",tbl_name," removed:\n",ddl_str))
-      on.exit(dbEnd(con))
-      return(TRUE)
-    },
-  {
-    stop(paste0(
-      "Couldn't remove table: ",schema,".",tbl_name,":\n",odbcGetErrMsg(con)
-    ))
-    return(FALSE)
+    ddl_str <- paste(ddl_str, "CASCADE CONSTRAINTS")
+
+  tryCatch({
+    .wsExecuteQuery(con, ddl_str)
+    message(paste0("Table ", schema, ".", tbl_name, " removed:\n", ddl_str))
+    on.exit(dbEnd(con))
+    return(TRUE)
+  }, error = function(e) {
+    stop(paste0("Couldn't remove table: ", schema, ".", tbl_name, ":\n", conditionMessage(e)))
   })
 }

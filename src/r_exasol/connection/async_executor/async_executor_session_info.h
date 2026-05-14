@@ -8,7 +8,7 @@ namespace exa {
 
     /**
      * Abstract interface to the asynchrnous remote session info. The concrete class might contain detailed information
-     * about the ODBC handle/queries etc. It provides instantiation of a @class AsyncExecutor.
+     * about the WebSocket session/queries etc. It provides instantiation of a @class AsyncExecutor.
      */
     struct AsyncExecutorSessionInfo {
         virtual ~AsyncExecutorSessionInfo() = default;

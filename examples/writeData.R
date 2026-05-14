@@ -1,10 +1,9 @@
 \dontrun{
 
-require(RODBC)
 require(exasol)
 
-# Connect via RODBC with configured DSN
-C <- odbcConnect("exasolution")
+# Connect via WebSocket
+C <- dbConnect("exa", exahost = "localhost:8563", uid = "sys", pwd = "exasol")
 
 # Generate example data frame with two groups
 # of random values with different means.
@@ -14,11 +13,13 @@ twogroups <- data.frame(group = rep(1:2, each = 10),
                         value = c(valsMean0, valsMean50))
 
 # Write example data to a table
-odbcQuery(C, "CREATE SCHEMA test")
-odbcQuery(C, "CREATE TABLE test.twogroups (groupid INT, val DOUBLE)")
+dbGetQuery(C, "CREATE SCHEMA IF NOT EXISTS test")
+dbGetQuery(C, "CREATE TABLE test.twogroups (groupid INT, val DOUBLE)")
 exa.writeData(C, twogroups, tableName = "test.twogroups")
 
 # setting the write encoding manually
 # (See also EXASOL User Manual, Appendix D. "Supported Encodings")
-exa.writeData(con, twogroups, "test.twogroups", encoding="1252")
+exa.writeData(C, twogroups, "test.twogroups", encoding="1252")
+
+dbDisconnect(C)
 }

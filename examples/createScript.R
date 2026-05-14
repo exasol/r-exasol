@@ -1,12 +1,11 @@
 \dontrun{
 
 # This example creates a simple SET-EMITS script and executes
-# it the table footable.
-require(RODBC)
+# it on the table twogroups.
 require(exasol)
 
-# Connect via RODBC with configured DSN
-C <- odbcConnect("exasolution")
+# Connect via WebSocket
+C <- dbConnect("exa", exahost = "localhost:8563", uid = "sys", pwd = "exasol")
 
 # Generate example data frame with two groups
 # of random values with different means.
@@ -16,8 +15,8 @@ twogroups <- data.frame(group = rep(1:2, each = 10),
                         value = c(valsMean0, valsMean50))
 
 # Write example data to a table
-odbcQuery(C, "CREATE SCHEMA test")
-odbcQuery(C, "CREATE TABLE test.twogroups (groupid INT, val DOUBLE)")
+dbGetQuery(C, "CREATE SCHEMA IF NOT EXISTS test")
+dbGetQuery(C, "CREATE TABLE test.twogroups (groupid INT, val DOUBLE)")
 exa.writeData(C, twogroups, tableName = "test.twogroups")
 
 # Create the R function as an UDF R script in the database
@@ -36,4 +35,6 @@ testscript <- exa.createScript(
 # and aggregating on the "val" column. This returns
 # two values which are close to the means of the two groups.
 testscript("groupid", "val", table = "test.twogroups" , groupBy = "groupid")
+
+dbDisconnect(C)
 }

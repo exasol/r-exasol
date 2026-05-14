@@ -26,52 +26,24 @@ dbFetch
 }
 \section{Methods (by class)}{
 \itemize{
-\item \code{res = EXAResult,n = numeric}: Fetches a subset of an result set.
+\item \code{fetch(res = EXAResult, n = numeric)}: Fetches a subset of an result set.
 
-\item \code{res = EXAResult,n = missing}: Fetches a subset of an result set without indicated the size of the subset to fetch.
+\item \code{fetch(res = EXAResult, n = missing)}: Fetches a subset of an result set without indicated the size of the subset to fetch.
 
-\item \code{EXAResult}: Fetches a subset of an result set.
+\item \code{dbFetch(EXAResult)}: Fetches a subset of an result set.
+
 }}
-
 \seealso{
 \code{\link[DBI:fetch]{DBI::fetch()}}
 
 \code{\link[DBI:dbFetch]{DBI::dbFetch()}}
 
-Other EXAResult related objects: 
+Other EXAResult related objects:
 \code{\link{EXAResult-class}},
 \code{\link{dbClearResult,EXAResult-method}},
 \code{\link{dbListFields,EXAConnection,character-method}}
 
-Other DQL functions: 
-\code{\link{dbClearResult,EXAResult-method}},
-\code{\link{dbExistsTable,EXAConnection,character-method}},
-\code{\link{dbGetQuery,EXAConnection,character-method}},
-\code{\link{dbListFields,EXAConnection,character-method}},
-\code{\link{dbListTables,EXAConnection-method}},
-\code{\link{dbReadTable,EXAConnection,character-method}},
-\code{\link{dbSendQuery,EXAConnection,character-method}}
-
-Other EXAResult related objects: 
-\code{\link{EXAResult-class}},
-\code{\link{dbClearResult,EXAResult-method}},
-\code{\link{dbListFields,EXAConnection,character-method}}
-
-Other DQL functions: 
-\code{\link{dbClearResult,EXAResult-method}},
-\code{\link{dbExistsTable,EXAConnection,character-method}},
-\code{\link{dbGetQuery,EXAConnection,character-method}},
-\code{\link{dbListFields,EXAConnection,character-method}},
-\code{\link{dbListTables,EXAConnection-method}},
-\code{\link{dbReadTable,EXAConnection,character-method}},
-\code{\link{dbSendQuery,EXAConnection,character-method}}
-
-Other EXAResult related objects: 
-\code{\link{EXAResult-class}},
-\code{\link{dbClearResult,EXAResult-method}},
-\code{\link{dbListFields,EXAConnection,character-method}}
-
-Other DQL functions: 
+Other DQL functions:
 \code{\link{dbClearResult,EXAResult-method}},
 \code{\link{dbExistsTable,EXAConnection,character-method}},
 \code{\link{dbGetQuery,EXAConnection,character-method}},
@@ -81,10 +53,6 @@ Other DQL functions:
 \code{\link{dbSendQuery,EXAConnection,character-method}}
 }
 \author{
-EXASOL AG <opensource@exasol.com>
-
-EXASOL AG <opensource@exasol.com>
-
 EXASOL AG <opensource@exasol.com>
 }
 \concept{DQL functions}

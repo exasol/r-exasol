@@ -68,7 +68,7 @@ processIDs <- function(id, quotes = "\"") {
 #       return(sql("")) # empty string is NULL in EXASOL
 #
 
-  if (length(id) == 1 & is.na(id) ) return(NA)
+  if (length(id) == 1 && is.na(id) ) return(NA)
 
   id <- gsub("^\\s+|\\s+$", "", id) # remove surr whitespaces
   # remove surr quotes if present

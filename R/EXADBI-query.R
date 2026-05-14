@@ -3,6 +3,17 @@ NULL
 
 ## Query related methods of the DBI API.
 
+## Internal helper: execute SQL via WebSocket, returning the result list.
+## On error, raises an R error (if errors=TRUE) or returns -1 (if errors=FALSE).
+.wsExecuteQuery <- function(con, sql, errors = TRUE) {
+  tryCatch({
+    exaWsExecute(con@ws_handle, sql)
+  }, error = function(e) {
+    if (errors) stop(e)
+    return(-1)
+  })
+}
+
 #' @title dbSendQuery
 #' @describeIn dbSendQuery Sends an SQL statement to an EXASOL DB, prepares for result fetching.
 #' @family EXAConnection related objects
@@ -57,23 +68,21 @@ setMethod(
     err <- vector(mode = "character")
 
     if (profile) {
-      err <- append(err,sqlQuery(con, "alter session set profile='ON'"))
+      .wsExecuteQuery(con, "alter session set profile='ON'", errors = FALSE)
     }
 
     dbBegin(con)
-    on.exit(dbEnd(con,commit = FALSE))
+    on.exit(dbEnd(con, commit = FALSE))
 
-    if (stmt_cmd == "SELECT") {# ---------------if select ----------------------------------------
+    if (stmt_cmd == "SELECT") {
       temp_schema <- FALSE
       tbl_name <-
-        paste0("TEMP_",floor(rnorm(1,1000,100) ^ 2),"_CREATED_BY_R")
-      # con <- dbConnect(con, autocommit="N",...) # clone the connection with autocommit=off
+        paste0("TEMP_", floor(rnorm(1, 1000, 100) ^ 2), "_CREATED_BY_R")
 
       ids <- .EXAGetIdentifier(stmt, statement = TRUE)
 
       if (schema == "") {
-        # try to grep schema from stmt
-        if (length(ids)>0) schema <- ids[[length(ids)]][1]
+        if (length(ids) > 0) schema <- ids[[length(ids)]][1]
         if (schema != "" & schema != "\"\"") {
           message(paste("Using Schema from statement:", schema))
         } else {
@@ -84,7 +93,6 @@ setMethod(
         }
       }
       if (schema == "" || schema == "\"\"") {
-        # if nothing helps use temp_schema
         schema <- tbl_name
         temp_schema <- TRUE
         err <- append(err, paste("Using temporary schema:", schema))
@@ -93,54 +101,47 @@ setMethod(
       schema <- processIDs(schema)
 
       if (temp_schema)
-        err <- append(err, sqlQuery(con, paste("create schema", schema)))
-      sq1 <- paste0("create table ", schema, ".", tbl_name," as (", stmt, ")")
-      #print(paste("-sql: ", sq1, " -END"))
-      errr <-
-        try(sqlQuery(con, sq1, errors = FALSE))
-      # on success this won't return anything
+        .wsExecuteQuery(con, paste("create schema", schema))
 
-      # dbCommit(con)
+      sq1 <- paste0("create table ", schema, ".", tbl_name, " as (", stmt, ")")
 
-      if (errr == -1) {
-        warning(odbcGetErrMsg(con))
-        err <- append(err, odbcGetErrMsg(con))
+      errr <- .wsExecuteQuery(con, sq1, errors = FALSE)
+
+      if (identical(errr, -1)) {
+        warning("Failed to create temp result table.")
+        err <- append(err, "Failed to create temp result table.")
       } else {
         dbEnd(con, commit = TRUE)
-        # on.exit(dbEnd(con, commit = TRUE)) # commit after select in order to store indices that may have been created.
       }
 
     } else {
-      # if NOT SELECT ------------------
-      #
-
       if (schema != "") {
         schema <- processIDs(schema)
-        err1 <-
-          try(sqlQuery(con, paste("open schema", schema), errors = FALSE))
-        if (err1 == -1) {
-          # schema cannot be opened
-          warning(paste("Schema cannot be opened:", schema,"\n",err1))
-          err <- append(err, odbcGetErrMsg(con))
+        err1 <- .wsExecuteQuery(con, paste("open schema", schema), errors = FALSE)
+        if (identical(err1, -1)) {
+          warning(paste("Schema cannot be opened:", schema))
+          err <- append(err, paste("Schema cannot be opened:", schema))
         }
       }
 
-      err2 <- try(sqlQuery(con, stmt, errors = FALSE))
+      err2 <- .wsExecuteQuery(con, stmt, errors = FALSE)
 
-      if (err2 == -1) {
-        err <- append(err, odbcGetErrMsg(con))
-        stop(paste("Query failed.\n", odbcGetErrMsg(con)))
+      if (identical(err2, -1)) {
+        stop("Query failed.")
       } else {
-        #on.exit(
-        dbEnd(con,commit = TRUE)
-        #)
+        dbEnd(con, commit = TRUE)
       }
     }
 
-    sqlQuery(con,"flush statistics")
+    .wsExecuteQuery(con, "flush statistics", errors = FALSE)
 
     if (stmt_cmd == "SELECT") {
-      rc <- try(sqlQuery(con, paste0("select count(*) from ", schema, ".", tbl_name))[1,1], silent = TRUE)
+      rc <- tryCatch({
+        count_res <- .wsExecuteQuery(con, paste0("select count(*) from ", schema, ".", tbl_name))
+        if (!is.null(count_res$data) && length(count_res$data) > 0) {
+          count_res$data[[1]][1]
+        } else 0
+      }, error = function(e) 0)
       rowcount <- ifelse(is.numeric(rc), rc, 0)
     } else rowcount <- 0
 
@@ -160,13 +161,13 @@ setMethod(
       from exa_user_profile_last_day
       where session_id = current_session and stmt_id=current_statement-4
       order by part_id desc"
-    ) # current_statement: -2 if autocommit=N, otherwise -4, -3 if dbCommit (all +1 due to rowcount)
+    )
 
     cols <- data.frame()
 
     if (stmt_cmd == "SELECT") {
-      if (errr != -1) {
-        message(rowcount," rows prepared in ",sum(p$DURATION)," seconds.")
+      if (!identical(errr, -1)) {
+        message(rowcount, " rows prepared in ", sum(p$DURATION), " seconds.")
       }
 
       cols <- exa.readData(
@@ -181,12 +182,12 @@ setMethod(
           column_owner,
           column_is_distribution_key
           from exa_user_columns
-          where column_schema = ", processIDs(schema, quotes="'"),
-          " and column_table = ", processIDs(tbl_name, quotes="'")
+          where column_schema = ", processIDs(schema, quotes = "'"),
+          " and column_table = ", processIDs(tbl_name, quotes = "'")
         )
       )
 
-      res_tbl <- paste0(schema,".",tbl_name)
+      res_tbl <- paste0(schema, ".", tbl_name)
     } else {
       res_tbl <- ""
     }
@@ -196,8 +197,8 @@ setMethod(
       statement = stmt,
       rows_fetched = 0,
       rows_affected = rowcount,
-      is_complete = ifelse(stmt_cmd == "SELECT",FALSE,TRUE),
-      with_output = ifelse(stmt_cmd == "SELECT",TRUE,FALSE),
+      is_complete = ifelse(stmt_cmd == "SELECT", FALSE, TRUE),
+      with_output = ifelse(stmt_cmd == "SELECT", TRUE, FALSE),
       profile = p,
       columns = cols,
       temp_result_tbl = res_tbl,
@@ -302,48 +303,35 @@ setMethod(
     .EXAClearResult(res,...)
 )
 
-.EXAClearResult <- function(res,...) {
-
+.EXAClearResult <- function(res, ...) {
   if (res$temp_result_tbl == "CLEARED") {
     message("Clear result: already cleared.")
     return(TRUE)
   }
-  if (!res$with_output |
-    res$temp_result_tbl == "") {
-    # if not a SELECT stmt OR nothing to drop...
-    #res$close()
+  if (!res$with_output || res$temp_result_tbl == "") {
     message("No result set to clear.")
     res$temp_result_tbl <- "CLEARED"
     return(TRUE)
   } else {
-    # if a SELECT stmt...
-    # 1. drop the table...
-    err <-
-      try(sqlQuery(res$connection, paste("drop table",res$temp_result_tbl), errors =
-        FALSE))
-    if (err == -1) {
-      stop(paste(
-        "Couldn't remove temporary table. Delete:", res$temp_result_tbl
-      ))
-      return(FALSE)
-    }
-    stbl <-
-      strsplit(res$temp_result_tbl,".",fixed = TRUE) # 2. check if the schema had been created...
-    if (stbl[[1]][1] == stbl[[1]][2] &
-      gregexpr("CREATED_BY_R",stbl[[1]][1])[[1]][1] > 0) {
-      # if the tbl_name & schemaname are equal and contain 'CREATED_BY_R'...
-      err <-
-        try(sqlQuery(res$connection, paste("drop schema",stbl[[1]][1]), errors = FALSE))
-      # ...drop schema if empty
-      if (err == -1) {
-        stop(paste("Couldn't remove temp. schema:",stbl[[1]][1],"\n",err))
-        return(FALSE)
+    tryCatch(
+      .wsExecuteQuery(res$connection, paste("drop table", res$temp_result_tbl)),
+      error = function(e) {
+        stop(paste("Couldn't remove temporary table. Delete:", res$temp_result_tbl))
       }
+    )
+    stbl <- strsplit(res$temp_result_tbl, ".", fixed = TRUE)
+    if (stbl[[1]][1] == stbl[[1]][2] &&
+        gregexpr("CREATED_BY_R", stbl[[1]][1])[[1]][1] > 0) {
+      tryCatch(
+        .wsExecuteQuery(res$connection, paste("drop schema", stbl[[1]][1])),
+        error = function(e) {
+          stop(paste("Couldn't remove temp. schema:", stbl[[1]][1]))
+        }
+      )
     }
     res$temp_result_tbl <- "CLEARED"
-    return(TRUE) # if table (and schema) has been removed return true
+    return(TRUE)
   }
-
 }
 
 #' @title dbGetQuery
@@ -359,12 +347,12 @@ setMethod(
 #' @seealso \code{\link[DBI:dbGetQuery]{DBI::dbGetQuery()}}
 #' @author EXASOL AG <opensource@exasol.com>
 setMethod(
-  "dbGetQuery", signature("EXAConnection","character"),
-  definition = function(conn, statement,...) {
+  "dbGetQuery", signature("EXAConnection", "character"),
+  definition = function(conn, statement, ...) {
     if (.isSelectStatement(statement)) {
-      return(exa.readData(conn,statement,...))
+      return(exa.readData(conn, statement, ...))
     } else {
-      sqlQuery(conn, statement, errors = TRUE)
+      .wsExecuteQuery(conn, statement)
     }
   }
 )

@@ -2,14 +2,14 @@
 #'
 #' @description This function writes the given data frame to a database table.
 #'
-#' The data are transfered to the database via a proprietary transfer channel
+#' The data are transferred to the database via a proprietary transfer channel
 #' which is optimized for high speed bulk transfer. To be more detailed, the
 #' \code{IMPORT INTO ... FROM CSV AT ...} statement is used internally. On the
 #' R-side, the data.frame is converted to csv format and written to a file
 #' connection, streaming the data to the database. You can also use arbitrary
 #' writers, processing the data frame according to your needs.
 #'
-#' @param channel The RODBC connection channel, typically created via odbcConnect.
+#' @param channel An EXAConnection object (WebSocket-based connection to Exasol).
 #' @param data The data frame to be written to the table specified in tableName.
 #' Please make sure that the column names and types of the data frame are consistent with the names
 #' and types in the EXASolution table.
@@ -27,7 +27,7 @@
 #' @param writer This parameter is for the rare cases where you want to customize the writer receiving
 #' the data frame and writing the data to the communication channel.
 #' @param server This parameter is only relevant in rare cases where you want to customize the address
-#' of the data channel. Per default, the data channel uses the same host and port as the RODBC connection.
+#' of the data channel. Per default, the data channel uses the same host and port as the database connection.
 #'
 #' @return The function returns the value returned by the writer, or TRUE if there is none.
 #'
@@ -59,10 +59,10 @@ exa.writeData <- function(channel, data, tableName, tableColumns = NA,
 
   protocol <- ifelse(channel@encrypted, "https", "http")
 
-  try(.Call(C_asyncRODBCQueryFinish, 0))
+  try(asyncWSQueryFinish(0))
 
   if (missing(server)) {
-    server <- odbcGetInfo(channel)[["Server_Name"]]
+    server <- paste0(channel@db_host, ":", as.integer(channel@db_port))
   }
 
   serverAddress <- strsplit(server, ":")[[1]]
@@ -70,9 +70,9 @@ exa.writeData <- function(channel, data, tableName, tableColumns = NA,
   serverHost <- as.character(serverAddress[[1]])
   serverPort <- as.integer(serverAddress[[2]])
 
-  .Call(C_asyncRODBCIOStart, serverHost, serverPort, protocol)
-  proxyHost <- .Call(C_asyncRODBCProxyHost)
-  proxyPort <- .Call(C_asyncRODBCProxyPort)
+  asyncWSIOStart(serverHost, serverPort, protocol)
+  proxyHost <- asyncWSProxyHost()
+  proxyPort <- asyncWSProxyPort()
 
   columns <- ""
   if (length(tableColumns) > 1 || (length(tableColumns) == 1 && !is.na(tableColumns))) {
@@ -83,13 +83,12 @@ exa.writeData <- function(channel, data, tableName, tableColumns = NA,
                  columns,
                  " FROM CSV AT '" , protocol, "://", proxyHost, ":",
                  proxyPort, "' FILE 'importData.csv' ENCODING = '", encoding, "' IGNORE CERTIFICATE")
-  on.exit(.Call(C_asyncRODBCQueryFinish, 0))
+  on.exit(asyncWSQueryFinish(0))
 
-  fd <- .Call(C_asyncRODBCQueryStart, attr(channel, "handle_ptr"),
-              query, protocol, 1)
+  fd <- asyncWSQueryStart(channel@ws_handle, query, protocol, 1)
 
   res <- writer(data, fd)
   flush(fd)
-  .Call(C_asyncRODBCQueryFinish, 1)
+  asyncWSQueryFinish(1)
   ifelse(is.null(res), return(TRUE), return(res))
 }

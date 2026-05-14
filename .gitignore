@@ -14,3 +14,4 @@ config.log
 config.status
 /tests/cpp/cmake-build-debug/
 .idea
+.claude

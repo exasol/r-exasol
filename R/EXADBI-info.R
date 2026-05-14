@@ -32,7 +32,6 @@ setMethod(
       driver.version = packageVersion("exasol"),
       max.connections = 999,
       DBI.version = packageVersion("DBI"),
-      RODBC.version = packageVersion("RODBC"),
       client.version = R.Version()$version.string
     )
   }

@@ -11,7 +11,7 @@
 
 \item{schema}{Filter on DB schema}
 
-\item{...}{Further parameters passed on to `exa.readData()`}
+\item{...}{Unused.}
 }
 \value{
 A character vector. If no tables present, a character vector of length 0.
@@ -21,19 +21,19 @@ dbListTables
 }
 \section{Methods (by class)}{
 \itemize{
-\item \code{EXAConnection}: Lists all tables in the DB.
-}}
+\item \code{dbListTables(EXAConnection)}: Lists all tables in the DB.
 
+}}
 \seealso{
 \code{\link[DBI:dbListTables]{DBI::dbListTables()}}
 
-Other EXAConnection related objects: 
+Other EXAConnection related objects:
 \code{\link{EXAConnection-class}},
 \code{\link{dbBegin,EXAConnection-method}},
 \code{\link{dbCommit,EXAConnection-method}},
 \code{\link{dbConnect,EXADriver-method}},
-\code{\link{dbCurrentSchema}()},
-\code{\link{dbEnd}()},
+\code{\link[=dbCurrentSchema]{dbCurrentSchema()}},
+\code{\link[=dbEnd]{dbEnd()}},
 \code{\link{dbExistsTable,EXAConnection,character-method}},
 \code{\link{dbGetQuery,EXAConnection,character-method}},
 \code{\link{dbListFields,EXAConnection,character-method}},
@@ -43,7 +43,7 @@ Other EXAConnection related objects:
 \code{\link{dbSendQuery,EXAConnection,character-method}},
 \code{\link{dbWriteTable,EXAConnection,character,data.frame-method}}
 
-Other DQL functions: 
+Other DQL functions:
 \code{\link{dbClearResult,EXAResult-method}},
 \code{\link{dbExistsTable,EXAConnection,character-method}},
 \code{\link{dbGetQuery,EXAConnection,character-method}},

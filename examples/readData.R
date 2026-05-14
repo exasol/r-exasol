@@ -1,10 +1,9 @@
 \dontrun{
 
-require(RODBC)
 require(exasol)
 
-# Connect via RODBC with configured DSN
-C <- odbcConnect("exasolution")
+# Connect via WebSocket
+C <- dbConnect("exa", exahost = "localhost:8563", uid = "sys", pwd = "exasol")
 
 # Read results
 tables <- exa.readData(C, "SELECT * FROM EXA_ALL_TABLES")
@@ -15,4 +14,5 @@ print(colnames(tables))  # print names of columns
 print(tables[1,])        # print first row
 print(tables$TABLE_NAME[1])  # print first value of specified column
 
+dbDisconnect(C)
 }

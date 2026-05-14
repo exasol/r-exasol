@@ -45,34 +45,23 @@ fi
 
 echo "OpenSSL: ${OPENSSL_INCLUDES}"
 
-## Setup ODBC
-AC_CHECK_PROG(ODBC,odbc_config,yes)
-if test x"${ODBC}" == x"yes" ; then
-    ODBC_CFLAGS=`odbc_config --cflags`
-    ODBC_LIBS=`odbc_config --libs`
-else
-    ODBC_CFLAGS=""
-    ODBC_LIBS="-lodbc"
-fi
-
-
 ## Setup RBin
 RBIN="${R_HOME}/bin/R"
 
-CXX14=`"${RBIN}" CMD config CXX14`
-if test -z "$CXX14"; then
-  AC_MSG_ERROR([No C++14 compiler is available])
+CXX17=`"${RBIN}" CMD config CXX17`
+if test -z "$CXX17"; then
+  AC_MSG_ERROR([No C++17 compiler is available])
 fi
-CXX14STD=`"${RBIN}" CMD config CXX14STD`
+CXX17STD=`"${RBIN}" CMD config CXX17STD`
 CPPFLAGS=`"${RBIN}" CMD config CPPFLAGS`
-CXXFLAGS=`"${RBIN}" CMD config CXX14FLAGS`
-CXX="${CXX14} ${CXX14STD}"
+CXXFLAGS=`"${RBIN}" CMD config CXX17FLAGS`
+CXX="${CXX17} ${CXX17STD}"
 echo "CPPFLAGS:${CPPFLAGS}"
-CPPFLAGS="${CPPFLAGS} -I. ${UNIT_TESTFLAGS_CPPFLAGS} ${OPENSSL_INCLUDES} ${ODBC_CFLAGS}"
+CPPFLAGS="${CPPFLAGS} -I. -I./r_exasol/external ${UNIT_TESTFLAGS_CPPFLAGS} ${OPENSSL_INCLUDES}"
 echo "CPPFLAGS:${CPPFLAGS}"
 
 # honor PKG_xx overrides
-LIBS="${ODBC_LIBS} ${LIBS} ${PKG_LIBS} ${OPENSSL_LDFLAGS} ${OPENSSL_LIBS}"
+LIBS="${LIBS} ${PKG_LIBS} ${OPENSSL_LDFLAGS} ${OPENSSL_LIBS} -lpthread"
 
 ## We are using C++
 AC_LANG(C++)
@@ -86,7 +75,7 @@ PKG_SOURCES=$(cat src/sources.list)
 AC_SUBST(PKG_SOURCES)
 
 PKG_SOURCE_OBJ_FILES=$(sed  's/.cpp/.o/g' src/sources.list)
-PKG_SOURCE_OBJ_FILES+=" exasol.o"
+PKG_SOURCE_OBJ_FILES+=" exasol.o rcpp_bridge.o RcppExports.o"
 PKG_TEST_OBJ_FILES=$(sed 's/.cpp/.o/g' src/tests/sources.list)
 PKG_OBJ_FILES="$PKG_SOURCE_OBJ_FILES $PKG_TEST_OBJ_FILES"
 AC_SUBST(PKG_OBJ_FILES)

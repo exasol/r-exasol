@@ -7,13 +7,15 @@
 \title{R Interface & SDK for the EXASOL Database}
 \description{
 The EXASOL R Package offers interface functionality such as connecting to, querying
-and writing into an EXASOL Database (version 5 onwards). It is optimised for massively parallel
-reading & writing from and to a multinode cluster. Implemented are DBI compliant methods for database
-access, querying and modiifcation. The package integrates with EXASOL's InDB R UDF capabilities, which
-allows to deploy and execute R code dynamically from an R application running on a client.
+and writing into an EXASOL Database (version 7.1 onwards) via a native WebSocket protocol.
+No ODBC driver installation is required. It is optimised for massively parallel reading & writing
+from and to a multinode cluster using HTTP/HTTPS bulk transfer channels. Implemented are DBI
+compliant methods for database access, querying and modification. The package integrates with
+EXASOL's InDB R UDF capabilities, which allows to deploy and execute R code dynamically from an
+R application running on a client.
 
 EXASOL is an InMemory RDBMS that runs in a MPP cluster (shared-nothing) environment. Leading the TPC-H
-benckmark, it is considered the fastest analytical data warehouse available. The community edition
+benchmark, it is considered the fastest analytical data warehouse available. The community edition
 can be downloaded for free on \url{https://docs.exasol.com/get_started/communityedition.htm}.
 }
 \section{Package index}{
@@ -93,6 +95,14 @@ can be downloaded for free on \url{https://docs.exasol.com/get_started/community
 \item Bugs and improvements may be noted on \url{https://github.com/EXASOL/r-exasol/issues}
 \item Downloads & manuals related to the EXASOL Database are at \url{https://docs.exasol.com/get_started/communityedition.htm}
 }
+}
+\seealso{
+Useful links:
+\itemize{
+  \item \url{https://github.com/EXASOL/r-exasol} \url{https://www.exasol.com}
+  \item Report bugs at \url{https://github.com/exasol/r-exasol/issues}
+}
+
 }
 \author{
 EXASOL AG & Community

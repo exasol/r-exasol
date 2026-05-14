@@ -21,8 +21,8 @@ exa.createScript(
 )
 }
 \arguments{
-\item{channel}{The RODBC connection channel, typically created via
-odbcConnect.}
+\item{channel}{An EXAConnection object, typically created via
+dbConnect.}
 
 \item{name}{The script will be created in the database with this name.}
 
@@ -70,7 +70,7 @@ for details.}
 already exists. Either \code{TRUE} or \code{FALSE}.}
 
 \item{mockOnly}{Boolean, default FALSE. This parameter is useful for
-unit-testing if the ODBC connection is not available. Setting mockOnly=TRUE
+unit-testing if the database connection is not available. Setting mockOnly=TRUE
 will not install the UDF function to the EXASOL database.}
 }
 \value{
@@ -125,12 +125,11 @@ understanding.
 \dontrun{
 
 # This example creates a simple SET-EMITS script and executes
-# it the table footable.
-require(RODBC)
+# it on the table twogroups.
 require(exasol)
 
-# Connect via RODBC with configured DSN
-C <- odbcConnect("exasolution")
+# Connect via WebSocket
+C <- dbConnect("exa", exahost = "localhost:8563", uid = "sys", pwd = "exasol")
 
 # Generate example data frame with two groups
 # of random values with different means.
@@ -140,8 +139,8 @@ twogroups <- data.frame(group = rep(1:2, each = 10),
                         value = c(valsMean0, valsMean50))
 
 # Write example data to a table
-odbcQuery(C, "CREATE SCHEMA test")
-odbcQuery(C, "CREATE TABLE test.twogroups (groupid INT, val DOUBLE)")
+dbGetQuery(C, "CREATE SCHEMA IF NOT EXISTS test")
+dbGetQuery(C, "CREATE TABLE test.twogroups (groupid INT, val DOUBLE)")
 exa.writeData(C, twogroups, tableName = "test.twogroups")
 
 # Create the R function as an UDF R script in the database
@@ -160,14 +159,16 @@ testscript <- exa.createScript(
 # and aggregating on the "val" column. This returns
 # two values which are close to the means of the two groups.
 testscript("groupid", "val", table = "test.twogroups" , groupBy = "groupid")
+
+dbDisconnect(C)
 }
 }
 \seealso{
-Other None-DBI-API: 
-\code{\link{dbCurrentSchema}()},
-\code{\link{dbEnd}()},
-\code{\link{exa.readData}()},
-\code{\link{exa.writeData}()}
+Other None-DBI-API:
+\code{\link[=dbCurrentSchema]{dbCurrentSchema()}},
+\code{\link[=dbEnd]{dbEnd()}},
+\code{\link[=exa.readData]{exa.readData()}},
+\code{\link[=exa.writeData]{exa.writeData()}}
 }
 \author{
 EXASOL AG <opensource@exasol.com>

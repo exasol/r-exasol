@@ -34,21 +34,21 @@ namespace exa {
         bool connect(exa::ProtocolType protocolType, const char* host, uint16_t port);
 
         /**
-         * This function triggers the async ODBC statement executor, creates and prepares the reader (for the given protocol).
+         * This function triggers the async SQL statement executor, creates and prepares the reader (for the given protocol).
          * @param sessionInfo Information about the current async execution session.
          * @return Returns reader which can be used for reading user data.
          */
         std::weak_ptr<reader::Reader> startReading(const AsyncExecutorSessionInfo&);
         /**
-         * This function triggers the async ODBC statement executor, creates and prepares the writer (for the given protocol).
+         * This function triggers the async SQL statement executor, creates and prepares the writer (for the given protocol).
          * @param sessionInfo Information about the current async execution session.
          * @return Returns reader which can be used for writing user data.
          */
         std::weak_ptr<writer::Writer> startWriting(const AsyncExecutorSessionInfo&);
 
-        void onOdbcError();
+        void onAsyncExecutorError();
         /**
-         * Closes connection (Socket/ async Odbc executor / Writer or Reader)
+         * Closes connection (Socket/ async executor / Writer or Reader)
          * @return true if data transfer was finished. false otherwise.
          */
         bool shutDown();
@@ -65,7 +65,7 @@ namespace exa {
         ConnectionFactory & mConnectionFactory;
         std::shared_ptr<reader::Reader> mReader;
         std::shared_ptr<writer::Writer> mWriter;
-        std::unique_ptr<AsyncExecutor> mOdbcAsyncExecutor;
+        std::unique_ptr<AsyncExecutor> mAsyncExecutor;
         ConnectionInfo mConnectionInfo;
         tErrorFunction mErrorHandler;
 

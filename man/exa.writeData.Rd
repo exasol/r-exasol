@@ -12,14 +12,16 @@ exa.writeData(
   encoding = tryCatch(strsplit(Sys.getlocale("LC_CTYPE"), ".", fixed = TRUE)[[1]][2],
     error = function(e) stop(paste("Cannot get system encoding." +
     " Please set manually.\\n", e))),
-  writer = function(data, conn, fileEncoding = encoding) {     write.table(data, file =
+  writer = function(data, conn, fileEncoding = encoding) {
+     write.table(data, file =
     conn, row.names = FALSE, col.names = FALSE, na = "", sep = ",", qmethod = "double",
-    fileEncoding = fileEncoding) },
+    fileEncoding = fileEncoding)
+ },
   server
 )
 }
 \arguments{
-\item{channel}{The RODBC connection channel, typically created via odbcConnect.}
+\item{channel}{An EXAConnection object (WebSocket-based connection to Exasol).}
 
 \item{data}{The data frame to be written to the table specified in tableName.
 Please make sure that the column names and types of the data frame are consistent with the names
@@ -40,7 +42,7 @@ is returned, asking to set this parameter manually (see example below).}
 the data frame and writing the data to the communication channel.}
 
 \item{server}{This parameter is only relevant in rare cases where you want to customize the address
-of the data channel. Per default, the data channel uses the same host and port as the RODBC connection.}
+of the data channel. Per default, the data channel uses the same host and port as the database connection.}
 }
 \value{
 The function returns the value returned by the writer, or TRUE if there is none.
@@ -48,7 +50,7 @@ The function returns the value returned by the writer, or TRUE if there is none.
 \description{
 This function writes the given data frame to a database table.
 
-The data are transfered to the database via a proprietary transfer channel
+The data are transferred to the database via a proprietary transfer channel
 which is optimized for high speed bulk transfer. To be more detailed, the
 \code{IMPORT INTO ... FROM CSV AT ...} statement is used internally. On the
 R-side, the data.frame is converted to csv format and written to a file
@@ -58,11 +60,10 @@ writers, processing the data frame according to your needs.
 \examples{
 \dontrun{
 
-require(RODBC)
 require(exasol)
 
-# Connect via RODBC with configured DSN
-C <- odbcConnect("exasolution")
+# Connect via WebSocket
+C <- dbConnect("exa", exahost = "localhost:8563", uid = "sys", pwd = "exasol")
 
 # Generate example data frame with two groups
 # of random values with different means.
@@ -72,21 +73,23 @@ twogroups <- data.frame(group = rep(1:2, each = 10),
                         value = c(valsMean0, valsMean50))
 
 # Write example data to a table
-odbcQuery(C, "CREATE SCHEMA test")
-odbcQuery(C, "CREATE TABLE test.twogroups (groupid INT, val DOUBLE)")
+dbGetQuery(C, "CREATE SCHEMA IF NOT EXISTS test")
+dbGetQuery(C, "CREATE TABLE test.twogroups (groupid INT, val DOUBLE)")
 exa.writeData(C, twogroups, tableName = "test.twogroups")
 
 # setting the write encoding manually
 # (See also EXASOL User Manual, Appendix D. "Supported Encodings")
-exa.writeData(con, twogroups, "test.twogroups", encoding="1252")
+exa.writeData(C, twogroups, "test.twogroups", encoding="1252")
+
+dbDisconnect(C)
 }
 }
 \seealso{
-Other None-DBI-API: 
-\code{\link{dbCurrentSchema}()},
-\code{\link{dbEnd}()},
-\code{\link{exa.createScript}()},
-\code{\link{exa.readData}()}
+Other None-DBI-API:
+\code{\link[=dbCurrentSchema]{dbCurrentSchema()}},
+\code{\link[=dbEnd]{dbEnd()}},
+\code{\link[=exa.createScript]{exa.createScript()}},
+\code{\link[=exa.readData]{exa.readData()}}
 }
 \author{
 EXASOL AG <opensource@exasol.com>

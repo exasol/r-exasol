@@ -50,12 +50,12 @@ active EXAResult object, the table may stay in the DB.
 \seealso{
 \code{\link{DBIResult-class}}
 
-Other DBI classes: 
+Other DBI classes:
 \code{\link{EXAConnection-class}},
 \code{\link{EXADriver-class}},
 \code{\link{EXAObject-class}}
 
-Other EXAResult related objects: 
+Other EXAResult related objects:
 \code{\link{dbClearResult,EXAResult-method}},
 \code{\link{dbListFields,EXAConnection,character-method}},
 \code{\link{fetch,EXAResult,numeric-method}}

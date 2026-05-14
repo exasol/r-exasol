@@ -14,6 +14,7 @@ cd "${TEST_DIR}"
 Rscript -e 'devtools::install()'
 
 export HAS_LOCAL_EXASOL_TEST_DB=true
+export EXAHOST="exasol-test-database:8888"
 
 TST_CMD="R -f testthat.R"
 

@@ -44,27 +44,27 @@ Generic for conversion to an EXASOL data type.
 }
 \section{Methods (by class)}{
 \itemize{
-\item \code{data.frame}: Generic method for conversion of a dataframe to an EXASOL data type.
+\item \code{EXADataType(data.frame)}: Generic method for conversion of a dataframe to an EXASOL data type.
 
-\item \code{integer}: Generic method for conversion of an integer to an EXASOL "INT".
+\item \code{EXADataType(integer)}: Generic method for conversion of an integer to an EXASOL "INT".
 
-\item \code{numeric}: Generic method for conversion of all other numerics to an EXASOL "DECIMAL(36,15)".
+\item \code{EXADataType(numeric)}: Generic method for conversion of all other numerics to an EXASOL "DECIMAL(36,15)".
 
-\item \code{logical}: Generic method for conversion of a logical to an EXASOL "BOOLEAN".
+\item \code{EXADataType(logical)}: Generic method for conversion of a logical to an EXASOL "BOOLEAN".
 
-\item \code{Date}: Generic method for conversion of a Date to an EXASOL "DATE".
+\item \code{EXADataType(Date)}: Generic method for conversion of a Date to an EXASOL "DATE".
 
-\item \code{POSIXct}: Generic method for conversion of a POSIXCT to an EXASOL "TIMESTAMP".
+\item \code{EXADataType(POSIXct)}: Generic method for conversion of a POSIXCT to an EXASOL "TIMESTAMP".
 
-\item \code{character}: Generic method for conversion of a string to an EXASOL SQL string.
+\item \code{EXADataType(character)}: Generic method for conversion of a string to an EXASOL SQL string.
 
-\item \code{factor}: Generic method for conversion of a factor to an EXASOL SQL string.
+\item \code{EXADataType(factor)}: Generic method for conversion of a factor to an EXASOL SQL string.
 
-\item \code{list}: Generic method for conversion of a list to an EXASOL SQL string.
+\item \code{EXADataType(list)}: Generic method for conversion of a list to an EXASOL SQL string.
 
-\item \code{raw}: Generic method for conversion of a "raw" to an EXASOL SQL string.
+\item \code{EXADataType(raw)}: Generic method for conversion of a "raw" to an EXASOL SQL string.
 
-\item \code{ANY}: Generic method for conversion of "ANY" to an EXASOL SQL string.
+\item \code{EXADataType(ANY)}: Generic method for conversion of "ANY" to an EXASOL SQL string.
+
 }}
-
 \keyword{internal}

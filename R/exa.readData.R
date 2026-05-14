@@ -1,19 +1,18 @@
 #' Execute a SQL query on an EXASolution database and read results fast.
 #'
-#' @description This function executes the given SQL query using a given RODBC
-#' connection and returns the results as a data frame.
+#' @description This function executes the given SQL query using a given
+#' EXAConnection and returns the results as a data frame.
 #'
 #' The results are transfered via a proprietary high speed channel from the
 #' database optimized for bulk transfer. The \code{EXPORT ... INTO CSV AT ...}
-#' statement is used internally to transfer the results as a csv. This is
-#' significantly faster than RODBC.
+#' statement is used internally to transfer the results as a csv, which
+#' is usually faster than websocket, especially for large data.
 #'
 #' On the R-side, the results are parsed per default via read.csv. You can also
 #' use arbitrary readers, processing the incoming csv records according to your
 #' needs.
 #'
-#' @param channel The RODBC connection channel, typically created via
-#'   odbcConnect.
+#' @param channel An EXAConnection object (WebSocket-based connection to Exasol).
 #' @param query A string with the SQL query to be executed on EXASolution.
 #' @param encoding A string containing the DB encoding. By default "UTF-8".
 #' There should be no need to change this as the DB will convert the result set before
@@ -33,7 +32,7 @@
 #'
 #' @param server This parameter is only relevant in rare cases where you want to
 #'   customize the address of the data channel. Per default, the data channel
-#'   uses the same host and port as the RODBC connection.
+#'   uses the same host and port as the database connection.
 #'
 #' @param ... Other parameters passed on to the reader (read.csv).
 #'
@@ -53,12 +52,12 @@ exa.readData <- function(channel, query, encoding = 'UTF-8',
                          server = NA,...) {
   query <- as.character(query)
 
-  try(.Call(C_asyncRODBCQueryFinish, 0))
+  try(asyncWSQueryFinish(0))
 
   protocol <- ifelse(channel@encrypted, "https", "http")
 
   if (is.na(server)) {
-    server <- odbcGetInfo(channel)[["Server_Name"]]
+    server <- paste0(channel@db_host, ":", as.integer(channel@db_port))
   }
 
   serverAddress <- strsplit(server, ":")[[1]]
@@ -66,20 +65,19 @@ exa.readData <- function(channel, query, encoding = 'UTF-8',
   serverHost <- as.character(serverAddress[[1]])
   serverPort <- as.integer(serverAddress[[2]])
 
-  .Call(C_asyncRODBCIOStart,serverHost, serverPort, protocol)
+  asyncWSIOStart(serverHost, serverPort, protocol)
 
-  proxyHost <- .Call(C_asyncRODBCProxyHost)
-  proxyPort <- .Call(C_asyncRODBCProxyPort)
+  proxyHost <- asyncWSProxyHost()
+  proxyPort <- asyncWSProxyPort()
   query <- paste0("EXPORT (", query, ") INTO CSV AT '", protocol, "://",  proxyHost, ":",
                  proxyPort, "' FILE 'executeSQL.csv' ENCODING = '",encoding,"' BOOLEAN = 'TRUE/FALSE' WITH COLUMN NAMES IGNORE CERTIFICATE")
 
-  on.exit(.Call(C_asyncRODBCQueryFinish, 0))
+  on.exit(asyncWSQueryFinish(0))
 
-  fd <- .Call(C_asyncRODBCQueryStart,
-              attr(channel, "handle_ptr"), query, protocol, 0)
+  fd <- asyncWSQueryStart(channel@ws_handle, query, protocol, 0)
 
   res <- reader(fd,...)
   on.exit(NULL)
-  .Call(C_asyncRODBCQueryFinish, 1)
+  asyncWSQueryFinish(1)
   res
 }

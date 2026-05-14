@@ -623,7 +623,6 @@ CXXCPP
 ac_ct_CXX
 CXXFLAGS
 CXX
-ODBC
 OPENSSL_LDFLAGS
 OPENSSL_LIBS
 OPENSSL_INCLUDES
@@ -3982,75 +3981,23 @@ rm -f core conftest.err conftest.$ac_objext conftest.beam \
 
 echo "OpenSSL: ${OPENSSL_INCLUDES}"
 
-## Setup ODBC
-# Extract the first word of "odbc_config", so it can be a program name with args.
-set dummy odbc_config; ac_word=$2
-{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
-printf %s "checking for $ac_word... " >&6; }
-if test ${ac_cv_prog_ODBC+y}
-then :
-  printf %s "(cached) " >&6
-else $as_nop
-  if test -n "$ODBC"; then
-  ac_cv_prog_ODBC="$ODBC" # Let the user override the test.
-else
-as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
-for as_dir in $PATH
-do
-  IFS=$as_save_IFS
-  case $as_dir in #(((
-    '') as_dir=./ ;;
-    */) ;;
-    *) as_dir=$as_dir/ ;;
-  esac
-    for ac_exec_ext in '' $ac_executable_extensions; do
-  if as_fn_executable_p "$as_dir$ac_word$ac_exec_ext"; then
-    ac_cv_prog_ODBC="yes"
-    printf "%s\n" "$as_me:${as_lineno-$LINENO}: found $as_dir$ac_word$ac_exec_ext" >&5
-    break 2
-  fi
-done
-  done
-IFS=$as_save_IFS
-
-fi
-fi
-ODBC=$ac_cv_prog_ODBC
-if test -n "$ODBC"; then
-  { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $ODBC" >&5
-printf "%s\n" "$ODBC" >&6; }
-else
-  { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: no" >&5
-printf "%s\n" "no" >&6; }
-fi
-
-
-if test x"${ODBC}" == x"yes" ; then
-    ODBC_CFLAGS=`odbc_config --cflags`
-    ODBC_LIBS=`odbc_config --libs`
-else
-    ODBC_CFLAGS=""
-    ODBC_LIBS="-lodbc"
-fi
-
-
 ## Setup RBin
 RBIN="${R_HOME}/bin/R"
 
-CXX14=`"${RBIN}" CMD config CXX14`
-if test -z "$CXX14"; then
-  as_fn_error $? "No C++14 compiler is available" "$LINENO" 5
+CXX17=`"${RBIN}" CMD config CXX17`
+if test -z "$CXX17"; then
+  as_fn_error $? "No C++17 compiler is available" "$LINENO" 5
 fi
-CXX14STD=`"${RBIN}" CMD config CXX14STD`
+CXX17STD=`"${RBIN}" CMD config CXX17STD`
 CPPFLAGS=`"${RBIN}" CMD config CPPFLAGS`
-CXXFLAGS=`"${RBIN}" CMD config CXX14FLAGS`
-CXX="${CXX14} ${CXX14STD}"
+CXXFLAGS=`"${RBIN}" CMD config CXX17FLAGS`
+CXX="${CXX17} ${CXX17STD}"
 echo "CPPFLAGS:${CPPFLAGS}"
-CPPFLAGS="${CPPFLAGS} -I. ${UNIT_TESTFLAGS_CPPFLAGS} ${OPENSSL_INCLUDES} ${ODBC_CFLAGS}"
+CPPFLAGS="${CPPFLAGS} -I. -I./r_exasol/external ${UNIT_TESTFLAGS_CPPFLAGS} ${OPENSSL_INCLUDES}"
 echo "CPPFLAGS:${CPPFLAGS}"
 
 # honor PKG_xx overrides
-LIBS="${ODBC_LIBS} ${LIBS} ${PKG_LIBS} ${OPENSSL_LDFLAGS} ${OPENSSL_LIBS}"
+LIBS="${LIBS} ${PKG_LIBS} ${OPENSSL_LDFLAGS} ${OPENSSL_LIBS} -lpthread"
 
 ## We are using C++
 ac_ext=cpp
@@ -4339,11 +4286,11 @@ if test x$ac_prog_cxx_stdcxx = xno
 then :
   { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for $CXX option to enable C++11 features" >&5
 printf %s "checking for $CXX option to enable C++11 features... " >&6; }
-if test ${ac_cv_prog_cxx_11+y}
+if test ${ac_cv_prog_cxx_cxx11+y}
 then :
   printf %s "(cached) " >&6
 else $as_nop
-  ac_cv_prog_cxx_11=no
+  ac_cv_prog_cxx_cxx11=no
 ac_save_CXX=$CXX
 cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 /* end confdefs.h.  */
@@ -4385,11 +4332,11 @@ if test x$ac_prog_cxx_stdcxx = xno
 then :
   { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for $CXX option to enable C++98 features" >&5
 printf %s "checking for $CXX option to enable C++98 features... " >&6; }
-if test ${ac_cv_prog_cxx_98+y}
+if test ${ac_cv_prog_cxx_cxx98+y}
 then :
   printf %s "(cached) " >&6
 else $as_nop
-  ac_cv_prog_cxx_98=no
+  ac_cv_prog_cxx_cxx98=no
 ac_save_CXX=$CXX
 cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 /* end confdefs.h.  */
@@ -4841,11 +4788,11 @@ if test x$ac_prog_cxx_stdcxx = xno
 then :
   { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for $CXX option to enable C++11 features" >&5
 printf %s "checking for $CXX option to enable C++11 features... " >&6; }
-if test ${ac_cv_prog_cxx_11+y}
+if test ${ac_cv_prog_cxx_cxx11+y}
 then :
   printf %s "(cached) " >&6
 else $as_nop
-  ac_cv_prog_cxx_11=no
+  ac_cv_prog_cxx_cxx11=no
 ac_save_CXX=$CXX
 cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 /* end confdefs.h.  */
@@ -4887,11 +4834,11 @@ if test x$ac_prog_cxx_stdcxx = xno
 then :
   { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for $CXX option to enable C++98 features" >&5
 printf %s "checking for $CXX option to enable C++98 features... " >&6; }
-if test ${ac_cv_prog_cxx_98+y}
+if test ${ac_cv_prog_cxx_cxx98+y}
 then :
   printf %s "(cached) " >&6
 else $as_nop
-  ac_cv_prog_cxx_98=no
+  ac_cv_prog_cxx_cxx98=no
 ac_save_CXX=$CXX
 cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 /* end confdefs.h.  */
@@ -4942,7 +4889,7 @@ PKG_SOURCES=$(cat src/sources.list)
 
 
 PKG_SOURCE_OBJ_FILES=$(sed  's/.cpp/.o/g' src/sources.list)
-PKG_SOURCE_OBJ_FILES+=" exasol.o"
+PKG_SOURCE_OBJ_FILES+=" exasol.o rcpp_bridge.o RcppExports.o"
 PKG_TEST_OBJ_FILES=$(sed 's/.cpp/.o/g' src/tests/sources.list)
 PKG_OBJ_FILES="$PKG_SOURCE_OBJ_FILES $PKG_TEST_OBJ_FILES"
 

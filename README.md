@@ -8,10 +8,13 @@
 
 
 The Exasol R Package offers interface functionality such as connecting to, querying and writing
-into an Exasol Database (version 5 onwards). It is optimized for fast reading &
-writing from and to a multinode cluster. Implemented are DBI compliant methods for database access,
-querying and modification. The package integrates with Exasol's in-DB R UDF capabilities, which
-allows to deploy and execute R code dynamically from an R application running on a client.
+into an Exasol Database (version 7.1 onwards) via Exasol's native WebSocket protocol. No ODBC
+driver installation is required; the package communicates directly with the database using
+JSON-over-WebSocket for command operations and HTTP/HTTPS for high-speed bulk data transfer.
+It is optimized for fast reading & writing from and to a multinode cluster. Implemented are
+DBI compliant methods for database access, querying and modification. The package integrates
+with Exasol's in-DB R UDF capabilities, which allows to deploy and execute R code dynamically
+from an R application running on a client.
 
 Exasol is an in-memory RDBMS that runs in a MPP cluster (shared-nothing) environment.
 Leading the TPC-H benchmark, it is considered the fastest analytical data warehouse available.
@@ -20,13 +23,22 @@ Leading the TPC-H benchmark, it is considered the fastest analytical data wareho
 
 ## Status
 
-Github CI build validates the package r-exasol against R versions 4.0, 4.1, 4.2, and 4.3. You can use the [remotes package](https://remotes.r-lib.org/) to install specific versions of RODBC. Please note that packages DBI 0.3.1 and a fork of DBItest 1.0-1 are not the latest versions. The Exasol R package may however work with DBI 0.4.1, but until this is resolved appropriate and compatible older packages can be loaded from here:
+Github CI build validates the package r-exasol against R versions 4.0, 4.1, 4.2, and 4.3. Please note that DBI 0.3.1 and a fork of DBItest 1.0-1 are not the latest versions. The Exasol R package may however work with DBI 0.4.1, but until this is resolved appropriate and compatible older packages must be installed from here:
 
 - https://github.com/marcelboldt/DBI
 - https://github.com/marcelboldt/DBItest
 
-For Windows only: 
-  * As this package uses C++14 code, it needs at least RTools >= 4.0.0. Hence, it works only on R >= 4.0.0.
+Install both with:
+
+```r
+remotes::install_github("marcelboldt/DBI")
+remotes::install_github("marcelboldt/DBItest")
+```
+
+Without these, the DBItest-based integration tests (`tests/testthat/test-DBItest.R`) fail to load with the error *"object 'dbiCheckCompliance' is not exported by 'namespace:DBI'"*, because CRAN `DBI` >= 0.4 dropped that symbol while `DBItest 1.0.1` still imports it. Note that installing the fork downgrades your system-wide `DBI` — if you also work on other R projects, install into a project-local library by setting `R_LIBS_USER` before the install commands.
+
+For Windows only:
+  * As this package uses C++17 code, it needs at least RTools >= 4.0.0. Hence, it works only on R >= 4.0.0.
   * Please note that the version of RTools must match the installed version of R (RTools 4.2 for R >= 4.2, RTools 4.0 for R4.0/4.1), check https://cran.r-project.org/bin/windows/Rtools/ for further information
 
 The low-level methods such as regards `exa.readData`, `exa.writeData` and `exa.createScript` may work as expected, so
@@ -37,11 +49,6 @@ Following test were implemented:
 * Integration test (which require a local Exasol db running, and therefore are not activated by default). These leverage the DBItest package.
 
 `dplyr` methods have been moved to a [separate package](https://github.com/marcelboldt/r-exasol-dplyr).
-
-### Known issues
-
-1. ODBC drivers 7.1.1 & 7.1.2 under MacOsX BigSur have a dependency issue. If you have problems under MacOsX and see an error message like ```...libexaodbc-io418sys.dylib not found```, please update to the latest ODBC driver, version 7.1.3 works fine. 
-2. The Exasol ODBC driver does not support encoding of curly braces for passwords in the connection string: You can use curly braces to encode semicolons in passwords in the connection string, like `...,PWD={he;llo},...`. However, passwords like `he{{;o` are currently not supported.
 
 ## Getting started
 
@@ -60,33 +67,7 @@ Following test were implemented:
    official R-project website download section for your OS to find the
    package that are needed to build packages.
 
-2. Make sure you have ODBC and Exasol ODBC installed and
-   configured on your system. Go to the [download page](https://docs.exasol.com/connect_exasol/drivers/odbc.htm) and select your Exasol version in the left menu. Then scroll down to 'Download ODBC Driver' and choose the appropriate version.
-   
-   Once installed, we recommend to create a DSN pointing to
-   your database instance. Read the README of Exasol's ODBC
-   driver package for details.
-
-   <span style="color:red">*Important:*</span> Since v6.1.0 the Exasol ODBC driver for Linux and MacOsX are not bundled anymore in r-exasol and you need to 
-   configure properly the ODBC driver on your system. 
-   If you do not indicate a DSN calling dbConnect, r-exasol will look for a Data Source named <em>"EXASolution Driver"</em> and 
-   you must have the respective driver configured properly, for example the following line in your ```/etc/odbcinst.ini```:
-   ```
-   [EXASolution Driver]
-   Driver=/usr/lib/libexaodbc-uo2214lv2.so
-   ```
-   (This change does not affect Windows: Under Windows the ODBC driver already had to be configured on previous versions.) 
-
-   #### Linux
-   On Linux, you also need to install the development files for ODBC.
-   Therefore please install `unixodbc-devel` (RPM) or `unixodbc-dev`
-   (Debian) package.
-
-   #### MacOsX
-   On MacOsX you can install `unixodbc` with Homebrew:
-   ```brew install unixodbc```
-
-3. The R package **devtools** must be available as it contains the `install_github()` method
+2. The R package **devtools** must be available as it contains the `install_github()` method
    and the things needed to build the package.
 
    You can install it in R with: ```install.packages("devtools")```.
@@ -94,14 +75,21 @@ Following test were implemented:
    Under MacOsX you might need to install additional dependencies, please check the [devtools page](https://www.rdocumentation.org/packages/devtools/versions/1.13.6)
 
 
-4. OpenSSL
+3. OpenSSL (required for the encrypted WebSocket connection and HTTPS bulk transfer)
    For Windows: The package downloads the required DLL's during the installation process.
 
    For Linux: Install using the common package manager, for example: ```apt install libssl-dev```
 
    For MacOsX: Install via brew: ```brew install openssl```.
 
-5. Install the necessary dependencies, such as RODBC or the DBI packages. For the versions of these package, checkout the section [Status](#status). Have a look into the [Github Actions Docker](https://github.com/exasol/r-exasol/blob/main/tests/Dockerfile), if you look for an example, how to install the necessary dependencies.
+4. Install the necessary R dependencies. `DBI` (and, for running the integration test suite, `DBItest`) must be installed from the **legacy forks** described in the section [Status](#status):
+
+   ```r
+   remotes::install_github("marcelboldt/DBI")
+   remotes::install_github("marcelboldt/DBItest")
+   ```
+
+   The current CRAN `DBI` (>= 0.4) is incompatible with the `DBItest 1.0.1` fork that this package targets. See the [Github Actions Dockerfile](https://github.com/exasol/r-exasol/blob/main/tests/Dockerfile) for a complete example of the dependency install sequence.
 
    
 ### Installation
@@ -129,9 +117,7 @@ library(exasol)
 # display documentation of individual commands with Exasol-specific parameters
 ?dbConnect
 
-# connect to Exasol DB with an ODBC DSN
-con <- dbConnect("exa", dsn="ExaSolo", schema="test")
-# OR connect to Exasol DB running on default port (8563) with a hostname, default 'sys' user and default schema ('SYS'), using an encryption channel
+# connect to Exasol DB on default port (8563) with hostname, 'sys' user and 'SYS' schema, using an encrypted (TLS) WebSocket
 con <- dbConnect("exa", exahost = "<hostname>:8563", uid = "sys", pwd = "<password>", encryption = "Y")
 
 # list all tables in Exasol (returns a character vector).

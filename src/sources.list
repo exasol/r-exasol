@@ -7,4 +7,9 @@ r_exasol/connection/protocol/http/conn/http_connection_establisher.cpp \
 r_exasol/connection/protocol/https/conn/https_connection_establisher.cpp \
 r_exasol/connection/connection_controller.cpp r_exasol/connection/connection_factory_impl.cpp \
 r_exasol/debug_print/debug_printer.cpp r_exasol/debug_print/file_logger.cpp \
-r_exasol/odbc/odbc_query_executor.cpp r_exasol/odbc/odbc_session_info_impl.cpp connection.cpp
+r_exasol/websocket/exasol_exception.cpp r_exasol/websocket/exasol_response.cpp r_exasol/websocket/websocket_client.cpp \
+r_exasol/websocket/exasol_auth.cpp r_exasol/websocket/exasol_commands.cpp \
+r_exasol/websocket/r_websocket_bridge.cpp \
+r_exasol/websocket/ws_query_executor.cpp r_exasol/websocket/ws_session_info_impl.cpp \
+connection.cpp \
+boost_json_src.cpp

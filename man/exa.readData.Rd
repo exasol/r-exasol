@@ -8,15 +8,16 @@ exa.readData(
   channel,
   query,
   encoding = "UTF-8",
-  reader = function(x, ..., enc = encoding) {     read.csv(x, ..., stringsAsFactors =
-    FALSE, encoding = enc, blank.lines.skip = FALSE, numerals = "no.loss") },
+  reader = function(x, ..., enc = encoding) {
+     read.csv(x, ..., stringsAsFactors =
+    FALSE, encoding = enc, blank.lines.skip = FALSE, numerals = "no.loss")
+ },
   server = NA,
   ...
 )
 }
 \arguments{
-\item{channel}{The RODBC connection channel, typically created via
-odbcConnect.}
+\item{channel}{An EXAConnection object (WebSocket-based connection to Exasol).}
 
 \item{query}{A string with the SQL query to be executed on EXASolution.}
 
@@ -38,7 +39,7 @@ sending if necessary.}
 
 \item{server}{This parameter is only relevant in rare cases where you want to
 customize the address of the data channel. Per default, the data channel
-uses the same host and port as the RODBC connection.}
+uses the same host and port as the database connection.}
 
 \item{...}{Other parameters passed on to the reader (read.csv).}
 }
@@ -48,13 +49,13 @@ The return value is the return value of the reader function. If the
   read.csv.
 }
 \description{
-This function executes the given SQL query using a given RODBC
-connection and returns the results as a data frame.
+This function executes the given SQL query using a given
+EXAConnection and returns the results as a data frame.
 
 The results are transfered via a proprietary high speed channel from the
 database optimized for bulk transfer. The \code{EXPORT ... INTO CSV AT ...}
-statement is used internally to transfer the results as a csv. This is
-significantly faster than RODBC.
+statement is used internally to transfer the results as a csv, which
+is usually faster than websocket, especially for large data.
 
 On the R-side, the results are parsed per default via read.csv. You can also
 use arbitrary readers, processing the incoming csv records according to your
@@ -63,11 +64,10 @@ needs.
 \examples{
 \dontrun{
 
-require(RODBC)
 require(exasol)
 
-# Connect via RODBC with configured DSN
-C <- odbcConnect("exasolution")
+# Connect via WebSocket
+C <- dbConnect("exa", exahost = "localhost:8563", uid = "sys", pwd = "exasol")
 
 # Read results
 tables <- exa.readData(C, "SELECT * FROM EXA_ALL_TABLES")
@@ -78,14 +78,15 @@ print(colnames(tables))  # print names of columns
 print(tables[1,])        # print first row
 print(tables$TABLE_NAME[1])  # print first value of specified column
 
+dbDisconnect(C)
 }
 }
 \seealso{
-Other None-DBI-API: 
-\code{\link{dbCurrentSchema}()},
-\code{\link{dbEnd}()},
-\code{\link{exa.createScript}()},
-\code{\link{exa.writeData}()}
+Other None-DBI-API:
+\code{\link[=dbCurrentSchema]{dbCurrentSchema()}},
+\code{\link[=dbEnd]{dbEnd()}},
+\code{\link[=exa.createScript]{exa.createScript()}},
+\code{\link[=exa.writeData]{exa.writeData()}}
 }
 \author{
 EXASOL AG <opensource@exasol.com>

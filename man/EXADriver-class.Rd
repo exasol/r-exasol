@@ -7,24 +7,18 @@
 \description{
 An interface driver object to the EXASOL Database.
 }
-\section{Slots}{
-
-\describe{
-\item{\code{odbc_drv}}{A string containing the path to the EXASOL ODBC driver file.}
-}}
-
 \seealso{
 \code{\link{DBIDriver-class}}
 
-Other DBI classes: 
+Other DBI classes:
 \code{\link{EXAConnection-class}},
 \code{\link{EXAObject-class}},
 \code{\link{EXAResult-class}}
 
-Other EXADriver related objects: 
+Other EXADriver related objects:
 \code{\link{dbConnect,EXADriver-method}},
-\code{\link{dbEnd}()},
-\code{\link{exasol_driver}()}
+\code{\link[=dbEnd]{dbEnd()}},
+\code{\link[=exasol_driver]{exasol_driver()}}
 }
 \author{
 EXASOL AG <opensource@exasol.com>

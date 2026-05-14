@@ -12,17 +12,11 @@
   uid = "",
   pwd = "",
   schema = "SYS",
-  exalogfile = tempfile(pattern = "EXAODBC_", fileext = ".log"),
-  logmode = "NONE",
   encryption = "Y",
   sslcertificate = "",
   autocommit = "Y",
   querytimeout = "0",
-  connectionlcctype = Sys.getlocale(category = "LC_CTYPE"),
-  connectionlcnumeric = Sys.getlocale(category = "LC_NUMERIC"),
-  ...,
-  dsn = "",
-  connection_string = ""
+  ...
 )
 
 \S4method{dbConnect}{character}(drv, ...)
@@ -32,8 +26,8 @@
 \arguments{
 \item{drv}{Existing connection}
 
-\item{exahost}{DNS or IP (or range of IPs) and port of the database cluster,
-e.g. '10.0.2.15..20:8563'}
+\item{exahost}{Host and port of the database cluster, e.g. '10.0.2.15:8563'
+or '10.0.2.15..20:8563'.}
 
 \item{uid}{DB username, e.g. 'sys'}
 
@@ -42,48 +36,24 @@ e.g. '10.0.2.15..20:8563'}
 \item{schema}{Schema in EXASOL db which is opened directly after the
 connection.}
 
-\item{exalogfile}{The EXASOL ODBC driver log file. By standard a tempfile is
-created. Log data may be accessed with 'EXAlog(EXAConnection)'.}
+\item{encryption}{Whether to use TLS encryption. 'Y' (default) enables TLS.}
 
-\item{logmode}{EXASOL ODBC driver log mode. Allowed options are:
-\describe{
- \item{NONE}{no log is written (default)}
- \item{DEFAULT}{most important function calls & SQL commands}
- \item{VERBOSE}{also additional data about internal steps & result data}
- \item{ON ERROR ONLY}{only errors are logged}
- \item{DEBUGCOMM}{extended logs, similar to verbose but w/o data & parameter
- tables}
-}}
-
-\item{encryption}{ODBC encryption. By default off. Switch on with 'Y'.}
-
-\item{sslcertificate}{The name and path of the certificate file (cert.pem) used by SSL.
-You can use SSL_VERIFY_NONE to disable server verification and SSL_VERIFY_SERVER to enable it.
-By default the server certificate check is enabled.}
+\item{sslcertificate}{Controls server certificate verification when
+\code{encryption == 'Y'}. Use \code{"SSL_VERIFY_NONE"} to disable server
+verification, \code{"SSL_VERIFY_SERVER"} (or the default empty string) to
+verify against the system trust store, or pass the path to a PEM
+certificate file to verify against a specific trust anchor.}
 
 \item{autocommit}{By default 'Y'. If 'Y' each SQL statement is committed. 'N'
 means that no commits are executed automatically. The transaction will be
 rolled back on disconnect, which causes the loss of all data written during
 the transaction.}
 
-\item{querytimeout}{Time EXASOL DB computes a query before it is aborted.
-The default \code{'0'} (zero) means no timeout, i.e. runs until finished.}
+\item{querytimeout}{Time in seconds the Exasol DB computes a query before it
+is aborted. The default \code{'0'} (zero) means no timeout, i.e. queries
+run until finished. Applied via the WebSocket \code{setAttributes} command.}
 
-\item{connectionlcctype}{Sets the connection locale \code{LC CTYPE}.
-The default is the setting of the client's current R session.}
-
-\item{connectionlcnumeric}{Sets the connection locale \code{LC NUMERIC}.
-The default is the setting of the client's current R session.}
-
-\item{...}{Additional parameters to the connection string. If a connection is
-cloned, these override the old connection settings.}
-
-\item{dsn}{A preconfigured ODBC Data Source Name. Parameter being evaluated
-with priority to \code{EXAHOST}.}
-
-\item{connection_string}{Alternatively to everything else, a custom ODBC
-connection sting can be provided. See EXASOL DB manual secion 4.2.5 for
-details, available at \url{https://docs.exasol.com/}.}
+\item{...}{Additional parameters (currently unused).}
 }
 \value{
 A fresh EXAConnection object.
@@ -93,76 +63,33 @@ dbConnect
 }
 \section{Methods (by class)}{
 \itemize{
-\item \code{EXADriver}: Creates a new connection to an EXASOL Database.
+\item \code{dbConnect(EXADriver)}: Creates a new connection to an EXASOL Database via WebSocket.
 
-\item \code{character}: Creates a connection to an EXASOL Database based on string.
+\item \code{dbConnect(character)}: Creates a connection to an EXASOL Database based on string.
 
-\item \code{EXAConnection}: Creates a connection to an EXASOL Database based on an existing connection.
+\item \code{dbConnect(EXAConnection)}: Creates a connection to an EXASOL Database based on an existing connection.
+
 }}
-
 \examples{
 \dontrun{
- con <- dbConnect("exa", dsn = "EXASolo")
- con <- dbConnect("exa", exahost = "212.209.123.20..25:8563",
+ con <- dbConnect("exa", exahost = "212.209.123.20:8563",
                   uid = "peter", pwd = "password123", schema = "sales")
 }
 }
 \seealso{
 \code{\link[DBI:dbConnect]{DBI::dbConnect()}}
 
-Other EXADriver related objects: 
+Other EXADriver related objects:
 \code{\link{EXADriver-class}},
-\code{\link{dbEnd}()},
-\code{\link{exasol_driver}()}
+\code{\link[=dbEnd]{dbEnd()}},
+\code{\link[=exasol_driver]{exasol_driver()}}
 
-Other EXAConnection related objects: 
+Other EXAConnection related objects:
 \code{\link{EXAConnection-class}},
 \code{\link{dbBegin,EXAConnection-method}},
 \code{\link{dbCommit,EXAConnection-method}},
-\code{\link{dbCurrentSchema}()},
-\code{\link{dbEnd}()},
-\code{\link{dbExistsTable,EXAConnection,character-method}},
-\code{\link{dbGetQuery,EXAConnection,character-method}},
-\code{\link{dbListFields,EXAConnection,character-method}},
-\code{\link{dbListTables,EXAConnection-method}},
-\code{\link{dbReadTable,EXAConnection,character-method}},
-\code{\link{dbRemoveTable,EXAConnection,character-method}},
-\code{\link{dbRollback,EXAConnection-method}},
-\code{\link{dbSendQuery,EXAConnection,character-method}},
-\code{\link{dbWriteTable,EXAConnection,character,data.frame-method}}
-
-Other EXADriver related objects: 
-\code{\link{EXADriver-class}},
-\code{\link{dbEnd}()},
-\code{\link{exasol_driver}()}
-
-Other EXAConnection related objects: 
-\code{\link{EXAConnection-class}},
-\code{\link{dbBegin,EXAConnection-method}},
-\code{\link{dbCommit,EXAConnection-method}},
-\code{\link{dbCurrentSchema}()},
-\code{\link{dbEnd}()},
-\code{\link{dbExistsTable,EXAConnection,character-method}},
-\code{\link{dbGetQuery,EXAConnection,character-method}},
-\code{\link{dbListFields,EXAConnection,character-method}},
-\code{\link{dbListTables,EXAConnection-method}},
-\code{\link{dbReadTable,EXAConnection,character-method}},
-\code{\link{dbRemoveTable,EXAConnection,character-method}},
-\code{\link{dbRollback,EXAConnection-method}},
-\code{\link{dbSendQuery,EXAConnection,character-method}},
-\code{\link{dbWriteTable,EXAConnection,character,data.frame-method}}
-
-Other EXADriver related objects: 
-\code{\link{EXADriver-class}},
-\code{\link{dbEnd}()},
-\code{\link{exasol_driver}()}
-
-Other EXAConnection related objects: 
-\code{\link{EXAConnection-class}},
-\code{\link{dbBegin,EXAConnection-method}},
-\code{\link{dbCommit,EXAConnection-method}},
-\code{\link{dbCurrentSchema}()},
-\code{\link{dbEnd}()},
+\code{\link[=dbCurrentSchema]{dbCurrentSchema()}},
+\code{\link[=dbEnd]{dbEnd()}},
 \code{\link{dbExistsTable,EXAConnection,character-method}},
 \code{\link{dbGetQuery,EXAConnection,character-method}},
 \code{\link{dbListFields,EXAConnection,character-method}},
@@ -174,10 +101,6 @@ Other EXAConnection related objects:
 \code{\link{dbWriteTable,EXAConnection,character,data.frame-method}}
 }
 \author{
-EXASOL AG <opensource@exasol.com>
-
-EXASOL AG <opensource@exasol.com>
-
 EXASOL AG <opensource@exasol.com>
 }
 \concept{EXAConnection related objects}

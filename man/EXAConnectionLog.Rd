@@ -3,7 +3,11 @@
 \name{EXAConnectionLog}
 \alias{EXAConnectionLog}
 \title{EXAConnectionLog
-Shows the EXASOL ODBC connection log.}
+Shows the EXASOL connection log.
+
+This function is no longer supported after the migration from ODBC to WebSocket.
+It previously relied on the ODBC connection string to find the log file.
+Use EXATrace to enable C-level tracing instead.}
 \usage{
 EXAConnectionLog(con, view = TRUE)
 }
@@ -17,5 +21,9 @@ a data.frame, if View is FALSE.
 }
 \description{
 EXAConnectionLog
-Shows the EXASOL ODBC connection log.
+Shows the EXASOL connection log.
+
+This function is no longer supported after the migration from ODBC to WebSocket.
+It previously relied on the ODBC connection string to find the log file.
+Use EXATrace to enable C-level tracing instead.
 }

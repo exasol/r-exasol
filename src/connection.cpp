@@ -1,6 +1,7 @@
 #include <connection.h>
 #include <r_exasol/connection_context.h>
 #include <r_exasol/debug_print/file_logger.h>
+#include <r_exasol/websocket/exasol_commands.h>
 
 namespace exa {
     /*
@@ -29,20 +30,22 @@ int destroyConnection(int checkWasDone) {
     return exa::getConnectionContext().destroyConnection(1 == checkWasDone);
 }
 
-SEXP createReadConnection(pRODBCHandle handle, SQLCHAR *query, const char * protocol) {
-    return exa::getConnectionContext().createReadConnection(handle, query, protocol);
-}
-
-SEXP createWriteConnection(pRODBCHandle handle, SQLCHAR *query, const char * protocol) {
-    return exa::getConnectionContext().createWriteConnection(handle, query, protocol);
-}
-
 SEXP copyHostName() {
     return exa::getConnectionContext().copyHostName();
 }
 
 SEXP copyHostPort() {
     return exa::getConnectionContext().copyHostPort();
+}
+
+SEXP createReadConnectionWs(void *wsSession, const char *query, const char *protocol) {
+    exa::ExasolCommands *cmds = static_cast<exa::ExasolCommands*>(wsSession);
+    return exa::getConnectionContext().createReadConnectionWs(cmds, query, protocol);
+}
+
+SEXP createWriteConnectionWs(void *wsSession, const char *query, const char *protocol) {
+    exa::ExasolCommands *cmds = static_cast<exa::ExasolCommands*>(wsSession);
+    return exa::getConnectionContext().createWriteConnectionWs(cmds, query, protocol);
 }
 
 }

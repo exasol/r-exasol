@@ -3,19 +3,14 @@ NULL
 
 ## Declaration of EXAConnection and implementation of connection related to DBI API.
 
-#' The S3 class RODBC will be registered as a superclass of EXAConnection
-#' @name RODBC-class
-setOldClass("RODBC")
-
-
 #' An Object holding a connection to an EXASOL Database.
 #'
 #' @seealso \code{\link{DBIConnection-class}}
 #' @family DBI classes
 #' @family EXAConnection related objects
 #'
-#' @slot init_connection_string A string containing the ODBC connection sting used to
-#'     initialise the connection.
+#' @slot ws_handle An external pointer to the C++ WebSocket session.
+#' @slot session_id An integer containing the Exasol session ID.
 #' @slot current_schema A string reflecting the current schema.
 #' @slot autocom_default A logical indicating if autocommit is active.
 #' @slot db_host A string containing the hostname or IP.
@@ -26,79 +21,67 @@ setOldClass("RODBC")
 #' @slot db_version A string containing the database version.
 #' @slot drv_name A string containing the connection driver version.
 #' @slot encrypted A logical indicating if connection should be encrypted.
+#' @slot sslcertificate The TLS verification setting used at connect time
+#'   (\code{""}, \code{"SSL_VERIFY_NONE"}, \code{"SSL_VERIFY_SERVER"} or a path
+#'   to a PEM trust file). Used to reproduce the original TLS behavior when the
+#'   connection is cloned.
 #' @author EXASOL AG <opensource@exasol.com>
 #' @export
 EXAConnection <- setClass(
   "EXAConnection",
   slots = c(
-    init_connection_string = "character",
+    ws_handle = "externalptr",
+    session_id = "numeric",
     current_schema = "character",
     autocom_default = "logical",
     db_host = "character",
     db_port = "numeric",
     db_user = "character",
+    db_pwd = "character",
     db_name = "character",
     db_prod_name = "character",
     db_version = "character",
     drv_name = "character",
-    encrypted = "logical"
+    encrypted = "logical",
+    sslcertificate = "character"
   ),
-  contains = c("DBIConnection", "EXAObject", "RODBC")
+  contains = c("DBIConnection", "EXAObject")
 )
 
 
 # Connection -------------------------------------------------------------------
 
 #' @title dbConnect
-#' @describeIn dbConnect Creates a new connection to an EXASOL Database.
+#' @describeIn dbConnect Creates a new connection to an EXASOL Database via WebSocket.
 #'
 #' @family EXADriver related objects
 #' @family EXAConnection related objects
 #'
 #' @param drv An EXAdriver object, a character string "exasol", "exa" or "exasol_driver", or an
 #'   existing EXAConnection object (for connection cloning).
-#' @param exahost DNS or IP (or range of IPs) and port of the database cluster,
-#'   e.g. '10.0.2.15..20:8563'
+#' @param exahost Host and port of the database cluster, e.g. '10.0.2.15:8563'
+#'   or '10.0.2.15..20:8563'.
 #' @param uid DB username, e.g. 'sys'
 #' @param pwd DB user password, e.g. 'exasol'
 #' @param schema Schema in EXASOL db which is opened directly after the
 #'   connection.
-#' @param exalogfile The EXASOL ODBC driver log file. By standard a tempfile is
-#'   created. Log data may be accessed with 'EXAlog(EXAConnection)'.
-#' @param logmode EXASOL ODBC driver log mode. Allowed options are:
-#' \describe{
-#'  \item{NONE}{no log is written (default)}
-#'  \item{DEFAULT}{most important function calls & SQL commands}
-#'  \item{VERBOSE}{also additional data about internal steps & result data}
-#'  \item{ON ERROR ONLY}{only errors are logged}
-#'  \item{DEBUGCOMM}{extended logs, similar to verbose but w/o data & parameter
-#'  tables}
-#' }
-#' @param encryption ODBC encryption. By default off. Switch on with 'Y'.
-#' @param sslcertificate The name and path of the certificate file (cert.pem) used by SSL.
-#'   You can use SSL_VERIFY_NONE to disable server verification and SSL_VERIFY_SERVER to enable it.
-#'   By default the server certificate check is enabled.
+#' @param encryption Whether to use TLS encryption. 'Y' (default) enables TLS.
+#' @param sslcertificate Controls server certificate verification when
+#'   \code{encryption == 'Y'}. Use \code{"SSL_VERIFY_NONE"} to disable server
+#'   verification, \code{"SSL_VERIFY_SERVER"} (or the default empty string) to
+#'   verify against the system trust store, or pass the path to a PEM
+#'   certificate file to verify against a specific trust anchor.
 #' @param autocommit By default 'Y'. If 'Y' each SQL statement is committed. 'N'
 #'   means that no commits are executed automatically. The transaction will be
 #'   rolled back on disconnect, which causes the loss of all data written during
 #'   the transaction.
-#' @param querytimeout Time EXASOL DB computes a query before it is aborted.
-#'   The default \code{'0'} (zero) means no timeout, i.e. runs until finished.
-#' @param connectionlcctype Sets the connection locale \code{LC CTYPE}.
-#'   The default is the setting of the client's current R session.
-#' @param connectionlcnumeric Sets the connection locale \code{LC NUMERIC}.
-#'   The default is the setting of the client's current R session.
-#' @param ... Additional parameters to the connection string. If a connection is
-#'   cloned, these override the old connection settings.
-#' @param dsn A preconfigured ODBC Data Source Name. Parameter being evaluated
-#'   with priority to \code{EXAHOST}.
-#' @param connection_string Alternatively to everything else, a custom ODBC
-#'   connection sting can be provided. See EXASOL DB manual secion 4.2.5 for
-#'   details, available at \url{https://docs.exasol.com/}.
+#' @param querytimeout Time in seconds the Exasol DB computes a query before it
+#'   is aborted. The default \code{'0'} (zero) means no timeout, i.e. queries
+#'   run until finished. Applied via the WebSocket \code{setAttributes} command.
+#' @param ... Additional parameters (currently unused).
 #' @return A fresh EXAConnection object.
 #' @examples \dontrun{
-#'  con <- dbConnect("exa", dsn = "EXASolo")
-#'  con <- dbConnect("exa", exahost = "212.209.123.20..25:8563",
+#'  con <- dbConnect("exa", exahost = "212.209.123.20:8563",
 #'                   uid = "peter", pwd = "password123", schema = "sales")
 #' }
 #' @include EXADBI-driver.R
@@ -107,22 +90,16 @@ EXAConnection <- setClass(
 #' @export
 setMethod(
   "dbConnect", "EXADriver",
-  definition = function(drv, # change defaults also below
+  definition = function(drv,
                         exahost = "",
                         uid = "",
                         pwd = "",
                         schema = "SYS",
-                        exalogfile = tempfile(pattern = "EXAODBC_", fileext = ".log"),
-                        logmode = "NONE",
                         encryption = "Y",
                         sslcertificate = "",
                         autocommit = "Y",
                         querytimeout = "0",
-                        connectionlcctype = Sys.getlocale(category = "LC_CTYPE"),
-                        connectionlcnumeric = Sys.getlocale(category = "LC_NUMERIC"),
-                        ...,
-                        dsn = "",
-                        connection_string = "")
+                        ...)
   {
     .EXANewConnection(
       drv = drv,
@@ -130,17 +107,11 @@ setMethod(
       uid = uid,
       pwd = pwd,
       schema = schema,
-      exalogfile = exalogfile,
-      logmode = logmode,
       encryption = encryption,
       sslcertificate = sslcertificate,
       autocommit = autocommit,
       querytimeout = querytimeout,
-      connectionlcctype = connectionlcctype,
-      connectionlcnumeric = connectionlcnumeric,
-      ... = ...,
-      dsn = dsn,
-      connection_string = connection_string
+      ... = ...
     )
   },
   valueClass = "EXAConnection"
@@ -186,112 +157,70 @@ setMethod(
 #' @export
 dbCurrentSchema <- function(con, setSchema=NULL) {
   if(!missing(setSchema)) {
-    sqlQuery(con, paste("open schema", processIDs(setSchema)))
+    exaWsExecute(con@ws_handle, paste("open schema", processIDs(setSchema)))
     con@current_schema <- setSchema
   } else {
-    res <- sqlQuery(con, "select current_schema")
-    con@current_schema <- as.character(res[1,1])
+    res <- exaWsExecute(con@ws_handle, "select current_schema")
+    if (!is.null(res$data) && length(res$data) > 0 && length(res$data[[1]]) > 0) {
+      con@current_schema <- as.character(res$data[[1]][1])
+    }
   }
   message(paste("Schema: ", con@current_schema))
   con
 }
 
-.parse_odbc_value <- function(att, pattern, key_size) {
-  odbc_key_value <- regmatches(att, gregexpr(pattern, att,perl = TRUE))[[1]]
-  substr(odbc_key_value, key_size, nchar(odbc_key_value) - 1)
-}
-
-.encode_password <- function(pwd) {
-  paste0("{", pwd, "}")
-}
-
-.EXANewConnection <- function(# change defaults also above
-  drv,
-  exahost = "",
-  uid = "",
-  pwd = "",
-  schema = "SYS",
-  exalogfile = tempfile(pattern = "EXAODBC_", fileext = ".log"),
-  logmode = "NONE",
-  encryption = "Y",
-  sslcertificate = "",
-  autocommit = "Y",
-  querytimeout = "0",
-  connectionlcctype = Sys.getlocale(category = "LC_CTYPE"),
-  connectionlcnumeric = Sys.getlocale(category = "LC_NUMERIC"),
-  ...,
-  dsn = "",
-  connection_string = "") {
-  exaschema <- c(schema)
-
-  if (connection_string != "") {
-    con_str <- connection_string
-  }
-  else {
-    if (dsn != "") {
-      con_str <- paste0("DSN=",dsn)
-    }
-    else if (exahost != "" & uid != "") {
-      con_str <- paste0("DRIVER=", drv@odbc_drv ,";", "EXAHOST=",exahost)
-    }
-    else {
-      stop(
-        "Connect failed. Either DSN, host & db_user or a connection string must be given.\n
-        Hint: No lazy declaration of connection parameters - these have to be stated ' dsn=...'.\n
-        See also the examples in the help ('?dbConnect')."
-      )
-    }
-    # all additional parameters...
-    if (uid != "") {
-      con_str <- paste0(con_str,";UID=",uid,";PWD=",.encode_password(pwd))
-    }
-    # EXASCHEMA
-    if (exaschema != "SYS") {
-      con_str <- paste0(con_str,";EXASCHEMA=",exaschema)
-    }
-    # EXALOGFILE
-    con_str <- paste0(con_str,";EXALOGFILE=",exalogfile)
-
-    # LOGMODE
-    con_str <- paste0(con_str,";LOGMODE=",logmode)
-
-    # locale
-    con_str <-
-      paste0(
-        con_str,";CONNECTIONLCCTYPE=",connectionlcctype,";CONNECTIONLCNUMERIC=",connectionlcnumeric
-      )
-
-    # autocommit
-    con_str <- paste0(con_str,";autocommit=",autocommit)
-    con_str <- paste0(con_str, ";ENCRYPTION=", ifelse(encryption == "Y", "Y", "N"))
-    if (sslcertificate != "") {
-      con_str <- paste0(con_str,";SSLCERTIFICATE=",sslcertificate)
-    }
-    # dots
-    d <- list(...)
-    while (length(d) > 0) {
-      con_str <- paste0(con_str,";", names(d[1]),"=",d[1])
-      d[1] <- NULL
-    }
+.EXANewConnection <- function(drv,
+                              exahost = "",
+                              uid = "",
+                              pwd = "",
+                              schema = "SYS",
+                              encryption = "Y",
+                              sslcertificate = "",
+                              autocommit = "Y",
+                              querytimeout = "0",
+                              ...) {
+  if (exahost == "" || uid == "") {
+    stop("Connect failed. Host (exahost) and username (uid) are required.")
   }
 
-  con <- odbcDriverConnect(con_str)
-  exa_metadata <- odbcGetInfo(con)
+  parts <- strsplit(exahost, ":")[[1]]
+  host <- parts[1]
+  port <- as.integer(parts[2])
+  if (is.na(port)) port <- 8563L
 
-  res <- new(
-    "EXAConnection",init_connection_string = con_str,
-    current_schema = exaschema,
-    autocom_default = ifelse(autocommit == "Y",TRUE,FALSE),
-    db_host = strsplit(exa_metadata["Server_Name"],":")[[1]][1],
-    db_port = as.numeric(strsplit(exa_metadata["Server_Name"],":")[[1]][2]),
-    db_user = .parse_odbc_value(attributes(con)$connection.string, "UID=[\\w]+?;", 5),
-    db_name = exa_metadata["Data_Source_Name"],
-    db_prod_name = exa_metadata["DBMS_Name"],
-    db_version = exa_metadata["DBMS_Ver"],
-    drv_name = exa_metadata["Driver_Name"],
-    encrypted = ifelse(encryption == "Y",TRUE,FALSE),
-    con
+  useTls <- (encryption == "Y")
+
+  result <- exaWsConnect(host, port, useTls, uid, pwd, 3L, sslcertificate)
+
+  if (!is.na(schema) && nchar(schema) > 0 && schema != "SYS") {
+    exaWsExecute(result$handle, paste("OPEN SCHEMA", processIDs(schema)))
+  }
+
+  attrEntries <- c(paste0('"autocommit":', ifelse(autocommit == "Y", "true", "false")))
+  qt <- suppressWarnings(as.integer(querytimeout))
+  if (!is.na(qt) && qt >= 0) {
+    attrEntries <- c(attrEntries, paste0('"queryTimeout":', qt))
+  }
+  exaWsSetAttributes(result$handle,
+                     paste0("{", paste(attrEntries, collapse = ","), "}"))
+
+  res <- new("EXAConnection",
+    ws_handle = result$handle,
+    session_id = as.numeric(result$sessionId),
+    current_schema = schema,
+    autocom_default = (autocommit == "Y"),
+    db_host = host,
+    db_port = as.numeric(port),
+    db_user = uid,
+    db_pwd = pwd,
+    db_name = result$dbName,
+    db_prod_name = result$prodName,
+    db_version = result$dbVersion,
+    drv_name = "r-exasol",
+    encrypted = useTls,
+    sslcertificate = sslcertificate
   )
+
   tryCatch({
     .on_connection_opened(res)
   }, error = function(e) {
@@ -300,82 +229,22 @@ dbCurrentSchema <- function(con, setSchema=NULL) {
   res
 }
 
-## Opens a new connection with the same settings as an existing one.
-## @family EXADriver related objects
-## @family EXAConnection related objects
-##
-## @param drv An EXAConnection object to be duplicated.
-## @param autocommit A logical that if it is true, autocommit will be enabled for cloned connection.
-## @param ... An additional connection string parameter that may override the old settings.
-## @return A fresh EXAConnection
 .EXACloneConnection <-
   function(drv, autocommit, ...) {
-    # todo: parameters
+    drv <- dbCurrentSchema(drv)
 
-    drv <- dbCurrentSchema(drv) # update schema metadata
+    autocom <- if (!missing(autocommit)) (autocommit == "Y") else drv@autocom_default
 
-    # dots
-    d <- data.frame(...,stringsAsFactors = FALSE)
-    names(d) <- toupper(names(d))
-    con_str <- drv@init_connection_string
-    s <- strsplit(con_str, ";")
-    s <- sapply(s, strsplit, "=")
-    capital_letter_exclude_list <- c("DRIVER", "CONNECTIONLCCTYPE", "EXALOGFILE", "UID", "PWD", "SSLCERTIFICATE")
-    s <- lapply(s, function(x) if(toupper(x[[1]]) %in% capital_letter_exclude_list)  x else toupper(x))
-
-    con_str <- ""
-
-    while (length(s) > 0) {
-      # as long as there is at least one parameter in S
-      if (is.null(d[[s[[1]][1]]])) {
-        # if the first parameter of s (S is the conn_str) is not in d (the dots
-        # parameters)
-        con_str <-
-          paste0(con_str, ";", s[[1]][1],"=", s[[1]][2]) # take the s parameter
-        s[1] <- NULL # delete the first parameter from S
-      } else {
-        # else take the value out of d, delete the parameter from d, then
-        # delete the first S parameter
-        con_str <-
-          paste0(con_str, ";", s[[1]][1], "=", d[[s[[1]][1]]])
-        d[[s[[1]][1]]] <- NULL
-        s[1] <- NULL
-      }
-    } # add the remaining dots parameters
-
-    while (ncol(d) > 0) {
-      con_str <- paste0(con_str, ";", names(d)[1], "=", d[[1]])
-      d[1] <- NULL
-    }
-
-    con_str <-
-      substr(con_str,2,nchar(con_str)) # remove the initial semicolon
-
-    con <- odbcDriverConnect(con_str)
-    if (con == -1) {
-      stop(
-        paste(
-          ".EXACloneConnection error: failed to initialise connection.\nConnection String:", con_str
-        )
-      )
-    }
-    exa_metadata <- odbcGetInfo(con)
-    new(
-      "EXAConnection",
-      init_connection_string = con_str,
-      current_schema = drv@current_schema,
-      autocom_default = ifelse(
-        !missing(autocommit),ifelse(autocommit == "Y",TRUE,FALSE),drv@autocom_default
-      ),
-      db_host = strsplit(exa_metadata["Server_Name"],":")[[1]][1],
-      db_port = as.numeric(strsplit(exa_metadata["Server_Name"],":")[[1]][2]),
-      db_user = .parse_odbc_value(attributes(con)$connection.string, "UID=[\\w]+?;", 5),
-      db_name = exa_metadata["Data_Source_Name"],
-      db_prod_name = exa_metadata["DBMS_Name"],
-      db_version = exa_metadata["DBMS_Ver"],
-      drv_name = exa_metadata["Driver_Name"],
-      encrypted = drv@encrypted,
-      con
+    .EXANewConnection(
+      drv = new("EXADriver"),
+      exahost = paste0(drv@db_host, ":", as.integer(drv@db_port)),
+      uid = drv@db_user,
+      pwd = drv@db_pwd,
+      schema = drv@current_schema,
+      encryption = ifelse(drv@encrypted, "Y", "N"),
+      sslcertificate = drv@sslcertificate,
+      autocommit = ifelse(autocom, "Y", "N"),
+      ...
     )
   }
 
@@ -391,12 +260,16 @@ dbCurrentSchema <- function(con, setSchema=NULL) {
 setMethod(
   "dbDisconnect",signature("EXAConnection"),
   definition = function(conn) {
+    if (!exaWsIsConnected(conn@ws_handle)) {
+      stop("Connection is already closed.")
+    }
     tryCatch({
       .on_connection_closed(conn)
     }, error = function(e) {
       warning(paste0("Error closing connection pane:\n'", conditionMessage(e), "'"))
     })
-    odbcClose(conn)
+    exaWsDisconnect(conn@ws_handle)
+    invisible(TRUE)
   }
 )
 

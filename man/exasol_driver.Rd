@@ -5,16 +5,12 @@
 \alias{exa}
 \title{Instantiates an EXADriver object.}
 \usage{
-exasol_driver(driver = NULL, silent = FALSE)
+exasol_driver(silent = FALSE)
 
-exa(driver = NULL, silent = FALSE)
+exa(silent = FALSE)
 }
 \arguments{
-\item{driver}{The path to an ODBC driver file. If missing, the driver installed on the system is used.
-If "SYSTEM": the EXASOL ODBC driver installed on the system is used immediately.
-Alternatively a path to an ODBC driver library can be provided.}
-
-\item{silent}{If TRUE, no message is print.}
+\item{silent}{If TRUE, no message is printed.}
 }
 \value{
 An EXADriver object.
@@ -24,14 +20,14 @@ Instantiates an EXADriver object.
 }
 \section{Functions}{
 \itemize{
-\item \code{exa}: An alias for \code{\link{exasol_driver}}
-}}
+\item \code{exa()}: An alias for \code{\link{exasol_driver}}
 
+}}
 \seealso{
-Other EXADriver related objects: 
+Other EXADriver related objects:
 \code{\link{EXADriver-class}},
 \code{\link{dbConnect,EXADriver-method}},
-\code{\link{dbEnd}()}
+\code{\link[=dbEnd]{dbEnd()}}
 }
 \author{
 EXASOL AG <opensource@exasol.com>
