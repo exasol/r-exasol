@@ -2,7 +2,7 @@
 
 ## Build & Test
 
-- **Build:** `R CMD INSTALL --no-multiarch --with-keep.source .`
+- **Build:** `R CMD INSTALL --no-multiarch --with-keep.source -l ~/R/library .`
 - **Test:** `EXAHOST=localhost:8888 EXAUID=sys EXAPWD=exasol Rscript -e 'devtools::test()'`
 - Exasol docker-db: `EXAHOST=localhost:8888`, user `sys`, password `exasol`.
 

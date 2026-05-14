@@ -51,7 +51,7 @@ exa.readData <- function(channel, query, encoding = 'UTF-8',
                          server = NA,...) {
   query <- as.character(query)
 
-  try(asyncRODBCQueryFinish(0))
+  try(asyncWSQueryFinish(0))
 
   protocol <- ifelse(channel@encrypted, "https", "http")
 
@@ -64,19 +64,19 @@ exa.readData <- function(channel, query, encoding = 'UTF-8',
   serverHost <- as.character(serverAddress[[1]])
   serverPort <- as.integer(serverAddress[[2]])
 
-  asyncRODBCIOStart(serverHost, serverPort, protocol)
+  asyncWSIOStart(serverHost, serverPort, protocol)
 
-  proxyHost <- asyncRODBCProxyHost()
-  proxyPort <- asyncRODBCProxyPort()
+  proxyHost <- asyncWSProxyHost()
+  proxyPort <- asyncWSProxyPort()
   query <- paste0("EXPORT (", query, ") INTO CSV AT '", protocol, "://",  proxyHost, ":",
                  proxyPort, "' FILE 'executeSQL.csv' ENCODING = '",encoding,"' BOOLEAN = 'TRUE/FALSE' WITH COLUMN NAMES IGNORE CERTIFICATE")
 
-  on.exit(asyncRODBCQueryFinish(0))
+  on.exit(asyncWSQueryFinish(0))
 
-  fd <- asyncRODBCQueryStart(channel@ws_handle, query, protocol, 0)
+  fd <- asyncWSQueryStart(channel@ws_handle, query, protocol, 0)
 
   res <- reader(fd,...)
   on.exit(NULL)
-  asyncRODBCQueryFinish(1)
+  asyncWSQueryFinish(1)
   res
 }

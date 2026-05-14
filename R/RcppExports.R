@@ -33,24 +33,24 @@ exaWsIsConnected <- function(connPtr) {
     .Call(`_exasol_exaWsIsConnected`, connPtr)
 }
 
-asyncRODBCIOStart <- function(host, port, protocol) {
-    .Call(`_exasol_asyncRODBCIOStart`, host, port, protocol)
+asyncWSIOStart <- function(host, port, protocol) {
+    .Call(`_exasol_asyncWSIOStart`, host, port, protocol)
 }
 
-asyncRODBCProxyHost <- function() {
-    .Call(`_exasol_asyncRODBCProxyHost`)
+asyncWSProxyHost <- function() {
+    .Call(`_exasol_asyncWSProxyHost`)
 }
 
-asyncRODBCProxyPort <- function() {
-    .Call(`_exasol_asyncRODBCProxyPort`)
+asyncWSProxyPort <- function() {
+    .Call(`_exasol_asyncWSProxyPort`)
 }
 
-asyncRODBCQueryStart <- function(chan, query, protocol, writer) {
-    .Call(`_exasol_asyncRODBCQueryStart`, chan, query, protocol, writer)
+asyncWSQueryStart <- function(chan, query, protocol, writer) {
+    .Call(`_exasol_asyncWSQueryStart`, chan, query, protocol, writer)
 }
 
-asyncRODBCQueryFinish <- function(checkWasDone) {
-    .Call(`_exasol_asyncRODBCQueryFinish`, checkWasDone)
+asyncWSQueryFinish <- function(checkWasDone) {
+    .Call(`_exasol_asyncWSQueryFinish`, checkWasDone)
 }
 
 asyncEnableTracing <- function(tracefile) {

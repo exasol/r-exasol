@@ -274,22 +274,22 @@ bool exaWsIsConnected(SEXP connPtr) {
 /* ================================================================== */
 
 // [[Rcpp::export]]
-int asyncRODBCIOStart(std::string host, int port, std::string protocol) {
+int asyncWSIOStart(std::string host, int port, std::string protocol) {
     return initConnection(host.c_str(), port, protocol.c_str());
 }
 
 // [[Rcpp::export]]
-SEXP asyncRODBCProxyHost() {
+SEXP asyncWSProxyHost() {
     return copyHostName();
 }
 
 // [[Rcpp::export]]
-SEXP asyncRODBCProxyPort() {
+SEXP asyncWSProxyPort() {
     return copyHostPort();
 }
 
 // [[Rcpp::export]]
-SEXP asyncRODBCQueryStart(SEXP chan, std::string query, std::string protocol, int writer) {
+SEXP asyncWSQueryStart(SEXP chan, std::string query, std::string protocol, int writer) {
     void *cmdsPtr = exaWsGetCommandsPtr(chan);
     if (cmdsPtr != NULL && query.size() > 0) {
         if (writer) {
@@ -304,7 +304,7 @@ SEXP asyncRODBCQueryStart(SEXP chan, std::string query, std::string protocol, in
 }
 
 // [[Rcpp::export]]
-int asyncRODBCQueryFinish(int checkWasDone) {
+int asyncWSQueryFinish(int checkWasDone) {
     return destroyConnection(checkWasDone);
 }
 

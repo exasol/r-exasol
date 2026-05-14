@@ -18,7 +18,7 @@
   df
 }
 
-.odbcListObjectTypes <- function(connection) {
+.listObjectTypes <- function(connection) {
   # slurp all the objects in the database so we can determine the correct
   # object hierarchy
 
@@ -65,7 +65,7 @@
   )
 }
 
-.odbcListObjects <- function(connection, catalog = NULL, schema = NULL, name = NULL, type = NULL, ...) {
+.listObjects <- function(connection, catalog = NULL, schema = NULL, name = NULL, type = NULL, ...) {
 
   res <- data.frame()
   # if no schema was supplied, return a list of schema
@@ -124,7 +124,7 @@
   ifelse(!is.null(table), table, view)
 }
 
-.odbcListColumns <- function(connection, table = NULL, view = NULL,
+.listColumns <- function(connection, table = NULL, view = NULL,
                                            catalog = NULL, schema = NULL, ...) {
 
   if (is.null(schema)) {
@@ -145,7 +145,7 @@
   res
 }
 
-.odbcPreviewObject <- function(connection, rowLimit, table = NULL, view = NULL,
+.previewObject <- function(connection, rowLimit, table = NULL, view = NULL,
                                              schema = NULL, catalog = NULL, ...) {
   # extract object name from arguments
   name <- .validateObjectName(table, view)
@@ -230,22 +230,22 @@
       },
 
       listObjectTypes = function () {
-        .odbcListObjectTypes(connection)
+        .listObjectTypes(connection)
       },
 
       # table enumeration code
       listObjects = function(...) {
-        .odbcListObjects(connection, ...)
+        .listObjects(connection, ...)
       },
 
       # column enumeration code
       listColumns = function(...) {
-        .odbcListColumns(connection, ...)
+        .listColumns(connection, ...)
       },
 
       # table preview code
       previewObject = function(rowLimit, ...) {
-        .odbcPreviewObject(connection, rowLimit, ...)
+        .previewObject(connection, rowLimit, ...)
       },
 
       # raw connection object

@@ -16,8 +16,8 @@ namespace exa {
          */
         virtual void execute(tBackgroundAsyncErrorFunction errorHandler) = 0;
         /**
-         * Indicates if the asynchronous ODBC statement execution has been finished.
-         * @return true if the asynchronous ODBC statement execution has been finished, false otherwise.
+         * Indicates if the asynchronous remote statement execution has been finished.
+         * @return true if the asynchronous remote statement execution has been finished, false otherwise.
          */
         virtual bool isDone() const = 0;
 

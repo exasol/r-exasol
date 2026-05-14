@@ -11,16 +11,16 @@ exa::ConnectionController::ConnectionController(ConnectionFactory &connectionFac
 : mConnectionFactory(connectionFactory)
 , mErrorHandler(errorHandler) {}
 
-std::weak_ptr<exa::reader::Reader> exa::ConnectionController::startReading(const AsyncExecutorSessionInfo& odbcSessionInfo) {
+std::weak_ptr<exa::reader::Reader> exa::ConnectionController::startReading(const AsyncExecutorSessionInfo& sessionInfo) {
     CON_CONTROLLER_STACK_PRINTER;
     std::weak_ptr<exa::reader::Reader> retVal;
     if (mConnectionInfo.socket) {
         conn_debug_printer::print("creating asyncExecutor");
-        mOdbcAsyncExecutor = odbcSessionInfo.createAsyncExecutor();
+        mAsyncExecutor = sessionInfo.createAsyncExecutor();
 
         try {
             conn_debug_printer::print("start asyncExecutor");
-            mOdbcAsyncExecutor->execute([this]() { onOdbcError(); });
+            mAsyncExecutor->execute([this]() { onAsyncExecutorError(); });
             conn_debug_printer::print("creating httpReader");
             mReader = mConnectionFactory.createHttpReader(mConnectionInfo.socket);
             conn_debug_printer::print("starting httpReader");
@@ -39,15 +39,15 @@ std::weak_ptr<exa::reader::Reader> exa::ConnectionController::startReading(const
     return retVal;
 }
 
-std::weak_ptr<exa::writer::Writer> exa::ConnectionController::startWriting(const AsyncExecutorSessionInfo& odbcSessionInfo) {
+std::weak_ptr<exa::writer::Writer> exa::ConnectionController::startWriting(const AsyncExecutorSessionInfo& sessionInfo) {
     CON_CONTROLLER_STACK_PRINTER;
     std::weak_ptr<exa::writer::Writer> retVal;
     if (mConnectionInfo.socket) {
         conn_debug_printer::print("creating asyncExecutor");
-        mOdbcAsyncExecutor = odbcSessionInfo.createAsyncExecutor();
+        mAsyncExecutor = sessionInfo.createAsyncExecutor();
         try {
             conn_debug_printer::print("start asyncExecutor");
-            mOdbcAsyncExecutor->execute([this]() { onOdbcError(); });
+            mAsyncExecutor->execute([this]() { onAsyncExecutorError(); });
             conn_debug_printer::print("creating httpWriter");
             mWriter = mConnectionFactory.createHttpWriter(mConnectionInfo.socket);
             conn_debug_printer::print("starting httpWriter");
@@ -70,17 +70,17 @@ bool exa::ConnectionController::shutDown() {
     CON_CONTROLLER_STACK_PRINTER;
     bool retVal = true;
     //Close socket before joining background thread.
-    //In case of writer this is important because the database server will finish the ODBC execution only after the socket has been closed.
+    //In case of writer this is important because the database server will finish the IMPORT execution only after the socket has been closed.
     if (mConnectionInfo.socket) {
         mConnectionInfo.socket->shutdownRdWr();
     }
     mConnectionInfo.socket.reset();
     std::string errorMsg;
-    if (mOdbcAsyncExecutor) {
+    if (mAsyncExecutor) {
         //Join background thread and get result
-        errorMsg = mOdbcAsyncExecutor->joinAndCheckResult();
-        retVal = mOdbcAsyncExecutor->isDone();
-        mOdbcAsyncExecutor.reset();
+        errorMsg = mAsyncExecutor->joinAndCheckResult();
+        retVal = mAsyncExecutor->isDone();
+        mAsyncExecutor.reset();
     }
     mReader.reset();
     mWriter.reset();
@@ -91,7 +91,7 @@ bool exa::ConnectionController::shutDown() {
     return retVal;
 }
 
-void exa::ConnectionController::onOdbcError() {
+void exa::ConnectionController::onAsyncExecutorError() {
     CON_CONTROLLER_STACK_PRINTER;
     if(mConnectionInfo.socket) {
         mConnectionInfo.socket->shutdownRdWr();

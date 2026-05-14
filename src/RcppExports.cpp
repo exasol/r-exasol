@@ -110,42 +110,42 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// asyncRODBCIOStart
-int asyncRODBCIOStart(std::string host, int port, std::string protocol);
-RcppExport SEXP _exasol_asyncRODBCIOStart(SEXP hostSEXP, SEXP portSEXP, SEXP protocolSEXP) {
+// asyncWSIOStart
+int asyncWSIOStart(std::string host, int port, std::string protocol);
+RcppExport SEXP _exasol_asyncWSIOStart(SEXP hostSEXP, SEXP portSEXP, SEXP protocolSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< std::string >::type host(hostSEXP);
     Rcpp::traits::input_parameter< int >::type port(portSEXP);
     Rcpp::traits::input_parameter< std::string >::type protocol(protocolSEXP);
-    rcpp_result_gen = Rcpp::wrap(asyncRODBCIOStart(host, port, protocol));
+    rcpp_result_gen = Rcpp::wrap(asyncWSIOStart(host, port, protocol));
     return rcpp_result_gen;
 END_RCPP
 }
-// asyncRODBCProxyHost
-SEXP asyncRODBCProxyHost();
-RcppExport SEXP _exasol_asyncRODBCProxyHost() {
+// asyncWSProxyHost
+SEXP asyncWSProxyHost();
+RcppExport SEXP _exasol_asyncWSProxyHost() {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    rcpp_result_gen = Rcpp::wrap(asyncRODBCProxyHost());
+    rcpp_result_gen = Rcpp::wrap(asyncWSProxyHost());
     return rcpp_result_gen;
 END_RCPP
 }
-// asyncRODBCProxyPort
-SEXP asyncRODBCProxyPort();
-RcppExport SEXP _exasol_asyncRODBCProxyPort() {
+// asyncWSProxyPort
+SEXP asyncWSProxyPort();
+RcppExport SEXP _exasol_asyncWSProxyPort() {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    rcpp_result_gen = Rcpp::wrap(asyncRODBCProxyPort());
+    rcpp_result_gen = Rcpp::wrap(asyncWSProxyPort());
     return rcpp_result_gen;
 END_RCPP
 }
-// asyncRODBCQueryStart
-SEXP asyncRODBCQueryStart(SEXP chan, std::string query, std::string protocol, int writer);
-RcppExport SEXP _exasol_asyncRODBCQueryStart(SEXP chanSEXP, SEXP querySEXP, SEXP protocolSEXP, SEXP writerSEXP) {
+// asyncWSQueryStart
+SEXP asyncWSQueryStart(SEXP chan, std::string query, std::string protocol, int writer);
+RcppExport SEXP _exasol_asyncWSQueryStart(SEXP chanSEXP, SEXP querySEXP, SEXP protocolSEXP, SEXP writerSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -153,18 +153,18 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< std::string >::type query(querySEXP);
     Rcpp::traits::input_parameter< std::string >::type protocol(protocolSEXP);
     Rcpp::traits::input_parameter< int >::type writer(writerSEXP);
-    rcpp_result_gen = Rcpp::wrap(asyncRODBCQueryStart(chan, query, protocol, writer));
+    rcpp_result_gen = Rcpp::wrap(asyncWSQueryStart(chan, query, protocol, writer));
     return rcpp_result_gen;
 END_RCPP
 }
-// asyncRODBCQueryFinish
-int asyncRODBCQueryFinish(int checkWasDone);
-RcppExport SEXP _exasol_asyncRODBCQueryFinish(SEXP checkWasDoneSEXP) {
+// asyncWSQueryFinish
+int asyncWSQueryFinish(int checkWasDone);
+RcppExport SEXP _exasol_asyncWSQueryFinish(SEXP checkWasDoneSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< int >::type checkWasDone(checkWasDoneSEXP);
-    rcpp_result_gen = Rcpp::wrap(asyncRODBCQueryFinish(checkWasDone));
+    rcpp_result_gen = Rcpp::wrap(asyncWSQueryFinish(checkWasDone));
     return rcpp_result_gen;
 END_RCPP
 }

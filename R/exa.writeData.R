@@ -59,7 +59,7 @@ exa.writeData <- function(channel, data, tableName, tableColumns = NA,
 
   protocol <- ifelse(channel@encrypted, "https", "http")
 
-  try(asyncRODBCQueryFinish(0))
+  try(asyncWSQueryFinish(0))
 
   if (missing(server)) {
     server <- paste0(channel@db_host, ":", as.integer(channel@db_port))
@@ -70,9 +70,9 @@ exa.writeData <- function(channel, data, tableName, tableColumns = NA,
   serverHost <- as.character(serverAddress[[1]])
   serverPort <- as.integer(serverAddress[[2]])
 
-  asyncRODBCIOStart(serverHost, serverPort, protocol)
-  proxyHost <- asyncRODBCProxyHost()
-  proxyPort <- asyncRODBCProxyPort()
+  asyncWSIOStart(serverHost, serverPort, protocol)
+  proxyHost <- asyncWSProxyHost()
+  proxyPort <- asyncWSProxyPort()
 
   columns <- ""
   if (length(tableColumns) > 1 || (length(tableColumns) == 1 && !is.na(tableColumns))) {
@@ -83,12 +83,12 @@ exa.writeData <- function(channel, data, tableName, tableColumns = NA,
                  columns,
                  " FROM CSV AT '" , protocol, "://", proxyHost, ":",
                  proxyPort, "' FILE 'importData.csv' ENCODING = '", encoding, "' IGNORE CERTIFICATE")
-  on.exit(asyncRODBCQueryFinish(0))
+  on.exit(asyncWSQueryFinish(0))
 
-  fd <- asyncRODBCQueryStart(channel@ws_handle, query, protocol, 1)
+  fd <- asyncWSQueryStart(channel@ws_handle, query, protocol, 1)
 
   res <- writer(data, fd)
   flush(fd)
-  asyncRODBCQueryFinish(1)
+  asyncWSQueryFinish(1)
   ifelse(is.null(res), return(TRUE), return(res))
 }

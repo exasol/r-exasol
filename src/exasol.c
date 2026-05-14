@@ -18,11 +18,11 @@ extern SEXP _exasol_exaWsDisconnect(SEXP);
 extern SEXP _exasol_exaWsSetAttributes(SEXP, SEXP);
 extern SEXP _exasol_exaWsGetAttributes(SEXP);
 extern SEXP _exasol_exaWsIsConnected(SEXP);
-extern SEXP _exasol_asyncRODBCIOStart(SEXP, SEXP, SEXP);
-extern SEXP _exasol_asyncRODBCProxyHost(void);
-extern SEXP _exasol_asyncRODBCProxyPort(void);
-extern SEXP _exasol_asyncRODBCQueryStart(SEXP, SEXP, SEXP, SEXP);
-extern SEXP _exasol_asyncRODBCQueryFinish(SEXP);
+extern SEXP _exasol_asyncWSIOStart(SEXP, SEXP, SEXP);
+extern SEXP _exasol_asyncWSProxyHost(void);
+extern SEXP _exasol_asyncWSProxyPort(void);
+extern SEXP _exasol_asyncWSQueryStart(SEXP, SEXP, SEXP, SEXP);
+extern SEXP _exasol_asyncWSQueryFinish(SEXP);
 extern SEXP _exasol_asyncEnableTracing(SEXP);
 
 static R_CallMethodDef CallEntries[] = {
@@ -35,11 +35,11 @@ static R_CallMethodDef CallEntries[] = {
     {"_exasol_exaWsSetAttributes",    (DL_FUNC) &_exasol_exaWsSetAttributes,    2},
     {"_exasol_exaWsGetAttributes",    (DL_FUNC) &_exasol_exaWsGetAttributes,    1},
     {"_exasol_exaWsIsConnected",      (DL_FUNC) &_exasol_exaWsIsConnected,      1},
-    {"_exasol_asyncRODBCIOStart",     (DL_FUNC) &_exasol_asyncRODBCIOStart,     3},
-    {"_exasol_asyncRODBCProxyHost",   (DL_FUNC) &_exasol_asyncRODBCProxyHost,   0},
-    {"_exasol_asyncRODBCProxyPort",   (DL_FUNC) &_exasol_asyncRODBCProxyPort,   0},
-    {"_exasol_asyncRODBCQueryStart",  (DL_FUNC) &_exasol_asyncRODBCQueryStart,  4},
-    {"_exasol_asyncRODBCQueryFinish", (DL_FUNC) &_exasol_asyncRODBCQueryFinish, 1},
+    {"_exasol_asyncWSIOStart",     (DL_FUNC) &_exasol_asyncWSIOStart,     3},
+    {"_exasol_asyncWSProxyHost",   (DL_FUNC) &_exasol_asyncWSProxyHost,   0},
+    {"_exasol_asyncWSProxyPort",   (DL_FUNC) &_exasol_asyncWSProxyPort,   0},
+    {"_exasol_asyncWSQueryStart",  (DL_FUNC) &_exasol_asyncWSQueryStart,  4},
+    {"_exasol_asyncWSQueryFinish", (DL_FUNC) &_exasol_asyncWSQueryFinish, 1},
     {"_exasol_asyncEnableTracing",    (DL_FUNC) &_exasol_asyncEnableTracing,    1},
     {NULL, NULL, 0}
 };
