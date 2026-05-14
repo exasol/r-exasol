@@ -3,7 +3,7 @@
 ## Build & Test
 
 - **Build:** `R CMD INSTALL --no-multiarch --with-keep.source -l ~/R/library .`
-- **Test:** `HAS_LOCAL_EXASOL_TEST_DB=true EXAHOST=localhost:8888 EXAUID=sys EXAPWD=exasol Rscript -e 'devtools::test()'`
+- **Test:** `HAS_LOCAL_EXASOL_TEST_DB=true EXAHOST=localhost:8888 EXAUID=sys EXAPWD=exasol EXASSLCERTIFICATE=SSL_VERIFY_NONE Rscript -e 'devtools::test()'`
 - Exasol docker-db: `EXAHOST=localhost:8888`, user `sys`, password `exasol`.
 - **DBI/DBItest prerequisite:** the DBItest suite (`tests/testthat/test-DBItest.R`) requires the legacy forks `marcelboldt/DBI` and `marcelboldt/DBItest` — CRAN `DBI` >= 0.4 dropped `dbiCheckCompliance`, which `DBItest 1.0.1` still imports, so test discovery fails with *"object 'dbiCheckCompliance' is not exported by 'namespace:DBI'"*. Install once with `Rscript -e 'remotes::install_github("marcelboldt/DBI"); remotes::install_github("marcelboldt/DBItest")'` — note this downgrades system-wide `DBI`, so prefer a project-local library (`R_LIBS_USER=~/R/r-exasol-libs ...`) if you also work on other R projects.
 
