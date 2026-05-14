@@ -11,7 +11,7 @@
 
 \item{schema}{Filter on DB schema}
 
-\item{...}{Further parameters passed on to `exa.readData()`}
+\item{...}{Unused.}
 }
 \value{
 A character vector. If no tables present, a character vector of length 0.

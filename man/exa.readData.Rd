@@ -54,7 +54,8 @@ EXAConnection and returns the results as a data frame.
 
 The results are transfered via a proprietary high speed channel from the
 database optimized for bulk transfer. The \code{EXPORT ... INTO CSV AT ...}
-statement is used internally to transfer the results as a csv.
+statement is used internally to transfer the results as a csv, which
+is usually faster than websocket, especially for large data.
 
 On the R-side, the results are parsed per default via read.csv. You can also
 use arbitrary readers, processing the incoming csv records according to your

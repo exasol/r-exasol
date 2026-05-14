@@ -50,7 +50,7 @@ The function returns the value returned by the writer, or TRUE if there is none.
 \description{
 This function writes the given data frame to a database table.
 
-The data are transfered to the database via a proprietary transfer channel
+The data are transferred to the database via a proprietary transfer channel
 which is optimized for high speed bulk transfer. To be more detailed, the
 \code{IMPORT INTO ... FROM CSV AT ...} statement is used internally. On the
 R-side, the data.frame is converted to csv format and written to a file
