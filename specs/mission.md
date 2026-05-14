@@ -4,7 +4,7 @@
 
 ## Problem Statement
 
-R users working with Exasol databases need a native, high-performance way to connect, query, and transfer data between R and Exasol. Standard ODBC-only approaches lack the throughput needed for large-scale analytical workloads on multinode clusters. This package bridges that gap by combining DBI-compliant convenience with a C++ high-speed data transfer layer.
+R users working with Exasol databases need a native, high-performance way to connect, query, and transfer data between R and Exasol. Standard generic database drivers lack the throughput needed for large-scale analytical workloads on multinode clusters. This package bridges that gap by combining DBI-compliant convenience with a native C++ WebSocket client and a high-speed bulk data transfer layer.
 
 ## Target Users
 
@@ -15,7 +15,7 @@ R users working with Exasol databases need a native, high-performance way to con
 
 ## Core Capabilities
 
-1. **Database connectivity** — DBI-compliant connect/disconnect to Exasol via ODBC, supporting DSN and direct hostname configuration with optional encryption
+1. **Database connectivity** — DBI-compliant connect/disconnect to Exasol via the native WebSocket protocol, supporting direct hostname configuration with optional TLS encryption
 2. **Data querying** — Send SQL queries, fetch results, list tables and fields using standard DBI methods
 3. **High-speed data transfer** — Parallel bulk read/write optimized for multinode clusters via a native C++ HTTP/HTTPS layer
 4. **Transaction management** — Begin, commit, and rollback transactions on Exasol connections
@@ -42,11 +42,13 @@ R users working with Exasol databases need a native, high-performance way to con
 | Layer | Technology | Purpose |
 |-------|------------|---------|
 | Language | R (>= 3.3.0) | Package logic, DBI interface, S4/R5 class system |
-| Language | C++ (C++14) | High-speed data transfer layer |
+| Language | C++ (C++17) | WebSocket client, command execution, and high-speed data transfer |
 | Build | autoconf / configure | Configure and compile C++ native code |
-| Database interface | RODBC (>= 1.3-12) | ODBC-based SQL execution and metadata |
+| R/C++ binding | Rcpp | Bridge between R and the C++ layer |
+| WebSocket / HTTP | Boost.Beast (via BH) | Native WebSocket protocol and HTTP/HTTPS bulk transfer |
+| JSON | Boost.JSON (via BH) | Encoding/decoding Exasol WebSocket commands |
 | DBI | DBI (>= 0.3.1) | Standard R database interface compliance |
-| Crypto | OpenSSL (>= 1.0.1) | TLS/SSL for encrypted data transfer |
+| Crypto | OpenSSL (>= 1.0.1) | TLS/SSL for encrypted WebSocket and data transfer |
 | Testing | testthat | R-level unit and integration tests |
 | Testing | DBItest | DBI compliance test suite |
 | Testing | CMake + Catch | C++ unit tests |
@@ -106,15 +108,15 @@ Layered architecture with a native C++ performance layer:
 
 - **R DBI layer** (S4 classes): Public API implementing the DBI interface — `EXADriver`, `EXAConnection`, `EXAResult`, `EXAObject`
 - **R internal layer**: Low-level bulk transfer functions (`exa.readData`, `exa.writeData`) that coordinate parallel data transfer
-- **C++ native layer**: High-speed HTTP/HTTPS data transfer with OpenSSL, compiled via autoconf and linked into the R package
-- **ODBC bridge**: RODBC handles SQL command execution, metadata queries, and connection management
+- **C++ WebSocket client**: Boost.Beast-based client that speaks Exasol's native JSON-over-WebSocket protocol for SQL execution, metadata, and session management
+- **C++ bulk data transfer**: High-speed HTTP/HTTPS channel (with OpenSSL) for parallel `IMPORT`/`EXPORT` against multinode clusters, compiled via autoconf and linked into the R package
 
-**Data flow:** R client → DBI methods → RODBC (SQL queries) or C++ layer (bulk data transfer) → Exasol database
+**Data flow:** R client → DBI methods → C++ WebSocket client (SQL queries) or C++ HTTP/HTTPS layer (bulk data transfer) → Exasol database
 
 ## Constraints
 
-- **Technical**: Requires OpenSSL >= 1.0.1, ODBC driver, and Exasol DB v5+ on the target system
-- **Technical**: C++14 compiler required; Windows requires RTools >= 4.0
+- **Technical**: Requires OpenSSL >= 1.0.1 and Exasol DB v7.1+ on the target system
+- **Technical**: C++17 compiler required; Windows requires RTools >= 4.0
 - **Technical**: R >= 3.3.0 (DESCRIPTION), CI validates against R 4.0+
 - **Technical**: Cross-platform support required (Linux, Windows, macOS)
 
@@ -123,5 +125,4 @@ Layered architecture with a native C++ performance layer:
 | Service | Purpose | Failure Impact |
 |---------|---------|----------------|
 | Exasol Database | Target database for all operations | Package cannot function without a running Exasol instance |
-| Exasol ODBC Driver | System-level driver for ODBC connectivity | Connection establishment fails |
 | GitHub (build-time) | CI/CD and package distribution | No impact on runtime; builds and releases are blocked |
