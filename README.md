@@ -23,10 +23,19 @@ Leading the TPC-H benchmark, it is considered the fastest analytical data wareho
 
 ## Status
 
-Github CI build validates the package r-exasol against R versions 4.0, 4.1, 4.2, and 4.3. Please note that DBI 0.3.1 and a fork of DBItest 1.0-1 are not the latest versions. The Exasol R package may however work with DBI 0.4.1, but until this is resolved appropriate and compatible older packages can be loaded from here:
+Github CI build validates the package r-exasol against R versions 4.0, 4.1, 4.2, and 4.3. Please note that DBI 0.3.1 and a fork of DBItest 1.0-1 are not the latest versions. The Exasol R package may however work with DBI 0.4.1, but until this is resolved appropriate and compatible older packages must be installed from here:
 
 - https://github.com/marcelboldt/DBI
 - https://github.com/marcelboldt/DBItest
+
+Install both with:
+
+```r
+remotes::install_github("marcelboldt/DBI")
+remotes::install_github("marcelboldt/DBItest")
+```
+
+Without these, the DBItest-based integration tests (`tests/testthat/test-DBItest.R`) fail to load with the error *"object 'dbiCheckCompliance' is not exported by 'namespace:DBI'"*, because CRAN `DBI` >= 0.4 dropped that symbol while `DBItest 1.0.1` still imports it. Note that installing the fork downgrades your system-wide `DBI` — if you also work on other R projects, install into a project-local library by setting `R_LIBS_USER` before the install commands.
 
 For Windows only:
   * As this package uses C++17 code, it needs at least RTools >= 4.0.0. Hence, it works only on R >= 4.0.0.
@@ -73,7 +82,14 @@ Following test were implemented:
 
    For MacOsX: Install via brew: ```brew install openssl```.
 
-4. Install the necessary R dependencies, such as DBI. For the versions of these packages, checkout the section [Status](#status). Have a look into the [Github Actions Docker](https://github.com/exasol/r-exasol/blob/main/tests/Dockerfile), if you look for an example, how to install the necessary dependencies.
+4. Install the necessary R dependencies. `DBI` (and, for running the integration test suite, `DBItest`) must be installed from the **legacy forks** described in the section [Status](#status):
+
+   ```r
+   remotes::install_github("marcelboldt/DBI")
+   remotes::install_github("marcelboldt/DBItest")
+   ```
+
+   The current CRAN `DBI` (>= 0.4) is incompatible with the `DBItest 1.0.1` fork that this package targets. See the [Github Actions Dockerfile](https://github.com/exasol/r-exasol/blob/main/tests/Dockerfile) for a complete example of the dependency install sequence.
 
    
 ### Installation
