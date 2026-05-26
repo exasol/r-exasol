@@ -56,9 +56,11 @@ exa.readData <- function(channel, query, encoding = 'UTF-8',
   try(.Call(C_asyncRODBCQueryFinish, 0))
 
   protocol <- ifelse(channel@encrypted, "https", "http")
+  odbc_info <- odbcGetInfo(channel)
+  certificate_clause <- .exa_etl_certificate_clause(odbc_info[["DBMS_Ver"]])
 
   if (is.na(server)) {
-    server <- odbcGetInfo(channel)[["Server_Name"]]
+    server <- odbc_info[["Server_Name"]]
   }
 
   serverAddress <- strsplit(server, ":")[[1]]
@@ -71,7 +73,8 @@ exa.readData <- function(channel, query, encoding = 'UTF-8',
   proxyHost <- .Call(C_asyncRODBCProxyHost)
   proxyPort <- .Call(C_asyncRODBCProxyPort)
   query <- paste0("EXPORT (", query, ") INTO CSV AT '", protocol, "://",  proxyHost, ":",
-                 proxyPort, "' FILE 'executeSQL.csv' ENCODING = '",encoding,"' BOOLEAN = 'TRUE/FALSE' WITH COLUMN NAMES IGNORE CERTIFICATE")
+                 proxyPort, "' FILE 'executeSQL.csv' ENCODING = '",encoding,"' BOOLEAN = 'TRUE/FALSE' WITH COLUMN NAMES",
+                 certificate_clause)
 
   on.exit(.Call(C_asyncRODBCQueryFinish, 0))
 
