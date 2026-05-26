@@ -31,8 +31,8 @@ RUN apt-get update && \
                         texlive-latex-extra texinfo && \
                         apt-get -y clean && apt-get -y autoremove
 RUN Rscript -e 'install.packages("testthat")'
-RUN Rscript -e 'install.packages("DBI")'
 RUN Rscript -e 'install.packages("assertthat")'
+RUN Rscript -e 'install.packages("DBI")'
 RUN Rscript -e 'install.packages("xml2")'
 RUN Rscript -e 'install.packages("DBItest")'
 RUN Rscript -e 'install.packages("devtools", dependencies=TRUE)'

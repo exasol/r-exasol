@@ -33,6 +33,7 @@ RUN apt-get update && \
                         apt-get -y clean && apt-get -y autoremove
 ENV GITHUB_PAT=$GH_TOKEN
 RUN Rscript -e 'install.packages("testthat")'
+RUN Rscript -e 'install.packages("assertthat")'
 RUN  Rscript -e 'install.packages("devtools", dependencies = TRUE)'
 RUN  Rscript -e 'install.packages("remotes")'
 RUN  Rscript -e 'install.packages("RODBC")'
