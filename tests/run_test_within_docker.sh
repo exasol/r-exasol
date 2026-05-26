@@ -9,9 +9,10 @@ fi
 
 TEST_DIR="$1"
 
-#Install r-exasol library via devtools
+# Install r-exasol directly so the test container does not depend on devtools
+# at runtime.
 cd "${TEST_DIR}"
-Rscript -e 'devtools::install()'
+R CMD INSTALL --no-multiarch --with-keep.source .
 
 export HAS_LOCAL_EXASOL_TEST_DB=true
 
