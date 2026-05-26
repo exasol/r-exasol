@@ -4037,14 +4037,14 @@ fi
 ## Setup RBin
 RBIN="${R_HOME}/bin/R"
 
-CXX14=`"${RBIN}" CMD config CXX14`
-if test -z "$CXX14"; then
-  as_fn_error $? "No C++14 compiler is available" "$LINENO" 5
+CXX17=`"${RBIN}" CMD config CXX17`
+if test -z "$CXX17"; then
+  as_fn_error $? "No C++17 compiler is available" "$LINENO" 5
 fi
-CXX14STD=`"${RBIN}" CMD config CXX14STD`
+CXX17STD=`"${RBIN}" CMD config CXX17STD`
 CPPFLAGS=`"${RBIN}" CMD config CPPFLAGS`
-CXXFLAGS=`"${RBIN}" CMD config CXX14FLAGS`
-CXX="${CXX14} ${CXX14STD}"
+CXXFLAGS=`"${RBIN}" CMD config CXX17FLAGS`
+CXX="${CXX17} ${CXX17STD}"
 echo "CPPFLAGS:${CPPFLAGS}"
 CPPFLAGS="${CPPFLAGS} -I. ${UNIT_TESTFLAGS_CPPFLAGS} ${OPENSSL_INCLUDES} ${ODBC_CFLAGS}"
 echo "CPPFLAGS:${CPPFLAGS}"
@@ -6105,5 +6105,4 @@ if test -n "$ac_unrecognized_opts" && test "$enable_option_checking" != no; then
   { printf "%s\n" "$as_me:${as_lineno-$LINENO}: WARNING: unrecognized options: $ac_unrecognized_opts" >&5
 printf "%s\n" "$as_me: WARNING: unrecognized options: $ac_unrecognized_opts" >&2;}
 fi
-
 

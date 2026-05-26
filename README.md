@@ -26,7 +26,7 @@ Github CI build validates the package r-exasol against R versions 4.0, 4.1, 4.2,
 - https://github.com/marcelboldt/DBItest
 
 For Windows only: 
-  * As this package uses C++14 code, it needs at least RTools >= 4.0.0. Hence, it works only on R >= 4.0.0.
+  * As this package uses C++17 code, it needs at least RTools >= 4.0.0. Hence, it works only on R >= 4.0.0.
   * Please note that the version of RTools must match the installed version of R (RTools 4.2 for R >= 4.2, RTools 4.0 for R4.0/4.1), check https://cran.r-project.org/bin/windows/Rtools/ for further information
 
 The low-level methods such as regards `exa.readData`, `exa.writeData` and `exa.createScript` may work as expected, so
