@@ -26,13 +26,13 @@ RUN add-apt-repository -y ppa:deadsnakes/ppa
 RUN apt-get update && \
     apt-get install -y --no-install-recommends "r-base-core=$R_VERSION" "r-base-dev=$R_VERSION" curl \
                         libcurl4-openssl-dev libssl-dev \
-                        libssh2-1-dev libxml2-dev zlib1g-dev unixodbc-dev \
+                        libssh2-1-dev libxml2-dev libuv1-dev zlib1g-dev unixodbc-dev \
                         texlive-latex-base texlive-fonts-recommended texlive-fonts-extra \
                         texlive-latex-extra texinfo && \
                         apt-get -y clean && apt-get -y autoremove
 RUN Rscript -e 'install.packages("testthat")'
-RUN Rscript -e 'install.packages("DBI")'
 RUN Rscript -e 'install.packages("assertthat")'
+RUN Rscript -e 'install.packages("DBI")'
 RUN Rscript -e 'install.packages("xml2")'
 RUN Rscript -e 'install.packages("DBItest")'
 RUN Rscript -e 'install.packages("devtools", dependencies=TRUE)'

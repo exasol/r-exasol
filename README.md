@@ -26,7 +26,7 @@ Github CI build validates the package r-exasol against R versions 4.0, 4.1, 4.2,
 - https://github.com/marcelboldt/DBItest
 
 For Windows only: 
-  * As this package uses C++14 code, it needs at least RTools >= 4.0.0. Hence, it works only on R >= 4.0.0.
+  * As this package uses C++17 code, it needs at least RTools >= 4.0.0. Hence, it works only on R >= 4.0.0.
   * Please note that the version of RTools must match the installed version of R (RTools 4.2 for R >= 4.2, RTools 4.0 for R4.0/4.1), check https://cran.r-project.org/bin/windows/Rtools/ for further information
 
 The low-level methods such as regards `exa.readData`, `exa.writeData` and `exa.createScript` may work as expected, so
@@ -42,6 +42,7 @@ Following test were implemented:
 
 1. ODBC drivers 7.1.1 & 7.1.2 under MacOsX BigSur have a dependency issue. If you have problems under MacOsX and see an error message like ```...libexaodbc-io418sys.dylib not found```, please update to the latest ODBC driver, version 7.1.3 works fine. 
 2. The Exasol ODBC driver does not support encoding of curly braces for passwords in the connection string: You can use curly braces to encode semicolons in passwords in the connection string, like `...,PWD={he;llo},...`. However, passwords like `he{{;o` are currently not supported.
+3. `exa.readData()` and `exa.writeData()` adapt the `IMPORT`/`EXPORT` certificate syntax to the connected database version. Exasol 2025.1.0 and later require `IGNORE CERTIFICATE`, while older releases do not accept it. If the server version cannot be determined, the package stops with an error instead of guessing.
 
 ## Getting started
 

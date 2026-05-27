@@ -88,6 +88,45 @@ processIDs <- function(id, quotes = "\"") {
   paste0(quotes,make.unique(encodeString(id)),quotes)
 }
 
+.parse_exasol_db_version <- function(db_version) {
+  if (length(db_version) != 1 || is.na(db_version) || !nzchar(db_version)) {
+    stop("Unsupported Exasol database version: missing DBMS_Ver metadata.")
+  }
+
+  db_version <- trimws(db_version)
+  parsed_version <- strsplit(db_version, " ", fixed = TRUE)[[1]]
+  parsed_version <- parsed_version[nzchar(parsed_version)][1]
+
+  if (length(parsed_version) == 0 || identical(parsed_version, "")) {
+    stop(paste0(
+      "Unsupported Exasol database version: '",
+      db_version,
+      "'. Cannot determine compatible IMPORT/EXPORT certificate syntax."
+    ))
+  }
+
+  version_parts <- strsplit(parsed_version, ".", fixed = TRUE)[[1]]
+  version_parts <- version_parts[nzchar(version_parts)]
+
+  if (length(version_parts) < 2 || any(is.na(as.integer(version_parts)))) {
+    stop(paste0(
+      "Unsupported Exasol database version: '",
+      db_version,
+      "'. Cannot determine compatible IMPORT/EXPORT certificate syntax."
+    ))
+  }
+
+  package_version(parsed_version)
+}
+
+.exa_etl_certificate_clause <- function(db_version) {
+  if (.parse_exasol_db_version(db_version) >= package_version("2025.1.0")) {
+    " IGNORE CERTIFICATE"
+  } else {
+    ""
+  }
+}
+
 # This method recognises schema and table identifiers, and applies proper quoting.
 # @param string The input string containing identifiers.
 # @param statement A boolean indicating whether the input string is a whole statement, or a fully qualified identifier.

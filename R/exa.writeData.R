@@ -60,9 +60,11 @@ exa.writeData <- function(channel, data, tableName, tableColumns = NA,
   protocol <- ifelse(channel@encrypted, "https", "http")
 
   try(.Call(C_asyncRODBCQueryFinish, 0))
+  odbc_info <- odbcGetInfo(channel)
+  certificate_clause <- .exa_etl_certificate_clause(odbc_info[["DBMS_Ver"]])
 
   if (missing(server)) {
-    server <- odbcGetInfo(channel)[["Server_Name"]]
+    server <- odbc_info[["Server_Name"]]
   }
 
   serverAddress <- strsplit(server, ":")[[1]]
@@ -82,7 +84,8 @@ exa.writeData <- function(channel, data, tableName, tableColumns = NA,
   query <- paste0("IMPORT INTO ", tableName,
                  columns,
                  " FROM CSV AT '" , protocol, "://", proxyHost, ":",
-                 proxyPort, "' FILE 'importData.csv' ENCODING = '", encoding, "' IGNORE CERTIFICATE")
+                 proxyPort, "' FILE 'importData.csv' ENCODING = '", encoding, "'",
+                 certificate_clause)
   on.exit(.Call(C_asyncRODBCQueryFinish, 0))
 
   fd <- .Call(C_asyncRODBCQueryStart, attr(channel, "handle_ptr"),

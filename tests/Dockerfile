@@ -27,12 +27,13 @@ RUN add-apt-repository -y ppa:deadsnakes/ppa
 RUN apt-get update && \
     apt-get install -y --no-install-recommends "r-base-core=$R_VERSION" "r-base-dev=$R_VERSION" curl \
                         libcurl4-openssl-dev libssl-dev \
-                        libfontconfig1-dev libssh2-1-dev libxml2-dev zlib1g-dev unixodbc-dev \
+                        libfontconfig1-dev libssh2-1-dev libxml2-dev libuv1-dev zlib1g-dev unixodbc-dev \
                         libfreetype6-dev libpng-dev libtiff5-dev libjpeg-dev \
                         libharfbuzz-dev  libfribidi-dev cmake && \
                         apt-get -y clean && apt-get -y autoremove
 ENV GITHUB_PAT=$GH_TOKEN
 RUN Rscript -e 'install.packages("testthat")'
+RUN Rscript -e 'install.packages("assertthat")'
 RUN  Rscript -e 'install.packages("devtools", dependencies = TRUE)'
 RUN  Rscript -e 'install.packages("remotes")'
 RUN  Rscript -e 'install.packages("RODBC")'
