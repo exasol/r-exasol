@@ -93,12 +93,22 @@ processIDs <- function(id, quotes = "\"") {
     stop("Unsupported Exasol database version: missing DBMS_Ver metadata.")
   }
 
-  parsed_version <- regmatches(
-    db_version,
-    regexpr("[0-9]+(\\.[0-9]+)+", db_version, perl = TRUE)
-  )
+  db_version <- trimws(db_version)
+  parsed_version <- strsplit(db_version, " ", fixed = TRUE)[[1]]
+  parsed_version <- parsed_version[nzchar(parsed_version)][1]
 
   if (length(parsed_version) == 0 || identical(parsed_version, "")) {
+    stop(paste0(
+      "Unsupported Exasol database version: '",
+      db_version,
+      "'. Cannot determine compatible IMPORT/EXPORT certificate syntax."
+    ))
+  }
+
+  version_parts <- strsplit(parsed_version, ".", fixed = TRUE)[[1]]
+  version_parts <- version_parts[nzchar(version_parts)]
+
+  if (length(version_parts) < 2 || any(is.na(as.integer(version_parts)))) {
     stop(paste0(
       "Unsupported Exasol database version: '",
       db_version,
